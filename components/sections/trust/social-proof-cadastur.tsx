@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   ShieldCheck,
@@ -17,6 +17,7 @@ import {
 } from "@/components/layout/section-header";
 import { Section } from "@/components/layout/section";
 import { content } from "@/config/content";
+import { useMotionReady } from "@/hooks/use-motion-ready";
 import { cn } from "@/lib/utils";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -65,20 +66,20 @@ export type SocialProofCadasturProps = {
 };
 
 function useSectionMotion() {
-  const reduce = useReducedMotion();
+  const { shouldAnimate } = useMotionReady();
 
   const item = React.useCallback(
     (index: number) => ({
-      initial: reduce ? false : { opacity: 0, y: 16 },
-      whileInView: reduce ? undefined : { opacity: 1, y: 0 },
+      initial: shouldAnimate ? { opacity: 0, y: 16 } : false,
+      whileInView: shouldAnimate ? { opacity: 1, y: 0 } : undefined,
       viewport: { once: true, margin: "-60px" },
       transition: {
         duration: 0.5,
         ease,
-        delay: reduce ? 0 : index * 0.08,
+        delay: shouldAnimate ? index * 0.08 : 0,
       },
     }),
-    [reduce]
+    [shouldAnimate]
   );
 
   return { item };

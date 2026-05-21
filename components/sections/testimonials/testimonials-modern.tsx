@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
 import { content, type TestimonialItem } from "@/config/content";
+import { useMotionReady } from "@/hooks/use-motion-ready";
 import {
   cardInteractiveClassName,
   cardShadowClassName,
@@ -78,16 +79,16 @@ function StarRating({ rating = 5 }: { rating?: number }) {
 }
 
 function useCardMotion(index: number) {
-  const reduce = useReducedMotion();
+  const { shouldAnimate } = useMotionReady();
 
   return {
-    initial: reduce ? false : { opacity: 0, y: 16 },
-    whileInView: reduce ? undefined : { opacity: 1, y: 0 },
+    initial: shouldAnimate ? { opacity: 0, y: 16 } : false,
+    whileInView: shouldAnimate ? { opacity: 1, y: 0 } : undefined,
     viewport: { once: true, margin: "-50px" },
     transition: {
       duration: 0.5,
       ease,
-      delay: reduce ? 0 : index * 0.08,
+      delay: shouldAnimate ? index * 0.08 : 0,
     },
   };
 }

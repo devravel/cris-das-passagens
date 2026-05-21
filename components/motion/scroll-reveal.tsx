@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
+import { useMotionReady } from "@/hooks/use-motion-ready";
 import { motionEase, scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -19,9 +20,9 @@ export function ScrollReveal({
   delay = 0,
   y = scrollRevealDefaults.y,
 }: ScrollRevealProps) {
-  const reduce = useReducedMotion();
+  const { shouldAnimate } = useMotionReady();
 
-  if (reduce) {
+  if (!shouldAnimate) {
     return <div className={className}>{children}</div>;
   }
 

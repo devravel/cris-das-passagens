@@ -3,13 +3,14 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, Globe, Plane } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
+import { useMotionReady } from "@/hooks/use-motion-ready";
 import { cn } from "@/lib/utils";
 
 export type HeroServiceCard = {
@@ -50,18 +51,18 @@ const defaultHeroImage =
   "https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=1400&q=80";
 
 function useHeroMotion() {
-  const reduce = useReducedMotion();
+  const { shouldAnimate } = useMotionReady();
 
   const fade = React.useCallback(
     (delay = 0) => ({
-      initial: reduce ? false : { opacity: 0, y: 14 },
-      animate: reduce ? false : { opacity: 1, y: 0 },
-      transition: { duration: 0.55, ease, delay: reduce ? 0 : delay },
+      initial: shouldAnimate ? { opacity: 0, y: 14 } : false,
+      animate: shouldAnimate ? { opacity: 1, y: 0 } : undefined,
+      transition: { duration: 0.55, ease, delay: shouldAnimate ? delay : 0 },
     }),
-    [reduce]
+    [shouldAnimate]
   );
 
-  return { fade, reduce };
+  return { fade, shouldAnimate };
 }
 
 function HeroCtaLink({
@@ -141,7 +142,7 @@ export function TourismHero({
   imageCaption = "Assessoria completa do início ao fim da sua viagem.",
   className,
 }: TourismHeroProps) {
-  const { fade, reduce } = useHeroMotion();
+  const { fade, shouldAnimate } = useHeroMotion();
 
   return (
     <Section
@@ -157,9 +158,9 @@ export function TourismHero({
       <div className="grid items-center gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">
         <motion.div
           className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none"
-          initial={reduce ? false : { opacity: 0, y: 18 }}
-          animate={reduce ? false : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: reduce ? 0 : 0.12, ease }}
+          initial={shouldAnimate ? { opacity: 0, y: 18 } : false}
+          animate={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 0.65, delay: shouldAnimate ? 0.12 : 0, ease }}
         >
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl shadow-[0_24px_80px_-24px_rgba(52,91,167,0.28)] ring-1 ring-border/40 sm:aspect-[5/4] lg:aspect-[4/5] xl:aspect-[5/4]">
             <Image

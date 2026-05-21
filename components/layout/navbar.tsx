@@ -4,11 +4,12 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Menu, MessageCircle, Phone } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { navigation as defaultItems, navbarCta } from "@/config/navigation";
+import { useMotionReady } from "@/hooks/use-motion-ready";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import {
@@ -160,7 +161,7 @@ function MobileNavLinks({
   onNavigate: () => void;
 }) {
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
+  const { shouldAnimate } = useMotionReady();
 
   return (
     <nav className="flex flex-col gap-1 p-2" aria-label="Navegação móvel">
@@ -181,7 +182,7 @@ function MobileNavLinks({
           </Link>
         );
 
-        if (reduceMotion) {
+        if (!shouldAnimate) {
           return <div key={item.href}>{link}</div>;
         }
 
