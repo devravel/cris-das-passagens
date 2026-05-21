@@ -7,6 +7,8 @@ export const siteConfig = {
   url: "https://crisdaspassagens.com.br",
 
   logo: "/cris-das-passagens-logo.png",
+  /** Versão recortada (sem padding) — navbar e UI compacta. */
+  logoNav: "/cris-das-passagens-logo-nav.png",
 
   phone: content.contact.phone,
   phoneHref: content.contact.phoneHref,

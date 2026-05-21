@@ -232,17 +232,17 @@ export function Navbar({
         className
       )}
     >
-      <Container className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-3">
+      <Container className="flex h-16 items-center justify-between gap-2 sm:h-[4.25rem] sm:gap-3">
         <Link
           href={logoHref}
           className="group flex shrink-0 items-center rounded-md outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <Image
-            src={siteConfig.logo}
+            src={siteConfig.logoNav}
             alt={siteConfig.name}
-            width={160}
-            height={48}
-            className="h-8 w-auto max-w-[7.25rem] object-contain object-left sm:h-10 sm:max-w-[10rem]"
+            width={817}
+            height={388}
+            className="h-12 w-auto sm:h-[3.25rem] md:h-14 lg:h-[3.75rem]"
             priority
           />
         </Link>

@@ -76,7 +76,7 @@ export const content = {
       { label: "Seguros" },
     ] satisfies ServiceItem[],
     primaryCta: {
-      label: "Faça Uma Cotação AGORA",
+      label: "Faça uma cotação agora",
       href: contentLinks.quote,
     } satisfies ContentCta,
     secondaryCta: {
@@ -116,8 +116,7 @@ export const content = {
       {
         id: "whatsapp",
         title: "Atendimento WhatsApp",
-        description:
-          "Fale com nossa equipe e tire dúvidas em poucos minutos.",
+        description: "Fale com nossa equipe e tire dúvidas em poucos minutos.",
         href: contentLinks.whatsapp,
         ctaLabel: "Falar agora",
         external: true,
