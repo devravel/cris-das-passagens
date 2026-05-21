@@ -1,49 +1,27 @@
-import { Quote } from "lucide-react";
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import * as React from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Star } from "lucide-react";
+
+import { Section } from "@/components/layout/section";
+import { SectionHeader } from "@/components/layout/section-header";
+import { content, type TestimonialItem } from "@/config/content";
+import {
+  cardInteractiveClassName,
+  cardShadowClassName,
+} from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
 
-export type TestimonialItem = {
-  quote: string;
-  author: string;
-  role: string;
-  company?: string;
-  /** URL da fonte original (opcional); útil para `cite` em SEO). */
-  sourceUrl?: string;
-};
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export type TestimonialsModernProps = {
   sectionId?: string;
-  eyebrow?: string;
-  title: string;
-  description?: string;
-  testimonials: TestimonialItem[];
+  title?: string;
+  subtitle?: string;
+  testimonials?: TestimonialItem[];
   className?: string;
 };
-
-export const defaultTestimonials: TestimonialItem[] = [
-  {
-    quote:
-      "Reduzimos o tempo entre ideia e produção em semanas. A clareza do processo e a qualidade técnica notam-se em cada release.",
-    author: "Mariana Costa",
-    role: "VP de Produto",
-    company: "Northline",
-  },
-  {
-    quote:
-      "Finalmente uma experiência que parece enterprise sem sacrificar velocidade. Onboarding fluido e documentação que as equipas realmente usam.",
-    author: "João Ferreira",
-    role: "CTO",
-    company: "BridgeLabs",
-  },
-  {
-    quote:
-      "O detalhe no design e na execução elevou a confiança dos nossos clientes. Métricas de adoção subiram de forma consistente no primeiro trimestre.",
-    author: "Inês Almeida",
-    role: "Head de Crescimento",
-    company: "Craft & Co.",
-  },
-];
 
 function getInitials(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -52,121 +30,170 @@ function getInitials(name: string) {
   return `${parts[0][0] ?? ""}${parts[parts.length - 1][0] ?? ""}`.toUpperCase();
 }
 
+function GoogleMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-label="Google"
+      className={cn("size-4", className)}
+    >
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+      />
+    </svg>
+  );
+}
+
+function StarRating({ rating = 5 }: { rating?: number }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`${rating} de 5 estrelas`}>
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={cn(
+            "size-4",
+            index < rating
+              ? "fill-amber-400 text-amber-400"
+              : "fill-muted text-muted"
+          )}
+          strokeWidth={1.5}
+          aria-hidden
+        />
+      ))}
+    </div>
+  );
+}
+
+function useCardMotion(index: number) {
+  const reduce = useReducedMotion();
+
+  return {
+    initial: reduce ? false : { opacity: 0, y: 16 },
+    whileInView: reduce ? undefined : { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-50px" },
+    transition: {
+      duration: 0.5,
+      ease,
+      delay: reduce ? 0 : index * 0.08,
+    },
+  };
+}
+
 function TestimonialCard({
   testimonial,
   authorId,
+  index,
 }: {
   testimonial: TestimonialItem;
   authorId: string;
+  index: number;
 }) {
   const initials = getInitials(testimonial.author);
+  const motionProps = useCardMotion(index);
 
   return (
-    <Card
+    <motion.article
+      aria-labelledby={authorId}
       className={cn(
-        "h-full rounded-2xl border-border/60 bg-card/45 py-0 shadow-sm ring-1 ring-foreground/6 transition-[box-shadow,border-color,transform] duration-300",
-        "supports-backdrop-filter:bg-card/35 supports-backdrop-filter:backdrop-blur-sm",
-        "hover:-translate-y-px hover:border-border hover:shadow-md"
+        "flex h-full flex-col rounded-2xl bg-background p-5 ring-1 ring-border/50 sm:p-6",
+        cardInteractiveClassName,
+        cardShadowClassName
       )}
+      {...motionProps}
     >
-      <CardContent className="flex flex-col gap-6 p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <Quote
-            className="size-7 shrink-0 text-foreground/20"
-            strokeWidth={1.5}
-            aria-hidden
-          />
-        </div>
-
-        <blockquote
-          cite={testimonial.sourceUrl}
-          className="space-y-0 border-l-0 pl-0 text-[0.9375rem] leading-relaxed text-foreground sm:text-base"
+      <header className="flex items-center gap-3">
+        <div
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand/10 font-heading text-xs font-semibold tracking-tight text-brand ring-1 ring-brand/15"
+          aria-hidden
         >
-          <p>&ldquo;{testimonial.quote}&rdquo;</p>
-        </blockquote>
-
-        <footer className="mt-auto flex items-center gap-3 border-t border-border/50 pt-5">
-          <div
-            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted/70 font-heading text-xs font-semibold tracking-tight text-foreground ring-1 ring-border/50"
-            aria-hidden
+          {initials}
+        </div>
+        <div className="min-w-0">
+          <p
+            id={authorId}
+            className="truncate font-heading text-sm font-semibold tracking-tight text-foreground"
           >
-            {initials}
-          </div>
-          <div className="min-w-0">
-            <p id={authorId} className="truncate font-heading text-sm font-semibold tracking-tight text-foreground">
-              <cite className="not-italic">{testimonial.author}</cite>
-            </p>
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground/80">{testimonial.role}</span>
-              {testimonial.company ? (
-                <>
-                  <span className="text-border">&nbsp;·&nbsp;</span>
-                  <span>{testimonial.company}</span>
-                </>
-              ) : null}
-            </p>
-          </div>
-        </footer>
-      </CardContent>
-    </Card>
+            <cite className="not-italic">{testimonial.author}</cite>
+          </p>
+          <p className="truncate text-sm text-muted-foreground">
+            {testimonial.destination}
+          </p>
+        </div>
+      </header>
+
+      <blockquote className="mt-5 flex-1 border-l-0 pl-0">
+        <p className="text-sm italic leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
+          &ldquo;{testimonial.quote}&rdquo;
+        </p>
+      </blockquote>
+
+      <footer className="mt-5 flex flex-wrap items-center gap-2 border-t border-border/50 pt-4">
+        <StarRating rating={testimonial.rating} />
+        <span className="text-sm tabular-nums text-muted-foreground">
+          — {testimonial.rating?.toFixed(1) ?? "5.0"}
+        </span>
+        {testimonial.source === "google" ? <GoogleMark /> : null}
+      </footer>
+    </motion.article>
   );
 }
 
 export function TestimonialsModern({
-  sectionId = "testimonials",
-  eyebrow,
-  title,
-  description,
-  testimonials,
+  sectionId = "depoimentos",
+  title = content.testimonials.title,
+  subtitle = content.testimonials.subtitle,
+  testimonials = content.testimonials.items,
   className,
 }: TestimonialsModernProps) {
   const headingId = `${sectionId}-heading`;
 
   return (
-    <section
-      className={cn(
-        "border-b border-border/50 bg-background py-16 sm:py-20 lg:py-24",
-        className
-      )}
+    <Section
+      background="soft"
+      spacing="default"
+      bordered
+      className={className}
       aria-labelledby={headingId}
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-14 lg:mb-16">
-          {eyebrow ? (
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h2
-            id={headingId}
-            className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-[2rem] lg:leading-tight"
-          >
-            {title}
-          </h2>
-          {description ? (
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {description}
-            </p>
-          ) : null}
-        </div>
+      <SectionHeader
+        id={headingId}
+        title={title}
+        subtitle={subtitle}
+        subtitleClassName="mt-4"
+        className="mb-12 sm:mb-14 lg:mb-16"
+      />
 
-        <ul
-          className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6"
-          role="list"
-        >
-          {testimonials.map((item, index) => {
-            const authorId = `${sectionId}-author-${index}`;
+      <ul
+        className="grid list-none grid-cols-1 gap-4 p-0 md:grid-cols-2 md:gap-5 lg:grid-cols-3 lg:gap-6"
+        role="list"
+      >
+        {testimonials.map((item, index) => {
+          const authorId = `${sectionId}-author-${index}`;
 
-            return (
-              <li key={authorId}>
-                <article aria-labelledby={authorId}>
-                  <TestimonialCard testimonial={item} authorId={authorId} />
-                </article>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </section>
+          return (
+            <li key={authorId}>
+              <TestimonialCard
+                testimonial={item}
+                authorId={authorId}
+                index={index}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </Section>
   );
 }

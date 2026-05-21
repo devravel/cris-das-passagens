@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { Menu } from "lucide-react";
+import { Menu, MessageCircle, Phone } from "lucide-react";
 
-import { navigation as defaultItems } from "@/config/navigation";
+import { Container } from "@/components/layout/container";
+import { navigation as defaultItems, navbarCta } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,10 +28,10 @@ export type NavItem = {
 export type NavbarCta = {
   label: string;
   href: string;
+  external?: boolean;
 };
 
 export type NavbarProps = {
-  brand?: React.ReactNode;
   logoHref?: string;
   items?: NavItem[];
   cta?: NavbarCta | null;
@@ -82,13 +84,71 @@ function NavLink({
 
 function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
-    <div className="hidden items-center gap-1 sm:flex">
+    <div className="hidden items-center gap-0.5 lg:flex">
       {items.map((item) => (
-        <div key={item.href} className="group px-3 py-2">
+        <div key={item.href} className="group px-2.5 py-2 xl:px-3">
           <NavLink href={item.href}>{item.label}</NavLink>
         </div>
       ))}
     </div>
+  );
+}
+
+function NavbarCtaButton({
+  cta,
+  className,
+  onNavigate,
+  compact = false,
+}: {
+  cta: NavbarCta;
+  className?: string;
+  onNavigate?: () => void;
+  compact?: boolean;
+}) {
+  const whatsappStyles =
+    "bg-brand-whatsapp text-white hover:bg-brand-whatsapp/90 [a]:hover:bg-brand-whatsapp/90";
+
+  if (cta.external) {
+    return (
+      <Button
+        asChild
+        size={compact ? "icon-sm" : "sm"}
+        className={cn(
+          "rounded-lg shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px active:translate-y-0",
+          whatsappStyles,
+          className
+        )}
+      >
+        <a
+          href={cta.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onNavigate}
+          aria-label={compact ? cta.label : undefined}
+        >
+          {compact ? (
+            <MessageCircle className="size-[18px]" strokeWidth={1.75} aria-hidden />
+          ) : (
+            cta.label
+          )}
+        </a>
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      asChild
+      size={compact ? "icon-sm" : "sm"}
+      className={cn(
+        "rounded-lg shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px active:translate-y-0",
+        className
+      )}
+    >
+      <Link href={cta.href} onClick={onNavigate}>
+        {cta.label}
+      </Link>
+    </Button>
   );
 }
 
@@ -145,10 +205,9 @@ function MobileNavLinks({
 }
 
 export function Navbar({
-  brand = siteConfig.name,
   logoHref = "/",
   items = defaultItems,
-  cta = { label: "Fale connosco", href: "/contato" },
+  cta = navbarCta,
   className,
 }: NavbarProps) {
   const [scrolled, setScrolled] = React.useState(false);
@@ -173,27 +232,46 @@ export function Navbar({
         className
       )}
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6 lg:px-8">
+      <Container className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-3">
         <Link
           href={logoHref}
-          className="group flex shrink-0 items-center gap-2 rounded-md outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="group flex shrink-0 items-center rounded-md outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <span className="font-heading text-base font-semibold tracking-tight text-foreground transition-transform duration-200 ease-out group-hover:translate-y-px sm:text-[1.05rem]">
-            {brand}
-          </span>
+          <Image
+            src={siteConfig.logo}
+            alt={siteConfig.name}
+            width={160}
+            height={48}
+            className="h-8 w-auto max-w-[7.25rem] object-contain object-left sm:h-10 sm:max-w-[10rem]"
+            priority
+          />
         </Link>
 
         <DesktopNavLinks items={items} />
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          {cta ? (
-            <Button
-              asChild
-              size="sm"
-              className="hidden rounded-lg shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px active:translate-y-0 sm:inline-flex"
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+          {siteConfig.phone ? (
+            <a
+              href={siteConfig.phoneHref}
+              className="hidden items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground md:inline-flex"
             >
-              <Link href={cta.href}>{cta.label}</Link>
-            </Button>
+              <Phone className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
+              <span className="whitespace-nowrap">{siteConfig.phone}</span>
+            </a>
+          ) : null}
+
+          {cta ? (
+            <>
+              <NavbarCtaButton
+                cta={cta}
+                className="hidden sm:inline-flex"
+              />
+              <NavbarCtaButton
+                cta={cta}
+                compact
+                className="inline-flex sm:hidden"
+              />
+            </>
           ) : null}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -201,7 +279,7 @@ export function Navbar({
               <Button
                 variant="outline"
                 size="icon-sm"
-                className="shrink-0 rounded-lg border-border/80 bg-background/50 transition-[transform,background-color] duration-200 hover:bg-muted/80 active:scale-[0.98] sm:hidden"
+                className="shrink-0 rounded-lg border-border/80 bg-background/50 transition-[transform,background-color] duration-200 hover:bg-muted/80 active:scale-[0.98] lg:hidden"
                 aria-label="Abrir menu de navegação"
               >
                 <Menu className="size-[18px]" strokeWidth={1.75} />
@@ -217,22 +295,31 @@ export function Navbar({
                 </SheetTitle>
               </SheetHeader>
               <MobileNavLinks items={items} onNavigate={closeMobile} />
+              {siteConfig.phone ? (
+                <div className="border-t border-border/50 px-4 py-3">
+                  <a
+                    href={siteConfig.phoneHref}
+                    onClick={closeMobile}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                  >
+                    <Phone className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
+                    {siteConfig.phone}
+                  </a>
+                </div>
+              ) : null}
               {cta ? (
                 <div className="border-t border-border/50 p-4">
-                  <Button
-                    asChild
-                    className="w-full rounded-lg shadow-none transition-[transform] duration-200 active:scale-[0.99]"
-                  >
-                    <Link href={cta.href} onClick={closeMobile}>
-                      {cta.label}
-                    </Link>
-                  </Button>
+                  <NavbarCtaButton
+                    cta={cta}
+                    className="w-full"
+                    onNavigate={closeMobile}
+                  />
                 </div>
               ) : null}
             </SheetContent>
           </Sheet>
         </div>
-      </div>
+      </Container>
     </header>
   );
 }

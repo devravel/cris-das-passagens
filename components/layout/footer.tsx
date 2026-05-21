@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 
+import { Container } from "@/components/layout/container";
+import { content } from "@/config/content";
 import { navigation as defaultNavItems } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -20,67 +22,86 @@ export type FooterProps = {
   brand?: ReactNode;
   brandHref?: string;
   siteName?: string;
-  /** Texto curto abaixo da marca; omitir para um rodapé mais limpo. */
   tagline?: ReactNode;
-  /** Ano do copyright; por omissão usa o ano civil atual (servidor). */
   year?: number;
   navItems?: FooterNavItem[];
   socialLinks?: SocialLink[] | null;
   className?: string;
 };
 
-const defaultSocialLinks: SocialLink[] = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/" },
-  { label: "X", href: "https://x.com/" },
-  { label: "GitHub", href: "https://github.com/" },
-  { label: "Instagram", href: "https://www.instagram.com/" },
-];
+function buildDefaultSocialLinks(): SocialLink[] {
+  const links: SocialLink[] = [];
+
+  if (siteConfig.links.instagram) {
+    links.push({ label: "Instagram", href: siteConfig.links.instagram });
+  }
+  if (siteConfig.links.facebook) {
+    links.push({ label: "Facebook", href: siteConfig.links.facebook });
+  }
+
+  return links;
+}
 
 export function Footer({
   brand = siteConfig.name,
   brandHref = "/",
-  siteName = siteConfig.name,
-  tagline,
+  siteName = siteConfig.legalName,
+  tagline = content.meta.tagline,
   year,
   navItems = defaultNavItems,
-  socialLinks = defaultSocialLinks,
+  socialLinks = buildDefaultSocialLinks(),
   className,
 }: FooterProps) {
   const copyrightYear = year ?? new Date().getFullYear();
 
   return (
     <footer
-      className={cn(
-        "mt-auto w-full border-t border-border/60 bg-muted/20",
-        className
-      )}
+      className={cn("mt-auto w-full bg-brand-navy text-white", className)}
     >
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <Container className="py-12 sm:py-16">
         <div className="flex flex-col gap-10 sm:gap-12">
           <div className="flex flex-col justify-between gap-10 sm:flex-row sm:items-start sm:gap-16">
-            <div className="max-w-sm space-y-3">
+            <div className="min-w-0 max-w-sm space-y-3">
               <Link
                 href={brandHref}
-                className="inline-flex rounded-md font-heading text-base font-semibold tracking-tight text-foreground outline-none transition-opacity duration-200 hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex rounded-md font-heading text-base font-semibold tracking-tight text-white outline-none transition-opacity duration-200 hover:opacity-80 focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
               >
                 {brand}
               </Link>
               {tagline ? (
-                <p className="text-sm leading-relaxed text-muted-foreground">
+                <p className="text-sm leading-relaxed text-white/70">
                   {tagline}
                 </p>
               ) : null}
+              {socialLinks && socialLinks.length > 0 ? (
+                <ul className="flex flex-wrap gap-3 pt-1" role="list">
+                  {socialLinks.map(({ label, href }) => (
+                    <li key={`${href}-${label}`}>
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium text-white/70 transition-colors duration-200 hover:text-white focus-visible:rounded-md focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                      >
+                        {label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
 
-            <div className="flex flex-1 flex-col gap-10 sm:flex-row sm:justify-end sm:gap-20">
+            <div className="flex flex-1 flex-col gap-8 min-w-0 sm:flex-row sm:justify-end sm:gap-12 lg:gap-20">
               <nav aria-label="Páginas do site">
-                <h2 className="sr-only">Navegação</h2>
+                <p className="mb-3 text-sm font-semibold text-white">
+                  Links Rápidos
+                </p>
                 <ul className="flex flex-col gap-2 sm:gap-2.5" role="list">
                   {navItems.map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className="text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground focus-visible:rounded-md focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                        className="text-sm font-medium text-white/70 transition-colors duration-200 hover:text-white focus-visible:rounded-md focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                       >
                         {item.label}
                       </Link>
@@ -89,45 +110,86 @@ export function Footer({
                 </ul>
               </nav>
 
-              {socialLinks && socialLinks.length > 0 ? (
-                <nav aria-label="Redes sociais">
-                  <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    Social
-                  </p>
-                  <ul className="flex flex-col gap-2 sm:gap-2.5" role="list">
-                    {socialLinks.map(({ label, href }) => (
-                      <li key={`${href}-${label}`}>
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground underline-offset-4 transition-colors duration-200 hover:text-foreground focus-visible:rounded-md focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                        >
-                          <span>{label}</span>
-                          <ArrowUpRight
-                            className="size-3.5 shrink-0 opacity-50 transition-[opacity,transform] duration-200 group-hover:translate-x-px group-hover:-translate-y-px group-hover:opacity-70"
-                            strokeWidth={1.75}
-                            aria-hidden
-                          />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              ) : null}
+              <div>
+                <p className="mb-3 text-sm font-semibold text-white">Contato</p>
+                <ul className="flex flex-col gap-3" role="list">
+                  {siteConfig.phone ? (
+                    <li>
+                      <a
+                        href={siteConfig.phoneHref}
+                        className="inline-flex items-start gap-2 text-sm text-white/70 transition-colors duration-200 hover:text-white"
+                      >
+                        <Phone
+                          className="mt-0.5 size-4 shrink-0"
+                          strokeWidth={1.75}
+                          aria-hidden
+                        />
+                        <span>{siteConfig.phone}</span>
+                      </a>
+                    </li>
+                  ) : null}
+                  {siteConfig.email ? (
+                    <li>
+                      <a
+                        href={`mailto:${siteConfig.email}`}
+                        className="inline-flex items-start gap-2 text-sm text-white/70 transition-colors duration-200 hover:text-white"
+                      >
+                        <Mail
+                          className="mt-0.5 size-4 shrink-0"
+                          strokeWidth={1.75}
+                          aria-hidden
+                        />
+                        <span>{siteConfig.email}</span>
+                      </a>
+                    </li>
+                  ) : null}
+                  {siteConfig.address ? (
+                    <li className="inline-flex items-start gap-2 text-sm text-white/70">
+                      <MapPin
+                        className="mt-0.5 size-4 shrink-0"
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                      <span>{siteConfig.address}</span>
+                    </li>
+                  ) : null}
+                  <li>
+                    <a
+                      href={siteConfig.whatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-1.5 text-sm font-medium text-white/70 transition-colors duration-200 hover:text-white"
+                    >
+                      <span>WhatsApp</span>
+                      <ArrowUpRight
+                        className="size-3.5 shrink-0 opacity-50 transition-[opacity,transform] duration-200 group-hover:translate-x-px group-hover:-translate-y-px group-hover:opacity-70"
+                        strokeWidth={1.75}
+                        aria-hidden
+                      />
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 border-t border-border/50 pt-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-8 text-xs text-white/60 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <p>
               <small className="text-[0.8125rem] leading-relaxed">
                 © <span className="tabular-nums">{copyrightYear}</span>{" "}
                 {siteName}. Todos os direitos reservados.
               </small>
             </p>
+            {siteConfig.addressDetails.cnpj ? (
+              <p>
+                <small className="text-[0.8125rem] leading-relaxed">
+                  CNPJ {siteConfig.addressDetails.cnpj}
+                </small>
+              </p>
+            ) : null}
           </div>
         </div>
-      </div>
+      </Container>
     </footer>
   );
 }

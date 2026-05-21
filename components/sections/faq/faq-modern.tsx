@@ -1,3 +1,10 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+
+import { Section } from "@/components/layout/section";
+import { Container } from "@/components/layout/container";
+import { SectionHeader } from "@/components/layout/section-header";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import {
   Accordion,
   AccordionContent,
@@ -5,57 +12,24 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { content, type ContentCta, type FaqItem } from "@/config/content";
+import { scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-
-export type FaqItem = {
-  question: string;
-  /** Texto simples (também usado no JSON-LD). */
-  answer: string;
-};
 
 export type FaqModernProps = {
   sectionId?: string;
-  eyebrow?: string;
-  title: string;
-  description?: string;
-  items: FaqItem[];
+  title?: string;
+  items?: FaqItem[];
+  cta?: ContentCta;
   className?: string;
 };
 
-export const defaultFaqItems: FaqItem[] = [
-  {
-    question: "Quanto tempo demora um projeto típico?",
-    answer:
-      "Depende do âmbito e integrações. Para um MVP bem definido, conte frequentemente com 6–12 semanas, com marcos semanais e demonstrações contínuas.",
-  },
-  {
-    question: "Trabalham com equipas internas existentes?",
-    answer:
-      "Sim. Integramo-nos com produto, design e engenharia para acelerar entrega, partilhar contexto e documentar decisões — sem duplicar pipelines.",
-  },
-  {
-    question: "Como tratam de performance e acessibilidade?",
-    answer:
-      "Definimos budgets de performance cedo, validamos com medições reais e aplicamos padrões de acessibilidade AA como requisito, não como extra.",
-  },
-  {
-    question: "Qual é o modelo de comunicação durante o projeto?",
-    answer:
-      "Ritos leves e assíncronos primeiro: registo de decisões, canais claros e reviews quinzenais ou semanais, consoante a fase e o risco.",
-  },
-  {
-    question: "Podem ajudar após o lançamento?",
-    answer:
-      "Oferecemos retainer opcional para evolução, observabilidade, hardening e melhorias incrementais — sempre com roadmap transparente.",
-  },
-];
-
 export function FaqModern({
   sectionId = "faq",
-  eyebrow,
-  title,
-  description,
-  items,
+  title = content.faq.title,
+  items = content.faq.items,
+  cta = content.faq.cta,
   className,
 }: FaqModernProps) {
   const headingId = `${sectionId}-heading`;
@@ -74,72 +48,68 @@ export function FaqModern({
   };
 
   return (
-    <section
-      className={cn(
-        "border-b border-border/50 bg-muted/10 py-16 sm:py-20 lg:py-24",
-        className
-      )}
+    <Section
+      background="default"
+      spacing="default"
+      bordered
+      className={className}
       aria-labelledby={headingId}
     >
       <script
         type="application/ld+json"
-        // JSON-LD: conteúdo gerado a partir de strings controladas pelo projeto
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-10 max-w-2xl text-center sm:mb-12 lg:mb-14">
-          {eyebrow ? (
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h2
-            id={headingId}
-            className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-[2rem] lg:leading-tight"
+      <ScrollReveal>
+        <SectionHeader id={headingId} title={title} />
+      </ScrollReveal>
+
+      <ScrollReveal delay={scrollRevealDefaults.stagger}>
+        <Container size="narrow" padding="none">
+        <div
+          className={cn(
+            "rounded-2xl border border-border/60 bg-background px-1 shadow-[0_8px_30px_-14px_rgba(52,91,167,0.12)] ring-1 ring-border/50 sm:px-2"
+          )}
+        >
+          <Accordion
+            type="single"
+            collapsible
+            className="px-4 sm:px-5"
+            defaultValue={items[0] ? `${sectionId}-0` : undefined}
           >
-            {title}
-          </h2>
-          {description ? (
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {description}
-            </p>
-          ) : null}
+            {items.map((item, index) => {
+              const value = `${sectionId}-${index}`;
+
+              return (
+                <AccordionItem key={value} value={value}>
+                  <AccordionHeader>
+                    <AccordionTrigger className="gap-4 text-left [&>svg:last-child]:mt-1">
+                      {item.question}
+                    </AccordionTrigger>
+                  </AccordionHeader>
+                  <AccordionContent>
+                    <p className="text-muted-foreground">{item.answer}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
         </div>
 
-        <div className="mx-auto max-w-3xl">
-          <div
-            className={cn(
-              "rounded-2xl border border-border/60 bg-card/45 px-1 shadow-sm ring-1 ring-foreground/6",
-              "supports-backdrop-filter:bg-card/35 supports-backdrop-filter:backdrop-blur-sm sm:px-2"
-            )}
+        <div className="mt-10 flex justify-center sm:mt-12">
+          <Button
+            asChild
+            size="lg"
+            className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
           >
-            <Accordion
-              type="single"
-              collapsible
-              className="px-4 sm:px-5"
-              defaultValue={items[0] ? `${sectionId}-0` : undefined}
-            >
-              {items.map((item, index) => {
-                const value = `${sectionId}-${index}`;
-
-                return (
-                  <AccordionItem key={value} value={value}>
-                    <AccordionHeader>
-                      <AccordionTrigger className="gap-4 [&>svg:last-child]:mt-1">
-                        {item.question}
-                      </AccordionTrigger>
-                    </AccordionHeader>
-                    <AccordionContent>
-                      <p>{item.answer}</p>
-                    </AccordionContent>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
-          </div>
+            <Link href={cta.href} className="gap-2">
+              {cta.label}
+              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            </Link>
+          </Button>
         </div>
-      </div>
-    </section>
+        </Container>
+      </ScrollReveal>
+    </Section>
   );
 }

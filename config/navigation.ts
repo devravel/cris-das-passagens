@@ -1,14 +1,25 @@
-export const navigation = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Sobre",
-    href: "/sobre",
-  },
-  {
-    label: "Contato",
-    href: "/contato",
-  },
+import { content, contentLinks } from "@/config/content";
+
+export type NavItem = {
+  label: string;
+  href: string;
+};
+
+/** Links principais — referência: Destinos, Pacotes, Sobre, Blog, Contato. */
+export const navigation: NavItem[] = [
+  { label: "Início", href: "/" },
+  { label: "Destinos", href: "/destinos" },
+  { label: "Pacotes", href: "/pacotes" },
+  { label: "Sobre", href: "/sobre" },
+  { label: "Blog", href: contentLinks.blog },
+  { label: "Contato", href: contentLinks.quote },
 ];
+
+/** CTA da navbar — conversão via WhatsApp (referência visual). */
+export const navbarCta = {
+  label: content.ctas.whatsapp.label,
+  href: contentLinks.whatsapp,
+  external: true,
+} as const;
+
+export type NavbarCtaConfig = typeof navbarCta;

@@ -8,6 +8,9 @@ import {
   Zap,
 } from "lucide-react";
 
+import { Container } from "@/components/layout/container";
+import { Section } from "@/components/layout/section";
+import { SectionHeader } from "@/components/layout/section-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -119,50 +122,44 @@ export function FeaturesGrid({
   const headingId = `${sectionId}-heading`;
 
   return (
-    <section
-      className={cn(
-        "border-b border-border/50 bg-background py-16 sm:py-20 lg:py-24",
-        className
-      )}
+    <Section
+      background="default"
+      spacing="default"
+      bordered
+      className={className}
       aria-labelledby={headingId}
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-14 lg:mb-16">
-          {eyebrow ? (
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h2
-            id={headingId}
-            className="font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl lg:text-[2rem] lg:leading-tight"
-          >
-            {title}
-          </h2>
-          {description ? (
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {description}
-            </p>
-          ) : null}
-        </div>
+      {eyebrow ? (
+        <Container size="prose" padding="none" className="mb-3 text-center">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            {eyebrow}
+          </p>
+        </Container>
+      ) : null}
 
-        <ul
-          className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6"
-          role="list"
-        >
-          {features.map((feature, index) => {
-            const itemId = `${sectionId}-item-${index}`;
+      <SectionHeader
+        id={headingId}
+        title={title}
+        subtitle={description}
+        className={cn("mb-12 sm:mb-14 lg:mb-16", eyebrow && "mt-0")}
+      />
 
-            return (
-              <li key={itemId}>
-                <article aria-labelledby={itemId}>
-                  <FeatureCard feature={feature} itemId={itemId} />
-                </article>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </section>
+      <ul
+        className="grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6"
+        role="list"
+      >
+        {features.map((feature, index) => {
+          const itemId = `${sectionId}-item-${index}`;
+
+          return (
+            <li key={itemId}>
+              <article aria-labelledby={itemId}>
+                <FeatureCard feature={feature} itemId={itemId} />
+              </article>
+            </li>
+          );
+        })}
+      </ul>
+    </Section>
   );
 }
