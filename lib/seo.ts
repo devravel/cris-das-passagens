@@ -76,8 +76,4 @@ export const rootMetadata: Metadata = {
     description: defaultDescription,
     images: ["/opengraph-image"],
   },
-  icons: {
-    icon: siteConfig.logo,
-    apple: siteConfig.logo,
-  },
 };

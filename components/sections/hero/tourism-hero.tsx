@@ -7,7 +7,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Globe, Plane } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
@@ -191,14 +190,12 @@ export function TourismHero({
             {headline}
           </motion.h1>
 
-          <Container size="prose" padding="none" asChild>
-            <motion.p
-              className="text-center text-sm leading-relaxed text-muted-foreground sm:text-left sm:text-base md:text-lg"
-              {...fade(0.06)}
-            >
-              {subheadline}
-            </motion.p>
-          </Container>
+          <motion.p
+            className="max-w-2xl text-center text-sm leading-relaxed text-muted-foreground sm:text-left sm:text-base md:text-lg"
+            {...fade(0.06)}
+          >
+            {subheadline}
+          </motion.p>
 
           <motion.ul
             className="flex flex-wrap justify-center gap-2 sm:justify-start"

@@ -313,7 +313,7 @@ export const content = {
           "Entenda o melhor momento para garantir sua passagem e economizar de verdade na sua viagem.",
         category: "Passagens",
         image:
-          "https://images.unsplash.com/photo-1436491865339-34a364068ae4?auto=format&fit=crop&w=900&q=80",
+          "https://images.unsplash.com/photo-1586441133374-ed1cb4007a47?auto=format&fit=crop&w=900&q=80",
       },
       {
         title: "09 Motivos para comprar com o Cris",
