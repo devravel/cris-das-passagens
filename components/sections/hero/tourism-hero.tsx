@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -10,7 +9,7 @@ import type { LucideIcon } from "lucide-react";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
-import { useMotionReady } from "@/hooks/use-motion-ready";
+import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
 
 export type HeroServiceCard = {
@@ -32,8 +31,6 @@ export type TourismHeroProps = {
   className?: string;
 };
 
-const ease = [0.22, 1, 0.36, 1] as const;
-
 const defaultServiceCards: HeroServiceCard[] = [
   {
     label: "Viagens Nacionais",
@@ -49,21 +46,6 @@ const defaultServiceCards: HeroServiceCard[] = [
 
 const defaultHeroImage =
   "https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=1400&q=80";
-
-function useHeroMotion() {
-  const { shouldAnimate } = useMotionReady();
-
-  const fade = React.useCallback(
-    (delay = 0) => ({
-      initial: shouldAnimate ? { opacity: 0, y: 14 } : false,
-      animate: shouldAnimate ? { opacity: 1, y: 0 } : undefined,
-      transition: { duration: 0.55, ease, delay: shouldAnimate ? delay : 0 },
-    }),
-    [shouldAnimate]
-  );
-
-  return { fade, shouldAnimate };
-}
 
 function HeroCtaLink({
   cta,
@@ -107,13 +89,13 @@ function HeroCtaLink({
 }
 
 function ServiceCard({ card, delay }: { card: HeroServiceCard; delay: number }) {
-  const { fade } = useHeroMotion();
+  const entrance = useEntranceMotion(delay);
   const Icon = card.icon;
 
   return (
     <motion.div
       className="flex gap-3 rounded-xl bg-background p-4 shadow-[0_8px_30px_-12px_rgba(52,91,167,0.18)] ring-1 ring-border/50 transition-[box-shadow,transform] duration-300 hover:-translate-y-px hover:shadow-[0_12px_36px_-12px_rgba(52,91,167,0.22)]"
-      {...fade(delay)}
+      {...entrance}
     >
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand ring-1 ring-brand/15">
         <Icon className="size-[18px]" strokeWidth={1.75} aria-hidden />
@@ -142,7 +124,11 @@ export function TourismHero({
   imageCaption = "Assessoria completa do início ao fim da sua viagem.",
   className,
 }: TourismHeroProps) {
-  const { fade, shouldAnimate } = useHeroMotion();
+  const imageEntrance = useEntranceMotion(0.12, { y: 18, duration: 0.65 });
+  const headlineEntrance = useEntranceMotion(0);
+  const subheadlineEntrance = useEntranceMotion(0.06);
+  const servicesEntrance = useEntranceMotion(0.1);
+  const ctaEntrance = useEntranceMotion(0.24);
 
   return (
     <Section
@@ -158,9 +144,7 @@ export function TourismHero({
       <div className="grid items-center gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">
         <motion.div
           className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none"
-          initial={shouldAnimate ? { opacity: 0, y: 18 } : false}
-          animate={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
-          transition={{ duration: 0.65, delay: shouldAnimate ? 0.12 : 0, ease }}
+          {...imageEntrance}
         >
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl shadow-[0_24px_80px_-24px_rgba(52,91,167,0.28)] ring-1 ring-border/40 sm:aspect-[5/4] lg:aspect-[4/5] xl:aspect-[5/4]">
             <Image
@@ -186,21 +170,21 @@ export function TourismHero({
           <motion.h1
             id="hero-headline"
             className="font-heading text-balance text-center text-[1.875rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-left sm:text-4xl md:text-[2.75rem] md:leading-[1.06] lg:text-5xl"
-            {...fade(0)}
+            {...headlineEntrance}
           >
             {headline}
           </motion.h1>
 
           <motion.p
             className="max-w-2xl text-center text-sm leading-relaxed text-muted-foreground sm:text-left sm:text-base md:text-lg"
-            {...fade(0.06)}
+            {...subheadlineEntrance}
           >
             {subheadline}
           </motion.p>
 
           <motion.ul
             className="flex flex-wrap justify-center gap-2 sm:justify-start"
-            {...fade(0.1)}
+            {...servicesEntrance}
             aria-label="Serviços oferecidos"
           >
             {services.map((service) => (
@@ -220,7 +204,7 @@ export function TourismHero({
 
           <motion.div
             className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
-            {...fade(0.24)}
+            {...ctaEntrance}
           >
             <HeroCtaLink cta={primaryCta} variant="primary" />
             <HeroCtaLink cta={secondaryCta} variant="secondary" />
