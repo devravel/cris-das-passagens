@@ -5,7 +5,6 @@ import { Shield } from "lucide-react";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminLogoutButton } from "@/components/admin/logout-button";
-import { adminNavigationItems } from "@/lib/admin/navigation";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
 import { buildAdminLoginRedirect } from "@/lib/auth/admin-redirect";
 import { createNoIndexMetadata } from "@/lib/seo";
@@ -31,7 +30,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <header className="border-b border-border/70 bg-card/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <AdminSidebar items={adminNavigationItems} mode="mobile" />
+            <AdminSidebar mode="mobile" />
             <div className="flex size-10 items-center justify-center rounded-2xl bg-brand/10 text-brand">
               <Shield className="size-5" aria-hidden />
             </div>
@@ -48,7 +47,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       </header>
 
       <main className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[18rem_1fr] lg:py-8">
-        <AdminSidebar items={adminNavigationItems} mode="desktop" />
+        <AdminSidebar mode="desktop" />
         <div className="min-w-0">{children}</div>
       </main>
     </div>

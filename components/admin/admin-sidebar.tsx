@@ -2,9 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Shield } from "lucide-react";
+import {
+  FileText,
+  LayoutDashboard,
+  Megaphone,
+  Menu,
+  Shield,
+  type LucideIcon,
+} from "lucide-react";
 
-import type { AdminNavigationItem } from "@/lib/admin/navigation";
+import {
+  adminNavigationItems,
+  type AdminNavigationIcon,
+  type AdminNavigationItem,
+} from "@/lib/admin/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,8 +27,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
+const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
+  "layout-dashboard": LayoutDashboard,
+  "file-text": FileText,
+  megaphone: Megaphone,
+};
+
 type AdminSidebarProps = {
-  items: readonly AdminNavigationItem[];
   mode?: "mobile" | "desktop" | "both";
 };
 
@@ -31,18 +47,18 @@ function routeIsActive(pathname: string, href: string) {
 
 function SidebarNav({
   pathname,
-  items,
+  items = adminNavigationItems,
   onNavigate,
 }: {
   pathname: string;
-  items: readonly AdminNavigationItem[];
+  items?: readonly AdminNavigationItem[];
   onNavigate?: () => void;
 }) {
   return (
     <nav aria-label="Navegacao admin" className="space-y-1.5">
       {items.map((item) => {
         const isActive = routeIsActive(pathname, item.href);
-        const Icon = item.icon;
+        const Icon = adminNavigationIcons[item.icon];
         const linkNode = (
           <Link
             href={item.href}
@@ -82,7 +98,7 @@ function SidebarNav({
   );
 }
 
-export function AdminSidebar({ items, mode = "both" }: AdminSidebarProps) {
+export function AdminSidebar({ mode = "both" }: AdminSidebarProps) {
   const pathname = usePathname();
   const showDesktop = mode === "desktop" || mode === "both";
   const showMobile = mode === "mobile" || mode === "both";
@@ -100,7 +116,7 @@ export function AdminSidebar({ items, mode = "both" }: AdminSidebarProps) {
               <p className="text-xs text-muted-foreground">Cris das Passagens</p>
             </div>
           </div>
-          <SidebarNav pathname={pathname} items={items} />
+          <SidebarNav pathname={pathname} />
         </aside>
       ) : null}
 
@@ -130,7 +146,7 @@ export function AdminSidebar({ items, mode = "both" }: AdminSidebarProps) {
               </SheetHeader>
 
               <div className="p-3">
-                <SidebarNav pathname={pathname} items={items} onNavigate={() => undefined} />
+                <SidebarNav pathname={pathname} onNavigate={() => undefined} />
               </div>
             </SheetContent>
           </Sheet>

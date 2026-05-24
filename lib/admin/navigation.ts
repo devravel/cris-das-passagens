@@ -1,21 +1,20 @@
-import { FileText, LayoutDashboard, Megaphone } from "lucide-react";
-
 export const adminNavigationItems = [
   {
     title: "Dashboard",
     href: "/admin",
-    icon: LayoutDashboard,
+    icon: "layout-dashboard",
   },
   {
     title: "Blogs",
     href: "/admin/blogs",
-    icon: FileText,
+    icon: "file-text",
   },
   {
     title: "Promotions",
     href: "/admin/promotions",
-    icon: Megaphone,
+    icon: "megaphone",
   },
 ] as const;
 
+export type AdminNavigationIcon = (typeof adminNavigationItems)[number]["icon"];
 export type AdminNavigationItem = (typeof adminNavigationItems)[number];
