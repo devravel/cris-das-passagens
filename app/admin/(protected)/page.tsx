@@ -38,7 +38,7 @@ export default function AdminHomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="size-4 text-brand" aria-hidden />
-              Conteúdo do blog
+              Seus blogs
             </CardTitle>
             <CardDescription>
               Crie, publique e atualize artigos em minutos.
