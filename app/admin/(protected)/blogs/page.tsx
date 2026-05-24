@@ -44,7 +44,7 @@ export default async function AdminBlogsPage() {
             Blogs
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            Organize o fluxo editorial com uma experiencia simples, clara e pronta para
+            Organize o fluxo editorial com uma experiência simples, clara e pronta para
             escalar.
           </p>
         </div>
@@ -76,7 +76,7 @@ export default async function AdminBlogsPage() {
               <FileText className="size-4 text-brand" aria-hidden />
               Publicados
             </CardTitle>
-            <CardDescription>Posts visiveis no blog publico.</CardDescription>
+            <CardDescription>Posts visíveis no blog público.</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold tracking-tight text-foreground">
             {posts.filter((post) => post.published).length}
@@ -102,7 +102,7 @@ export default async function AdminBlogsPage() {
               <FileText className="size-4 text-brand" aria-hidden />
               Rascunhos
             </CardTitle>
-            <CardDescription>Posts ainda nao publicados.</CardDescription>
+            <CardDescription>Posts ainda não publicados.</CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold tracking-tight text-foreground">
             {posts.filter((post) => !post.published).length}

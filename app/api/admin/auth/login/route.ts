@@ -9,11 +9,11 @@ import { getSafeAdminRedirectTarget } from "@/lib/auth/admin-redirect";
 import { validateAdminCredentials } from "@/lib/auth/admin-service";
 
 const loginSchema = z.object({
-  email: z.email("Informe um e-mail valido."),
+  email: z.email("Informe um e-mail válido."),
   password: z
     .string()
-    .min(8, "A senha deve ter no minimo 8 caracteres.")
-    .max(128, "A senha deve ter no maximo 128 caracteres."),
+    .min(8, "A senha deve ter no mínimo 8 caracteres.")
+    .max(128, "A senha deve ter no máximo 128 caracteres."),
   redirectTo: z.string().optional(),
 });
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           ok: false,
-          error: parsedData.error.issues[0]?.message ?? "Dados invalidos.",
+          error: parsedData.error.issues[0]?.message ?? "Dados inválidos.",
         },
         { status: 400 },
       );
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           ok: false,
-          error: "E-mail ou senha invalidos.",
+          error: "E-mail ou senha inválidos.",
         },
         { status: 401 },
       );
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         ok: false,
-        error: "Nao foi possivel autenticar agora. Tente novamente.",
+        error: "Não foi possível autenticar agora. Tente novamente.",
       },
       { status: 500 },
     );

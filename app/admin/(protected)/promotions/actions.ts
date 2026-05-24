@@ -13,7 +13,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 const uploadImageSchema = z.object({
   fileName: z.string().min(1),
   fileType: z.string().min(1),
-  fileSize: z.number().max(5 * 1024 * 1024, "A imagem deve ter no maximo 5MB."),
+  fileSize: z.number().max(5 * 1024 * 1024, "A imagem deve ter no máximo 5MB."),
 });
 
 const allowedMimeTypes = new Set([
@@ -29,7 +29,7 @@ async function requireAdmin() {
   const session = await getCurrentAdminSession();
 
   if (!session) {
-    throw new Error("Nao autorizado.");
+    throw new Error("Não autorizado.");
   }
 }
 
@@ -61,7 +61,7 @@ export async function createPromotionAction(
     if (!parsed.success) {
       return {
         ok: false,
-        message: "Revise os campos obrigatorios.",
+        message: "Revise os campos obrigatórios.",
         fieldErrors: toFieldErrors(parsed.error),
       };
     }
@@ -78,14 +78,14 @@ export async function createPromotionAction(
     return {
       ok: true,
       message: values.active
-        ? "Promocao criada e ativada com sucesso."
-        : "Promocao criada como inativa.",
+        ? "Promoção criada e ativada com sucesso."
+        : "Promoção criada como inativa.",
       data: promotion,
     };
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel criar a promocao agora.",
+      message: "Não foi possível criar a promoção agora.",
     };
   }
 }
@@ -101,7 +101,7 @@ export async function updatePromotionAction(
     if (!parsed.success) {
       return {
         ok: false,
-        message: "Revise os campos obrigatorios.",
+        message: "Revise os campos obrigatórios.",
         fieldErrors: toFieldErrors(parsed.error),
       };
     }
@@ -116,7 +116,7 @@ export async function updatePromotionAction(
     if (!existing) {
       return {
         ok: false,
-        message: "Promocao nao encontrada.",
+        message: "Promoção não encontrada.",
       };
     }
 
@@ -130,13 +130,13 @@ export async function updatePromotionAction(
     return {
       ok: true,
       message: values.active
-        ? "Promocao atualizada e ativa."
-        : "Promocao atualizada como inativa.",
+        ? "Promoção atualizada e ativa."
+        : "Promoção atualizada como inativa.",
     };
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel atualizar a promocao agora.",
+      message: "Não foi possível atualizar a promoção agora.",
     };
   }
 }
@@ -153,7 +153,7 @@ export async function deletePromotionAction(id: string): Promise<ActionResult> {
     if (!promotion) {
       return {
         ok: false,
-        message: "Promocao nao encontrada.",
+        message: "Promoção não encontrada.",
       };
     }
 
@@ -165,12 +165,12 @@ export async function deletePromotionAction(id: string): Promise<ActionResult> {
 
     return {
       ok: true,
-      message: "Promocao excluida com sucesso.",
+      message: "Promoção excluída com sucesso.",
     };
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel excluir a promocao agora.",
+      message: "Não foi possível excluir a promoção agora.",
     };
   }
 }
@@ -191,12 +191,12 @@ export async function setPromotionActiveAction(
 
     return {
       ok: true,
-      message: active ? "Promocao ativada com sucesso." : "Promocao desativada com sucesso.",
+      message: active ? "Promoção ativada com sucesso." : "Promoção desativada com sucesso.",
     };
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel atualizar o status da promocao.",
+      message: "Não foi possível atualizar o status da promoção.",
     };
   }
 }
@@ -212,7 +212,7 @@ export async function uploadPromotionImageAction(
     if (!(file instanceof File)) {
       return {
         ok: false,
-        message: "Arquivo invalido.",
+        message: "Arquivo inválido.",
       };
     }
 
@@ -225,14 +225,14 @@ export async function uploadPromotionImageAction(
     if (!parsedUpload.success) {
       return {
         ok: false,
-        message: parsedUpload.error.issues[0]?.message ?? "Arquivo invalido.",
+        message: parsedUpload.error.issues[0]?.message ?? "Arquivo inválido.",
       };
     }
 
     if (!allowedMimeTypes.has(parsedUpload.data.fileType.toLowerCase())) {
       return {
         ok: false,
-        message: "Formato invalido. Use JPG, PNG, WEBP ou AVIF.",
+        message: "Formato inválido. Use JPG, PNG, WEBP ou AVIF.",
       };
     }
 
@@ -267,7 +267,7 @@ export async function uploadPromotionImageAction(
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel enviar a imagem agora.",
+      message: "Não foi possível enviar a imagem agora.",
     };
   }
 }

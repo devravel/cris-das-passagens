@@ -47,7 +47,7 @@ export function AdminLoginForm({ redirectTo }: LoginFormProps) {
         const data = (await response.json()) as LoginResponse;
 
         if (!response.ok || !data.ok) {
-          setError(data.error ?? "Nao foi possivel entrar com essas credenciais.");
+          setError(data.error ?? "Não foi possível entrar com essas credenciais.");
           return;
         }
 
@@ -55,7 +55,7 @@ export function AdminLoginForm({ redirectTo }: LoginFormProps) {
         router.replace(nextPath);
         router.refresh();
       } catch {
-        setError("Erro de conexao. Verifique sua internet e tente novamente.");
+        setError("Erro de conexão. Verifique sua internet e tente novamente.");
       }
     });
   }

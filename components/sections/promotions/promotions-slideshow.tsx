@@ -25,7 +25,7 @@ function PromotionSlide({
   isActive: boolean;
   priority: boolean;
 }) {
-  const alt = promotion.title ?? "Promocao Cris das Passagens";
+  const alt = promotion.title ?? "Promoção Cris das Passagens";
 
   const image = (
     <Image
@@ -156,7 +156,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
       className="relative mx-auto w-full max-w-6xl"
       role="region"
       aria-roledescription="carousel"
-      aria-label="Promocoes em destaque"
+      aria-label="Promoções em destaque"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
@@ -190,7 +190,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
               type="button"
               className="absolute top-1/2 left-3 z-20 hidden -translate-y-1/2 rounded-full border border-white/20 bg-brand-navy/45 p-2 text-white backdrop-blur-sm transition-colors hover:bg-brand-navy/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:inline-flex"
               onClick={goPrev}
-              aria-label="Promocao anterior"
+              aria-label="Promoção anterior"
             >
               <ChevronLeft className="size-5" aria-hidden />
             </button>
@@ -198,7 +198,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
               type="button"
               className="absolute top-1/2 right-3 z-20 hidden -translate-y-1/2 rounded-full border border-white/20 bg-brand-navy/45 p-2 text-white backdrop-blur-sm transition-colors hover:bg-brand-navy/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:inline-flex"
               onClick={goNext}
-              aria-label="Proxima promocao"
+              aria-label="Próxima promoção"
             >
               <ChevronRight className="size-5" aria-hidden />
             </button>
@@ -210,7 +210,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
         <div
           className="mt-4 flex items-center justify-center gap-2"
           role="tablist"
-          aria-label="Selecionar promocao"
+          aria-label="Selecionar promoção"
         >
           {promotions.map((promotion, index) => {
             const isActive = index === activeIndex;
@@ -223,8 +223,8 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
                 aria-selected={isActive}
                 aria-label={
                   promotion.title
-                    ? `Ver promocao: ${promotion.title}`
-                    : `Ver promocao ${index + 1}`
+                    ? `Ver promoção: ${promotion.title}`
+                    : `Ver promoção ${index + 1}`
                 }
                 className={cn(
                   "h-2 rounded-full transition-all duration-300 motion-reduce:transition-none",
@@ -241,7 +241,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
 
       {hasMultiple ? (
         <p className="sr-only" aria-live="polite" aria-atomic="true">
-          Promocao {activeIndex + 1} de {count}
+          Promoção {activeIndex + 1} de {count}
           {promotions[activeIndex]?.title ? `: ${promotions[activeIndex]?.title}` : ""}
         </p>
       ) : null}

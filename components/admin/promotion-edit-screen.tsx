@@ -24,10 +24,10 @@ export function PromotionEditScreen({ promotion }: PromotionEditScreenProps) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
-            Editar promocao
+            Editar promoção
           </h1>
           <p className="text-sm text-muted-foreground">
-            Atualize imagem, titulo, link e status da campanha.
+            Atualize imagem, título, link e status da campanha.
           </p>
         </div>
         <Button

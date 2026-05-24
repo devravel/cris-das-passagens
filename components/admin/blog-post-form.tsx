@@ -145,7 +145,7 @@ export function BlogPostForm({
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-1.5 md:col-span-2">
           <label htmlFor="title" className="text-sm font-medium text-foreground">
-            Titulo
+            Título
           </label>
           <Input
             id="title"
@@ -233,7 +233,7 @@ export function BlogPostForm({
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-foreground">Conteudo</label>
+        <label className="text-sm font-medium text-foreground">Conteúdo</label>
         <TiptapEditor
           value={contentValue}
           onChange={(nextValue) =>
@@ -276,7 +276,7 @@ export function BlogPostForm({
             Publicar post
           </label>
           <p className="text-xs text-muted-foreground">
-            {isPublished ? "Visivel no site publico." : "Salvo como rascunho."}
+            {isPublished ? "Visível no site público." : "Salvo como rascunho."}
           </p>
         </div>
 
@@ -307,7 +307,7 @@ export function BlogPostForm({
           </label>
           <p className="text-xs text-muted-foreground">
             {isPublished
-              ? "Maximo de 3 posts destacados na landing page."
+              ? "Máximo de 3 posts destacados na landing page."
               : "Publique o post para habilitar destaque na homepage."}
           </p>
           {form.formState.errors.featuredOnHomepage ? (
@@ -332,7 +332,7 @@ export function BlogPostForm({
           ) : mode === "create" ? (
             "Criar post"
           ) : (
-            "Salvar alteracoes"
+            "Salvar alterações"
           )}
         </Button>
       </div>

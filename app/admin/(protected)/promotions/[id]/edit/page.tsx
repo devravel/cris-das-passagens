@@ -9,8 +9,8 @@ type EditPromotionPageProps = {
 };
 
 export const metadata: Metadata = {
-  title: "Editar Promocao | Admin",
-  description: "Edite uma promocao no painel administrativo.",
+  title: "Editar Promoção | Admin",
+  description: "Edite uma promoção no painel administrativo.",
   robots: {
     index: false,
     follow: false,

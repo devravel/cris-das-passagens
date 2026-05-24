@@ -17,8 +17,8 @@ export async function PromotionsSection() {
       <ScrollReveal y={scrollRevealDefaults.y}>
         <SectionHeader
           id="promotions-heading"
-          title="Promocoes em destaque"
-          subtitle="Ofertas selecionadas para voce viajar pagando menos, com assessoria completa."
+          title="Promoções em destaque"
+          subtitle="Ofertas selecionadas para você viajar pagando menos, com assessoria completa."
           className="mb-6 sm:mb-8"
         />
       </ScrollReveal>

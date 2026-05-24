@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { PromotionCreateScreen } from "@/components/admin/promotion-create-screen";
 
 export const metadata: Metadata = {
-  title: "Nova Promocao | Admin",
-  description: "Crie uma nova promocao no painel administrativo.",
+  title: "Nova Promoção | Admin",
+  description: "Crie uma nova promoção no painel administrativo.",
   robots: {
     index: false,
     follow: false,

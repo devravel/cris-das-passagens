@@ -14,10 +14,10 @@ export function PromotionCreateScreen() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
-            Nova promocao
+            Nova promoção
           </h1>
           <p className="text-sm text-muted-foreground">
-            Cadastre campanhas visuais com imagem, link opcional e controle de ativacao.
+            Cadastre campanhas visuais com imagem, link opcional e controle de ativação.
           </p>
         </div>
         <Button

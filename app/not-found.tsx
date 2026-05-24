@@ -8,8 +8,8 @@ import { siteConfig } from "@/config/site";
 import { createNoIndexMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createNoIndexMetadata({
-  title: "Pagina nao encontrada",
-  description: "A pagina solicitada nao foi encontrada.",
+  title: "Página não encontrada",
+  description: "A página solicitada não foi encontrada.",
 });
 
 export default function NotFound() {
@@ -21,10 +21,10 @@ export default function NotFound() {
 
       <p className="text-sm font-semibold uppercase tracking-wider text-brand">404</p>
       <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-        Esta p&aacute;gina ainda n&atilde;o foi constru&iacute;da
+        Esta página ainda não foi construída
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-        Estamos evoluindo o site para trazer mais conte&uacute;dos em breve. Enquanto
+        Estamos evoluindo o site para trazer mais conteúdos em breve. Enquanto
         isso, nossa equipe pode te atender agora mesmo.
       </p>
 
@@ -32,7 +32,7 @@ export default function NotFound() {
         <Button asChild className="h-10 w-full rounded-lg bg-brand px-5 text-sm sm:w-auto">
           <Link href="/">
             <House className="size-4" strokeWidth={1.75} aria-hidden />
-            Voltar para o in&iacute;cio
+            Voltar para o início
           </Link>
         </Button>
 

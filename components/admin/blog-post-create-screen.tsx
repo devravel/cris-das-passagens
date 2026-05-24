@@ -17,7 +17,7 @@ export function BlogPostCreateScreen() {
             Novo post
           </h1>
           <p className="text-sm text-muted-foreground">
-            Escreva, revise e publique conteudo com uma experiencia focada em produtividade.
+            Escreva, revise e publique conteúdo com uma experiência focada em produtividade.
           </p>
         </div>
         <Button variant="outline" className="rounded-xl" onClick={() => router.push("/admin/blogs")}>

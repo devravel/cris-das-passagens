@@ -20,14 +20,14 @@ export function AdminLogoutButton() {
         });
 
         if (!response.ok) {
-          setError("Falha ao encerrar a sessao.");
+          setError("Falha ao encerrar a sessão.");
           return;
         }
 
         router.replace("/admin/login");
         router.refresh();
       } catch {
-        setError("Erro de conexao ao sair.");
+        setError("Erro de conexão ao sair.");
       }
     });
   }

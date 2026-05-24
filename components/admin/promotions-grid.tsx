@@ -85,11 +85,11 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
         <div className="mx-auto mb-3 flex size-11 items-center justify-center rounded-2xl bg-brand/10 text-brand">
           <Megaphone className="size-5" aria-hidden />
         </div>
-        <p className="text-sm text-muted-foreground">Nenhuma promocao cadastrada ainda.</p>
+        <p className="text-sm text-muted-foreground">Nenhuma promoção cadastrada ainda.</p>
         <Button asChild className="mt-4 rounded-xl">
           <Link href="/admin/promotions/new">
             <Plus className="size-4" aria-hidden />
-            Criar primeira promocao
+            Criar primeira promoção
           </Link>
         </Button>
       </div>
@@ -110,7 +110,7 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
             <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
               <Image
                 src={promotion.image}
-                alt={promotion.title ?? "Promocao"}
+                alt={promotion.title ?? "Promoção"}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
@@ -133,7 +133,7 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
             <div className="space-y-3 p-4">
               <div className="space-y-1">
                 <h2 className="line-clamp-2 font-medium text-foreground">
-                  {promotion.title ?? "Sem titulo"}
+                  {promotion.title ?? "Sem título"}
                 </h2>
                 <p className="text-xs text-muted-foreground">
                   Criada em {formatDate(promotion.createdAt)}
@@ -167,7 +167,7 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
                   className="rounded-lg"
                   onClick={() => setDeleteId(promotion.id)}
                   disabled={isPending}
-                  aria-label="Excluir promocao"
+                  aria-label="Excluir promoção"
                 >
                   <Trash2 className="size-4" aria-hidden />
                 </Button>
@@ -180,9 +180,9 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
       <Dialog open={Boolean(deleteId)} onOpenChange={(open) => !open && setDeleteId(null)}>
         <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Excluir promocao?</DialogTitle>
+            <DialogTitle>Excluir promoção?</DialogTitle>
             <DialogDescription>
-              Esta acao nao pode ser desfeita. A campanha sera removida permanentemente.
+              Esta ação não pode ser desfeita. A campanha será removida permanentemente.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -196,7 +196,7 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
                   Excluindo...
                 </>
               ) : (
-                "Excluir promocao"
+                "Excluir promoção"
               )}
             </Button>
           </DialogFooter>

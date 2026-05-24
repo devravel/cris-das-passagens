@@ -106,7 +106,7 @@ function BlogCard({
         </Link>
       ) : (
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground/80">
-          Conteudo em preparacao
+          Conteúdo em preparação
         </span>
       )}
     </div>

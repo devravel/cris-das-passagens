@@ -32,7 +32,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             Tivemos um problema para carregar o site
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Nossa equipe j&aacute; pode te ajudar pelo WhatsApp enquanto o problema &eacute;
+            Nossa equipe já pode te ajudar pelo WhatsApp enquanto o problema é
             normalizado.
           </p>
 

@@ -14,7 +14,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 const uploadCoverSchema = z.object({
   fileName: z.string().min(1),
   fileType: z.string().min(1),
-  fileSize: z.number().max(5 * 1024 * 1024, "A imagem deve ter no maximo 5MB."),
+  fileSize: z.number().max(5 * 1024 * 1024, "A imagem deve ter no máximo 5MB."),
 });
 
 
@@ -22,7 +22,7 @@ async function requireAdmin() {
   const session = await getCurrentAdminSession();
 
   if (!session) {
-    throw new Error("Nao autorizado.");
+    throw new Error("Não autorizado.");
   }
 }
 
@@ -85,7 +85,7 @@ export async function createBlogPostAction(
     if (!parsed.success) {
       return {
         ok: false,
-        message: "Revise os campos obrigatorios.",
+        message: "Revise os campos obrigatórios.",
         fieldErrors: toFieldErrors(parsed.error),
       };
     }
@@ -105,7 +105,7 @@ export async function createBlogPostAction(
     if (existingSlug) {
       return {
         ok: false,
-        message: "Ja existe um post com este slug.",
+        message: "Já existe um post com este slug.",
         fieldErrors: { slug: ["Escolha outro slug."] },
       };
     }
@@ -130,7 +130,7 @@ export async function createBlogPostAction(
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel criar o post agora.",
+      message: "Não foi possível criar o post agora.",
     };
   }
 }
@@ -146,7 +146,7 @@ export async function updateBlogPostAction(
     if (!parsed.success) {
       return {
         ok: false,
-        message: "Revise os campos obrigatorios.",
+        message: "Revise os campos obrigatórios.",
         fieldErrors: toFieldErrors(parsed.error),
       };
     }
@@ -166,7 +166,7 @@ export async function updateBlogPostAction(
     if (!existing) {
       return {
         ok: false,
-        message: "Post nao encontrado.",
+        message: "Post não encontrado.",
       };
     }
 
@@ -183,7 +183,7 @@ export async function updateBlogPostAction(
     if (slugConflict) {
       return {
         ok: false,
-        message: "Ja existe um post com este slug.",
+        message: "Já existe um post com este slug.",
         fieldErrors: { slug: ["Escolha outro slug."] },
       };
     }
@@ -209,7 +209,7 @@ export async function updateBlogPostAction(
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel atualizar o post agora.",
+      message: "Não foi possível atualizar o post agora.",
     };
   }
 }
@@ -226,7 +226,7 @@ export async function deleteBlogPostAction(id: string): Promise<ActionResult> {
     if (!post) {
       return {
         ok: false,
-        message: "Post nao encontrado.",
+        message: "Post não encontrado.",
       };
     }
 
@@ -238,12 +238,12 @@ export async function deleteBlogPostAction(id: string): Promise<ActionResult> {
 
     return {
       ok: true,
-      message: "Post excluido com sucesso.",
+      message: "Post excluído com sucesso.",
     };
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel excluir o post agora.",
+      message: "Não foi possível excluir o post agora.",
     };
   }
 }
@@ -273,7 +273,7 @@ export async function setBlogPostPublishedAction(
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel atualizar o status do post.",
+      message: "Não foi possível atualizar o status do post.",
     };
   }
 }
@@ -293,14 +293,14 @@ export async function setBlogPostFeaturedAction(
     if (!post) {
       return {
         ok: false,
-        message: "Post nao encontrado.",
+        message: "Post não encontrado.",
       };
     }
 
     if (featuredOnHomepage && !post.published) {
       return {
         ok: false,
-        message: "Publique o post antes de destaca-lo na homepage.",
+        message: "Publique o post antes de destacá-lo na homepage.",
       };
     }
 
@@ -327,7 +327,7 @@ export async function setBlogPostFeaturedAction(
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel atualizar o destaque do post.",
+      message: "Não foi possível atualizar o destaque do post.",
     };
   }
 }
@@ -343,7 +343,7 @@ export async function uploadBlogCoverImageAction(
     if (!(file instanceof File)) {
       return {
         ok: false,
-        message: "Arquivo invalido.",
+        message: "Arquivo inválido.",
       };
     }
 
@@ -356,7 +356,7 @@ export async function uploadBlogCoverImageAction(
     if (!parsedUpload.success) {
       return {
         ok: false,
-        message: parsedUpload.error.issues[0]?.message ?? "Arquivo invalido.",
+        message: parsedUpload.error.issues[0]?.message ?? "Arquivo inválido.",
       };
     }
 
@@ -371,7 +371,7 @@ export async function uploadBlogCoverImageAction(
     if (!allowedMimeTypes.has(parsedUpload.data.fileType.toLowerCase())) {
       return {
         ok: false,
-        message: "Formato invalido. Use JPG, PNG, WEBP ou AVIF.",
+        message: "Formato inválido. Use JPG, PNG, WEBP ou AVIF.",
       };
     }
 
@@ -406,7 +406,7 @@ export async function uploadBlogCoverImageAction(
   } catch {
     return {
       ok: false,
-      message: "Nao foi possivel enviar a imagem agora.",
+      message: "Não foi possível enviar a imagem agora.",
     };
   }
 }

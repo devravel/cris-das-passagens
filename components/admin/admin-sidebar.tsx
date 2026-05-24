@@ -55,7 +55,7 @@ function SidebarNav({
   onNavigate?: () => void;
 }) {
   return (
-    <nav aria-label="Navegacao admin" className="space-y-1.5">
+    <nav aria-label="Navegação admin" className="space-y-1.5">
       {items.map((item) => {
         const isActive = routeIsActive(pathname, item.href);
         const Icon = adminNavigationIcons[item.icon];

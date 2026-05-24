@@ -24,7 +24,7 @@ export function BlogPostEditScreen({ post }: BlogPostEditScreenProps) {
             Editar post
           </h1>
           <p className="text-sm text-muted-foreground">
-            Atualize conteudo, status de publicacao e capa com seguranca.
+            Atualize conteúdo, status de publicação e capa com segurança.
           </p>
         </div>
         <Button variant="outline" className="rounded-xl" onClick={() => router.push("/admin/blogs")}>

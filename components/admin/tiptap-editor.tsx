@@ -42,7 +42,7 @@ function ToolbarButton({ active, label, onClick, children }: ToolbarButtonProps)
 export function TiptapEditor({
   value,
   onChange,
-  placeholder = "Escreva o conteudo do post...",
+  placeholder = "Escreva o conteúdo do post...",
 }: TiptapEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -78,21 +78,21 @@ export function TiptapEditor({
           <Bold className="size-4" aria-hidden />
         </ToolbarButton>
         <ToolbarButton
-          label="Italico"
+          label="Itálico"
           active={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <Italic className="size-4" aria-hidden />
         </ToolbarButton>
         <ToolbarButton
-          label="Titulo H2"
+          label="Título H2"
           active={editor.isActive("heading", { level: 2 })}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
         >
           <Heading2 className="size-4" aria-hidden />
         </ToolbarButton>
         <ToolbarButton
-          label="Titulo H3"
+          label="Título H3"
           active={editor.isActive("heading", { level: 3 })}
           onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
         >
@@ -113,7 +113,7 @@ export function TiptapEditor({
           <ListOrdered className="size-4" aria-hidden />
         </ToolbarButton>
         <ToolbarButton
-          label="Citacao"
+          label="Citação"
           active={editor.isActive("blockquote")}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >

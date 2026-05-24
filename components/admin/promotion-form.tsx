@@ -131,12 +131,12 @@ export function PromotionForm({
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label htmlFor="title" className="text-sm font-medium text-foreground">
-              Titulo <span className="text-muted-foreground">(opcional)</span>
+              Título <span className="text-muted-foreground">(opcional)</span>
             </label>
             <Input
               id="title"
               className="h-10 rounded-xl"
-              placeholder="Ex.: Promo de verao — Miami"
+              placeholder="Ex.: Promo de verão — Miami"
               {...form.register("title")}
             />
             {form.formState.errors.title ? (
@@ -218,10 +218,10 @@ export function PromotionForm({
                   })
                 }
               />
-              Ativar promocao
+              Ativar promoção
             </label>
             <p className="text-xs text-muted-foreground">
-              {isActive ? "Visivel para visitantes." : "Oculta no site."}
+              {isActive ? "Visível para visitantes." : "Oculta no site."}
             </p>
           </div>
         </div>
@@ -233,7 +233,7 @@ export function PromotionForm({
               {imageValue ? (
                 <Image
                   src={imageValue}
-                  alt="Preview da promocao"
+                  alt="Preview da promoção"
                   fill
                   sizes="(max-width: 1024px) 100vw, 480px"
                   className="object-cover"
@@ -247,7 +247,7 @@ export function PromotionForm({
             </div>
             <div className="space-y-1 border-t border-border/70 p-4">
               <p className="font-medium text-foreground">
-                {titleValue.trim() || "Sem titulo"}
+                {titleValue.trim() || "Sem título"}
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 {linkValue.trim() || "Sem link configurado"}
@@ -269,9 +269,9 @@ export function PromotionForm({
               Salvando...
             </>
           ) : mode === "create" ? (
-            "Criar promocao"
+            "Criar promoção"
           ) : (
-            "Salvar alteracoes"
+            "Salvar alterações"
           )}
         </Button>
       </div>

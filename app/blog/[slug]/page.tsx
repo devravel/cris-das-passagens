@@ -64,8 +64,8 @@ export async function generateMetadata({
 
   if (!post) {
     return createNoIndexMetadata({
-      title: "Post nao encontrado",
-      description: "O conteudo solicitado nao esta disponivel.",
+      title: "Post não encontrado",
+      description: "O conteúdo solicitado não está disponível.",
     });
   }
 

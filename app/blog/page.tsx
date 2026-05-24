@@ -44,9 +44,9 @@ export async function generateMetadata({
   const path = page <= 1 ? "/blog" : `/blog?page=${page}`;
 
   return createMetadata({
-    title: page <= 1 ? "Blog de Viagens e Dicas" : `Blog de Viagens — Pagina ${page}`,
+    title: page <= 1 ? "Blog de Viagens e Dicas" : `Blog de Viagens — Página ${page}`,
     description:
-      "Conteudos exclusivos da Cris das Passagens com dicas de viagem, destinos e orientacoes para viajar com mais tranquilidade.",
+      "Conteúdos exclusivos da Cris das Passagens com dicas de viagem, destinos e orientações para viajar com mais tranquilidade.",
     path,
     keywords: [
       "blog de viagens",
@@ -94,14 +94,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <SectionHeader
         id="blog-page-heading"
         title="Blog"
-        subtitle="Dicas, roteiros e inspiracao para voce viajar com seguranca e experiencia premium."
+        subtitle="Dicas, roteiros e inspiração para você viajar com segurança e experiência premium."
         className="mb-10 sm:mb-12"
       />
 
       {posts.length === 0 ? (
         <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-muted/20 px-6 py-14 text-center shadow-sm">
           <p className="text-base text-muted-foreground sm:text-lg">
-            Ainda nao existem posts publicados.
+            Ainda não existem posts publicados.
           </p>
         </div>
       ) : (
@@ -173,7 +173,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
           <nav
             className="mt-10 flex items-center justify-center gap-3 sm:mt-12"
-            aria-label="Paginacao do blog"
+            aria-label="Paginação do blog"
           >
             <Button
               asChild
@@ -193,7 +193,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             </Button>
 
             <p className="min-w-28 text-center text-sm font-medium text-muted-foreground">
-              Pagina {currentPage} de {totalPages}
+              Página {currentPage} de {totalPages}
             </p>
 
             <Button
@@ -208,7 +208,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 tabIndex={hasNextPage ? 0 : -1}
                 className={cn(!hasNextPage && "pointer-events-none opacity-50")}
               >
-                Proxima
+                Próxima
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
             </Button>

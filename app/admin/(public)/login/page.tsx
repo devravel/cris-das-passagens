@@ -14,7 +14,7 @@ type AdminLoginPageProps = {
 export const metadata: Metadata = {
   title: "Login Admin | Cris das Passagens",
   description:
-    "Acesse o painel administrativo para gerenciar conteudos e promocoes.",
+    "Acesse o painel administrativo para gerenciar conteúdos e promoções.",
   robots: {
     index: false,
     follow: false,

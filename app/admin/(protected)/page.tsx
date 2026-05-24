@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Admin | Cris das Passagens",
-  description: "Dashboard administrativo para gestao de conteudo e promocoes.",
+  description: "Dashboard administrativo para gestão de conteúdo e promoções.",
   robots: {
     index: false,
     follow: false,
@@ -28,8 +28,8 @@ export default function AdminHomePage() {
           Bem-vindo ao painel
         </h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          Gerencie os principais recursos do site com foco em agilidade, consistencia e
-          seguranca operacional.
+          Gerencie os principais recursos do site com foco em agilidade,
+          consistência e segurança operacional.
         </p>
       </header>
 
@@ -38,15 +38,22 @@ export default function AdminHomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="size-4 text-brand" aria-hidden />
-              Conteudo do blog
+              Conteúdo do blog
             </CardTitle>
-            <CardDescription>Crie, publique e atualize artigos em minutos.</CardDescription>
+            <CardDescription>
+              Crie, publique e atualize artigos em minutos.
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Fluxo pronto para acelerar atualizacoes editoriais sem perder padrao visual.
+            Fluxo pronto para acelerar atualizações editoriais sem perder padrão
+            visual.
           </CardContent>
           <CardContent>
-            <Button asChild variant="outline" className="rounded-xl border-border/70">
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-xl border-border/70"
+            >
               <Link href="/admin/blogs">Acessar blogs</Link>
             </Button>
           </CardContent>
@@ -56,16 +63,23 @@ export default function AdminHomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Megaphone className="size-4 text-brand" aria-hidden />
-              Promocoes em destaque
+              Promoções em destaque
             </CardTitle>
-            <CardDescription>Atualize campanhas e links com controle total.</CardDescription>
+            <CardDescription>
+              Atualize campanhas e links com controle total.
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Mantenha ofertas relevantes e melhore a conversao com ajustes rapidos.
+            Mantenha ofertas relevantes e melhore a conversão com ajustes
+            rápidos.
           </CardContent>
           <CardContent>
-            <Button asChild variant="outline" className="rounded-xl border-border/70">
-              <Link href="/admin/promotions">Acessar promotions</Link>
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-xl border-border/70"
+            >
+              <Link href="/admin/promotions">Acessar promoções</Link>
             </Button>
           </CardContent>
         </Card>
@@ -74,12 +88,15 @@ export default function AdminHomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldCheck className="size-4 text-brand" aria-hidden />
-              Sessao protegida
+              Sessão protegida
             </CardTitle>
-            <CardDescription>Autenticacao JWT com cookie seguro.</CardDescription>
+            <CardDescription>
+              Autenticação JWT com cookie seguro.
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Rotas `/admin` sao protegidas automaticamente por middleware e validacao server-side.
+            Rotas `/admin` são protegidas automaticamente por middleware e
+            validação server-side.
           </CardContent>
         </Card>
       </div>

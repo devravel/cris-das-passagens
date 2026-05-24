@@ -66,7 +66,7 @@ export function BlogsTable({ posts }: BlogsTableProps) {
 
   function handleToggleFeatured(id: string, featuredOnHomepage: boolean, published: boolean) {
     if (!published && !featuredOnHomepage) {
-      toast.error("Publique o post antes de destaca-lo na homepage.");
+      toast.error("Publique o post antes de destacá-lo na homepage.");
       return;
     }
 
@@ -124,12 +124,12 @@ export function BlogsTable({ posts }: BlogsTableProps) {
         <table className="min-w-full text-left text-sm">
           <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
             <tr>
-              <th className="px-4 py-3 font-medium">Titulo</th>
+              <th className="px-4 py-3 font-medium">Título</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Homepage</th>
               <th className="px-4 py-3 font-medium">Criado</th>
               <th className="px-4 py-3 font-medium">Atualizado</th>
-              <th className="px-4 py-3 text-right font-medium">Acoes</th>
+              <th className="px-4 py-3 text-right font-medium">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -213,7 +213,7 @@ export function BlogsTable({ posts }: BlogsTableProps) {
           <DialogHeader>
             <DialogTitle>Excluir post?</DialogTitle>
             <DialogDescription>
-              Esta acao nao pode ser desfeita. O conteudo sera removido permanentemente.
+              Esta ação não pode ser desfeita. O conteúdo será removido permanentemente.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

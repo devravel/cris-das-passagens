@@ -5,24 +5,24 @@ export const blogPostSchema = z
     title: z
       .string()
       .trim()
-      .min(3, "Titulo deve ter no minimo 3 caracteres.")
-      .max(140, "Titulo deve ter no maximo 140 caracteres."),
+      .min(3, "Título deve ter no mínimo 3 caracteres.")
+      .max(140, "Título deve ter no máximo 140 caracteres."),
     slug: z
       .string()
       .trim()
-      .min(3, "Slug deve ter no minimo 3 caracteres.")
-      .max(160, "Slug deve ter no maximo 160 caracteres.")
-      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use apenas letras minusculas, numeros e hifens."),
+      .min(3, "Slug deve ter no mínimo 3 caracteres.")
+      .max(160, "Slug deve ter no máximo 160 caracteres.")
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use apenas letras minúsculas, números e hífens."),
     excerpt: z
       .string()
       .trim()
-      .min(10, "Resumo deve ter no minimo 10 caracteres.")
-      .max(320, "Resumo deve ter no maximo 320 caracteres."),
+      .min(10, "Resumo deve ter no mínimo 10 caracteres.")
+      .max(320, "Resumo deve ter no máximo 320 caracteres."),
     content: z
       .string()
       .trim()
-      .min(20, "Conteudo deve ter no minimo 20 caracteres."),
-    coverImage: z.string().trim().url("Informe uma URL valida para a capa."),
+      .min(20, "Conteúdo deve ter no mínimo 20 caracteres."),
+    coverImage: z.string().trim().url("Informe uma URL válida para a capa."),
     published: z.boolean(),
     featuredOnHomepage: z.boolean(),
   })

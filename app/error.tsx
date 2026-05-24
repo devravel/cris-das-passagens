@@ -27,10 +27,10 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         Ocorreu um erro
       </p>
       <h1 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-        N&atilde;o foi poss&iacute;vel carregar esta p&aacute;gina
+        Não foi possível carregar esta página
       </h1>
       <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-        Pode ter sido uma falha tempor&aacute;ria. Tente novamente ou fale com nosso
+        Pode ter sido uma falha temporária. Tente novamente ou fale com nosso
         time para continuar seu atendimento.
       </p>
 
@@ -47,7 +47,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         <Button asChild variant="outline" className="h-10 w-full rounded-lg px-5 text-sm sm:w-auto">
           <Link href="/">
             <House className="size-4" strokeWidth={1.75} aria-hidden />
-            Ir para o in&iacute;cio
+            Ir para o início
           </Link>
         </Button>
 
