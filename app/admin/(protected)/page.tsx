@@ -49,11 +49,7 @@ export default function AdminHomePage() {
             visual.
           </CardContent>
           <CardContent>
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-xl border-border/70"
-            >
+            <Button asChild className="rounded-xl">
               <Link href="/admin/blogs">Acessar blogs</Link>
             </Button>
           </CardContent>
@@ -74,11 +70,7 @@ export default function AdminHomePage() {
             rápidos.
           </CardContent>
           <CardContent>
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-xl border-border/70"
-            >
+            <Button asChild className="rounded-xl">
               <Link href="/admin/promotions">Acessar promoções</Link>
             </Button>
           </CardContent>
