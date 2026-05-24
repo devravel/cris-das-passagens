@@ -45,6 +45,7 @@
   --color-brand-soft: var(--brand-soft);
   --color-brand-navy: var(--brand-navy);
   --color-brand-whatsapp: var(--brand-whatsapp);
+  --color-brand-whatsapp-hover: var(--brand-whatsapp-hover);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -62,6 +63,7 @@
   --brand-soft: oklch(0.978 0.005 197.1);
   --brand-navy: oklch(0.18 0.04 264);
   --brand-whatsapp: oklch(0.761 0.201 149.7);
+  --brand-whatsapp-hover: color-mix(in oklch, var(--brand-whatsapp) 88%, black);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -104,6 +106,7 @@
   --brand-soft: oklch(0.24 0.03 262);
   --brand-navy: oklch(0.14 0.035 264);
   --brand-whatsapp: oklch(0.761 0.201 149.7);
+  --brand-whatsapp-hover: color-mix(in oklch, var(--brand-whatsapp) 88%, black);
 
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

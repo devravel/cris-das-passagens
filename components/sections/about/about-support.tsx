@@ -17,6 +17,7 @@ import {
 } from "@/lib/card-styles";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 export type AboutSectionProps = {
   sectionId?: string;
@@ -121,7 +122,7 @@ function SupportCta({ cta }: { cta: ContentCta }) {
       <Button
         asChild
         size="lg"
-        className={cn(buttonClassName, "bg-brand-whatsapp text-white hover:bg-brand-whatsapp/90")}
+        className={cn(buttonClassName, whatsappSolidButtonClassName)}
       >
         <a href={cta.href} target="_blank" rel="noopener noreferrer" className="gap-2">
           {cta.label}

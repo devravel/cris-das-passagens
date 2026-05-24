@@ -20,6 +20,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 export type NavItem = {
   label: string;
@@ -63,17 +64,17 @@ function NavLink({
       href={href}
       onClick={onNavigate}
       className={cn(
-        "relative inline-block text-sm font-medium tracking-tight transition-colors duration-200",
+        "group relative inline-flex items-center py-1 text-[0.9375rem] font-medium tracking-tight transition-colors duration-200",
         active
           ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
+          : "text-foreground/75 hover:text-foreground",
         className
       )}
     >
       {children}
       <span
         className={cn(
-          "pointer-events-none absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-foreground/80 transition-transform duration-200 ease-out",
+          "pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 bg-foreground transition-transform duration-200 ease-out",
           active && "scale-x-100",
           !active && "group-hover:scale-x-100"
         )}
@@ -85,13 +86,16 @@ function NavLink({
 
 function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
-    <div className="hidden items-center gap-0.5 lg:flex">
+    <nav
+      className="hidden items-center gap-6 xl:gap-8 lg:flex"
+      aria-label="Navegação principal"
+    >
       {items.map((item) => (
-        <div key={item.href} className="group px-2.5 py-2 xl:px-3">
-          <NavLink href={item.href}>{item.label}</NavLink>
-        </div>
+        <NavLink key={item.href} href={item.href}>
+          {item.label}
+        </NavLink>
       ))}
-    </div>
+    </nav>
   );
 }
 
@@ -106,17 +110,20 @@ function NavbarCtaButton({
   onNavigate?: () => void;
   compact?: boolean;
 }) {
-  const whatsappStyles =
-    "bg-brand-whatsapp text-white hover:bg-brand-whatsapp/90 [a]:hover:bg-brand-whatsapp/90";
+  const whatsappStyles = cn(
+    "rounded-lg font-semibold shadow-none",
+    whatsappSolidButtonClassName
+  );
 
   if (cta.external) {
     return (
       <Button
         asChild
-        size={compact ? "icon-sm" : "sm"}
+        size={compact ? "icon-sm" : "default"}
         className={cn(
-          "rounded-lg shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px active:translate-y-0",
+          "transition-colors duration-200",
           whatsappStyles,
+          !compact && "h-9 px-5 text-sm",
           className
         )}
       >
@@ -228,12 +235,12 @@ export function Navbar({
       className={cn(
         "sticky top-0 z-50 w-full border-b transition-[box-shadow,background-color,border-color] duration-300",
         scrolled
-          ? "border-border/80 bg-background/85 shadow-[0_1px_0_rgba(0,0,0,0.04)] supports-backdrop-filter:bg-background/70 supports-backdrop-filter:backdrop-blur-md"
-          : "border-transparent bg-background/80 supports-backdrop-filter:bg-background/60 supports-backdrop-filter:backdrop-blur-md",
+          ? "border-border/60 bg-background shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+          : "border-transparent bg-background",
         className
       )}
     >
-      <Container className="flex h-16 items-center justify-between gap-2 sm:h-[4.25rem] sm:gap-3">
+      <Container className="flex h-16 items-center justify-between gap-4 sm:h-18">
         <Link
           href={logoHref}
           className="group flex shrink-0 items-center rounded-md outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -243,21 +250,25 @@ export function Navbar({
             alt={siteConfig.name}
             width={817}
             height={388}
-            className="h-12 w-auto sm:h-[3.25rem] md:h-14 lg:h-[3.75rem]"
+            className="h-9 w-auto sm:h-10 md:h-11"
             priority
           />
         </Link>
 
-        <DesktopNavLinks items={items} />
+        <div className="flex min-w-0 items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+          <DesktopNavLinks items={items} />
 
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
           {siteConfig.phone ? (
             <a
               href={siteConfig.phoneHref}
-              className="hidden items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground md:inline-flex"
+              className="group relative hidden items-center gap-1.5 py-1 text-[0.9375rem] font-medium text-foreground/75 transition-colors duration-200 hover:text-foreground md:inline-flex"
             >
               <Phone className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
               <span className="whitespace-nowrap">{siteConfig.phone}</span>
+              <span
+                className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 bg-foreground transition-transform duration-200 ease-out group-hover:scale-x-100"
+                aria-hidden
+              />
             </a>
           ) : null}
 

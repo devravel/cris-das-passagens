@@ -1,5 +1,6 @@
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
+import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 export type WhatsAppFabProps = {
   className?: string;
@@ -26,7 +27,8 @@ export function WhatsAppFab({ className }: WhatsAppFabProps) {
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp com a Cris das Passagens"
       className={cn(
-        "fixed z-50 flex size-14 items-center justify-center rounded-full bg-brand-whatsapp text-white shadow-[0_4px_20px_rgba(0,0,0,0.18)] transition-[transform,box-shadow] duration-200 hover:scale-105 hover:shadow-[0_6px_24px_rgba(0,0,0,0.22)] active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
+        "fixed z-50 flex size-14 items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.18)] transition-[transform,box-shadow,background-color] duration-200 hover:scale-105 hover:shadow-[0_6px_24px_rgba(0,0,0,0.22)] active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
+        whatsappSolidButtonClassName,
         "bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))]",
         className
       )}

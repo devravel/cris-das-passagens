@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Megaphone, ShieldCheck } from "lucide-react";
+import { FileText, Megaphone } from "lucide-react";
 
 import {
   Card,
@@ -81,22 +81,6 @@ export default function AdminHomePage() {
             >
               <Link href="/admin/promotions">Acessar promoções</Link>
             </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border-border/70 shadow-sm sm:col-span-2 lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShieldCheck className="size-4 text-brand" aria-hidden />
-              Sessão protegida
-            </CardTitle>
-            <CardDescription>
-              Autenticação JWT com cookie seguro.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Rotas `/admin` são protegidas automaticamente por middleware e
-            validação server-side.
           </CardContent>
         </Card>
       </div>
