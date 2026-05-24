@@ -1,10 +1,13 @@
 import { content, contentLinks } from "@/config/content";
+import { getSiteUrl } from "@/lib/seo/site-url";
 
 export const siteConfig = {
   name: "Cris das Passagens",
   legalName: content.contact.legalName,
   description: content.meta.tagline,
-  url: "https://crisdaspassagens.com.br",
+  get url() {
+    return getSiteUrl();
+  },
 
   logo: "/cris-das-passagens-logo.png",
   /** Versão recortada (sem padding) — navbar e UI compacta. */

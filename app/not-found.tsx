@@ -1,9 +1,16 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft, House, MessageCircle, TriangleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { contentLinks } from "@/config/content";
 import { siteConfig } from "@/config/site";
+import { createNoIndexMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = createNoIndexMetadata({
+  title: "Pagina nao encontrada",
+  description: "A pagina solicitada nao foi encontrada.",
+});
 
 export default function NotFound() {
   return (

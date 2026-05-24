@@ -147,3 +147,23 @@ Priorizar:
 - acessibilidade
 - sitemap
 - robots.txt
+
+## Backend
+
+- Supabase
+- Prisma
+- PostgreSQL
+
+## Admin
+
+- CRUD de blogs
+- CRUD de promoções
+- Upload de imagens
+- Auth admin
+
+## Regras
+
+- Sempre tipar tudo
+- Server Actions quando possível
+- Separar lógica em services
+- Nunca misturar UI com lógica

@@ -5,6 +5,7 @@ import { Section } from "@/components/layout/section";
 import { Container } from "@/components/layout/container";
 import { SectionHeader } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { JsonLdScript } from "@/components/seo/json-ld-script";
 import {
   Accordion,
   AccordionContent,
@@ -15,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type FaqItem } from "@/config/content";
 import { scrollRevealDefaults } from "@/lib/motion";
+import { createFaqPageJsonLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
 export type FaqModernProps = {
@@ -34,19 +36,6 @@ export function FaqModern({
 }: FaqModernProps) {
   const headingId = `${sectionId}-heading`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: items.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  };
-
   return (
     <Section
       background="default"
@@ -55,10 +44,7 @@ export function FaqModern({
       className={className}
       aria-labelledby={headingId}
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLdScript data={createFaqPageJsonLd(items)} />
 
       <ScrollReveal>
         <SectionHeader id={headingId} title={title} />

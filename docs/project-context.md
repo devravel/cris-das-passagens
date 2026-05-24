@@ -67,3 +67,22 @@ Criar um website moderno premium para agência de turismo.
 - Testimonials
 - FAQ
 - Footer
+
+# Área Administrativa
+
+O sistema deve possuir:
+
+- Login admin
+- CRUD de blogs
+- CRUD de promoções
+- Upload de imagens
+- Publicação de posts
+- Slideshow de promoções
+
+# Banco de Dados
+
+Utilizar:
+
+- Supabase
+- PostgreSQL
+- Prisma ORM
