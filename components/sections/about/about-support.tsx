@@ -39,6 +39,7 @@ export function AboutSection({
 
   return (
     <Section
+      id={sectionId}
       background="soft"
       spacing="default"
       bordered

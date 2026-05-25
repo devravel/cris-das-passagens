@@ -10,7 +10,7 @@ export const navigation: NavItem[] = [
   { label: "Início", href: "/" },
   { label: "Destinos", href: "/destinos" },
   { label: "Pacotes", href: "/pacotes" },
-  { label: "Sobre", href: "/sobre" },
+  { label: "Sobre", href: "/#sobre" },
   { label: "Blog", href: contentLinks.blog },
 ];
 
