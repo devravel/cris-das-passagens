@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
-import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
+import { SectionHeader } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ProcessStep } from "@/config/content";
@@ -24,6 +24,9 @@ const stepAccentClasses = [
   "bg-brand/12 text-brand ring-brand/18",
 ] as const;
 
+const processStepDescriptionClassName =
+  "mt-2 text-pretty text-center text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base lg:px-2 xl:px-3";
+
 function ProcessStepCard({
   step,
   accentClass,
@@ -34,7 +37,7 @@ function ProcessStepCard({
   const stepLabel = String(step.step).padStart(2, "0");
 
   return (
-    <div className="flex flex-col items-center text-center">
+    <div className="flex min-w-0 flex-col items-center px-2 text-center sm:px-3">
       <div
         className={cn(
           "flex size-14 items-center justify-center rounded-full text-lg font-semibold tabular-nums ring-1 sm:size-16 sm:text-xl",
@@ -48,9 +51,7 @@ function ProcessStepCard({
       <h3 className="mt-4 font-heading text-base font-semibold tracking-tight text-foreground sm:mt-5">
         {step.title}
       </h3>
-      <p className={cn("mt-2 max-w-xs", bodyTextClassName, "sm:text-base md:text-lg")}>
-        {step.description}
-      </p>
+      <p className={processStepDescriptionClassName}>{step.description}</p>
     </div>
   );
 }
@@ -76,9 +77,9 @@ export function ProcessSteps({
         <SectionHeader id={headingId} title={title} className="mb-12 sm:mb-14 lg:mb-16" />
       </ScrollReveal>
 
-      <ol className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4 lg:gap-6">
+      <ol className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:gap-x-8 lg:gap-y-12 xl:grid-cols-4 xl:gap-x-8 xl:gap-y-10">
         {steps.map((step, index) => (
-          <li key={step.step}>
+          <li key={step.step} className="min-w-0">
             <ScrollReveal delay={index * scrollRevealDefaults.stagger}>
               <ProcessStepCard
                 step={step}
