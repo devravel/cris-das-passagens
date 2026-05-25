@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import { BlogImage } from "@/components/blog/blog-image";
 import { Section } from "@/components/layout/section";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { createMetadata } from "@/lib/seo";
+import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { prisma } from "@/lib/prisma";
 import {
   cardInteractiveClassName,
@@ -44,7 +45,10 @@ export async function generateMetadata({
   const path = page <= 1 ? "/blog" : `/blog?page=${page}`;
 
   return createMetadata({
-    title: page <= 1 ? "Blog de Viagens e Dicas" : `Blog de Viagens — Página ${page}`,
+    title:
+      page <= 1
+        ? "Blog de Viagens e Dicas"
+        : `Blog de Viagens — Página ${page}`,
     description:
       "Conteúdos exclusivos da Cris das Passagens com dicas de viagem, destinos e orientações para viajar com mais tranquilidade.",
     path,
@@ -67,7 +71,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     where: { published: true },
   });
 
-  const totalPages = Math.max(1, Math.ceil(totalPublishedPosts / POSTS_PER_PAGE));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalPublishedPosts / POSTS_PER_PAGE),
+  );
   const currentPage = Math.min(requestedPage, totalPages);
   const skip = (currentPage - 1) * POSTS_PER_PAGE;
 
@@ -93,7 +100,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     <Section spacing="default" background="default" bordered>
       <SectionHeader
         id="blog-page-heading"
-        title="Blog"
+        title="Blogs"
         subtitle="Dicas, roteiros e inspiração para você viajar com segurança e experiência premium."
         className="mb-10 sm:mb-12"
       />
@@ -124,14 +131,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       cardShadowClassName,
                     )}
                   >
-                    <Link href={href} className="relative block aspect-16/10 overflow-hidden">
-                      <Image
-                        src={post.coverImage}
+                    <Link
+                      href={href}
+                      className="relative block aspect-16/10 overflow-hidden"
+                    >
+                      <BlogImage
+                        src={normalizeBlogImageUrl(post.coverImage)}
                         alt={post.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                        priority={false}
+                        className="transition-transform duration-500 group-hover:scale-[1.03]"
+                        containerClassName="absolute inset-0"
                       />
                     </Link>
 
@@ -149,7 +159,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         </Link>
                       </h2>
 
-                      <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
+                      <p className={cn("mt-3 flex-1", bodyTextClassName, "sm:text-base md:text-lg")}>
                         {post.excerpt}
                       </p>
 
@@ -185,7 +195,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 href={hasPreviousPage ? getBlogHref(currentPage - 1) : "#"}
                 aria-disabled={!hasPreviousPage}
                 tabIndex={hasPreviousPage ? 0 : -1}
-                className={cn(!hasPreviousPage && "pointer-events-none opacity-50")}
+                className={cn(
+                  !hasPreviousPage && "pointer-events-none opacity-50",
+                )}
               >
                 <ArrowLeft className="size-4" aria-hidden />
                 Anterior

@@ -1,7 +1,13 @@
 import { z } from "zod";
 
+import { isValidBlogImageUrl } from "@/lib/blog/image-url";
+
 export const promotionSchema = z.object({
-  image: z.string().trim().url("Informe uma URL válida para a imagem."),
+  image: z
+    .string()
+    .trim()
+    .min(1, "Informe a imagem da promoção.")
+    .refine((value) => isValidBlogImageUrl(value), "Informe uma URL válida para a imagem."),
   title: z
     .string()
     .trim()

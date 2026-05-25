@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { useMotionReady } from "@/hooks/use-motion-ready";
+import { BlogImage } from "@/components/blog/blog-image";
 import { cardShadowClassName } from "@/lib/card-styles";
 import type { PublicPromotion } from "@/lib/promotion/queries";
 import { cn } from "@/lib/utils";
@@ -28,13 +27,14 @@ function PromotionSlide({
   const alt = promotion.title ?? "Promoção Cris das Passagens";
 
   const image = (
-    <Image
+    <BlogImage
       src={promotion.image}
       alt={alt}
       fill
       priority={priority}
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 92vw, 1200px"
+      sizes="(max-width: 672px) 100vw, 672px"
       className="object-cover"
+      containerClassName="absolute inset-0"
     />
   );
 
@@ -83,7 +83,6 @@ function PromotionSlide({
 }
 
 export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
-  const { shouldAnimate } = useMotionReady();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -106,16 +105,18 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
   }, [activeIndex, goTo]);
 
   useEffect(() => {
-    if (!hasMultiple || !shouldAnimate || isPaused) {
+    if (!hasMultiple || isPaused) {
       return;
     }
 
-    const timer = window.setInterval(goNext, AUTOPLAY_MS);
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % count);
+    }, AUTOPLAY_MS);
 
     return () => {
       window.clearInterval(timer);
     };
-  }, [hasMultiple, shouldAnimate, isPaused, goNext]);
+  }, [count, hasMultiple, isPaused]);
 
   useEffect(() => {
     function handleVisibilityChange() {
@@ -153,7 +154,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
 
   return (
     <div
-      className="relative mx-auto w-full max-w-6xl"
+      className="relative mx-auto w-full"
       role="region"
       aria-roledescription="carousel"
       aria-label="Promoções em destaque"
@@ -184,23 +185,23 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
           />
         ))}
 
-        {hasMultiple && shouldAnimate ? (
+        {hasMultiple ? (
           <>
             <button
               type="button"
-              className="absolute top-1/2 left-3 z-20 hidden -translate-y-1/2 rounded-full border border-white/20 bg-brand-navy/45 p-2 text-white backdrop-blur-sm transition-colors hover:bg-brand-navy/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:inline-flex"
+              className="absolute top-1/2 left-2 z-20 inline-flex -translate-y-1/2 rounded-full border border-white/20 bg-brand-navy/45 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-brand-navy/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:left-3 sm:p-2"
               onClick={goPrev}
               aria-label="Promoção anterior"
             >
-              <ChevronLeft className="size-5" aria-hidden />
+              <ChevronLeft className="size-4 sm:size-5" aria-hidden />
             </button>
             <button
               type="button"
-              className="absolute top-1/2 right-3 z-20 hidden -translate-y-1/2 rounded-full border border-white/20 bg-brand-navy/45 p-2 text-white backdrop-blur-sm transition-colors hover:bg-brand-navy/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:inline-flex"
+              className="absolute top-1/2 right-2 z-20 inline-flex -translate-y-1/2 rounded-full border border-white/20 bg-brand-navy/45 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-brand-navy/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:right-3 sm:p-2"
               onClick={goNext}
               aria-label="Próxima promoção"
             >
-              <ChevronRight className="size-5" aria-hidden />
+              <ChevronRight className="size-4 sm:size-5" aria-hidden />
             </button>
           </>
         ) : null}

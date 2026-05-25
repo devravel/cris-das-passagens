@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { content, type TestimonialItem } from "@/config/content";
 import { useMotionReady } from "@/hooks/use-motion-ready";
 import {
@@ -136,7 +136,7 @@ function TestimonialCard({
       </header>
 
       <blockquote className="mt-5 flex-1 border-l-0 pl-0">
-        <p className="text-sm italic leading-relaxed text-muted-foreground sm:text-[0.9375rem]">
+        <p className={cn("italic", bodyTextClassName, "sm:text-[0.9375rem] md:text-lg")}>
           &ldquo;{testimonial.quote}&rdquo;
         </p>
       </blockquote>

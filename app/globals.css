@@ -57,7 +57,7 @@
 
 :root {
   /* Marca — Cris das Passagens (#345ba7) */
-  --brand: oklch(0.483 0.130 262.2);
+  --brand: oklch(0.483 0.13 262.2);
   --brand-foreground: oklch(0.985 0 0);
   --brand-light: oklch(0.591 0.119 264.6);
   --brand-soft: oklch(0.978 0.005 197.1);
@@ -160,7 +160,7 @@
     @apply font-heading tracking-tight text-balance;
   }
   p {
-    @apply text-pretty;
+    @apply text-pretty text-justify;
   }
   @media (prefers-reduced-motion: reduce) {
     html {

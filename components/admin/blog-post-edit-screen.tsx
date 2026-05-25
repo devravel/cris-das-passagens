@@ -10,6 +10,7 @@ import type { BlogPostInput } from "@/lib/blog/schemas";
 type BlogPostEditScreenProps = {
   post: BlogPostInput & {
     id: string;
+    tags?: string[];
   };
 };
 
@@ -43,6 +44,7 @@ export function BlogPostEditScreen({ post }: BlogPostEditScreenProps) {
             excerpt: post.excerpt,
             content: post.content,
             coverImage: post.coverImage,
+            tags: post.tags ?? [],
             published: post.published,
             featuredOnHomepage: post.featuredOnHomepage,
           }}

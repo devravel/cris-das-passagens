@@ -62,8 +62,7 @@ export const contentLinks = {
 
 export const content = {
   meta: {
-    tagline:
-      "Viaje mais, pagando menos. Passagens aéreas, pacotes de viagens. Assessoria completa.",
+    tagline: "Viaje mais, pagando menos. Assessoria completa.",
   },
 
   hero: {
@@ -80,20 +79,19 @@ export const content = {
       href: contentLinks.quote,
     } satisfies ContentCta,
     secondaryCta: {
-      label: "Acessar o Blog",
-      href: contentLinks.blog,
+      label: "Confira nossos Destinos",
+      href: "/destinos",
     } satisfies ContentCta,
   },
 
   quickActions: {
-    title: "Acesso rápido",
-    subtitle: "Escolha o caminho mais rápido para a sua próxima viagem.",
+    title: "Principais serviços",
+    subtitle: "Tudo o que você precisa para a sua próxima viagem.",
     items: [
       {
         id: "passagens",
         title: "Passagens Promocionais",
-        description:
-          "Melhores ofertas de passagens aéreas com suporte especializado.",
+        description: "As melhores ofertas de passagens aéreas.",
         href: contentLinks.quote,
         ctaLabel: "Cotar agora",
       },
@@ -108,15 +106,15 @@ export const content = {
       {
         id: "hospedagem",
         title: "Hospedagem",
-        description:
-          "Hotéis e estadias selecionadas para complementar sua viagem.",
+        description: "Hotéis e estadias ideais em seu destino.",
         href: contentLinks.quote,
         ctaLabel: "Solicitar cotação",
       },
       {
         id: "whatsapp",
         title: "Atendimento WhatsApp",
-        description: "Fale com nossa equipe e tire dúvidas em poucos minutos.",
+        description:
+          "Fale com nossa equipe e tire suas dúvidas em poucos minutos.",
         href: contentLinks.whatsapp,
         ctaLabel: "Falar agora",
         external: true,
@@ -125,9 +123,9 @@ export const content = {
   },
 
   about: {
-    title: "O que é o Cris das Passagens",
+    title: "Sobre a Cris das Passagens",
     paragraphs: [
-      "Nós ajudamos pessoas a viajarem tranquilamente! Sem dores de cabeça e com atendimento do início ao fim da sua viagem.",
+      "Nasceu e permanece com um único propósito: ajudar pessoas a viajarem tranquilamente: Sem dores de cabeça e com atendimento do início ao fim da sua viagem.",
       "Aqui nosso foco é facilitar sua vida na hora de viajar. Cuidamos de cada detalhe para que você tenha uma experiência sem estresse, com economia, praticidade e suporte de verdade.",
     ],
     cta: {
@@ -138,13 +136,10 @@ export const content = {
 
   support: {
     title: "Suporte Total",
-    intro:
-      "Viajar com segurança, praticidade e suporte completo? Com o Cris das Passagens, você pode!",
+    intro: "Viajar com segurança, praticidade e suporte completo? Você pode!",
     paragraphs: [
       "O Cris das Passagens oferece muito mais do que apenas a emissão de passagens aéreas.",
       "Aqui, você conta com suporte completo do início ao fim da sua viagem, com uma equipe experiente e atenciosa, sempre pronta para te ajudar.",
-      "Nosso diferencial está no atendimento humanizado, onde você fala com pessoas reais, que entendem sua necessidade e cuidam de todos os detalhes da sua viagem, desde a escolha do melhor voo até o seu retorno para casa.",
-      "E mais: oferecemos também suporte jurídico especializado, garantindo ainda mais segurança e tranquilidade caso você enfrente imprevistos durante sua viagem, como voos cancelados, atrasos ou problemas com companhias aéreas.",
       "Com o Cris das Passagens, você viaja com economia, apoio e confiança.",
     ],
     closing:
@@ -174,13 +169,13 @@ export const content = {
         step: 1,
         title: "Passo 01",
         description:
-          "Nos informe os detalhes da sua viagem respondendo as perguntas do atendimento e logo em seguida um de nossos especialistas entrará em contato com você.",
+          "Informe os detalhes da sua viagem respondendo a algumas perguntas no atendimento.",
       },
       {
         step: 2,
         title: "Passo 02",
         description:
-          "Um dos nossos atendentes responsável por seu atendimento responderá o mais rápido que conseguir para ajudá-lo.",
+          "O atendente responsável por seu atendimento o responderá o mais rápido possível para te ajudar.",
       },
       {
         step: 3,
@@ -255,6 +250,9 @@ export const content = {
       "A autenticidade dessa informação pode ser verificada através do código acima (basta apontar a câmera) ou através de consulta no site do Governo Federal.",
     verifyUrl: contentLinks.cadastur,
     verifyUrlLabel: "www.cadastur.turismo.gov.br",
+    qrCode: "/cadastur-qrcode.png",
+    qrCodeAlt:
+      "QR Code para verificar a certificação CADASTUR no site do Governo Federal",
   },
 
   faq: {
@@ -291,7 +289,7 @@ export const content = {
           "Não precisa. Algumas emissões são feitas através de milhas, mas você não precisa ter nenhuma milha ou ponto.",
       },
       {
-        question: "Se precisar de suporte?",
+        question: "E se eu precisar de suporte?",
         answer:
           "Estamos disponíveis para lhe auxiliar em diversos assuntos relacionados à sua viagem, até mesmo com suporte jurídico caso você precise.",
       },
@@ -304,7 +302,7 @@ export const content = {
 
   blog: {
     title: "Conheça nosso Blog",
-    subtitle: "Muitos clientes já viveram essa experiência",
+    subtitle: "Dicas para sua próxima viagem.",
     posts: [
       {
         title: "Quando devo comprar a minha Passagem?",
@@ -326,9 +324,20 @@ export const content = {
       },
     ] satisfies BlogPostPreview[],
     cta: {
-      label: "Ver Todo o Conteúdo",
+      label: "Ver Todos os Blogs",
       href: contentLinks.blog,
     } satisfies ContentCta,
+  },
+
+  blogPost: {
+    vipCta: {
+      eyebrow: "Grupo VIP",
+      headline: "Entre agora no grupo VIP de dicas",
+      description:
+        "Receba promoções exclusivas, alertas de passagens e dicas práticas para viajar melhor — direto no WhatsApp.",
+      buttonLabel: "Entrar no grupo VIP",
+      href: contentLinks.whatsapp,
+    },
   },
 
   ctas: {
@@ -348,30 +357,9 @@ export const content = {
 
   finalCta: {
     title: "Pronto para sua próxima viagem?",
-    subtitle:
-      "Solicite sua cotação e viaje com economia, suporte humanizado e assessoria do início ao fim.",
+    subtitle: "Solicite sua cotação agora mesmo.",
     footnote: "Atendimento humanizado · Pagamento facilitado",
-    actions: [
-      {
-        id: "phone",
-        title: "Fale com a Gente",
-        description: "(51) 9 9251-9187",
-        href: "tel:+5551992519187",
-      },
-      {
-        id: "whatsapp",
-        title: "Agende no WhatsApp",
-        description: "Fale agora",
-        href: contentLinks.whatsapp,
-        external: true,
-      },
-      {
-        id: "quote",
-        title: "Solicitar Cotação",
-        description: "Orçamento sem compromisso",
-        href: contentLinks.quote,
-      },
-    ] satisfies FinalCtaAction[],
+    actions: [] satisfies FinalCtaAction[],
     primaryCta: {
       label: "Faça Uma Cotação AGORA",
       href: contentLinks.quote,

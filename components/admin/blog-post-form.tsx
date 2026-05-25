@@ -1,16 +1,17 @@
 "use client";
 
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
-import { Loader2, UploadCloud } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
   createBlogPostAction,
   updateBlogPostAction,
-  uploadBlogCoverImageAction,
 } from "@/app/admin/(protected)/blogs/actions";
+import { BlogCoverField } from "@/components/admin/blog-cover-field";
+import { BlogTagsField } from "@/components/admin/blog-tags-field";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ const EMPTY_VALUES: BlogPostFormValues = {
   excerpt: "",
   content: "",
   coverImage: "",
+  tags: [],
   published: false,
   featuredOnHomepage: false,
 };
@@ -45,8 +47,6 @@ export function BlogPostForm({
   onSuccess,
 }: BlogPostFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const values = useMemo(
     () => ({
@@ -64,32 +64,9 @@ export function BlogPostForm({
 
   const contentValue = useWatch({ control: form.control, name: "content" }) ?? "";
   const coverImageValue = useWatch({ control: form.control, name: "coverImage" }) ?? "";
+  const tagsValue = useWatch({ control: form.control, name: "tags" }) ?? [];
   const isPublished = useWatch({ control: form.control, name: "published" }) ?? false;
   const isFeatured = useWatch({ control: form.control, name: "featuredOnHomepage" }) ?? false;
-
-  async function handleUploadCover(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    setIsUploading(true);
-    const result = await uploadBlogCoverImageAction(formData);
-    setIsUploading(false);
-
-    if (!result.ok || !result.data) {
-      toast.error(result.message);
-      return;
-    }
-
-    form.setValue("coverImage", result.data.coverImageUrl, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    toast.success("Imagem de capa enviada.");
-  }
-
-  function handleSelectCover() {
-    fileInputRef.current?.click();
-  }
 
   function handleAutoSlug() {
     const title = form.getValues("title");
@@ -99,10 +76,15 @@ export function BlogPostForm({
 
   function onSubmit(input: BlogPostFormValues) {
     startTransition(async () => {
+      const payload: BlogPostInput = {
+        ...input,
+        tags: input.tags ?? [],
+      };
+
       const result =
         mode === "create"
-          ? await createBlogPostAction(input)
-          : await updateBlogPostAction(postId ?? "", input);
+          ? await createBlogPostAction(payload)
+          : await updateBlogPostAction(postId ?? "", payload);
 
       if (!result.ok) {
         if (result.fieldErrors) {
@@ -129,19 +111,6 @@ export function BlogPostForm({
 
   return (
     <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (!file) return;
-          void handleUploadCover(file);
-          event.currentTarget.value = "";
-        }}
-      />
-
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-1.5 md:col-span-2">
           <label htmlFor="title" className="text-sm font-medium text-foreground">
@@ -183,38 +152,37 @@ export function BlogPostForm({
           ) : null}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 md:col-span-2">
           <label htmlFor="coverImage" className="text-sm font-medium text-foreground">
             Imagem de capa
           </label>
-          <div className="flex items-center gap-2">
-            <Input
-              id="coverImage"
-              className="h-10 rounded-xl"
-              placeholder="https://..."
-              {...form.register("coverImage")}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="h-10 rounded-xl border-border/70"
-              onClick={handleSelectCover}
-              disabled={isUploading}
-            >
-              {isUploading ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <UploadCloud className="size-4" aria-hidden />
-              )}
-            </Button>
-          </div>
-          {form.formState.errors.coverImage ? (
-            <p className="text-xs text-destructive">{form.formState.errors.coverImage.message}</p>
-          ) : null}
-          {coverImageValue ? (
-            <p className="truncate text-xs text-muted-foreground">{coverImageValue}</p>
-          ) : null}
+          <BlogCoverField
+            value={coverImageValue}
+            onChange={(nextValue) =>
+              form.setValue("coverImage", nextValue, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            error={form.formState.errors.coverImage?.message}
+          />
         </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="tags" className="text-sm font-medium text-foreground">
+          Tags
+        </label>
+        <BlogTagsField
+          value={tagsValue}
+          onChange={(nextTags) =>
+            form.setValue("tags", nextTags, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          error={form.formState.errors.tags?.message}
+        />
       </div>
 
       <div className="space-y-1.5">
@@ -322,7 +290,7 @@ export function BlogPostForm({
         <Button
           type="submit"
           className="h-10 rounded-xl px-5"
-          disabled={isPending || isUploading}
+          disabled={isPending}
         >
           {isPending ? (
             <>

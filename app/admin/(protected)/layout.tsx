@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { Shield } from "lucide-react";
+import { CircleUser } from "lucide-react";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminLogoutButton } from "@/components/admin/logout-button";
@@ -32,13 +32,15 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex min-w-0 items-center gap-3">
             <AdminSidebar mode="mobile" />
             <div className="flex size-10 items-center justify-center rounded-2xl bg-brand/10 text-brand">
-              <Shield className="size-5" aria-hidden />
+              <CircleUser className="size-5" aria-hidden />
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground">
                 Admin Dashboard
               </p>
-              <p className="truncate text-xs text-muted-foreground">{session.email}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {session.email}
+              </p>
             </div>
           </div>
 

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import { AboutSection, SupportSection } from "@/components/sections/about/about-support";
+import {
+  AboutSection,
+  SupportSection,
+} from "@/components/sections/about/about-support";
 import { BlogPreviewHomeSection } from "@/components/sections/blog/blog-preview-home-section";
 import { FinalCta } from "@/components/sections/cta/final-cta";
 import { FaqModern } from "@/components/sections/faq/faq-modern";

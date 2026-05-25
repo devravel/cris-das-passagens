@@ -5,14 +5,13 @@ export type NavItem = {
   href: string;
 };
 
-/** Links principais — referência: Destinos, Pacotes, Sobre, Blog, Contato. */
+/** Links principais — referência: Destinos, Pacotes, Sobre, Blog. */
 export const navigation: NavItem[] = [
   { label: "Início", href: "/" },
   { label: "Destinos", href: "/destinos" },
   { label: "Pacotes", href: "/pacotes" },
   { label: "Sobre", href: "/sobre" },
   { label: "Blog", href: contentLinks.blog },
-  { label: "Contato", href: contentLinks.quote },
 ];
 
 /** CTA da navbar — conversão via WhatsApp (referência visual). */

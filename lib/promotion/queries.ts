@@ -1,5 +1,6 @@
 import { cache } from "react";
 
+import { normalizePromotionImageUrl } from "@/lib/promotion/image-url";
 import { prisma } from "@/lib/prisma";
 
 export type PublicPromotion = {
@@ -10,7 +11,7 @@ export type PublicPromotion = {
 };
 
 export const getActivePromotions = cache(async (): Promise<PublicPromotion[]> => {
-  return prisma.promotion.findMany({
+  const promotions = await prisma.promotion.findMany({
     where: { active: true },
     orderBy: { createdAt: "desc" },
     select: {
@@ -20,4 +21,9 @@ export const getActivePromotions = cache(async (): Promise<PublicPromotion[]> =>
       link: true,
     },
   });
+
+  return promotions.map((promotion) => ({
+    ...promotion,
+    image: normalizePromotionImageUrl(promotion.image),
+  }));
 });

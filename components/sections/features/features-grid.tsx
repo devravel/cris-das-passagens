@@ -10,7 +10,7 @@ import {
 
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -103,9 +103,7 @@ function FeatureCard({
         </div>
       </CardHeader>
       <CardContent className="px-5 pb-5 pt-0 sm:px-6 sm:pb-6">
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {feature.description}
-        </p>
+        <p className={bodyTextClassName}>{feature.description}</p>
       </CardContent>
     </Card>
   );

@@ -7,6 +7,7 @@ import { ArrowRight, Globe, Plane } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
+import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
@@ -61,11 +62,19 @@ function HeroCtaLink({
   const primaryClasses =
     "h-11 w-full rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0 sm:w-auto";
   const secondaryClasses =
-    "h-11 w-full rounded-lg border-border/80 bg-background/80 px-6 text-sm backdrop-blur-sm transition-[transform,background-color] duration-200 hover:bg-background active:scale-[0.99] sm:w-auto";
+    "h-11 w-full rounded-lg border-border/80 bg-background/80 px-6 text-sm text-foreground backdrop-blur-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:scale-[1.02] hover:!bg-background/80 hover:!text-foreground hover:shadow-md active:translate-y-0 active:scale-100 sm:w-auto";
 
   if (isExternal) {
     return (
-      <Button asChild size="lg" variant={variant === "primary" ? "default" : "outline"} className={cn(variant === "primary" ? primaryClasses : secondaryClasses, className)}>
+      <Button
+        asChild
+        size="lg"
+        variant={variant === "primary" ? "default" : "outline"}
+        className={cn(
+          variant === "primary" ? primaryClasses : secondaryClasses,
+          className,
+        )}
+      >
         <a href={cta.href} target="_blank" rel="noopener noreferrer">
           {cta.label}
           {variant === "primary" ? (
@@ -77,18 +86,39 @@ function HeroCtaLink({
   }
 
   return (
-    <Button asChild size="lg" variant={variant === "primary" ? "default" : "outline"} className={cn(variant === "primary" ? primaryClasses : secondaryClasses, className)}>
-      <Link href={cta.href} className={variant === "primary" ? "gap-2" : undefined}>
+    <Button
+      asChild
+      size="lg"
+      variant={variant === "primary" ? "default" : "outline"}
+      className={cn(
+        variant === "primary" ? primaryClasses : secondaryClasses,
+        className,
+      )}
+    >
+      <Link
+        href={cta.href}
+        className={variant === "primary" ? "gap-2" : undefined}
+      >
         {cta.label}
         {variant === "primary" ? (
-          <ArrowRight className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5" strokeWidth={1.75} aria-hidden />
+          <ArrowRight
+            className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5"
+            strokeWidth={1.75}
+            aria-hidden
+          />
         ) : null}
       </Link>
     </Button>
   );
 }
 
-function ServiceCard({ card, delay }: { card: HeroServiceCard; delay: number }) {
+function ServiceCard({
+  card,
+  delay,
+}: {
+  card: HeroServiceCard;
+  delay: number;
+}) {
   const entrance = useEntranceMotion(delay);
   const Icon = card.icon;
 
@@ -137,7 +167,7 @@ export function TourismHero({
       bordered
       className={cn(
         "overflow-hidden pb-12 pt-8 sm:pb-20 sm:pt-14 lg:pb-24 lg:pt-16",
-        className
+        className,
       )}
       aria-labelledby="hero-headline"
     >
@@ -176,7 +206,7 @@ export function TourismHero({
           </motion.h1>
 
           <motion.p
-            className="max-w-2xl text-center text-sm leading-relaxed text-muted-foreground sm:text-left sm:text-base md:text-lg"
+            className={cn("max-w-2xl", bodyTextClassName)}
             {...subheadlineEntrance}
           >
             {subheadline}
@@ -198,7 +228,11 @@ export function TourismHero({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {serviceCards.map((card, index) => (
-              <ServiceCard key={card.label} card={card} delay={0.14 + index * 0.05} />
+              <ServiceCard
+                key={card.label}
+                card={card}
+                delay={0.14 + index * 0.05}
+              />
             ))}
           </div>
 

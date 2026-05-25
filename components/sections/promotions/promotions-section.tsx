@@ -1,3 +1,4 @@
+import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
@@ -13,18 +14,28 @@ export async function PromotionsSection() {
   }
 
   return (
-    <Section spacing="compact" background="soft" bordered aria-labelledby="promotions-heading">
+    <Section
+      spacing="compact"
+      background="soft"
+      bordered
+      aria-labelledby="promotions-heading"
+    >
       <ScrollReveal y={scrollRevealDefaults.y}>
         <SectionHeader
           id="promotions-heading"
           title="Promoções em destaque"
-          subtitle="Ofertas selecionadas para você viajar pagando menos, com assessoria completa."
+          subtitle="Ofertas selecionadas para você viajar mais pagando menos."
           className="mb-6 sm:mb-8"
         />
       </ScrollReveal>
 
-      <ScrollReveal y={scrollRevealDefaults.y} delay={scrollRevealDefaults.stagger}>
-        <PromotionsSlideshow promotions={promotions} />
+      <ScrollReveal
+        y={scrollRevealDefaults.y}
+        delay={scrollRevealDefaults.stagger}
+      >
+        <Container size="prose" padding="none">
+          <PromotionsSlideshow promotions={promotions} />
+        </Container>
       </ScrollReveal>
     </Section>
   );

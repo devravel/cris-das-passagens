@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ExternalLink, Loader2, Megaphone, PencilLine, Plus, Trash2 } from "lucide-react";
@@ -11,6 +10,7 @@ import {
   deletePromotionAction,
   setPromotionActiveAction,
 } from "@/app/admin/(protected)/promotions/actions";
+import { BlogImage } from "@/components/blog/blog-image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { normalizePromotionImageUrl } from "@/lib/promotion/image-url";
 
 type PromotionListItem = {
   id: string;
@@ -108,12 +109,13 @@ export function PromotionsGrid({ promotions }: PromotionsGridProps) {
             )}
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
-              <Image
-                src={promotion.image}
+              <BlogImage
+                src={normalizePromotionImageUrl(promotion.image)}
                 alt={promotion.title ?? "Promoção"}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                className="transition-transform duration-500 group-hover:scale-[1.02]"
+                containerClassName="absolute inset-0"
               />
               <button
                 type="button"

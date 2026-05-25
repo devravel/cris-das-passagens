@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ProcessStep } from "@/config/content";
@@ -48,7 +48,7 @@ function ProcessStepCard({
       <h3 className="mt-4 font-heading text-base font-semibold tracking-tight text-foreground sm:mt-5">
         {step.title}
       </h3>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground sm:text-base">
+      <p className={cn("mt-2 max-w-xs", bodyTextClassName, "sm:text-base md:text-lg")}>
         {step.description}
       </p>
     </div>

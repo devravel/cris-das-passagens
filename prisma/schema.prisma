@@ -13,19 +13,50 @@ datasource db {
 }
 
 model Post {
-  id                  String   @id @default(cuid())
+  id                  String     @id @default(cuid())
   title               String
-  slug                String   @unique
-  excerpt             String   @db.Text
-  content             String   @db.Text
+  slug                String     @unique
+  excerpt             String     @db.Text
+  content             String     @db.Text
   coverImage          String
-  published           Boolean  @default(false)
-  featuredOnHomepage  Boolean  @default(false)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  published           Boolean    @default(false)
+  featuredOnHomepage  Boolean    @default(false)
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  tags                PostTag[]
+  likes               PostLike[]
 
   @@index([published, createdAt])
   @@index([featuredOnHomepage, published, createdAt])
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  posts     PostTag[]
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  clientId  String
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, clientId])
+  @@index([postId])
 }
 
 model Promotion {

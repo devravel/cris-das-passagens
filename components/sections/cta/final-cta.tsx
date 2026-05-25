@@ -53,20 +53,26 @@ function useCtaMotion() {
         delay: shouldAnimate ? index * 0.08 : 0,
       },
     }),
-    [shouldAnimate]
+    [shouldAnimate],
   );
 
   return { item };
 }
 
-function ActionCard({ action, index }: { action: FinalCtaAction; index: number }) {
+function ActionCard({
+  action,
+  index,
+}: {
+  action: FinalCtaAction;
+  index: number;
+}) {
   const { item } = useCtaMotion();
   const Icon = iconMap[action.id];
 
   const cardClassName = cn(
     "group flex flex-col items-center rounded-2xl bg-brand-soft px-5 py-6 text-center transition-[transform,box-shadow] duration-300 sm:px-6 sm:py-7",
     "hover:-translate-y-0.5 hover:shadow-[0_12px_40px_-16px_rgba(0,0,0,0.35)]",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy"
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy",
   );
 
   const body = (
@@ -115,6 +121,7 @@ export function FinalCta({
 }: FinalCtaProps) {
   const { item } = useCtaMotion();
   const headingId = `${sectionId}-heading`;
+  const hasActions = actions.length > 0;
 
   return (
     <Section
@@ -123,7 +130,7 @@ export function FinalCta({
       className={className}
       aria-labelledby={headingId}
     >
-      <Container size="prose" padding="none" className="text-center">
+      <Container size="prose" padding="none">
         <motion.h2
           id={headingId}
           className={cn(sectionHeadingClassName, "text-white")}
@@ -141,17 +148,22 @@ export function FinalCta({
         ) : null}
       </Container>
 
-      <ul className="mt-10 grid list-none grid-cols-1 gap-4 p-0 sm:mt-12 md:grid-cols-3 md:gap-5 lg:mt-14">
-        {actions.map((action, index) => (
-          <li key={action.id}>
-            <ActionCard action={action} index={index + 2} />
-          </li>
-        ))}
-      </ul>
+      {hasActions ? (
+        <ul className="mt-10 grid list-none grid-cols-1 gap-4 p-0 sm:mt-12 md:grid-cols-3 md:gap-5 lg:mt-14">
+          {actions.map((action, index) => (
+            <li key={action.id}>
+              <ActionCard action={action} index={index + 2} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       <motion.div
-        className="mt-10 flex flex-col items-center gap-3 sm:mt-12"
-        {...item(5)}
+        className={cn(
+          "flex flex-col items-center gap-3",
+          hasActions ? "mt-10 sm:mt-12" : "mt-6 sm:mt-8",
+        )}
+        {...item(hasActions ? 5 : 2)}
       >
         <Button
           asChild

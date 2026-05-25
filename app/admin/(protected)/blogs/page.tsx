@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Plus, Star } from "lucide-react";
+import { CircleCheck, FileText, Plus, Star } from "lucide-react";
 
 import { BlogsTable } from "@/components/admin/blogs-table";
 import { Button } from "@/components/ui/button";
@@ -44,8 +44,8 @@ export default async function AdminBlogsPage() {
             Blogs
           </h1>
           <p className="max-w-2xl text-sm text-muted-foreground">
-            Organize o fluxo editorial com uma experiência simples, clara e pronta para
-            escalar.
+            Organize o fluxo editorial com uma experiência simples, clara e
+            pronta para escalar.
           </p>
         </div>
         <Button asChild className="rounded-xl">
@@ -63,7 +63,9 @@ export default async function AdminBlogsPage() {
               <FileText className="size-4 text-brand" aria-hidden />
               Total de posts
             </CardTitle>
-            <CardDescription>Quantidade total cadastrada no painel.</CardDescription>
+            <CardDescription>
+              Quantidade total cadastrada no painel.
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold tracking-tight text-foreground">
             {posts.length}
@@ -73,7 +75,7 @@ export default async function AdminBlogsPage() {
         <Card className="rounded-2xl border-border/70 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="size-4 text-brand" aria-hidden />
+              <CircleCheck className="size-4 text-brand" aria-hidden />
               Publicados
             </CardTitle>
             <CardDescription>Posts visíveis no blog público.</CardDescription>
@@ -89,10 +91,15 @@ export default async function AdminBlogsPage() {
               <Star className="size-4 text-brand" aria-hidden />
               Destaques na homepage
             </CardTitle>
-            <CardDescription>Posts selecionados para a landing page (max. 3).</CardDescription>
+            <CardDescription>
+              Posts selecionados para a landing page (max. 3).
+            </CardDescription>
           </CardHeader>
           <CardContent className="text-3xl font-semibold tracking-tight text-foreground">
-            {posts.filter((post) => post.featuredOnHomepage && post.published).length}
+            {
+              posts.filter((post) => post.featuredOnHomepage && post.published)
+                .length
+            }
           </CardContent>
         </Card>
 

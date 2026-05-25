@@ -7,8 +7,8 @@ import type { ActionResult } from "@/lib/admin/action-result";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { promotionSchema, type PromotionInput } from "@/lib/promotion/schemas";
-import { makePromotionImagePath } from "@/lib/promotion/utils";
-import { createSupabaseAdminClient } from "@/lib/supabase-admin";
+import { normalizePromotionImageUrl } from "@/lib/promotion/image-url";
+import { uploadPromotionImageToStorage } from "@/lib/promotion/storage";
 
 const uploadImageSchema = z.object({
   fileName: z.string().min(1),
@@ -39,7 +39,7 @@ function toFieldErrors(error: z.ZodError<PromotionInput>) {
 
 function normalizeInput(input: PromotionInput) {
   return {
-    image: input.image.trim(),
+    image: normalizePromotionImageUrl(input.image.trim()),
     title: input.title.trim() || null,
     link: input.link.trim() || null,
     active: input.active,
@@ -236,38 +236,19 @@ export async function uploadPromotionImageAction(
       };
     }
 
-    const supabaseAdmin = createSupabaseAdminClient();
-    const path = makePromotionImagePath(parsedUpload.data.fileName);
-    const fileArrayBuffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(fileArrayBuffer);
-
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from("promotion-images")
-      .upload(path, fileBuffer, {
-        contentType: parsedUpload.data.fileType,
-        upsert: false,
-      });
-
-    if (uploadError) {
-      return {
-        ok: false,
-        message: `Falha no upload: ${uploadError.message}`,
-      };
-    }
-
-    const { data } = supabaseAdmin.storage.from("promotion-images").getPublicUrl(path);
+    const { publicUrl } = await uploadPromotionImageToStorage(file);
 
     return {
       ok: true,
       message: "Imagem enviada com sucesso.",
       data: {
-        imageUrl: data.publicUrl,
+        imageUrl: publicUrl,
       },
     };
-  } catch {
+  } catch (error) {
     return {
       ok: false,
-      message: "Não foi possível enviar a imagem agora.",
+      message: error instanceof Error ? error.message : "Não foi possível enviar a imagem agora.",
     };
   }
 }

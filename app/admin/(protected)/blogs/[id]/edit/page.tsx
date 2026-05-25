@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { BlogPostEditScreen } from "@/components/admin/blog-post-edit-screen";
+import { getTagsForPost } from "@/lib/blog/tags";
 import { prisma } from "@/lib/prisma";
 
 type EditBlogPageProps = {
@@ -38,5 +39,14 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
     notFound();
   }
 
-  return <BlogPostEditScreen post={post} />;
+  const tags = await getTagsForPost(post.id);
+
+  return (
+    <BlogPostEditScreen
+      post={{
+        ...post,
+        tags: tags.map((tag) => tag.name),
+      }}
+    />
+  );
 }

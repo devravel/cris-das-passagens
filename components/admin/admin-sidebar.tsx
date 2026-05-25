@@ -7,7 +7,7 @@ import {
   LayoutDashboard,
   Megaphone,
   Menu,
-  Shield,
+  CircleUser,
   type LucideIcon,
 } from "lucide-react";
 
@@ -109,11 +109,13 @@ export function AdminSidebar({ mode = "both" }: AdminSidebarProps) {
         <aside className="sticky top-6 hidden h-[calc(100dvh-3rem)] w-72 shrink-0 rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm backdrop-blur-sm lg:block">
           <div className="mb-4 flex items-center gap-2 border-b border-border/70 pb-4">
             <div className="flex size-9 items-center justify-center rounded-xl bg-brand/10 text-brand">
-              <Shield className="size-4" aria-hidden />
+              <CircleUser className="size-4" aria-hidden />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">Admin</p>
-              <p className="text-xs text-muted-foreground">Cris das Passagens</p>
+              <p className="text-xs text-muted-foreground">
+                Cris das Passagens
+              </p>
             </div>
           </div>
           <SidebarNav pathname={pathname} />
@@ -140,7 +142,7 @@ export function AdminSidebar({ mode = "both" }: AdminSidebarProps) {
             >
               <SheetHeader className="border-b border-border/70 px-4 py-4 text-left">
                 <SheetTitle className="flex items-center gap-2 text-sm font-semibold">
-                  <Shield className="size-4 text-brand" aria-hidden />
+                  <CircleUser className="size-4 text-brand" aria-hidden />
                   Menu admin
                 </SheetTitle>
               </SheetHeader>

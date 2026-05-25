@@ -7,6 +7,7 @@ import { Section } from "@/components/layout/section";
 import {
   sectionHeadingClassName,
   SectionHeader,
+  bodyTextClassName,
 } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
@@ -45,37 +46,31 @@ export function AboutSection({
       aria-labelledby={headingId}
     >
       <ScrollReveal>
-        <Container size="narrow" padding="none" className="text-center">
-        <h2
-          id={headingId}
-          className={sectionHeadingClassName}
-        >
-          {title}
-        </h2>
+        <Container size="narrow" padding="none">
+          <h2 id={headingId} className={sectionHeadingClassName}>
+            {title}
+          </h2>
 
-        <div className="mt-6 space-y-4 sm:mt-8">
-          {paragraphs.map((paragraph) => (
-            <p
-              key={paragraph}
-              className="text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg"
+          <div className="mt-6 space-y-4 sm:mt-8">
+            {paragraphs.map((paragraph) => (
+              <p key={paragraph} className={bodyTextClassName}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-center sm:mt-10">
+            <Button
+              asChild
+              size="lg"
+              className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
             >
-              {paragraph}
-            </p>
-          ))}
-        </div>
-
-        <div className="mt-8 sm:mt-10">
-          <Button
-            asChild
-            size="lg"
-            className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
-          >
-            <Link href={cta.href} className="gap-2">
-              {cta.label}
-              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-            </Link>
-          </Button>
-        </div>
+              <Link href={cta.href} className="gap-2">
+                {cta.label}
+                <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+              </Link>
+            </Button>
+          </div>
         </Container>
       </ScrollReveal>
     </Section>
@@ -124,7 +119,12 @@ function SupportCta({ cta }: { cta: ContentCta }) {
         size="lg"
         className={cn(buttonClassName, whatsappSolidButtonClassName)}
       >
-        <a href={cta.href} target="_blank" rel="noopener noreferrer" className="gap-2">
+        <a
+          href={cta.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="gap-2"
+        >
           {cta.label}
           <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
         </a>
@@ -136,7 +136,10 @@ function SupportCta({ cta }: { cta: ContentCta }) {
     <Button
       asChild
       size="lg"
-      className={cn(buttonClassName, "bg-brand text-brand-foreground hover:bg-brand/90")}
+      className={cn(
+        buttonClassName,
+        "bg-brand text-brand-foreground hover:bg-brand/90",
+      )}
     >
       <Link href={cta.href} className="gap-2">
         {cta.label}
@@ -172,54 +175,61 @@ export function SupportSection({
 
       <Container padding="none" className="max-w-4xl">
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-          {highlights.map(({ title: highlightTitle, description, icon: Icon }, index) => (
-            <ScrollReveal key={highlightTitle} delay={index * scrollRevealDefaults.stagger}>
-              <div
-                className={cn(
-                  "rounded-2xl bg-background p-5 ring-1 ring-border/50 sm:p-6",
-                  cardInteractiveClassName,
-                  cardShadowClassName
-                )}
+          {highlights.map(
+            ({ title: highlightTitle, description, icon: Icon }, index) => (
+              <ScrollReveal
+                key={highlightTitle}
+                delay={index * scrollRevealDefaults.stagger}
               >
-              <div className="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand/10 text-brand ring-1 ring-brand/15">
-                <Icon className="size-5" strokeWidth={1.75} aria-hidden />
-              </div>
-              <h3 className="font-heading text-base font-semibold tracking-tight text-foreground">
-                {highlightTitle}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {description}
-              </p>
-              </div>
-            </ScrollReveal>
-          ))}
+                <div
+                  className={cn(
+                    "rounded-2xl bg-background p-5 ring-1 ring-border/50 sm:p-6",
+                    cardInteractiveClassName,
+                    cardShadowClassName,
+                  )}
+                >
+                  <div className="mb-3 flex size-11 items-center justify-center rounded-xl bg-brand/10 text-brand ring-1 ring-brand/15">
+                    <Icon className="size-5" strokeWidth={1.75} aria-hidden />
+                  </div>
+                  <h3 className="font-heading text-base font-semibold tracking-tight text-foreground">
+                    {highlightTitle}
+                  </h3>
+                  <p className={cn("mt-2", bodyTextClassName, "sm:text-base md:text-lg")}>
+                    {description}
+                  </p>
+                </div>
+              </ScrollReveal>
+            ),
+          )}
         </div>
       </Container>
 
       <ScrollReveal delay={0.12}>
         <Container
-        size="narrow"
-        padding="none"
-        className="mt-10 space-y-4 text-center sm:mt-12"
-      >
-        {paragraphs.map((paragraph) => (
-          <p
-            key={paragraph}
-            className="text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg"
-          >
-            {paragraph}
-          </p>
-        ))}
+          size="narrow"
+          padding="none"
+          className="mt-10 space-y-4 sm:mt-12"
+        >
+          {paragraphs.map((paragraph) => (
+            <p key={paragraph} className={bodyTextClassName}>
+              {paragraph}
+            </p>
+          ))}
 
-        {closing ? (
-          <p className="pt-2 text-sm font-medium leading-relaxed text-foreground sm:text-base md:text-lg">
-            {closing}
-          </p>
-        ) : null}
+          {closing ? (
+            <p
+              className={cn(
+                "pt-2 font-medium text-foreground",
+                bodyTextClassName,
+              )}
+            >
+              {closing}
+            </p>
+          ) : null}
 
-        <div className="pt-4 sm:pt-6">
-          <SupportCta cta={cta} />
-        </div>
+          <div className="flex justify-center pt-4 sm:pt-6">
+            <SupportCta cta={cta} />
+          </div>
         </Container>
       </ScrollReveal>
     </Section>

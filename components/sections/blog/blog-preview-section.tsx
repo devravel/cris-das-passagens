@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
+import { BlogImage } from "@/components/blog/blog-image";
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta } from "@/config/content";
@@ -49,17 +49,17 @@ function BlogCard({
 
   const imageBlock = (
     <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
-      <Image
+      <BlogImage
         src={post.coverImage}
         alt={isPlaceholder ? "" : post.title}
         fill
         priority={priority}
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         className={cn(
-          "object-cover transition-transform duration-500",
+          "transition-transform duration-500",
           !isPlaceholder && "group-hover:scale-[1.03]",
         )}
-        aria-hidden={isPlaceholder}
+        containerClassName="absolute inset-0"
       />
       {isPlaceholder ? (
         <div
@@ -89,7 +89,7 @@ function BlogCard({
           </Link>
         </h3>
       )}
-      <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-base">
+      <p className={cn("mt-3 flex-1", bodyTextClassName, "sm:text-base md:text-lg")}>
         {post.excerpt}
       </p>
       {!isPlaceholder ? (

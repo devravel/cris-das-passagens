@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
+import { bodyTextClassName } from "@/components/layout/section-header";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -35,7 +36,7 @@ function useHeroMotion() {
       animate: reduce ? false : { opacity: 1, y: 0 },
       transition: { duration: 0.55, ease, delay: reduce ? 0 : delay },
     }),
-    [reduce]
+    [reduce],
   );
 
   return { fade, reduce };
@@ -56,7 +57,10 @@ export function HeroModern({
       background="default"
       spacing="none"
       bordered
-      className={cn("overflow-hidden pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-28 lg:pt-28", className)}
+      className={cn(
+        "overflow-hidden pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-28 lg:pt-28",
+        className,
+      )}
       aria-labelledby="hero-headline"
     >
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -95,10 +99,7 @@ export function HeroModern({
           </motion.h1>
 
           <Container size="prose" padding="none" asChild>
-            <motion.p
-              className="text-center text-base leading-relaxed text-muted-foreground sm:text-left sm:text-lg"
-              {...fade(eyebrow ? 0.12 : 0.06)}
-            >
+            <motion.p className={bodyTextClassName} {...fade(eyebrow ? 0.12 : 0.06)}>
               {subheadline}
             </motion.p>
           </Container>

@@ -1,6 +1,7 @@
 import { cache } from "react";
 
 import { MAX_FEATURED_HOME_POSTS } from "@/lib/blog/constants";
+import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { prisma } from "@/lib/prisma";
 
 export type HomeBlogPostPreview = {
@@ -31,6 +32,7 @@ export const getFeaturedHomeBlogPosts = cache(async (): Promise<HomeBlogPostPrev
 
   return posts.map((post) => ({
     ...post,
+    coverImage: normalizeBlogImageUrl(post.coverImage),
     href: `/blog/${post.slug}`,
   }));
 });

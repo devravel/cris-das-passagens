@@ -6,17 +6,17 @@ import { z } from "zod";
 import type { ActionFailure, ActionResult } from "@/lib/admin/action-result";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
 import { getFeaturedHomePostsLimitMessage } from "@/lib/blog/featured";
+import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { blogPostSchema, type BlogPostInput } from "@/lib/blog/schemas";
-import { makeCoverImagePath } from "@/lib/blog/utils";
+import { uploadBlogImageToStorage } from "@/lib/blog/storage";
+import { syncPostTags } from "@/lib/blog/tags";
 import { prisma } from "@/lib/prisma";
-import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 
-const uploadCoverSchema = z.object({
+const uploadImageSchema = z.object({
   fileName: z.string().min(1),
   fileType: z.string().min(1),
   fileSize: z.number().max(5 * 1024 * 1024, "A imagem deve ter no máximo 5MB."),
 });
-
 
 async function requireAdmin() {
   const session = await getCurrentAdminSession();
@@ -39,9 +39,10 @@ function normalizeInput(input: BlogPostInput) {
     slug: input.slug.trim(),
     excerpt: input.excerpt.trim(),
     content: input.content.trim(),
-    coverImage: input.coverImage.trim(),
+    coverImage: normalizeBlogImageUrl(input.coverImage.trim()),
     published,
     featuredOnHomepage,
+    tags: input.tags ?? [],
   };
 }
 
@@ -111,13 +112,22 @@ export async function createBlogPostAction(
     }
 
     const post = await prisma.post.create({
-      data: values,
+      data: {
+        title: values.title,
+        slug: values.slug,
+        excerpt: values.excerpt,
+        content: values.content,
+        coverImage: values.coverImage,
+        published: values.published,
+        featuredOnHomepage: values.featuredOnHomepage,
+      },
       select: {
         id: true,
         slug: true,
       },
     });
 
+    await syncPostTags(post.id, values.tags);
     revalidateBlogPaths(post.slug);
 
     return {
@@ -127,7 +137,8 @@ export async function createBlogPostAction(
         : "Rascunho criado com sucesso.",
       data: post,
     };
-  } catch {
+  } catch (error) {
+    console.error("createBlogPostAction failed:", error);
     return {
       ok: false,
       message: "Não foi possível criar o post agora.",
@@ -190,23 +201,38 @@ export async function updateBlogPostAction(
 
     const updated = await prisma.post.update({
       where: { id },
-      data: values,
+      data: {
+        title: values.title,
+        slug: values.slug,
+        excerpt: values.excerpt,
+        content: values.content,
+        coverImage: values.coverImage,
+        published: values.published,
+        featuredOnHomepage: values.featuredOnHomepage,
+      },
       select: { slug: true },
     });
 
+    const tagsSynced = await syncPostTags(id, values.tags);
     revalidateBlogPaths(existing.slug);
     if (existing.slug !== updated.slug) {
       revalidateBlogPaths(updated.slug);
     }
 
+    const baseMessage = values.published
+      ? "Post atualizado e publicado."
+      : "Post atualizado como rascunho.";
+
     return {
       ok: true,
-      message: values.published
-        ? "Post atualizado e publicado."
-        : "Post atualizado como rascunho.",
+      message:
+        !tagsSynced && values.tags.length > 0
+          ? `${baseMessage} As tags não puderam ser salvas — execute a migration do banco.`
+          : baseMessage,
       data: updated,
     };
-  } catch {
+  } catch (error) {
+    console.error("updateBlogPostAction failed:", error);
     return {
       ok: false,
       message: "Não foi possível atualizar o post agora.",
@@ -332,9 +358,10 @@ export async function setBlogPostFeaturedAction(
   }
 }
 
-export async function uploadBlogCoverImageAction(
+async function uploadBlogImageFromFormData(
   formData: FormData,
-): Promise<ActionResult<{ coverImageUrl: string }>> {
+  folder: "covers" | "content",
+): Promise<ActionResult<{ imageUrl: string }>> {
   try {
     await requireAdmin();
 
@@ -347,7 +374,7 @@ export async function uploadBlogCoverImageAction(
       };
     }
 
-    const parsedUpload = uploadCoverSchema.safeParse({
+    const parsedUpload = uploadImageSchema.safeParse({
       fileName: file.name,
       fileType: file.type || "image/jpeg",
       fileSize: file.size,
@@ -360,53 +387,123 @@ export async function uploadBlogCoverImageAction(
       };
     }
 
-    const allowedMimeTypes = new Set([
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/webp",
-      "image/avif",
-    ]);
-
-    if (!allowedMimeTypes.has(parsedUpload.data.fileType.toLowerCase())) {
-      return {
-        ok: false,
-        message: "Formato inválido. Use JPG, PNG, WEBP ou AVIF.",
-      };
-    }
-
-    const supabaseAdmin = createSupabaseAdminClient();
-    const path = makeCoverImagePath(parsedUpload.data.fileName);
-    const fileArrayBuffer = await file.arrayBuffer();
-    const fileBuffer = Buffer.from(fileArrayBuffer);
-
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from("blog-covers")
-      .upload(path, fileBuffer, {
-        contentType: parsedUpload.data.fileType,
-        upsert: false,
-      });
-
-    if (uploadError) {
-      return {
-        ok: false,
-        message: `Falha no upload: ${uploadError.message}`,
-      };
-    }
-
-    const { data } = supabaseAdmin.storage.from("blog-covers").getPublicUrl(path);
+    const { publicUrl } = await uploadBlogImageToStorage({ file, folder });
 
     return {
       ok: true,
       message: "Imagem enviada com sucesso.",
       data: {
-        coverImageUrl: data.publicUrl,
+        imageUrl: publicUrl,
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Não foi possível enviar a imagem agora.",
+    };
+  }
+}
+
+export async function uploadBlogCoverImageAction(
+  formData: FormData,
+): Promise<ActionResult<{ coverImageUrl: string }>> {
+  const result = await uploadBlogImageFromFormData(formData, "covers");
+
+  if (!result.ok) {
+    return result;
+  }
+
+  if (!result.data) {
+    return {
+      ok: false,
+      message: "Não foi possível enviar a imagem agora.",
+    };
+  }
+
+  return {
+    ok: true,
+    message: result.message,
+    data: {
+      coverImageUrl: result.data.imageUrl,
+    },
+  };
+}
+
+export async function uploadBlogContentImageAction(
+  formData: FormData,
+): Promise<ActionResult<{ imageUrl: string }>> {
+  return uploadBlogImageFromFormData(formData, "content");
+}
+
+export async function togglePostLikeAction(
+  postId: string,
+  clientId: string,
+): Promise<ActionResult<{ liked: boolean; likeCount: number }>> {
+  try {
+    const parsedClientId = z.string().trim().min(8).max(128).safeParse(clientId);
+    const parsedPostId = z.string().trim().min(1).safeParse(postId);
+
+    if (!parsedClientId.success || !parsedPostId.success) {
+      return {
+        ok: false,
+        message: "Dados inválidos.",
+      };
+    }
+
+    const post = await prisma.post.findFirst({
+      where: {
+        id: parsedPostId.data,
+        published: true,
+      },
+      select: { id: true },
+    });
+
+    if (!post) {
+      return {
+        ok: false,
+        message: "Post não encontrado.",
+      };
+    }
+
+    const existingLike = await prisma.postLike.findUnique({
+      where: {
+        postId_clientId: {
+          postId: parsedPostId.data,
+          clientId: parsedClientId.data,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (existingLike) {
+      await prisma.postLike.delete({
+        where: { id: existingLike.id },
+      });
+    } else {
+      await prisma.postLike.create({
+        data: {
+          postId: parsedPostId.data,
+          clientId: parsedClientId.data,
+        },
+      });
+    }
+
+    const likeCount = await prisma.postLike.count({
+      where: { postId: parsedPostId.data },
+    });
+
+    return {
+      ok: true,
+      message: existingLike ? "Curtida removida." : "Post curtido.",
+      data: {
+        liked: !existingLike,
+        likeCount,
       },
     };
   } catch {
     return {
       ok: false,
-      message: "Não foi possível enviar a imagem agora.",
+      message: "Não foi possível registrar a curtida agora.",
     };
   }
 }

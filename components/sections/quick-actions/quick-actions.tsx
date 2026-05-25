@@ -9,7 +9,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { content, type QuickActionItem } from "@/config/content";
 import {
@@ -69,7 +69,7 @@ function QuickActionCard({ item }: { item: QuickActionItem }) {
       <h3 className="font-heading text-base font-semibold tracking-tight text-foreground">
         {item.title}
       </h3>
-      <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+      <p className={cn("mt-2 flex-1", bodyTextClassName, "md:text-lg")}>
         {item.description}
       </p>
       <span className={ctaClassName}>

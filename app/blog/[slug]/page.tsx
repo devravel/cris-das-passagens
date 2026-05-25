@@ -1,12 +1,20 @@
 import { cache } from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { BlogArticleContent } from "@/components/blog/blog-article-content";
+import { BlogImage } from "@/components/blog/blog-image";
+import { BlogPostLikeButton } from "@/components/blog/blog-post-like";
+import { BlogPostShare } from "@/components/blog/blog-post-share";
+import { BlogPostTags } from "@/components/blog/blog-post-tags";
+import { BlogVipCta } from "@/components/blog/blog-vip-cta";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
+import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
+import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
+import { getPostLikeCount, getTagsForPost } from "@/lib/blog/tags";
 import { prisma } from "@/lib/prisma";
 import {
   createArticleJsonLd,
@@ -14,6 +22,7 @@ import {
   createBreadcrumbJsonLd,
   createNoIndexMetadata,
 } from "@/lib/seo";
+import { buildCanonicalUrl } from "@/lib/seo/site-url";
 import {
   cardInteractiveClassName,
   cardShadowClassName,
@@ -69,14 +78,22 @@ export async function generateMetadata({
     });
   }
 
+  const tags = await getTagsForPost(post.id);
+
   return createArticleMetadata({
     title: post.title,
     description: post.excerpt,
     slug: post.slug,
-    coverImage: post.coverImage,
+    coverImage: normalizeBlogImageUrl(post.coverImage),
     publishedAt: post.createdAt,
     updatedAt: post.updatedAt,
-    keywords: ["blog", "viagens", "dicas de viagem", post.title],
+    keywords: [
+      "blog",
+      "viagens",
+      "dicas de viagem",
+      post.title,
+      ...tags.map((tag) => tag.name),
+    ],
   });
 }
 
@@ -87,6 +104,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) {
     notFound();
   }
+
+  const tags = await getTagsForPost(post.id);
+  const likeCount = await getPostLikeCount(post.id);
+  const canonicalUrl = buildCanonicalUrl(`/blog/${post.slug}`);
+  const coverImage = normalizeBlogImageUrl(post.coverImage);
 
   const publishedAt = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
@@ -99,7 +121,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       title: post.title,
       description: post.excerpt,
       slug: post.slug,
-      coverImage: post.coverImage,
+      coverImage,
       publishedAt: post.createdAt,
       updatedAt: post.updatedAt,
     }),
@@ -141,7 +163,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <h1 className="mt-3 text-balance font-heading text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl lg:text-4xl">
               {post.title}
             </h1>
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className={cn("mt-4", bodyTextClassName, "sm:text-base md:text-lg")}>
               {post.excerpt}
             </p>
             <time
@@ -153,33 +175,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </header>
 
           <div className="mt-6 sm:mt-8">
-            <div className="relative aspect-16/10 w-full overflow-hidden">
-              <Image
-                src={post.coverImage}
-                alt={post.title}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 900px"
-                className="object-cover"
-              />
-            </div>
+            <BlogImage
+              src={coverImage}
+              alt={post.title}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 900px"
+              className="object-cover"
+              containerClassName="relative aspect-16/10 w-full"
+            />
           </div>
 
           <div className="px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
-            <div
-              className={cn(
-                "text-[1.02rem] leading-8 text-foreground/95",
-                "[&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight",
-                "[&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight",
-                "[&_p]:mt-5 [&_p]:text-pretty",
-                "[&_ul]:mt-5 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5",
-                "[&_ol]:mt-5 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5",
-                "[&_a]:font-medium [&_a]:text-brand [&_a]:underline-offset-4 hover:[&_a]:underline",
-                "[&_blockquote]:my-6 [&_blockquote]:rounded-xl [&_blockquote]:border-l-4 [&_blockquote]:border-brand/40 [&_blockquote]:bg-muted/35 [&_blockquote]:px-4 [&_blockquote]:py-3 [&_blockquote]:italic",
-                "[&_strong]:font-semibold",
-              )}
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <BlogArticleContent html={post.content} />
+
+            <div className="mt-10 space-y-8 border-t border-border/60 pt-8">
+              <BlogVipCta />
+
+              <BlogPostTags tags={tags} />
+
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <BlogPostLikeButton postId={post.id} initialLikeCount={likeCount} />
+                <BlogPostShare url={canonicalUrl} title={post.title} />
+              </div>
+            </div>
           </div>
         </article>
       </div>

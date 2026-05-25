@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
 import { Container } from "@/components/layout/container";
-import { SectionHeader } from "@/components/layout/section-header";
+import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import {
@@ -74,7 +74,7 @@ export function FaqModern({
                     </AccordionTrigger>
                   </AccordionHeader>
                   <AccordionContent>
-                    <p className="text-muted-foreground">{item.answer}</p>
+                    <p className={bodyTextClassName}>{item.answer}</p>
                   </AccordionContent>
                 </AccordionItem>
               );

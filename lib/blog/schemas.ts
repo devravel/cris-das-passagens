@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { isValidBlogImageUrl } from "@/lib/blog/image-url";
+import { MAX_TAGS_PER_POST } from "@/lib/blog/tag-utils";
+
 export const blogPostSchema = z
   .object({
     title: z
@@ -22,7 +25,20 @@ export const blogPostSchema = z
       .string()
       .trim()
       .min(20, "Conteúdo deve ter no mínimo 20 caracteres."),
-    coverImage: z.string().trim().url("Informe uma URL válida para a capa."),
+    coverImage: z
+      .string()
+      .trim()
+      .min(1, "Informe a imagem de capa.")
+      .refine((value) => isValidBlogImageUrl(value), "Informe uma URL válida para a capa."),
+    tags: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(2, "Cada tag deve ter no mínimo 2 caracteres.")
+          .max(32, "Cada tag deve ter no máximo 32 caracteres."),
+      )
+      .max(MAX_TAGS_PER_POST, `Use no máximo ${MAX_TAGS_PER_POST} tags.`),
     published: z.boolean(),
     featuredOnHomepage: z.boolean(),
   })

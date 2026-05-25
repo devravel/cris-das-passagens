@@ -1,19 +1,17 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  ArrowUpRight,
-  ShieldCheck,
-  Star,
-} from "lucide-react";
+import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import {
   sectionHeadingClassName,
   sectionSubtitleClassName,
+  bodyTextClassName,
 } from "@/components/layout/section-header";
 import { Section } from "@/components/layout/section";
 import { content } from "@/config/content";
@@ -62,6 +60,8 @@ export type SocialProofCadasturProps = {
   verification?: string;
   verifyUrl?: string;
   verifyUrlLabel?: string;
+  qrCodeSrc?: string;
+  qrCodeAlt?: string;
   className?: string;
 };
 
@@ -79,7 +79,7 @@ function useSectionMotion() {
         delay: shouldAnimate ? index * 0.08 : 0,
       },
     }),
-    [shouldAnimate]
+    [shouldAnimate],
   );
 
   return { item };
@@ -98,7 +98,7 @@ function StatCard({ stat, index }: { stat: StatItem; index: number }) {
       <div
         className={cn(
           "flex size-14 items-center justify-center rounded-full ring-1 sm:size-16",
-          stat.accent
+          stat.accent,
         )}
       >
         {isCadastur && Icon ? (
@@ -131,6 +131,8 @@ export function SocialProofCadastur({
   verification = content.cadastur.verification,
   verifyUrl = content.cadastur.verifyUrl,
   verifyUrlLabel = content.cadastur.verifyUrlLabel,
+  qrCodeSrc = content.cadastur.qrCode,
+  qrCodeAlt = content.cadastur.qrCodeAlt,
   className,
 }: SocialProofCadasturProps) {
   const { item } = useSectionMotion();
@@ -147,7 +149,7 @@ export function SocialProofCadastur({
       <Container
         size="prose"
         padding="none"
-        className="mb-12 text-center sm:mb-14 lg:mb-16"
+        className="mb-12 sm:mb-14 lg:mb-16"
       >
         <motion.h2
           id={headingId}
@@ -157,10 +159,7 @@ export function SocialProofCadastur({
           {statsTitle}
         </motion.h2>
         {statsSubtitle ? (
-          <motion.p
-            className={sectionSubtitleClassName}
-            {...item(1)}
-          >
+          <motion.p className={sectionSubtitleClassName} {...item(1)}>
             {statsSubtitle}
           </motion.p>
         ) : null}
@@ -175,60 +174,50 @@ export function SocialProofCadastur({
       <Container padding="none" className="mt-14 max-w-4xl lg:mt-16" asChild>
         <motion.div {...item(5)}>
           <div className="rounded-2xl bg-muted/30 p-6 ring-1 ring-border/50 sm:p-8 lg:p-10">
-          <div className="grid gap-8 lg:grid-cols-[auto_1fr] lg:items-start lg:gap-10">
-            <div className="mx-auto flex flex-col items-center gap-3 lg:mx-0">
-              <div
-                className="flex size-28 items-center justify-center rounded-xl border-2 border-dashed border-border/80 bg-background/80 text-center sm:size-32"
-                aria-hidden
-              >
-                <div className="space-y-1 px-2">
-                  <ShieldCheck
-                    className="mx-auto size-8 text-brand"
-                    strokeWidth={1.5}
-                  />
-                  <span className="block text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                    QR Code
-                  </span>
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,10.5rem)_1fr] lg:items-start lg:gap-x-14 lg:gap-y-0">
+              <div className="order-1 space-y-4 lg:order-none lg:col-start-2 lg:row-start-1">
+                <h3 className="text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-left">
+                  {cadasturTitle}
+                </h3>
+                <div className="space-y-3">
+                  {cadasturParagraphs.map((paragraph) => (
+                    <p key={paragraph} className={bodyTextClassName}>
+                      {paragraph}
+                    </p>
+                  ))}
                 </div>
               </div>
-              <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Star className="size-3.5 fill-amber-400 text-amber-400" />
-                Depoimentos no {content.socialProof.reviewSources}
-              </p>
-            </div>
 
-            <div className="space-y-4 text-center lg:text-left">
-              <h3 className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-                {cadasturTitle}
-              </h3>
-              <div className="space-y-3">
-                {cadasturParagraphs.map((paragraph) => (
-                  <p
-                    key={paragraph}
-                    className="text-sm leading-relaxed text-muted-foreground sm:text-base"
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-              <p className="break-words text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {verification}{" "}
-                <Link
-                  href={verifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex flex-wrap items-center gap-1 font-medium text-brand underline-offset-4 transition-colors duration-200 hover:text-brand/90 hover:underline"
-                >
-                  {verifyUrlLabel}
-                  <ArrowUpRight
-                    className="size-3.5 opacity-60 transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px"
-                    strokeWidth={1.75}
-                    aria-hidden
+              <div className="order-2 mx-auto flex w-full max-w-xs flex-col items-center gap-5 border-t border-border/50 pt-8 sm:max-w-sm lg:order-none lg:col-start-1 lg:row-start-1 lg:mx-0 lg:max-w-none lg:items-start lg:gap-5 lg:border-t-0 lg:pt-0">
+                <div className="size-28 shrink-0 overflow-hidden rounded-xl border border-border/80 bg-background sm:size-32">
+                  <Image
+                    src={qrCodeSrc}
+                    alt={qrCodeAlt}
+                    width={128}
+                    height={128}
+                    className="size-full object-cover object-center"
                   />
-                </Link>
-              </p>
+                </div>
+                <div className="w-full space-y-2 sm:space-y-2.5 lg:space-y-2">
+                  <p className="text-pretty text-xs leading-relaxed text-muted-foreground sm:text-sm lg:text-[0.6875rem] lg:leading-normal">
+                    {verification}
+                  </p>
+                  <Link
+                    href={verifyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex flex-wrap items-center justify-center gap-1 text-xs font-medium text-brand underline-offset-4 transition-colors duration-200 hover:text-brand/90 hover:underline sm:text-sm lg:justify-start lg:text-[0.6875rem]"
+                  >
+                    {verifyUrlLabel}
+                    <ArrowUpRight
+                      className="size-3.5 opacity-60 transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px lg:size-3"
+                      strokeWidth={1.75}
+                      aria-hidden
+                    />
+                  </Link>
+                </div>
+              </div>
             </div>
-          </div>
           </div>
         </motion.div>
       </Container>

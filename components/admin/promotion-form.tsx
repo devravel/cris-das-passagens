@@ -1,19 +1,20 @@
 "use client";
 
-import Image from "next/image";
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
-import { ExternalLink, ImageIcon, Loader2, UploadCloud } from "lucide-react";
+import { ExternalLink, ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
   createPromotionAction,
   updatePromotionAction,
-  uploadPromotionImageAction,
 } from "@/app/admin/(protected)/promotions/actions";
+import { PromotionImageField } from "@/components/admin/promotion-image-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { isValidBlogImageUrl, normalizeBlogImageUrl } from "@/lib/blog/image-url";
+import { resolveStorageImageSrc } from "@/lib/storage/media-url";
 import { promotionSchema, type PromotionFormValues } from "@/lib/promotion/schemas";
 import { cn } from "@/lib/utils";
 
@@ -38,8 +39,8 @@ export function PromotionForm({
   onSuccess,
 }: PromotionFormProps) {
   const [isPending, startTransition] = useTransition();
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [previewErroredUrl, setPreviewErroredUrl] = useState<string | null>(null);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
 
   const values = useMemo(
     () => ({
@@ -63,29 +64,20 @@ export function PromotionForm({
   const linkValue = useWatch({ control: form.control, name: "link" }) ?? "";
   const isActive = useWatch({ control: form.control, name: "active" }) ?? true;
 
-  async function handleUploadImage(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    setIsUploading(true);
-    const result = await uploadPromotionImageAction(formData);
-    setIsUploading(false);
-
-    if (!result.ok || !result.data) {
-      toast.error(result.message);
-      return;
+  const previewUrl = useMemo(() => {
+    if (!imageValue.trim()) {
+      return "";
     }
 
-    form.setValue("image", result.data.imageUrl, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    toast.success("Imagem enviada com sucesso.");
-  }
-
-  function handleSelectImage() {
-    fileInputRef.current?.click();
-  }
+    return resolveStorageImageSrc(normalizeBlogImageUrl(imageValue));
+  }, [imageValue]);
+  const previewSrc = localPreviewUrl || previewUrl;
+  const hasValidPreview =
+    Boolean(previewSrc) &&
+    (previewSrc.startsWith("blob:") ||
+      previewSrc.startsWith("/api/media/") ||
+      isValidBlogImageUrl(previewSrc)) &&
+    previewErroredUrl !== previewSrc;
 
   function onSubmit(input: PromotionFormValues) {
     startTransition(async () => {
@@ -114,19 +106,6 @@ export function PromotionForm({
 
   return (
     <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)} noValidate>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (!file) return;
-          void handleUploadImage(file);
-          event.currentTarget.value = "";
-        }}
-      />
-
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <div className="space-y-4">
           <div className="space-y-1.5">
@@ -167,36 +146,20 @@ export function PromotionForm({
 
           <div className="space-y-1.5">
             <label htmlFor="image" className="text-sm font-medium text-foreground">
-              URL da imagem
+              Imagem da promoção
             </label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="image"
-                className="h-10 rounded-xl"
-                placeholder="https://..."
-                {...form.register("image")}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                className="h-10 shrink-0 rounded-xl border-border/70 px-3"
-                onClick={handleSelectImage}
-                disabled={isUploading}
-                aria-label="Enviar imagem"
-              >
-                {isUploading ? (
-                  <Loader2 className="size-4 animate-spin" aria-hidden />
-                ) : (
-                  <UploadCloud className="size-4" aria-hidden />
-                )}
-              </Button>
-            </div>
-            {form.formState.errors.image ? (
-              <p className="text-xs text-destructive">{form.formState.errors.image.message}</p>
-            ) : null}
-            <p className="text-xs text-muted-foreground">
-              Envie JPG, PNG, WEBP ou AVIF com ate 5MB.
-            </p>
+            <PromotionImageField
+              value={imageValue}
+              onChange={(nextValue) => {
+                setPreviewErroredUrl(null);
+                form.setValue("image", nextValue, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }}
+              onLocalPreview={setLocalPreviewUrl}
+              error={form.formState.errors.image?.message}
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-muted/25 p-3">
@@ -230,18 +193,28 @@ export function PromotionForm({
           <p className="text-sm font-medium text-foreground">Preview da campanha</p>
           <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
             <div className="relative aspect-[16/10] bg-muted/40">
-              {imageValue ? (
-                <Image
-                  src={imageValue}
+              {hasValidPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element -- admin preview with blob/proxy URLs
+                <img
+                  src={previewSrc}
                   alt="Preview da promoção"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 480px"
-                  className="object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  onError={() => setPreviewErroredUrl(previewSrc)}
+                  onLoad={() => {
+                    if (localPreviewUrl && previewUrl) {
+                      URL.revokeObjectURL(localPreviewUrl);
+                      setLocalPreviewUrl(null);
+                    }
+                  }}
                 />
               ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
+                <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-muted-foreground">
                   <ImageIcon className="size-8 opacity-60" aria-hidden />
-                  <p className="text-sm">Envie uma imagem para visualizar</p>
+                  <p className="text-sm">
+                    {previewErroredUrl === previewSrc
+                      ? "Não foi possível carregar a imagem. Tente enviar novamente."
+                      : "Envie uma imagem para visualizar"}
+                  </p>
                 </div>
               )}
             </div>
@@ -258,11 +231,7 @@ export function PromotionForm({
       </div>
 
       <div className="flex items-center justify-end gap-2 border-t border-border/70 pt-4">
-        <Button
-          type="submit"
-          className="h-10 rounded-xl px-5"
-          disabled={isPending || isUploading}
-        >
+        <Button type="submit" className="h-10 rounded-xl px-5" disabled={isPending}>
           {isPending ? (
             <>
               <Loader2 className="size-4 animate-spin" aria-hidden />

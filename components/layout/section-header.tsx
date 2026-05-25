@@ -11,10 +11,13 @@ export type SectionHeaderProps = {
 };
 
 export const sectionHeadingClassName =
-  "font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-[2rem] lg:leading-tight";
+  "text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-[2rem] lg:leading-tight";
+
+export const bodyTextClassName =
+  "w-full text-pretty text-justify text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg";
 
 export const sectionSubtitleClassName =
-  "mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg";
+  "mt-3 w-full text-pretty text-center text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg";
 
 export function SectionHeader({
   id,
@@ -28,7 +31,7 @@ export function SectionHeader({
     <Container
       size="prose"
       padding="none"
-      className={cn("mb-8 text-center sm:mb-12 lg:mb-14", className)}
+      className={cn("mb-8 sm:mb-12 lg:mb-14", className)}
     >
       <h2 id={id} className={cn(sectionHeadingClassName, titleClassName)}>
         {title}
