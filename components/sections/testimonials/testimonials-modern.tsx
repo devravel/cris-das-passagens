@@ -9,6 +9,7 @@ import { SectionHeader, bodyTextClassName } from "@/components/layout/section-he
 import { content, type TestimonialItem } from "@/config/content";
 import { useMotionReady } from "@/hooks/use-motion-ready";
 import {
+  cardContentContainerClassName,
   cardInteractiveClassName,
   cardShadowClassName,
 } from "@/lib/card-styles";
@@ -110,6 +111,7 @@ function TestimonialCard({
       aria-labelledby={authorId}
       className={cn(
         "flex h-full flex-col rounded-2xl bg-background p-5 ring-1 ring-border/50 sm:p-6",
+        cardContentContainerClassName,
         cardInteractiveClassName,
         cardShadowClassName
       )}

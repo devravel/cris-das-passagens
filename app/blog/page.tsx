@@ -10,6 +10,7 @@ import { createMetadata } from "@/lib/seo";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { prisma } from "@/lib/prisma";
 import {
+  cardContentContainerClassName,
   cardInteractiveClassName,
   cardShadowClassName,
 } from "@/lib/card-styles";
@@ -127,6 +128,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                   <article
                     className={cn(
                       "group flex h-full flex-col overflow-hidden rounded-2xl bg-background ring-1 ring-border/50",
+                      cardContentContainerClassName,
                       cardInteractiveClassName,
                       cardShadowClassName,
                     )}

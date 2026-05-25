@@ -13,6 +13,7 @@ import { SectionHeader, bodyTextClassName } from "@/components/layout/section-he
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { content, type QuickActionItem } from "@/config/content";
 import {
+  cardContentContainerClassName,
   cardInteractiveClassName,
   cardShadowClassName,
 } from "@/lib/card-styles";
@@ -40,6 +41,7 @@ function QuickActionCard({ item }: { item: QuickActionItem }) {
 
   const cardClassName = cn(
     "group flex h-full flex-col rounded-2xl bg-background p-4 ring-1 ring-border/50 sm:p-5",
+    cardContentContainerClassName,
     cardInteractiveClassName,
     cardShadowClassName,
     "hover:ring-border/80",

@@ -160,11 +160,33 @@
     @apply font-heading tracking-tight text-balance;
   }
   p {
-    @apply text-pretty text-justify;
+    @apply text-pretty;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphenate-limit-chars: 6 4 4;
   }
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
+    }
+  }
+}
+
+@layer utilities {
+  .text-justify-smart {
+    text-wrap: pretty;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphenate-limit-chars: 6 4 4;
+    overflow-wrap: break-word;
+    text-align: justify;
+  }
+}
+
+@layer components {
+  @container (max-width: 23rem) {
+    .text-justify-smart {
+      text-align: left;
     }
   }
 }

@@ -13,6 +13,7 @@ import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta } from "@/config/content";
 import {
+  cardContentContainerClassName,
   cardInteractiveClassName,
   cardShadowClassName,
 } from "@/lib/card-styles";
@@ -185,6 +186,7 @@ export function SupportSection({
                 <div
                   className={cn(
                     "rounded-2xl bg-background p-5 ring-1 ring-border/50 sm:p-6",
+                    cardContentContainerClassName,
                     cardInteractiveClassName,
                     cardShadowClassName,
                   )}

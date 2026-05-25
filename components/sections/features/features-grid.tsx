@@ -12,6 +12,7 @@ import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cardContentContainerClassName } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
 
 export type FeatureItem = {
@@ -82,6 +83,7 @@ function FeatureCard({
     <Card
       className={cn(
         "h-full rounded-2xl border-border/60 bg-card/45 py-0 shadow-sm ring-1 ring-foreground/6 transition-[box-shadow,border-color,transform] duration-300",
+        cardContentContainerClassName,
         "supports-backdrop-filter:bg-card/35 supports-backdrop-filter:backdrop-blur-sm",
         "hover:-translate-y-px hover:border-border hover:shadow-md"
       )}

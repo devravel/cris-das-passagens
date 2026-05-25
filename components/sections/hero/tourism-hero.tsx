@@ -11,6 +11,7 @@ import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
+import { cardContentContainerClassName } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
 
 export type HeroServiceCard = {
@@ -124,7 +125,10 @@ function ServiceCard({
 
   return (
     <motion.div
-      className="flex gap-3 rounded-xl bg-background p-4 shadow-[0_8px_30px_-12px_rgba(52,91,167,0.18)] ring-1 ring-border/50 transition-[box-shadow,transform] duration-300 hover:-translate-y-px hover:shadow-[0_12px_36px_-12px_rgba(52,91,167,0.22)]"
+      className={cn(
+        "flex gap-3 rounded-xl bg-background p-4 shadow-[0_8px_30px_-12px_rgba(52,91,167,0.18)] ring-1 ring-border/50 transition-[box-shadow,transform] duration-300 hover:-translate-y-px hover:shadow-[0_12px_36px_-12px_rgba(52,91,167,0.22)]",
+        cardContentContainerClassName,
+      )}
       {...entrance}
     >
       <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand ring-1 ring-brand/15">
@@ -134,7 +138,7 @@ function ServiceCard({
         <p className="font-heading text-sm font-semibold tracking-tight text-foreground">
           {card.label}
         </p>
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <p className="text-justify-smart text-sm leading-relaxed text-muted-foreground">
           {card.description}
         </p>
       </div>

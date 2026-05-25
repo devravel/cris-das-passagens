@@ -14,7 +14,7 @@ export const sectionHeadingClassName =
   "text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-[2rem] lg:leading-tight";
 
 export const bodyTextClassName =
-  "w-full text-pretty text-justify text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg";
+  "w-full text-justify-smart text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg";
 
 export const sectionSubtitleClassName =
   "mt-3 w-full text-pretty text-center text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg";

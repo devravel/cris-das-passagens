@@ -14,6 +14,7 @@ import {
 } from "@/lib/blog/placeholders";
 import type { HomeBlogPostPreview } from "@/lib/blog/queries";
 import {
+  cardContentContainerClassName,
   cardInteractiveClassName,
   cardShadowClassName,
 } from "@/lib/card-styles";
@@ -42,6 +43,7 @@ function BlogCard({
 }) {
   const cardClassName = cn(
     "group flex h-full flex-col overflow-hidden rounded-2xl bg-background ring-1 ring-border/50",
+    cardContentContainerClassName,
     !isPlaceholder && cardInteractiveClassName,
     cardShadowClassName,
     isPlaceholder && "opacity-95",

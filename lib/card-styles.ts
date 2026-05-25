@@ -9,3 +9,6 @@ export const cardInteractiveClassName = cn(
 
 export const cardShadowClassName =
   "shadow-[0_8px_30px_-14px_rgba(52,91,167,0.16)] hover:shadow-[0_14px_40px_-16px_rgba(52,91,167,0.22)]";
+
+/** Habilita container queries para text-justify-smart em cards estreitos. */
+export const cardContentContainerClassName = "@container";
