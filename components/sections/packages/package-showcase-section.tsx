@@ -4,7 +4,6 @@ import { Section } from "@/components/layout/section";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import {
   DEFAULT_DEPARTURE_CITY,
-  packageShowcaseDisclaimer,
   type PackageShowcaseConfig,
 } from "@/config/packages-showcase";
 import { scrollRevealDefaults } from "@/lib/motion";
@@ -106,13 +105,11 @@ export function PackageShowcaseSection({
             config.reverse ? "order-1 lg:order-2" : "order-1",
           )}
         >
-          <ShowcaseHeading config={config} headingId={headingId} departureCity={departureCity} />
-
-          {config.showDisclaimer && !config.reverse ? (
-            <p className="mt-8 max-w-md text-[11px] leading-relaxed text-muted-foreground sm:mt-10 sm:text-xs">
-              {packageShowcaseDisclaimer}
-            </p>
-          ) : null}
+          <ShowcaseHeading
+            config={config}
+            headingId={headingId}
+            departureCity={departureCity}
+          />
         </ScrollReveal>
 
         <ScrollReveal
@@ -128,12 +125,6 @@ export function PackageShowcaseSection({
             departureCity={departureCity}
             ariaLabel={carouselLabel}
           />
-
-          {config.showDisclaimer && config.reverse ? (
-            <p className="mt-4 max-w-xl text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
-              {packageShowcaseDisclaimer}
-            </p>
-          ) : null}
         </ScrollReveal>
       </div>
     </Section>

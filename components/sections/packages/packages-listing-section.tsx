@@ -13,14 +13,12 @@ import { cn } from "@/lib/utils";
 type PackagesListingSectionProps = {
   config: PackagesPageSectionConfig;
   packages: PublicPackage[];
-  showDisclaimer?: boolean;
   className?: string;
 };
 
 export function PackagesListingSection({
   config,
   packages,
-  showDisclaimer = false,
   className,
 }: PackagesListingSectionProps) {
   const [category, setCategory] = useState<PackageCategoryValue>("NATIONAL");
@@ -82,11 +80,6 @@ export function PackagesListingSection({
           emptyMessage={packagesPageContent.emptyCategoryMessage}
         />
 
-        {showDisclaimer ? (
-          <p className="mt-4 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
-            {packagesPageContent.disclaimer}
-          </p>
-        ) : null}
       </section>
     </ScrollReveal>
   );

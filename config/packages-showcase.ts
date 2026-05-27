@@ -7,7 +7,6 @@ export type PackageShowcaseConfig = {
   sectionId: string;
   icon: "suitcase" | "plane" | "bed" | "ticket" | "anchor";
   reverse: boolean;
-  showDisclaimer: boolean;
   heading: {
     before?: string;
     highlight?: string;
@@ -23,7 +22,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     sectionId: "pacotes-completos",
     icon: "suitcase",
     reverse: false,
-    showDisclaimer: true,
     heading: {
       before: "Os melhores ",
       highlight: "pacotes",
@@ -36,7 +34,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     sectionId: "passagens-aereas",
     icon: "plane",
     reverse: true,
-    showDisclaimer: true,
     heading: {
       full: "Passagens com preços imbatíveis",
     },
@@ -47,7 +44,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     sectionId: "hospedagem",
     icon: "bed",
     reverse: false,
-    showDisclaimer: false,
     heading: {
       before: "As melhores ",
       highlight: "diárias",
@@ -59,7 +55,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     sectionId: "ingressos",
     icon: "ticket",
     reverse: true,
-    showDisclaimer: false,
     heading: {
       before: "Ingressos para ",
       highlight: "experiências",
@@ -71,7 +66,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     sectionId: "cruzeiros",
     icon: "anchor",
     reverse: false,
-    showDisclaimer: false,
     heading: {
       before: "Navegue em ",
       highlight: "cruzeiros",
@@ -79,6 +73,3 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     },
   },
 ];
-
-export const packageShowcaseDisclaimer =
-  "*Taxas de embarque serão cobradas na primeira parcela";

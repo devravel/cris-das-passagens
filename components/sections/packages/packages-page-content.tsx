@@ -47,7 +47,6 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
           key={config.sectionId}
           config={config}
           packages={packages}
-          showDisclaimer={config.type === "FLIGHT" || config.type === "PACKAGE_COMPLETE"}
           className={index > 0 ? "border-t border-border/50 pt-14 sm:pt-16 lg:pt-20" : undefined}
         />
       ))}

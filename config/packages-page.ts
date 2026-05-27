@@ -55,7 +55,6 @@ export const packagesPageContent = {
   title: "Pacotes turísticos",
   subtitle:
     "Explore passagens, pacotes completos, hospedagem, ingressos e cruzeiros com curadoria premium e atendimento personalizado.",
-  disclaimer: "*Taxas de embarque serão cobradas na primeira parcela",
   emptyCategoryMessage: "Nenhuma oferta disponível nesta categoria no momento.",
   emptySectionMessage: "Novas ofertas serão publicadas em breve.",
 } as const;
