@@ -59,15 +59,45 @@ model PostLike {
   @@index([postId])
 }
 
-model Promotion {
-  id        String   @id @default(cuid())
-  image     String
-  title     String?
-  link      String?
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
+enum PackageType {
+  PACKAGE_COMPLETE
+  FLIGHT
+  HOTEL
+  TICKET
+  CRUISE
+}
+
+enum PackageCategory {
+  NATIONAL
+  INTERNATIONAL
+}
+
+model Package {
+  id               String           @id @default(cuid())
+  title            String
+  slug             String           @unique
+  shortDescription String           @db.Text
+  destination      String
+  image            String
+  type             PackageType
+  category         PackageCategory?
+  price            Decimal          @db.Decimal(10, 2)
+  oldPrice         Decimal?         @db.Decimal(10, 2)
+  installmentText  String?
+  airline          String?
+  hotelName        String?
+  includesTickets  Boolean          @default(false)
+  includesHotel    Boolean          @default(false)
+  includesFlight   Boolean          @default(false)
+  includesCruise   Boolean          @default(false)
+  active           Boolean          @default(true)
+  featured         Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   @@index([active, createdAt])
+  @@index([featured, active, createdAt])
+  @@index([type, active])
 }
 
 model AdminUser {

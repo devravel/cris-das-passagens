@@ -1,4 +1,4 @@
-export const STORAGE_MEDIA_BUCKETS = new Set(["promotion-images", "blog-covers"]);
+export const STORAGE_MEDIA_BUCKETS = new Set(["package-images", "promotion-images", "blog-covers"]);
 
 export function parseSupabasePublicStorageUrl(url: string): { bucket: string; path: string } | null {
   try {

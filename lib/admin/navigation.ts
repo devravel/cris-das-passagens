@@ -10,9 +10,9 @@ export const adminNavigationItems = [
     icon: "file-text",
   },
   {
-    title: "Promoções",
-    href: "/admin/promotions",
-    icon: "megaphone",
+    title: "Pacotes",
+    href: "/admin/packages",
+    icon: "package",
   },
 ] as const;
 

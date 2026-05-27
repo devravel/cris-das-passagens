@@ -47,7 +47,9 @@ export function AdminLoginForm({ redirectTo }: LoginFormProps) {
         const data = (await response.json()) as LoginResponse;
 
         if (!response.ok || !data.ok) {
-          setError(data.error ?? "Não foi possível entrar com essas credenciais.");
+          setError(
+            data.error ?? "Não foi possível entrar com essas credenciais.",
+          );
           return;
         }
 
@@ -71,7 +73,7 @@ export function AdminLoginForm({ redirectTo }: LoginFormProps) {
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="admin@crisdaspassagens.com.br"
+          placeholder="Digite seu email"
           defaultValue={defaultEmail}
           required
           className="h-10 rounded-xl px-3"
@@ -79,7 +81,10 @@ export function AdminLoginForm({ redirectTo }: LoginFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-foreground" htmlFor="password">
+        <label
+          className="text-sm font-medium text-foreground"
+          htmlFor="password"
+        >
           Senha
         </label>
         <Input
@@ -103,7 +108,11 @@ export function AdminLoginForm({ redirectTo }: LoginFormProps) {
         {error ?? " "}
       </div>
 
-      <Button type="submit" className="h-10 w-full rounded-xl text-sm" disabled={isPending}>
+      <Button
+        type="submit"
+        className="h-10 w-full rounded-xl text-sm"
+        disabled={isPending}
+      >
         {isPending ? "Entrando..." : "Entrar no painel"}
       </Button>
     </form>

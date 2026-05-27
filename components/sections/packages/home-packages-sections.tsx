@@ -1,0 +1,40 @@
+import { PackageShowcaseSection } from "@/components/sections/packages/package-showcase-section";
+import { packageShowcaseSections } from "@/config/packages-showcase";
+import type { PackageTypeValue } from "@/lib/package/constants";
+import { getHomepagePackages, type HomepagePackages } from "@/lib/package/queries";
+
+function getPackagesForType(homepagePackages: HomepagePackages, type: PackageTypeValue) {
+  switch (type) {
+    case "PACKAGE_COMPLETE":
+      return homepagePackages.complete;
+    case "FLIGHT":
+      return homepagePackages.flights;
+    case "HOTEL":
+      return homepagePackages.hotels;
+    default:
+      return [];
+  }
+}
+
+export async function HomePackagesSections() {
+  const homepagePackages = await getHomepagePackages();
+
+  const sections = packageShowcaseSections
+    .map((config) => ({
+      config,
+      packages: getPackagesForType(homepagePackages, config.type),
+    }))
+    .filter((section) => section.packages.length > 0);
+
+  if (sections.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {sections.map(({ config, packages }) => (
+        <PackageShowcaseSection key={config.sectionId} config={config} packages={packages} />
+      ))}
+    </>
+  );
+}

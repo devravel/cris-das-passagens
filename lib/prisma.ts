@@ -23,8 +23,27 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+function isStalePrismaClient(client: PrismaClient | undefined): client is undefined {
+  if (!client) {
+    return true;
+  }
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  // Recreate when hot reload keeps an outdated singleton (e.g. Promotion → Package).
+  return typeof client.package?.findMany !== "function";
 }
+
+function getPrismaClient() {
+  if (!isStalePrismaClient(globalForPrisma.prisma)) {
+    return globalForPrisma.prisma;
+  }
+
+  const client = createPrismaClient();
+
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
+  }
+
+  return client;
+}
+
+export const prisma = getPrismaClient();

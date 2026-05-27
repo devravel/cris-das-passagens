@@ -1,39 +1,10 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
-import { PromotionEditScreen } from "@/components/admin/promotion-edit-screen";
-import { prisma } from "@/lib/prisma";
-
-type EditPromotionPageProps = {
+type LegacyEditPromotionPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export const metadata: Metadata = {
-  title: "Editar Promoção | Admin",
-  description: "Edite uma promoção no painel administrativo.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default async function EditPromotionPage({ params }: EditPromotionPageProps) {
+export default async function LegacyEditPromotionPage({ params }: LegacyEditPromotionPageProps) {
   const { id } = await params;
-
-  const promotion = await prisma.promotion.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      image: true,
-      title: true,
-      link: true,
-      active: true,
-    },
-  });
-
-  if (!promotion) {
-    notFound();
-  }
-
-  return <PromotionEditScreen promotion={promotion} />;
+  redirect(`/admin/packages/${id}/edit`);
 }

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   FileText,
   LayoutDashboard,
-  Megaphone,
   Menu,
+  Package,
   CircleUser,
   type LucideIcon,
 } from "lucide-react";
@@ -30,7 +30,7 @@ import {
 const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
   "layout-dashboard": LayoutDashboard,
   "file-text": FileText,
-  megaphone: Megaphone,
+  package: Package,
 };
 
 type AdminSidebarProps = {

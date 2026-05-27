@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import {
   AboutSection,
@@ -8,8 +9,9 @@ import { BlogPreviewHomeSection } from "@/components/sections/blog/blog-preview-
 import { FinalCta } from "@/components/sections/cta/final-cta";
 import { FaqModern } from "@/components/sections/faq/faq-modern";
 import { TourismHero } from "@/components/sections/hero/tourism-hero";
-import { ProcessSteps } from "@/components/sections/process/process-steps";
-import { PromotionsSection } from "@/components/sections/promotions/promotions-section";
+// import { ProcessSteps } from "@/components/sections/process/process-steps";
+import { HomePackagesSections } from "@/components/sections/packages/home-packages-sections";
+import { HomePackagesSectionsSkeleton } from "@/components/sections/packages/home-packages-sections-skeleton";
 import { QuickActions } from "@/components/sections/quick-actions/quick-actions";
 import { TestimonialsModern } from "@/components/sections/testimonials/testimonials-modern";
 import { SocialProofCadastur } from "@/components/sections/trust/social-proof-cadastur";
@@ -37,13 +39,15 @@ export default function HomePage() {
   return (
     <>
       <TourismHero />
-      <PromotionsSection />
+      <Suspense fallback={<HomePackagesSectionsSkeleton />}>
+        <HomePackagesSections />
+      </Suspense>
       <QuickActions />
       <AboutSection />
-      <SupportSection />
-      <ProcessSteps />
       <SocialProofCadastur />
       <TestimonialsModern />
+      <SupportSection />
+      {/* <ProcessSteps /> — seção "Saiba como funciona" desativada temporariamente */}
       <FaqModern />
       <BlogPreviewHomeSection />
       <FinalCta />

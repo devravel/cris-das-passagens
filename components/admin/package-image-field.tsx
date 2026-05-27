@@ -4,27 +4,28 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Link2, Loader2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 
-import { uploadPromotionImageAction } from "@/app/admin/(protected)/promotions/actions";
+import { uploadPackageImageAction } from "@/app/admin/(protected)/packages/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RECOMMENDED_PACKAGE_IMAGE_SIZE } from "@/lib/package/constants";
 import { cn } from "@/lib/utils";
 
 type ImageMode = "upload" | "url";
 
-type PromotionImageFieldProps = {
+type PackageImageFieldProps = {
   value: string;
   onChange: (value: string) => void;
   onLocalPreview?: (url: string | null) => void;
   error?: string;
 };
 
-export function PromotionImageField({
+export function PackageImageField({
   value,
   onChange,
   onLocalPreview,
   error,
-}: PromotionImageFieldProps) {
-  const [mode, setMode] = useState<ImageMode>("url");
+}: PackageImageFieldProps) {
+  const [mode, setMode] = useState<ImageMode>("upload");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const localPreviewRef = useRef<string | null>(null);
@@ -60,7 +61,7 @@ export function PromotionImageField({
     formData.append("file", file);
 
     setIsUploading(true);
-    const result = await uploadPromotionImageAction(formData);
+    const result = await uploadPackageImageAction(formData);
     setIsUploading(false);
 
     if (!result.ok || !result.data) {
@@ -69,7 +70,6 @@ export function PromotionImageField({
     }
 
     onChange(result.data.imageUrl);
-    toast.success("Imagem enviada com sucesso.");
   }
 
   return (
@@ -109,10 +109,12 @@ export function PromotionImageField({
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           <input
+            id="package-image-upload"
             ref={fileInputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
             className="hidden"
+            aria-label="Selecionar imagem do pacote"
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (!file) return;
@@ -148,7 +150,10 @@ export function PromotionImageField({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">Envie JPG, PNG, WEBP ou AVIF com até 5MB.</p>
+      <p className="text-xs text-muted-foreground">
+        Recomendado: {RECOMMENDED_PACKAGE_IMAGE_SIZE} (proporção 4:3). Envie JPG, PNG, WEBP ou AVIF
+        com até 5MB.
+      </p>
 
       {value ? (
         <p className="break-all text-xs text-muted-foreground" title={value}>

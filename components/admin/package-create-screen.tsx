@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
-import { PromotionForm } from "@/components/admin/promotion-form";
+import { PackageForm } from "@/components/admin/package-form";
 import { Button } from "@/components/ui/button";
 
-export function PromotionCreateScreen() {
+export function PackageCreateScreen() {
   const router = useRouter();
 
   return (
@@ -14,16 +14,16 @@ export function PromotionCreateScreen() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="space-y-1">
           <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
-            Nova promoção
+            Novo pacote
           </h1>
           <p className="text-sm text-muted-foreground">
-            Cadastre campanhas visuais com imagem, link opcional e controle de ativação.
+            Preencha as informações e visualize o card padronizado antes de publicar.
           </p>
         </div>
         <Button
           variant="outline"
           className="rounded-xl"
-          onClick={() => router.push("/admin/promotions")}
+          onClick={() => router.push("/admin/packages")}
         >
           <ArrowLeft className="size-4" aria-hidden />
           Voltar
@@ -31,10 +31,10 @@ export function PromotionCreateScreen() {
       </div>
 
       <div className="rounded-2xl border border-border/70 bg-card/90 p-4 shadow-sm sm:p-6">
-        <PromotionForm
+        <PackageForm
           mode="create"
           onSuccess={() => {
-            router.replace("/admin/promotions?done=1");
+            router.replace("/admin/packages?done=1");
             router.refresh();
           }}
         />

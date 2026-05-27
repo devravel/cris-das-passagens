@@ -79,8 +79,8 @@ export const content = {
       href: contentLinks.quote,
     } satisfies ContentCta,
     secondaryCta: {
-      label: "Confira nossos Destinos",
-      href: "/destinos",
+      label: "Confira nossos Pacotes",
+      href: "/pacotes",
     } satisfies ContentCta,
   },
 

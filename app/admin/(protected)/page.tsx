@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Megaphone } from "lucide-react";
+import { FileText, Package } from "lucide-react";
 
 import {
   Card,
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Admin | Cris das Passagens",
-  description: "Dashboard administrativo para gestão de conteúdo e promoções.",
+  description: "Dashboard administrativo para gestão de conteúdo e pacotes turísticos.",
   robots: {
     index: false,
     follow: false,
@@ -58,20 +58,19 @@ export default function AdminHomePage() {
         <Card className="rounded-2xl border-border/70 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Megaphone className="size-4 text-brand" aria-hidden />
-              Promoções em destaque
+              <Package className="size-4 text-brand" aria-hidden />
+              Pacotes turísticos
             </CardTitle>
             <CardDescription>
-              Atualize campanhas e links com controle total.
+              Cadastre pacotes premium com cards padronizados automaticamente.
             </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Mantenha ofertas relevantes e melhore a conversão com ajustes
-            rápidos.
+            Preencha informações, faça upload da imagem e visualize o card antes de publicar.
           </CardContent>
           <CardContent>
             <Button asChild className="rounded-xl">
-              <Link href="/admin/promotions">Acessar promoções</Link>
+              <Link href="/admin/packages">Acessar pacotes</Link>
             </Button>
           </CardContent>
         </Card>

@@ -10,9 +10,11 @@
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate deploy",
+    "db:migrate": "node --env-file=.env scripts/run-migrate.mjs",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
-    "admin:create": "node --env-file=.env scripts/create-admin.mjs"
+    "admin:create": "node --env-file=.env scripts/create-admin.mjs",
+    "admin:change-password": "node --env-file=.env scripts/change-admin-password.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

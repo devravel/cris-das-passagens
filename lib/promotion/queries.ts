@@ -1,7 +1,6 @@
 import { cache } from "react";
 
 import { normalizePromotionImageUrl } from "@/lib/promotion/image-url";
-import { prisma } from "@/lib/prisma";
 
 export type PublicPromotion = {
   id: string;
@@ -10,20 +9,11 @@ export type PublicPromotion = {
   link: string | null;
 };
 
+/** Legacy homepage promotions — public package UI not implemented yet. */
 export const getActivePromotions = cache(async (): Promise<PublicPromotion[]> => {
-  const promotions = await prisma.promotion.findMany({
-    where: { active: true },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      image: true,
-      title: true,
-      link: true,
-    },
-  });
-
-  return promotions.map((promotion) => ({
-    ...promotion,
-    image: normalizePromotionImageUrl(promotion.image),
-  }));
+  return [];
 });
+
+export function mapLegacyPromotionImage(url: string) {
+  return normalizePromotionImageUrl(url);
+}
