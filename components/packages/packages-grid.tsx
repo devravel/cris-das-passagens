@@ -41,17 +41,24 @@ export function PackagesGrid({
       role={role}
       aria-labelledby={ariaLabelledBy}
       className={cn(
-        "grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4",
+        "grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4",
         className,
       )}
     >
       {packages.map((pkg, index) => (
-        <li key={pkg.id} className="flex w-full">
+        <li
+          key={pkg.id}
+          id={`pacote-${pkg.slug}`}
+          tabIndex={-1}
+          className="package-card-anchor flex w-full scroll-mt-28 items-stretch outline-none"
+        >
           <PublicPackageCard
             pkg={pkg}
             departureCity={departureCity}
             layout="grid"
+            variant="listing"
             priority={index < 4}
+            showChecklist
             className="h-full"
           />
         </li>

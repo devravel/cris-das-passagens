@@ -19,6 +19,14 @@ export const PACKAGE_TYPE_LABELS: Record<PackageTypeValue, string> = {
   CRUISE: "Cruzeiro",
 };
 
+export const PACKAGE_TYPE_CARD_LABELS: Record<PackageTypeValue, string> = {
+  PACKAGE_COMPLETE: "Pacote Completo",
+  FLIGHT: "Aéreo",
+  HOTEL: "Hospedagem",
+  TICKET: "Ingresso",
+  CRUISE: "Cruzeiro",
+};
+
 export const PACKAGE_CATEGORY_LABELS: Record<PackageCategoryValue, string> = {
   NATIONAL: "Nacional",
   INTERNATIONAL: "Internacional",

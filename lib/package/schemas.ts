@@ -5,13 +5,24 @@ import {
   PACKAGE_CATEGORIES,
   PACKAGE_TYPES,
   PACKAGE_TYPES_WITH_CATEGORY,
-  type PackageCategoryValue,
   type PackageTypeValue,
 } from "@/lib/package/constants";
 
 const priceSchema = z.number().min(0, "O preço deve ser maior ou igual a zero.");
 
 const optionalPriceSchema = z.number().min(0).nullable();
+
+const optionalCountSchema = z
+  .number()
+  .int("Informe um número inteiro.")
+  .min(1, "Informe um valor maior que zero.")
+  .nullable();
+
+const includedItemSchema = z
+  .string()
+  .trim()
+  .min(1, "Informe o texto do item.")
+  .max(120, "Cada item deve ter no máximo 120 caracteres.");
 
 export const packageFormSchema = z
   .object({
@@ -29,7 +40,6 @@ export const packageFormSchema = z
     shortDescription: z
       .string()
       .trim()
-      .min(10, "Informe uma descrição curta com pelo menos 10 caracteres.")
       .max(280, "Descrição curta deve ter no máximo 280 caracteres."),
     destination: z
       .string()
@@ -46,12 +56,20 @@ export const packageFormSchema = z
     price: priceSchema,
     oldPrice: optionalPriceSchema,
     installmentText: z.string().trim(),
+    highlightInstallments: z.boolean(),
     airline: z.string().trim(),
     hotelName: z.string().trim(),
+    includedItems: z
+      .array(z.string())
+      .transform((items) => items.map((item) => item.trim()).filter(Boolean))
+      .pipe(z.array(includedItemSchema).max(12, "Adicione no máximo 12 itens.")),
     includesTickets: z.boolean(),
     includesHotel: z.boolean(),
     includesFlight: z.boolean(),
     includesCruise: z.boolean(),
+    daysCount: optionalCountSchema,
+    nightsCount: optionalCountSchema,
+    showOnLandingPage: z.boolean(),
     active: z.boolean(),
     featured: z.boolean(),
   })
@@ -63,17 +81,58 @@ function validatePackageRules(
   data: z.infer<typeof packageFormSchema>,
   ctx: z.RefinementCtx,
 ) {
-    const type = data.type as PackageTypeValue;
+  const type = data.type as PackageTypeValue;
 
-    if (PACKAGE_TYPES_WITH_CATEGORY.has(type) && !data.category) {
+  if (data.shortDescription.length > 0 && data.shortDescription.length < 10) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["shortDescription"],
+      message: "Informe uma descrição curta com pelo menos 10 caracteres.",
+    });
+  }
+
+  if (PACKAGE_TYPES_WITH_CATEGORY.has(type) && !data.category) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["category"],
+      message: "Selecione a categoria do pacote.",
+    });
+  }
+
+  if (type === "FLIGHT" && !data.airline.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["airline"],
+      message: "Informe a companhia aérea.",
+    });
+  }
+
+  if (type === "HOTEL" && !data.hotelName.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["hotelName"],
+      message: "Informe o nome do hotel.",
+    });
+  }
+
+  if (type === "CRUISE" && !data.hotelName.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["hotelName"],
+      message: "Informe o nome do navio ou cruzeiro.",
+    });
+  }
+
+  if (type === "PACKAGE_COMPLETE") {
+    if (!data.includesFlight && !data.includesHotel && !data.includesTickets) {
       ctx.addIssue({
         code: "custom",
-        path: ["category"],
-        message: "Selecione a categoria do pacote.",
+        path: ["includesFlight"],
+        message: "Selecione ao menos um item incluso no pacote.",
       });
     }
 
-    if (type === "FLIGHT" && !data.airline.trim()) {
+    if (data.includesFlight && !data.airline.trim()) {
       ctx.addIssue({
         code: "custom",
         path: ["airline"],
@@ -81,95 +140,70 @@ function validatePackageRules(
       });
     }
 
-    if (type === "HOTEL" && !data.hotelName.trim()) {
+    if (data.includesHotel && !data.hotelName.trim()) {
       ctx.addIssue({
         code: "custom",
         path: ["hotelName"],
         message: "Informe o nome do hotel.",
       });
     }
+  }
 
-    if (type === "CRUISE" && !data.hotelName.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["hotelName"],
-        message: "Informe o nome do navio ou cruzeiro.",
-      });
-    }
+  if (data.oldPrice != null && data.oldPrice <= data.price) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["oldPrice"],
+      message: "O preço anterior deve ser maior que o preço atual.",
+    });
+  }
 
-    if (type === "PACKAGE_COMPLETE") {
-      if (!data.includesFlight && !data.includesHotel && !data.includesTickets) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["includesFlight"],
-          message: "Selecione ao menos um item incluso no pacote.",
-        });
-      }
-
-      if (data.includesFlight && !data.airline.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["airline"],
-          message: "Informe a companhia aérea.",
-        });
-      }
-
-      if (data.includesHotel && !data.hotelName.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["hotelName"],
-          message: "Informe o nome do hotel.",
-        });
-      }
-    }
-
-    if (data.oldPrice != null && data.oldPrice <= data.price) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["oldPrice"],
-        message: "O preço anterior deve ser maior que o preço atual.",
-      });
-    }
+  if (data.highlightInstallments && !data.installmentText.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["installmentText"],
+      message: "Informe o parcelamento para destacá-lo no card.",
+    });
+  }
 }
 
 export type PackageFormValues = z.infer<typeof packageFormSchema>;
 
-export type PackageCardPreviewData = {
+export type PackageCardData = {
   title: string;
-  shortDescription: string;
+  shortDescription: string | null;
   destination: string;
   image: string;
   type: PackageTypeValue;
-  category: PackageCategoryValue | null;
   price: number;
   oldPrice: number | null;
   installmentText: string | null;
+  highlightInstallments: boolean;
   airline: string | null;
   hotelName: string | null;
-  includesTickets: boolean;
-  includesHotel: boolean;
-  includesFlight: boolean;
-  includesCruise: boolean;
+  includedItems: string[];
+  daysCount: number | null;
+  nightsCount: number | null;
   featured: boolean;
 };
+
+export type PackageCardPreviewData = PackageCardData;
 
 export function toPackageCardPreviewData(values: PackageFormValues): PackageCardPreviewData {
   return {
     title: values.title.trim(),
-    shortDescription: values.shortDescription.trim(),
+    shortDescription: values.shortDescription.trim() || null,
     destination: values.destination.trim(),
     image: values.image.trim(),
     type: values.type,
-    category: values.category ?? null,
     price: values.price,
     oldPrice: values.oldPrice ?? null,
     installmentText: values.installmentText.trim() || null,
+    highlightInstallments: values.highlightInstallments,
     airline: values.airline.trim() || null,
     hotelName: values.hotelName.trim() || null,
-    includesTickets: values.includesTickets,
-    includesHotel: values.includesHotel,
-    includesFlight: values.includesFlight,
-    includesCruise: values.includesCruise,
+    includedItems: values.includedItems.map((item) => item.trim()).filter(Boolean),
+    daysCount: values.daysCount ?? null,
+    nightsCount: values.nightsCount ?? null,
     featured: values.featured,
   };
 }
@@ -225,12 +259,17 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormValues = {
   price: 0,
   oldPrice: null,
   installmentText: "",
+  highlightInstallments: false,
   airline: "",
   hotelName: "",
+  includedItems: [],
   includesTickets: false,
   includesFlight: true,
   includesHotel: true,
   includesCruise: false,
+  daysCount: null,
+  nightsCount: null,
+  showOnLandingPage: true,
   active: true,
   featured: false,
 };

@@ -5,7 +5,7 @@ export const DEFAULT_DEPARTURE_CITY = "São Paulo";
 export type PackageShowcaseConfig = {
   type: PackageTypeValue;
   sectionId: string;
-  icon: "suitcase" | "plane" | "bed";
+  icon: "suitcase" | "plane" | "bed" | "ticket" | "anchor";
   reverse: boolean;
   showDisclaimer: boolean;
   heading: {
@@ -52,6 +52,30 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
       before: "As melhores ",
       highlight: "diárias",
       after: " para sua estadia",
+    },
+  },
+  {
+    type: "TICKET",
+    sectionId: "ingressos",
+    icon: "ticket",
+    reverse: true,
+    showDisclaimer: false,
+    heading: {
+      before: "Ingressos para ",
+      highlight: "experiências",
+      after: " inesquecíveis",
+    },
+  },
+  {
+    type: "CRUISE",
+    sectionId: "cruzeiros",
+    icon: "anchor",
+    reverse: false,
+    showDisclaimer: false,
+    heading: {
+      before: "Navegue em ",
+      highlight: "cruzeiros",
+      after: " selecionados",
     },
   },
 ];

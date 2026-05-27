@@ -99,6 +99,32 @@
   --sidebar-ring: var(--brand-light);
 }
 
+.package-card-anchor[data-highlighted="true"] article {
+  animation: package-card-highlight 3.2s ease-out forwards;
+}
+
+@keyframes package-card-highlight {
+  0%,
+  18% {
+    box-shadow:
+      0 0 0 3px color-mix(in oklch, var(--brand) 28%, transparent),
+      0 14px 40px -16px rgba(52, 91, 167, 0.28);
+    transform: translateY(-3px);
+  }
+
+  100% {
+    box-shadow: 0 8px 30px -14px rgba(52, 91, 167, 0.16);
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .package-card-anchor[data-highlighted="true"] article {
+    animation: none;
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--brand) 28%, transparent);
+  }
+}
+
 .dark {
   --brand: oklch(0.62 0.14 262.2);
   --brand-foreground: oklch(0.985 0 0);

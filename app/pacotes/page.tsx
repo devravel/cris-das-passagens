@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
+import { PackageHighlightOnLoad } from "@/components/packages/package-highlight-on-load";
 import { PackagesPageContent } from "@/components/sections/packages/packages-page-content";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
@@ -60,6 +62,10 @@ export default async function PacotesPage() {
         </p>
       </header>
       </ScrollReveal>
+
+      <Suspense fallback={null}>
+        <PackageHighlightOnLoad />
+      </Suspense>
 
       <PackagesPageContent data={data} />
     </Section>

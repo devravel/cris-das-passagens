@@ -12,6 +12,7 @@ import {
 } from "@/app/admin/(protected)/packages/actions";
 import { PackageCardPreview } from "@/components/admin/package-card-preview";
 import { PackageImageField } from "@/components/admin/package-image-field";
+import { PackageIncludedItemsField } from "@/components/admin/package-included-items-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -219,7 +220,7 @@ export function PackageForm({ mode, packageId, initialValues, onSuccess }: Packa
 
           <div className="space-y-1.5">
             <label htmlFor="shortDescription" className="text-sm font-medium text-foreground">
-              Descrição curta
+              Descrição curta <span className="text-muted-foreground">(opcional)</span>
             </label>
             <Textarea
               id="shortDescription"
@@ -334,11 +335,79 @@ export function PackageForm({ mode, packageId, initialValues, onSuccess }: Packa
               <Input
                 id="installmentText"
                 className="h-10 rounded-xl"
-                placeholder="Ex.: 10x sem juros"
+                placeholder="Ex.: 12x R$ 129"
                 {...form.register("installmentText")}
               />
+              {form.formState.errors.installmentText ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.installmentText.message}
+                </p>
+              ) : null}
             </div>
           </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <label htmlFor="daysCount" className="text-sm font-medium text-foreground">
+                Dias <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="daysCount"
+                type="number"
+                min="1"
+                step="1"
+                className="h-10 rounded-xl"
+                placeholder="Ex.: 5"
+                {...form.register("daysCount", {
+                  setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
+                })}
+              />
+              {form.formState.errors.daysCount ? (
+                <p className="text-xs text-destructive">{form.formState.errors.daysCount.message}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="nightsCount" className="text-sm font-medium text-foreground">
+                Noites <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="nightsCount"
+                type="number"
+                min="1"
+                step="1"
+                className="h-10 rounded-xl"
+                placeholder="Ex.: 4"
+                {...form.register("nightsCount", {
+                  setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
+                })}
+              />
+              {form.formState.errors.nightsCount ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.nightsCount.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <label
+            htmlFor="highlightInstallments"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-sm font-medium text-foreground"
+          >
+            <input
+              id="highlightInstallments"
+              type="checkbox"
+              className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              checked={Boolean(watchedValues.highlightInstallments)}
+              onChange={(event) =>
+                form.setValue("highlightInstallments", event.target.checked, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+            />
+            Destacar parcelamento
+          </label>
 
           {(typeValue === "FLIGHT" || typeValue === "PACKAGE_COMPLETE") && (
             <div className="space-y-1.5">
@@ -380,7 +449,7 @@ export function PackageForm({ mode, packageId, initialValues, onSuccess }: Packa
 
           {typeValue === "PACKAGE_COMPLETE" ? (
             <fieldset className="space-y-2 rounded-xl border border-border/70 bg-muted/20 p-3">
-              <legend className="px-1 text-sm font-medium text-foreground">Itens inclusos</legend>
+              <legend className="px-1 text-sm font-medium text-foreground">Composição do pacote</legend>
               <div className="grid gap-2 sm:grid-cols-2">
                 {(
                   [
@@ -418,6 +487,17 @@ export function PackageForm({ mode, packageId, initialValues, onSuccess }: Packa
               ) : null}
             </fieldset>
           ) : null}
+
+          <PackageIncludedItemsField
+            value={watchedValues.includedItems ?? []}
+            onChange={(items) =>
+              form.setValue("includedItems", items, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            error={form.formState.errors.includedItems?.message}
+          />
 
           <div className="space-y-1.5">
             <label htmlFor="image" className="text-sm font-medium text-foreground">
@@ -478,6 +558,26 @@ export function PackageForm({ mode, packageId, initialValues, onSuccess }: Packa
                 }
               />
               Destaque
+            </label>
+            <label
+              htmlFor="showOnLandingPage"
+              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
+            >
+              <input
+                id="showOnLandingPage"
+                type="checkbox"
+                className={cn(
+                  "size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                )}
+                checked={Boolean(watchedValues.showOnLandingPage)}
+                onChange={(event) =>
+                  form.setValue("showOnLandingPage", event.target.checked, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              />
+              Exibir na landing page
             </label>
           </div>
         </div>

@@ -95,13 +95,14 @@ export function PackageCardsCarousel({
           aria-label={ariaLabel}
           onScroll={updateScrollState}
         >
-          <div className="flex w-max gap-3 px-0.5 py-1 sm:gap-4">
+          <div className="flex w-max items-stretch gap-3 px-0.5 py-1 sm:gap-4">
             {packages.map((pkg, index) => (
               <PublicPackageCard
                 key={pkg.id}
                 pkg={pkg}
                 departureCity={departureCity}
                 priority={index === 0}
+                className="h-full"
               />
             ))}
           </div>

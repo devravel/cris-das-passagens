@@ -69,6 +69,7 @@ export function PackagesListingSection({
               layoutId={config.sectionId}
               panelId={panelId}
               labelledBy={toggleId}
+              className="w-full sm:w-auto"
             />
           </div>
         ) : null}

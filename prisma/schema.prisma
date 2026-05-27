@@ -73,31 +73,37 @@ enum PackageCategory {
 }
 
 model Package {
-  id               String           @id @default(cuid())
-  title            String
-  slug             String           @unique
-  shortDescription String           @db.Text
-  destination      String
-  image            String
-  type             PackageType
-  category         PackageCategory?
-  price            Decimal          @db.Decimal(10, 2)
-  oldPrice         Decimal?         @db.Decimal(10, 2)
-  installmentText  String?
-  airline          String?
-  hotelName        String?
-  includesTickets  Boolean          @default(false)
-  includesHotel    Boolean          @default(false)
-  includesFlight   Boolean          @default(false)
-  includesCruise   Boolean          @default(false)
-  active           Boolean          @default(true)
-  featured         Boolean          @default(false)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  id                    String           @id @default(cuid())
+  title                 String
+  slug                  String           @unique
+  shortDescription      String?          @db.Text
+  destination           String
+  image                 String
+  type                  PackageType
+  category              PackageCategory?
+  price                 Decimal          @db.Decimal(10, 2)
+  oldPrice              Decimal?         @db.Decimal(10, 2)
+  installmentText       String?
+  highlightInstallments Boolean          @default(false)
+  airline               String?
+  hotelName             String?
+  includedItems         String[]         @default([])
+  includesTickets       Boolean          @default(false)
+  includesHotel         Boolean          @default(false)
+  includesFlight        Boolean          @default(false)
+  includesCruise        Boolean          @default(false)
+  daysCount             Int?
+  nightsCount           Int?
+  showOnLandingPage     Boolean          @default(true)
+  active                Boolean          @default(true)
+  featured              Boolean          @default(false)
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
 
   @@index([active, createdAt])
   @@index([featured, active, createdAt])
   @@index([type, active])
+  @@index([showOnLandingPage, active, type])
 }
 
 model AdminUser {

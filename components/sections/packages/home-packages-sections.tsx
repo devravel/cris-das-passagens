@@ -11,6 +11,10 @@ function getPackagesForType(homepagePackages: HomepagePackages, type: PackageTyp
       return homepagePackages.flights;
     case "HOTEL":
       return homepagePackages.hotels;
+    case "TICKET":
+      return homepagePackages.tickets;
+    case "CRUISE":
+      return homepagePackages.cruises;
     default:
       return [];
   }

@@ -59,7 +59,7 @@ export function PackageCategoryToggle({
       role="tablist"
       aria-labelledby={labelledBy}
       className={cn(
-        "relative inline-flex rounded-full border border-border/70 bg-muted/40 p-1 shadow-sm",
+        "relative flex w-full rounded-full border border-border/70 bg-muted/40 p-1 shadow-sm sm:inline-flex sm:w-auto",
         className,
       )}
     >
@@ -77,7 +77,7 @@ export function PackageCategoryToggle({
             aria-controls={panelId}
             tabIndex={isActive ? 0 : -1}
             className={cn(
-              "relative z-10 min-w-[7.5rem] rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+              "relative z-10 flex-1 rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:min-w-[7.5rem] sm:flex-none sm:px-4",
               isActive ? "text-brand-foreground" : "text-muted-foreground hover:text-foreground",
             )}
             onClick={() => onChange(category)}

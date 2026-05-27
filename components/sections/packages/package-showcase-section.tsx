@@ -78,7 +78,11 @@ export function PackageShowcaseSection({
       ? "Pacotes completos em destaque"
       : config.type === "FLIGHT"
         ? "Passagens aéreas em destaque"
-        : "Hospedagem em destaque";
+        : config.type === "HOTEL"
+          ? "Hospedagem em destaque"
+          : config.type === "TICKET"
+            ? "Ingressos em destaque"
+            : "Cruzeiros em destaque";
 
   return (
     <Section
