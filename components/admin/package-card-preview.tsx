@@ -3,7 +3,6 @@
 import { PackageCard } from "@/components/packages/package-card";
 import type { PackageCardPreviewData } from "@/lib/package/schemas";
 import { DEFAULT_DEPARTURE_CITY } from "@/config/packages-showcase";
-import { contentLinks } from "@/config/content";
 import { cn } from "@/lib/utils";
 
 type PackageCardPreviewProps = {
@@ -19,9 +18,8 @@ export function PackageCardPreview({ data, imageSrc, className }: PackageCardPre
       departureCity={DEFAULT_DEPARTURE_CITY}
       imageSrc={imageSrc}
       layout="preview"
-      variant="listing"
+      variant="preview"
       showChecklist
-      whatsAppHref={contentLinks.whatsapp}
       className={cn(className)}
     />
   );

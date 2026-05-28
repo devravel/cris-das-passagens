@@ -28,7 +28,13 @@ export function PublicPackageCard({
   const whatsAppHref = getPackageWhatsAppUrl(pkg);
 
   return (
-    <div className={cn("group flex h-full w-full flex-col", className)}>
+    <div
+      className={cn(
+        "group flex h-full flex-col",
+        layout === "carousel" ? "w-auto shrink-0" : "w-full",
+        className,
+      )}
+    >
       <PackageCard
         data={toPackageCardDataFromPublicPackage(pkg)}
         departureCity={departureCity}

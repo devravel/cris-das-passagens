@@ -41,7 +41,7 @@ export function PackagesGrid({
       role={role}
       aria-labelledby={ariaLabelledBy}
       className={cn(
-        "grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4",
+        "grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:justify-items-center sm:gap-5 lg:grid-cols-3 lg:justify-items-center lg:gap-6 xl:grid-cols-4 xl:justify-items-stretch xl:gap-6",
         className,
       )}
     >

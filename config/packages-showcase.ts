@@ -13,7 +13,6 @@ export type PackageShowcaseConfig = {
     after?: string;
     full?: string;
   };
-  originLabel?: boolean;
 };
 
 export const packageShowcaseSections: PackageShowcaseConfig[] = [
@@ -27,7 +26,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
       highlight: "pacotes",
       after: " para sua viagem",
     },
-    originLabel: true,
   },
   {
     type: "FLIGHT",
@@ -37,7 +35,6 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     heading: {
       full: "Passagens com preços imbatíveis",
     },
-    originLabel: true,
   },
   {
     type: "HOTEL",

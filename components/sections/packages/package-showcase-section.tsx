@@ -19,11 +19,9 @@ type PackageShowcaseSectionProps = {
 function ShowcaseHeading({
   config,
   headingId,
-  departureCity,
 }: {
   config: PackageShowcaseConfig;
   headingId: string;
-  departureCity: string;
 }) {
   const { heading } = config;
 
@@ -31,33 +29,22 @@ function ShowcaseHeading({
     <div className="space-y-5 sm:space-y-6">
       <PackageSectionIcon variant={config.icon} />
 
-      <div className="space-y-3">
-        <h2
-          id={headingId}
-          className="max-w-md font-heading text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-tight text-foreground"
-        >
-          {heading.full ? (
-            heading.full
-          ) : (
-            <>
-              {heading.before}
-              {heading.highlight ? (
-                <span className="text-brand">{heading.highlight}</span>
-              ) : null}
-              {heading.after}
-            </>
-          )}
-        </h2>
-
-        {config.originLabel ? (
-          <p className="text-sm text-muted-foreground sm:text-base">
-            Saindo de{" "}
-            <span className="font-medium text-brand underline decoration-brand/30 underline-offset-4">
-              {departureCity}
-            </span>
-          </p>
-        ) : null}
-      </div>
+      <h2
+        id={headingId}
+        className="max-w-md font-heading text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.08] font-semibold tracking-tight text-foreground"
+      >
+        {heading.full ? (
+          heading.full
+        ) : (
+          <>
+            {heading.before}
+            {heading.highlight ? (
+              <span className="text-brand">{heading.highlight}</span>
+            ) : null}
+            {heading.after}
+          </>
+        )}
+      </h2>
     </div>
   );
 }
@@ -105,11 +92,7 @@ export function PackageShowcaseSection({
             config.reverse ? "order-1 lg:order-2" : "order-1",
           )}
         >
-          <ShowcaseHeading
-            config={config}
-            headingId={headingId}
-            departureCity={departureCity}
-          />
+          <ShowcaseHeading config={config} headingId={headingId} />
         </ScrollReveal>
 
         <ScrollReveal

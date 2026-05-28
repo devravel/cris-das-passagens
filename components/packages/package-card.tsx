@@ -273,7 +273,7 @@ function ListingHeading({ data }: { data: PackageCardData }) {
 const layoutClassNames = {
   carousel:
     "w-[min(100%,240px)] shrink-0 sm:w-[250px] md:w-[260px] lg:w-[272px] xl:w-[288px]",
-  grid: "w-full sm:max-w-none",
+  grid: "mx-auto w-full max-w-none sm:max-w-[288px] xl:mx-0 xl:max-w-none",
   preview: "w-full",
 } as const;
 
@@ -384,7 +384,10 @@ export function PackageCard({
 
           {showOrigin ? (
             <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-              Saindo de {departureCity}
+              Saindo de{" "}
+              <span className="font-medium text-brand underline decoration-brand/30 underline-offset-4">
+                {departureCity}
+              </span>
             </p>
           ) : null}
 

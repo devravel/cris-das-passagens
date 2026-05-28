@@ -1,8 +1,14 @@
 import { Section } from "@/components/layout/section";
+import { cn } from "@/lib/utils";
 
-function PackageListingCardSkeleton() {
+function PackageListingCardSkeleton({ className }: { className?: string }) {
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-card/80 ring-1 ring-border/60">
+    <div
+      className={cn(
+        "flex h-full flex-col overflow-hidden rounded-2xl bg-card/80 ring-1 ring-border/60",
+        className,
+      )}
+    >
       <div className="aspect-[4/3] animate-pulse bg-muted/50" />
       <div className="flex flex-1 flex-col space-y-2.5 p-4 sm:p-5">
         <div className="h-3 w-1/3 animate-pulse rounded bg-muted/60" />
@@ -54,9 +60,12 @@ export default function PacotesLoading() {
 
             <div className="mb-6 h-10 w-full animate-pulse rounded-full bg-muted/60 sm:mb-8 sm:w-56" />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:justify-items-center sm:gap-5 lg:grid-cols-3 lg:justify-items-center lg:gap-6 xl:grid-cols-4 xl:justify-items-stretch xl:gap-6">
               {[0, 1, 2, 3].map((card) => (
-                <PackageListingCardSkeleton key={card} />
+                <PackageListingCardSkeleton
+                  key={card}
+                  className="w-full max-w-none sm:max-w-[288px] xl:max-w-none"
+                />
               ))}
             </div>
           </div>
