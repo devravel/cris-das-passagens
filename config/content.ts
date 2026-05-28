@@ -62,7 +62,7 @@ export const contentLinks = {
 
 export const content = {
   meta: {
-    tagline: "Viaje mais, pagando menos. Assessoria completa.",
+    tagline: "O melhor suporte para o seu sonho. Assessoria completa.",
   },
 
   hero: {
@@ -79,7 +79,7 @@ export const content = {
       href: contentLinks.quote,
     } satisfies ContentCta,
     secondaryCta: {
-      label: "Confira nossos Pacotes",
+      label: "Confira todos os Pacotes",
       href: "/pacotes",
     } satisfies ContentCta,
   },

@@ -53,8 +53,7 @@ export const packagesPageSections: PackagesPageSectionConfig[] = [
 
 export const packagesPageContent = {
   title: "Pacotes turísticos",
-  subtitle:
-    "Explore passagens, pacotes completos, hospedagem, ingressos e cruzeiros com curadoria premium e atendimento personalizado.",
+  subtitle: "Passagens, pacotes completos, hospedagem, ingressos e cruzeiros.",
   emptyCategoryMessage: "Nenhuma oferta disponível nesta categoria no momento.",
   emptySectionMessage: "Novas ofertas serão publicadas em breve.",
 } as const;
