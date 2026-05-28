@@ -4,7 +4,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { BlogImage } from "@/components/blog/blog-image";
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
-import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
+import { SectionHeader } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta } from "@/config/content";
@@ -14,6 +14,12 @@ import {
   HOME_BLOG_PLACEHOLDER_POSTS,
 } from "@/lib/blog/placeholders";
 import type { HomeBlogPostPreview } from "@/lib/blog/queries";
+import {
+  blogCardBodyClassName,
+  blogCardCtaClassName,
+  blogCardExcerptClassName,
+  blogCardTitleClassName,
+} from "@/lib/blog/card-styles";
 import {
   cardContentContainerClassName,
   cardInteractiveClassName,
@@ -74,16 +80,14 @@ function BlogCard({
   );
 
   const body = (
-    <div className="flex flex-1 flex-col p-4 sm:p-6">
-      <p className="mb-2 text-xs font-medium uppercase tracking-wider text-brand">
+    <div className={blogCardBodyClassName}>
+      <p className="mb-2 shrink-0 text-xs font-medium uppercase tracking-wider text-brand">
         {isPlaceholder ? "Em breve" : "Blog"}
       </p>
       {isPlaceholder ? (
-        <h3 className="font-heading text-base font-semibold leading-snug tracking-tight text-foreground sm:text-lg md:text-xl">
-          {post.title}
-        </h3>
+        <h3 className={cn(blogCardTitleClassName, "text-base sm:text-lg")}>{post.title}</h3>
       ) : (
-        <h3 className="font-heading text-base font-semibold leading-snug tracking-tight text-foreground sm:text-lg md:text-xl">
+        <h3 className={cn(blogCardTitleClassName, "text-base sm:text-lg")}>
           <Link
             href={post.href}
             className="outline-none transition-colors duration-200 hover:text-brand focus-visible:rounded-sm focus-visible:text-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
@@ -92,13 +96,11 @@ function BlogCard({
           </Link>
         </h3>
       )}
-      <p className={cn("mt-3 flex-1", bodyTextClassName, "sm:text-base md:text-lg")}>
-        {post.excerpt}
-      </p>
+      <p className={blogCardExcerptClassName}>{post.excerpt}</p>
       {!isPlaceholder ? (
         <Link
           href={post.href}
-          className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand transition-colors duration-200 hover:text-brand/90"
+          className={blogCardCtaClassName}
         >
           Leia mais
           <ArrowRight
@@ -117,7 +119,7 @@ function BlogCard({
 
   if (isPlaceholder) {
     return (
-      <article className={cardClassName} aria-hidden>
+      <article className={cn(cardClassName, "h-full w-full")} aria-hidden>
         {imageBlock}
         {body}
       </article>
@@ -125,7 +127,7 @@ function BlogCard({
   }
 
   return (
-    <article className={cardClassName}>
+    <article className={cn(cardClassName, "h-full w-full")}>
       <Link href={post.href} className="block outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
         {imageBlock}
       </Link>
@@ -179,11 +181,11 @@ export function BlogPreviewSection({
 
       <Container padding="none" className="max-w-6xl">
         <ul
-          className="grid list-none grid-cols-1 gap-5 p-0 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="grid list-none grid-cols-1 items-stretch gap-5 p-0 sm:gap-6 md:grid-cols-2 lg:grid-cols-3"
           role="list"
         >
           {displayPosts.map((post, index) => (
-            <li key={post.id}>
+            <li key={post.id} className="flex">
               <ScrollReveal delay={index * scrollRevealDefaults.stagger}>
                 <BlogCard
                   post={post}

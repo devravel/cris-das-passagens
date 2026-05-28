@@ -5,7 +5,13 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BlogImage } from "@/components/blog/blog-image";
 import { HOME_BLOG_SECTION_ID } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
-import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
+import { SectionHeader } from "@/components/layout/section-header";
+import {
+  blogCardBodyClassName,
+  blogCardCtaClassName,
+  blogCardExcerptClassName,
+  blogCardTitleClassName,
+} from "@/lib/blog/card-styles";
 import { Button } from "@/components/ui/button";
 import { createMetadata } from "@/lib/seo";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
@@ -128,7 +134,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
       ) : (
         <>
-          <ul className="grid list-none grid-cols-1 gap-5 p-0 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid list-none grid-cols-1 items-stretch gap-5 p-0 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3">
             {posts.map((post) => {
               const href = `/blog/${post.slug}`;
               const formattedDate = new Intl.DateTimeFormat("pt-BR", {
@@ -138,10 +144,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               }).format(post.createdAt);
 
               return (
-                <li key={post.id}>
+                <li key={post.id} className="flex">
                   <article
                     className={cn(
-                      "group flex h-full flex-col overflow-hidden rounded-2xl bg-background ring-1 ring-border/50",
+                      "group flex h-full w-full flex-col overflow-hidden rounded-2xl bg-background ring-1 ring-border/50",
                       cardContentContainerClassName,
                       cardInteractiveClassName,
                       cardShadowClassName,
@@ -161,12 +167,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       />
                     </Link>
 
-                    <div className="flex flex-1 flex-col p-5 sm:p-6">
-                      <p className="text-xs font-medium uppercase tracking-wider text-brand">
+                    <div className={cn(blogCardBodyClassName, "p-5 sm:p-6")}>
+                      <p className="shrink-0 text-xs font-medium uppercase tracking-wider text-brand">
                         {formattedDate}
                       </p>
 
-                      <h2 className="mt-2 font-heading text-lg font-semibold leading-snug tracking-tight text-foreground sm:text-xl">
+                      <h2 className={cn(blogCardTitleClassName, "mt-2 text-lg sm:text-xl")}>
                         <Link
                           href={href}
                           className="outline-none transition-colors duration-200 hover:text-brand focus-visible:rounded-sm focus-visible:text-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
@@ -175,13 +181,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         </Link>
                       </h2>
 
-                      <p className={cn("mt-3 flex-1", bodyTextClassName, "sm:text-base md:text-lg")}>
-                        {post.excerpt}
-                      </p>
+                      <p className={blogCardExcerptClassName}>{post.excerpt}</p>
 
                       <Link
                         href={href}
-                        className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand transition-colors duration-200 hover:text-brand/90"
+                        className={cn(blogCardCtaClassName, "mt-5")}
                       >
                         Ler artigo
                         <ArrowRight
