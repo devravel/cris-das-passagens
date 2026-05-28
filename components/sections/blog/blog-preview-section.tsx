@@ -8,6 +8,7 @@ import { SectionHeader, bodyTextClassName } from "@/components/layout/section-he
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta } from "@/config/content";
+import { HOME_BLOG_SECTION_ID } from "@/config/navigation";
 import {
   HOME_BLOG_EMPTY_MESSAGE,
   HOME_BLOG_PLACEHOLDER_POSTS,
@@ -134,7 +135,7 @@ function BlogCard({
 }
 
 export function BlogPreviewSection({
-  sectionId = "blog-preview",
+  sectionId = HOME_BLOG_SECTION_ID,
   title = content.blog.title,
   subtitle = content.blog.subtitle,
   posts,
@@ -148,6 +149,7 @@ export function BlogPreviewSection({
 
   return (
     <Section
+      id={sectionId}
       background="soft"
       spacing="default"
       bordered

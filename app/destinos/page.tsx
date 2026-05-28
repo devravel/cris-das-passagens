@@ -8,18 +8,12 @@ import { SectionHeader } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { destinationsGalleryConfig } from "@/config/destinations-gallery";
 import { getDestinationsGalleryPhotos } from "@/lib/google-places/gallery-photos";
-import { createMetadata } from "@/lib/seo";
+import { createNoIndexMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = createMetadata({
+/** Página mantida no código; oculta da navegação até publicação da galeria. */
+export const metadata: Metadata = createNoIndexMetadata({
   title: "Galeria de Destinos",
   description: destinationsGalleryConfig.subtitle,
-  path: "/destinos",
-  keywords: [
-    "galeria de destinos",
-    "viagens",
-    "passagens aereas",
-    "Cris das Passagens",
-  ],
 });
 
 export const revalidate = 86_400;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { BlogImage } from "@/components/blog/blog-image";
+import { HOME_BLOG_SECTION_ID } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
 import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,19 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <Section spacing="default" background="default" bordered>
+      <div className="mb-6 sm:mb-8">
+        <Button
+          asChild
+          variant="ghost"
+          className="h-9 rounded-lg px-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <Link href={`/#${HOME_BLOG_SECTION_ID}`}>
+            <ArrowLeft className="size-4" aria-hidden />
+            Voltar para a página inicial
+          </Link>
+        </Button>
+      </div>
+
       <SectionHeader
         id="blog-page-heading"
         title="Blogs"
