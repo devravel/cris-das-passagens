@@ -20,10 +20,10 @@ export const destinationsNavItem: NavItem = {
 /** Links principais — referência: Pacotes, Sobre, Blog. */
 export const navigation: NavItem[] = [
   { label: "Início", href: "/" },
-  { label: "Avaliações", href: `/#${HOME_TESTIMONIALS_SECTION_ID}` },
-  { label: "Pacotes", href: "/pacotes" },
   { label: "Sobre", href: "/#sobre" },
+  { label: "Pacotes", href: "/pacotes" },
   { label: "Blog", href: contentLinks.blog },
+  { label: "Avaliações", href: `/#${HOME_TESTIMONIALS_SECTION_ID}` },
 ];
 
 /** CTA da navbar — conversão via WhatsApp (referência visual). */
