@@ -185,8 +185,11 @@ export function BlogPreviewSection({
           role="list"
         >
           {displayPosts.map((post, index) => (
-            <li key={post.id} className="flex">
-              <ScrollReveal delay={index * scrollRevealDefaults.stagger}>
+            <li key={post.id} className="h-full min-h-0">
+              <ScrollReveal
+                delay={index * scrollRevealDefaults.stagger}
+                className="block h-full w-full min-w-0"
+              >
                 <BlogCard
                   post={post}
                   isPlaceholder={isPlaceholder}
