@@ -7,6 +7,7 @@ import { Star } from "lucide-react";
 import { Section } from "@/components/layout/section";
 import { SectionHeader, bodyTextClassName } from "@/components/layout/section-header";
 import { content, type TestimonialItem } from "@/config/content";
+import { HOME_TESTIMONIALS_SECTION_ID } from "@/config/navigation";
 import { useMotionReady } from "@/hooks/use-motion-ready";
 import {
   cardContentContainerClassName,
@@ -155,7 +156,7 @@ function TestimonialCard({
 }
 
 export function TestimonialsModern({
-  sectionId = "depoimentos",
+  sectionId = HOME_TESTIMONIALS_SECTION_ID,
   title = content.testimonials.title,
   subtitle = content.testimonials.subtitle,
   testimonials = content.testimonials.items,
@@ -165,6 +166,7 @@ export function TestimonialsModern({
 
   return (
     <Section
+      id={sectionId}
       background="soft"
       spacing="default"
       bordered
