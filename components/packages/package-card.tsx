@@ -1,4 +1,4 @@
-import { Anchor, BedDouble, Check, Luggage, Plane, Sparkles, Ticket } from "lucide-react";
+import { Anchor, BedDouble, Check, Luggage, Plane, Ticket } from "lucide-react";
 
 import { BlogImage } from "@/components/blog/blog-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
@@ -14,6 +14,18 @@ import { cardShadowClassName } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
 
 export type PackageCardVariant = "landing" | "listing" | "preview";
+
+function calculateDiscountPercent(oldPrice: number | null, currentPrice: number): number | null {
+  if (!oldPrice || oldPrice <= currentPrice) return null;
+  
+  const discount = ((oldPrice - currentPrice) / oldPrice) * 100;
+  const roundedDiscount = Math.round(discount / 5) * 5;
+  
+  if (roundedDiscount < 5) return null;
+  if (roundedDiscount > 40) return 40;
+  
+  return roundedDiscount;
+}
 
 type PackageCardProps = {
   data: PackageCardData;
@@ -48,14 +60,36 @@ function CardTypeLabel({ type }: { type: PackageCardData["type"] }) {
   );
 }
 
+function DiscountBadge({ oldPrice, currentPrice }: { oldPrice: number | null; currentPrice: number }) {
+  const discount = calculateDiscountPercent(oldPrice, currentPrice);
+  
+  if (!discount) return null;
+  
+  return (
+    <span className="rounded-full bg-amber-400/95 px-3 py-1.5 text-xs font-semibold tracking-wide text-amber-950 shadow-md sm:text-sm">
+      Até {discount}% de desconto!
+    </span>
+  );
+}
+
 function DurationBadge({
   daysCount,
   nightsCount,
+  type,
 }: {
   daysCount: number | null;
   nightsCount: number | null;
+  type: PackageCardData["type"];
 }) {
   const parts: string[] = [];
+
+  if (type === "TICKET" && daysCount != null) {
+    return (
+      <span className="rounded-full bg-amber-400/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-amber-950 shadow-sm uppercase sm:text-[11px]">
+        {daysCount} {daysCount === 1 ? "dia" : "dias"} de parque
+      </span>
+    );
+  }
 
   if (daysCount != null) {
     parts.push(`${daysCount} ${daysCount === 1 ? "dia" : "dias"}`);
@@ -336,23 +370,10 @@ export function PackageCard({
             </div>
           )}
 
-          <div
-            className={cn(
-              "absolute z-10 flex max-w-[calc(100%-1.25rem)] flex-wrap gap-1.5",
-              isDetailed ? "right-2.5 bottom-2.5 justify-end" : "top-2.5 left-2.5",
-            )}
-          >
-            <DurationBadge daysCount={data.daysCount} nightsCount={data.nightsCount} />
+          <div className="absolute top-2.5 right-2.5 z-10 flex max-w-[calc(100%-1.25rem)] flex-wrap gap-1.5 justify-end">
+            <DurationBadge daysCount={data.daysCount} nightsCount={data.nightsCount} type={data.type} />
+            <DiscountBadge oldPrice={data.oldPrice} currentPrice={data.price} />
           </div>
-
-          {data.featured ? (
-            <div className="absolute top-2.5 right-2.5 z-10">
-              <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-400/95 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-950 shadow-sm uppercase">
-                <Sparkles className="size-2.5" aria-hidden />
-                Destaque
-              </span>
-            </div>
-          ) : null}
         </div>
 
         <div
