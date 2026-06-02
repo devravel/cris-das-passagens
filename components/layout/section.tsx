@@ -15,6 +15,8 @@ const sectionVariants = cva("relative w-full", {
       default: "py-16 sm:py-20 lg:py-24 xl:py-32",
       /** Secções mais compactas (FAQ, blocos auxiliares). */
       compact: "py-12 sm:py-16 lg:py-20 xl:py-24",
+      /** Páginas internas — respiro mínimo abaixo do navbar, padding inferior padrão. */
+      page: "pt-3 pb-16 sm:pt-4 sm:pb-20 lg:pb-24 xl:pb-32",
       none: "py-0",
     },
     background: {

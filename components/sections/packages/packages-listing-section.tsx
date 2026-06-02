@@ -22,7 +22,7 @@ export function PackagesListingSection({
   className,
 }: PackagesListingSectionProps) {
   const [category, setCategory] = useState<PackageCategoryValue>("NATIONAL");
-  const toggleId = `${config.sectionId}-category-toggle-label`;
+  const headingId = `${config.sectionId}-heading`;
   const panelId = `${config.sectionId}-panel`;
 
   const filteredPackages = useMemo(() => {
@@ -44,29 +44,26 @@ export function PackagesListingSection({
         aria-labelledby={`${config.sectionId}-heading`}
         className={cn("scroll-mt-24", className)}
       >
-        <div className="mb-6 space-y-3 sm:mb-8">
+        <div className="mx-auto mb-6 max-w-3xl space-y-3 text-center sm:mb-8">
           <h2
-            id={`${config.sectionId}-heading`}
+            id={headingId}
             className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl"
           >
             {config.title}
           </h2>
-          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
             {config.description}
           </p>
         </div>
 
         {config.hasCategoryFilter ? (
-          <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-            <p id={toggleId} className="text-sm font-medium text-foreground">
-              Filtrar por categoria
-            </p>
+          <div className="mb-6 flex justify-center sm:mb-8">
             <PackageCategoryToggle
               value={category}
               onChange={setCategory}
               layoutId={config.sectionId}
               panelId={panelId}
-              labelledBy={toggleId}
+              labelledBy={headingId}
               className="w-full sm:w-auto"
             />
           </div>
@@ -75,7 +72,7 @@ export function PackagesListingSection({
         <PackagesGrid
           id={config.hasCategoryFilter ? panelId : undefined}
           role={config.hasCategoryFilter ? "tabpanel" : undefined}
-          aria-labelledby={config.hasCategoryFilter ? toggleId : undefined}
+          aria-labelledby={config.hasCategoryFilter ? headingId : undefined}
           packages={filteredPackages}
           emptyMessage={packagesPageContent.emptyCategoryMessage}
         />

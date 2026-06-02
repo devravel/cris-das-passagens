@@ -3,6 +3,12 @@ import { packageShowcaseSections } from "@/config/packages-showcase";
 import type { PackageTypeValue } from "@/lib/package/constants";
 import { getHomepagePackages, type HomepagePackages } from "@/lib/package/queries";
 
+const LANDING_PACKAGE_TYPES = new Set<PackageTypeValue>([
+  "PACKAGE_COMPLETE",
+  "FLIGHT",
+  "HOTEL",
+]);
+
 function getPackagesForType(homepagePackages: HomepagePackages, type: PackageTypeValue) {
   switch (type) {
     case "PACKAGE_COMPLETE":
@@ -24,6 +30,7 @@ export async function HomePackagesSections() {
   const homepagePackages = await getHomepagePackages();
 
   const sections = packageShowcaseSections
+    .filter((config) => LANDING_PACKAGE_TYPES.has(config.type))
     .map((config) => ({
       config,
       packages: getPackagesForType(homepagePackages, config.type),

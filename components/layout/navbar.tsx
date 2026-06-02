@@ -147,10 +147,12 @@ function NavbarCtaButton({
   return (
     <Button
       asChild
-      size={compact ? "icon-sm" : "sm"}
+      size={compact ? "sm" : "sm"}
       className={cn(
-        "rounded-lg shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px active:translate-y-0",
-        className
+        "rounded-lg bg-brand font-semibold text-brand-foreground shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 active:translate-y-0",
+        compact && "h-9 px-4 text-xs sm:text-sm",
+        !compact && "h-9 px-5 text-sm",
+        className,
       )}
     >
       <Link href={cta.href} onClick={onNavigate}>

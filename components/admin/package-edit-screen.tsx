@@ -40,7 +40,6 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
           mode="edit"
           packageId={pkg.id}
           initialValues={{
-            title: pkg.title,
             slug: pkg.slug,
             shortDescription: pkg.shortDescription ?? "",
             destination: pkg.destination,
@@ -58,8 +57,6 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
             includesHotel: pkg.includesHotel,
             includesFlight: pkg.includesFlight,
             includesCruise: pkg.includesCruise,
-            daysCount: pkg.daysCount,
-            nightsCount: pkg.nightsCount,
             showOnLandingPage: pkg.showOnLandingPage,
             active: pkg.active,
             featured: pkg.featured,

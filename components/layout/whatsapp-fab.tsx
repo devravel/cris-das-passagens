@@ -1,9 +1,14 @@
+"use client";
+
+import { X } from "lucide-react";
+import { useState } from "react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 export type WhatsAppFabProps = {
   className?: string;
+  label?: string;
 };
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -19,21 +24,52 @@ function WhatsAppIcon({ className }: { className?: string }) {
   );
 }
 
-export function WhatsAppFab({ className }: WhatsAppFabProps) {
+export function WhatsAppFab({
+  className,
+  label = "Fale com um agente",
+}: WhatsAppFabProps) {
+  const [showBanner, setShowBanner] = useState(true);
+
   return (
-    <a
-      href={siteConfig.whatsapp}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Falar no WhatsApp com a Cris das Passagens"
+    <div
       className={cn(
-        "fixed z-50 flex size-14 items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.18)] transition-[transform,box-shadow,background-color] duration-200 hover:scale-105 hover:shadow-[0_6px_24px_rgba(0,0,0,0.22)] active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
-        whatsappSolidButtonClassName,
+        "fixed z-50",
         "bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))]",
-        className
+        className,
       )}
     >
-      <WhatsAppIcon />
-    </a>
+      <div className="relative size-14">
+        {showBanner ? (
+          <div
+            className={cn(
+              "absolute bottom-full right-full -mb-[2px] -mr-[2px] w-max max-w-[min(16rem,calc(100vw-5rem))]",
+              "rounded-md bg-background/95 px-3 py-2 pr-7 text-xs font-medium leading-snug text-foreground shadow-[0_2px_12px_rgba(0,0,0,0.12)] ring-1 ring-border/60 backdrop-blur-sm",
+            )}
+          >
+            <button
+              type="button"
+              onClick={() => setShowBanner(false)}
+              aria-label="Fechar mensagem"
+              className="absolute top-1.5 right-1.5 cursor-pointer rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <X className="size-3.5" strokeWidth={1.75} aria-hidden />
+            </button>
+            {label}
+          </div>
+        ) : null}
+        <a
+          href={siteConfig.whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Falar no WhatsApp com a Cris das Passagens"
+          className={cn(
+            "flex size-14 items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.18)] transition-[transform,box-shadow,background-color] duration-200 hover:scale-105 hover:shadow-[0_6px_24px_rgba(0,0,0,0.22)] active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",
+            whatsappSolidButtonClassName,
+          )}
+        >
+          <WhatsAppIcon />
+        </a>
+      </div>
+    </div>
   );
 }

@@ -35,7 +35,12 @@ export default async function PacotesPage() {
   const data = await getPackagesPageData();
 
   return (
-    <Section spacing="default" background="default" bordered aria-labelledby="pacotes-page-heading">
+    <Section
+      spacing="page"
+      background="default"
+      bordered
+      aria-labelledby="pacotes-page-heading"
+    >
       <div className="mb-6 sm:mb-8">
         <Button
           asChild
@@ -50,7 +55,7 @@ export default async function PacotesPage() {
       </div>
 
       <ScrollReveal y={scrollRevealDefaults.y}>
-        <header className="mb-10 max-w-3xl space-y-3 sm:mb-12 lg:mb-14">
+        <header className="mx-auto mb-10 max-w-3xl space-y-3 text-center sm:mb-12 lg:mb-14">
         <h1
           id="pacotes-page-heading"
           className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-[2.5rem] md:leading-tight"

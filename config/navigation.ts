@@ -20,17 +20,17 @@ export const destinationsNavItem: NavItem = {
 /** Links principais — referência: Pacotes, Sobre, Blog. */
 export const navigation: NavItem[] = [
   { label: "Início", href: "/" },
-  { label: "Sobre", href: "/#sobre" },
+  { label: "Sobre", href: "/sobre" },
   { label: "Pacotes", href: "/pacotes" },
   { label: "Blog", href: contentLinks.blog },
   { label: "Avaliações", href: `/#${HOME_TESTIMONIALS_SECTION_ID}` },
 ];
 
-/** CTA da navbar — conversão via WhatsApp (referência visual). */
+/** CTA da navbar — cotação (referência visual). */
 export const navbarCta = {
-  label: content.ctas.whatsapp.label,
-  href: contentLinks.whatsapp,
-  external: true,
+  label: content.hero.primaryCta.label,
+  href: contentLinks.quote,
+  external: false,
 } as const;
 
 export type NavbarCtaConfig = typeof navbarCta;

@@ -12,6 +12,7 @@ type PublicPackageCardProps = {
   priority?: boolean;
   layout?: "carousel" | "grid";
   variant?: "landing" | "listing";
+  size?: "default" | "compact";
   showChecklist?: boolean;
   className?: string;
 };
@@ -22,6 +23,7 @@ export function PublicPackageCard({
   priority = false,
   layout = "carousel",
   variant = layout === "carousel" ? "landing" : "listing",
+  size = "default",
   showChecklist = false,
   className,
 }: PublicPackageCardProps) {
@@ -31,7 +33,7 @@ export function PublicPackageCard({
     <div
       className={cn(
         "group flex h-full flex-col",
-        layout === "carousel" ? "w-auto shrink-0" : "w-full",
+        "w-full",
         className,
       )}
     >
@@ -41,6 +43,7 @@ export function PublicPackageCard({
         layout={layout}
         priority={priority}
         variant={variant}
+        size={size}
         showChecklist={showChecklist}
         packageSlug={variant === "landing" ? pkg.slug : undefined}
         whatsAppHref={whatsAppHref}

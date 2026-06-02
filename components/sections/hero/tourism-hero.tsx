@@ -1,52 +1,29 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Globe, Plane } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
+import { HeroFeaturedPackages } from "@/components/sections/hero/hero-featured-packages";
 import { Section } from "@/components/layout/section";
 import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
+import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
-
-export type HeroServiceCard = {
-  label: string;
-  description: string;
-  icon: LucideIcon;
-};
 
 export type TourismHeroProps = {
   headline?: string;
   subheadline?: string;
   services?: ServiceItem[];
-  serviceCards?: HeroServiceCard[];
   primaryCta?: ContentCta;
   secondaryCta?: ContentCta;
-  imageSrc?: string;
-  imageAlt?: string;
-  imageCaption?: string;
+  featuredPackages?: PublicPackage[];
+  featuredTitle?: string;
+  departureCity?: string;
   className?: string;
 };
-
-const defaultServiceCards: HeroServiceCard[] = [
-  {
-    label: "Viagens Nacionais",
-    description: "Passagens e roteiros pelo Brasil com economia e suporte.",
-    icon: Plane,
-  },
-  {
-    label: "Internacionais",
-    description: "Destinos premium com assessoria do início ao fim.",
-    icon: Globe,
-  },
-];
-
-const defaultHeroImage =
-  "https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=1400&q=80";
 
 function HeroCtaLink({
   cta,
@@ -112,53 +89,23 @@ function HeroCtaLink({
   );
 }
 
-function ServiceCard({
-  card,
-  delay,
-}: {
-  card: HeroServiceCard;
-  delay: number;
-}) {
-  const entrance = useEntranceMotion(delay);
-  const Icon = card.icon;
-
-  return (
-    <motion.div
-      className="flex gap-3 rounded-xl bg-background p-4 shadow-[0_8px_30px_-12px_rgba(52,91,167,0.18)] ring-1 ring-border/50 transition-[box-shadow,transform] duration-300 hover:-translate-y-px hover:shadow-[0_12px_36px_-12px_rgba(52,91,167,0.22)]"
-      {...entrance}
-    >
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand ring-1 ring-brand/15">
-        <Icon className="size-[18px]" strokeWidth={1.75} aria-hidden />
-      </div>
-      <div className="min-w-0 space-y-0.5">
-        <p className="font-heading text-sm font-semibold tracking-tight text-foreground">
-          {card.label}
-        </p>
-        <p className="text-left text-sm leading-relaxed text-muted-foreground">
-          {card.description}
-        </p>
-      </div>
-    </motion.div>
-  );
-}
-
 export function TourismHero({
   headline = content.hero.headline,
   subheadline = content.meta.tagline,
   services = content.hero.services,
-  serviceCards = defaultServiceCards,
   primaryCta = content.hero.primaryCta,
   secondaryCta = content.hero.secondaryCta,
-  imageSrc = defaultHeroImage,
-  imageAlt = "Viajante admirando um destino internacional ao pôr do sol",
-  imageCaption = "Assessoria completa do início ao fim da sua viagem.",
+  featuredPackages = [],
+  featuredTitle = content.hero.featuredPackages.title,
+  departureCity = "São Paulo",
   className,
 }: TourismHeroProps) {
-  const imageEntrance = useEntranceMotion(0.12, { y: 18, duration: 0.65 });
   const headlineEntrance = useEntranceMotion(0);
   const subheadlineEntrance = useEntranceMotion(0.06);
   const servicesEntrance = useEntranceMotion(0.1);
-  const ctaEntrance = useEntranceMotion(0.24);
+  const ctaEntrance = useEntranceMotion(0.16);
+  const featuredEntrance = useEntranceMotion(0.12, { y: 18, duration: 0.65 });
+  const hasFeatured = featuredPackages.length > 0;
 
   return (
     <Section
@@ -171,32 +118,13 @@ export function TourismHero({
       )}
       aria-labelledby="hero-headline"
     >
-      <div className="grid items-center gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">
-        <motion.div
-          className="relative order-2 mx-auto w-full max-w-xl lg:order-1 lg:mx-0 lg:max-w-none"
-          {...imageEntrance}
-        >
-          <div className="relative aspect-4/3 overflow-hidden rounded-2xl shadow-[0_24px_80px_-24px_rgba(52,91,167,0.28)] ring-1 ring-border/40 sm:aspect-[5/4] lg:aspect-[4/5] xl:aspect-[5/4]">
-            <Image
-              src={imageSrc}
-              alt={imageAlt}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-brand-navy/55 via-brand-navy/10 to-transparent" />
-            {imageCaption ? (
-              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                <p className="max-w-md rounded-lg bg-brand-navy/75 px-4 py-3 text-sm leading-relaxed text-white/95 backdrop-blur-sm">
-                  {imageCaption}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        </motion.div>
-
-        <div className="order-1 flex flex-col gap-6 sm:gap-7 lg:order-2">
+      <div
+        className={cn(
+          "grid items-start gap-8 sm:gap-10 lg:gap-14",
+          hasFeatured ? "lg:grid-cols-2 xl:gap-16" : "max-w-3xl",
+        )}
+      >
+        <div className="flex min-w-0 flex-col gap-6 sm:gap-7">
           <motion.h1
             id="hero-headline"
             className="font-heading text-balance text-center text-[1.875rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-left sm:text-4xl md:text-[2.75rem] md:leading-[1.06] lg:text-5xl"
@@ -226,16 +154,6 @@ export function TourismHero({
             ))}
           </motion.ul>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {serviceCards.map((card, index) => (
-              <ServiceCard
-                key={card.label}
-                card={card}
-                delay={0.14 + index * 0.05}
-              />
-            ))}
-          </div>
-
           <motion.div
             className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
             {...ctaEntrance}
@@ -244,6 +162,16 @@ export function TourismHero({
             <HeroCtaLink cta={secondaryCta} variant="secondary" />
           </motion.div>
         </div>
+
+        {hasFeatured ? (
+          <motion.div className="min-w-0" {...featuredEntrance}>
+            <HeroFeaturedPackages
+              packages={featuredPackages}
+              departureCity={departureCity}
+              title={featuredTitle}
+            />
+          </motion.div>
+        ) : null}
       </div>
     </Section>
   );

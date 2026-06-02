@@ -105,7 +105,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const hasNextPage = currentPage < totalPages;
 
   return (
-    <Section spacing="default" background="default" bordered>
+    <Section spacing="page" background="default" bordered>
       <div className="mb-6 sm:mb-8">
         <Button
           asChild

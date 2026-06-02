@@ -40,7 +40,10 @@ export function BlogImage({
   onError,
   ...props
 }: BlogImageProps) {
-  const resolvedSrc = resolveStorageImageSrc(normalizeBlogImageUrl(src));
+  const isLocalPreviewSource = src.startsWith("blob:") || src.startsWith("data:");
+  const resolvedSrc = isLocalPreviewSource
+    ? src
+    : resolveStorageImageSrc(normalizeBlogImageUrl(src));
   const [erroredSrc, setErroredSrc] = useState<string | null>(null);
   const hasErrored = erroredSrc === resolvedSrc;
   const currentSrc = hasErrored ? fallbackSrc : resolvedSrc;

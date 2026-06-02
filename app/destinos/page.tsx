@@ -22,7 +22,7 @@ export default async function DestinosPage() {
   const { photos } = await getDestinationsGalleryPhotos();
 
   return (
-    <Section spacing="default" background="default" bordered>
+    <Section spacing="page" background="default" bordered>
       <div className="mb-6 sm:mb-8">
         <Button
           asChild

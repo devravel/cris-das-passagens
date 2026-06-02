@@ -36,6 +36,7 @@ export type FinalCtaProps = {
   footnote?: string;
   actions?: FinalCtaAction[];
   primaryCta?: ContentCta;
+  spacing?: "default" | "compact" | "none";
   className?: string;
 };
 
@@ -117,6 +118,7 @@ export function FinalCta({
   footnote = content.finalCta.footnote,
   actions = content.finalCta.actions,
   primaryCta = content.finalCta.primaryCta,
+  spacing = "default",
   className,
 }: FinalCtaProps) {
   const { item } = useCtaMotion();
@@ -126,7 +128,7 @@ export function FinalCta({
   return (
     <Section
       background="navy"
-      spacing="default"
+      spacing={spacing}
       className={className}
       aria-labelledby={headingId}
     >

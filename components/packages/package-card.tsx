@@ -15,6 +15,20 @@ import { cn } from "@/lib/utils";
 
 export type PackageCardVariant = "landing" | "listing" | "preview";
 
+const packageBadgeClassName =
+  "inline-flex items-center justify-center rounded-full bg-amber-400/95 px-3 py-1.5 text-center text-[11px] leading-none font-semibold tracking-wide text-amber-950 shadow-sm whitespace-nowrap sm:text-xs";
+
+const compactBadgeClassName =
+  "inline-flex items-center justify-center rounded-full bg-amber-400/95 px-2 py-1 text-center text-[9px] leading-none font-semibold tracking-wide text-amber-950 shadow-sm whitespace-nowrap lg:text-[10px] xl:text-[11px]";
+
+const compactActionButtonClassName = cn(
+  "inline-flex h-6 min-h-6 w-full items-center justify-center gap-0.5 rounded-md px-1 py-0.5 text-[8px] leading-[1.1] font-semibold lg:h-[1.625rem] lg:px-1.5 lg:text-[9px] xl:text-[10px]",
+  "transition-[transform,box-shadow,background-color] duration-200",
+  "hover:-translate-y-px hover:shadow-md active:translate-y-0",
+  "motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+);
+
 function calculateDiscountPercent(oldPrice: number | null, currentPrice: number): number | null {
   if (!oldPrice || oldPrice <= currentPrice) return null;
   
@@ -34,13 +48,14 @@ type PackageCardProps = {
   layout?: "carousel" | "grid" | "preview";
   priority?: boolean;
   variant?: PackageCardVariant;
+  size?: "default" | "compact";
   showChecklist?: boolean;
   packageSlug?: string;
   whatsAppHref?: string;
   className?: string;
 };
 
-function CardTypeLabel({ type }: { type: PackageCardData["type"] }) {
+function CardTypeLabel({ type, compact = false }: { type: PackageCardData["type"]; compact?: boolean }) {
   const Icon =
     type === "FLIGHT"
       ? Plane
@@ -53,59 +68,34 @@ function CardTypeLabel({ type }: { type: PackageCardData["type"] }) {
             : Luggage;
 
   return (
-    <span className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground sm:text-sm">
-      <Icon className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 font-medium text-muted-foreground",
+        compact ? "mb-1 text-[10px] lg:text-[11px] xl:text-xs" : "mb-1.5 text-xs sm:text-sm",
+      )}
+    >
+      <Icon className={cn("shrink-0", compact ? "size-3" : "size-4")} strokeWidth={1.75} aria-hidden />
       {PACKAGE_TYPE_CARD_LABELS[type]}
     </span>
   );
 }
 
-function DiscountBadge({ oldPrice, currentPrice }: { oldPrice: number | null; currentPrice: number }) {
+function DiscountBadge({
+  oldPrice,
+  currentPrice,
+  compact = false,
+}: {
+  oldPrice: number | null;
+  currentPrice: number;
+  compact?: boolean;
+}) {
   const discount = calculateDiscountPercent(oldPrice, currentPrice);
   
   if (!discount) return null;
   
   return (
-    <span className="rounded-full bg-amber-400/95 px-3 py-1.5 text-xs font-semibold tracking-wide text-amber-950 shadow-md sm:text-sm">
+    <span className={compact ? compactBadgeClassName : packageBadgeClassName}>
       Até {discount}% de desconto!
-    </span>
-  );
-}
-
-function DurationBadge({
-  daysCount,
-  nightsCount,
-  type,
-}: {
-  daysCount: number | null;
-  nightsCount: number | null;
-  type: PackageCardData["type"];
-}) {
-  const parts: string[] = [];
-
-  if (type === "TICKET" && daysCount != null) {
-    return (
-      <span className="rounded-full bg-amber-400/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-amber-950 shadow-sm uppercase sm:text-[11px]">
-        {daysCount} {daysCount === 1 ? "dia" : "dias"} de parque
-      </span>
-    );
-  }
-
-  if (daysCount != null) {
-    parts.push(`${daysCount} ${daysCount === 1 ? "dia" : "dias"}`);
-  }
-
-  if (nightsCount != null) {
-    parts.push(`${nightsCount} ${nightsCount === 1 ? "noite" : "noites"}`);
-  }
-
-  if (parts.length === 0) {
-    return null;
-  }
-
-  return (
-    <span className="rounded-full bg-amber-400/95 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-amber-950 shadow-sm uppercase sm:text-[11px]">
-      {parts.join(" | ")}
     </span>
   );
 }
@@ -163,14 +153,29 @@ function IncludedItemsList({
   );
 }
 
-function PriceBlock({ data, variant }: { data: PackageCardData; variant: PackageCardVariant }) {
+function PriceBlock({
+  data,
+  variant,
+  compact = false,
+}: {
+  data: PackageCardData;
+  variant: PackageCardVariant;
+  compact?: boolean;
+}) {
   const hideOldPrice = variant === "landing";
 
   if (data.highlightInstallments && data.installmentText) {
     return (
       <div className="space-y-0.5">
-        <p className="text-xs text-muted-foreground sm:text-sm">A partir de</p>
-        <p className="font-heading text-[1.35rem] font-semibold leading-none tracking-tight text-foreground sm:text-2xl">
+        <p className={cn("text-muted-foreground", compact ? "text-[10px] lg:text-xs" : "text-xs sm:text-sm")}>
+          A partir de
+        </p>
+        <p
+          className={cn(
+            "font-heading font-semibold leading-none tracking-tight text-foreground",
+            compact ? "text-base lg:text-lg xl:text-xl" : "text-[1.35rem] sm:text-2xl",
+          )}
+        >
           {data.installmentText}
         </p>
       </div>
@@ -181,12 +186,19 @@ function PriceBlock({ data, variant }: { data: PackageCardData; variant: Package
 
   return (
     <div className="space-y-0.5">
-      <p className="text-xs text-muted-foreground sm:text-sm">{priceLabel}</p>
-      <p className="font-heading text-[1.35rem] font-semibold leading-none tracking-tight text-foreground sm:text-2xl">
+      <p className={cn("text-muted-foreground", compact ? "text-[10px] lg:text-xs" : "text-xs sm:text-sm")}>
+        {priceLabel}
+      </p>
+      <p
+        className={cn(
+          "font-heading font-semibold leading-none tracking-tight text-foreground",
+          compact ? "text-base lg:text-lg xl:text-xl" : "text-[1.35rem] sm:text-2xl",
+        )}
+      >
         {formatPackagePrice(data.price)}
       </p>
       {!hideOldPrice && data.oldPrice != null && data.oldPrice > data.price ? (
-        <p className="text-xs text-muted-foreground line-through sm:text-sm">
+        <p className={cn("text-muted-foreground line-through", compact ? "text-[10px] lg:text-xs" : "text-xs sm:text-sm")}>
           {formatPackagePrice(data.oldPrice)}
         </p>
       ) : null}
@@ -198,22 +210,28 @@ function PriceFooter({
   data,
   variant,
   withTopBorder = true,
+  compact = false,
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
   withTopBorder?: boolean;
+  compact?: boolean;
 }) {
   const isDetailed = variant === "listing" || variant === "preview";
   const footerClassName = cn(
     withTopBorder && "border-t border-border/70",
     "text-center",
-    isDetailed ? "px-4 py-2.5 sm:px-5 sm:py-3" : "px-3.5 py-2.5 sm:px-4 sm:py-3",
+    compact
+      ? "px-2 py-1"
+      : isDetailed
+        ? "px-4 py-2.5 sm:px-5 sm:py-3"
+        : "px-3.5 py-2.5 sm:px-4 sm:py-3",
   );
 
   if (data.highlightInstallments && data.installmentText) {
     return (
       <div className={footerClassName}>
-        <p className="text-[11px] font-medium text-muted-foreground sm:text-xs">
+        <p className={cn("font-medium text-muted-foreground", compact ? "text-[9px] leading-snug lg:text-[10px] xl:text-xs" : "text-[11px] sm:text-xs")}>
           Total por pessoa: {formatPackagePrice(data.price)}{" "}
           <span className="font-bold text-foreground">| Taxas inclusas</span>
         </p>
@@ -224,12 +242,20 @@ function PriceFooter({
   if (data.installmentText) {
     return (
       <div className={footerClassName}>
-        <p className="text-xs text-foreground sm:text-sm">{data.installmentText}</p>
+        <p className={cn("text-foreground", compact ? "text-[10px] leading-snug lg:text-xs" : "text-xs sm:text-sm")}>
+          {data.installmentText}
+        </p>
       </div>
     );
   }
 
-  return null;
+  return (
+    <div className={footerClassName} aria-hidden>
+      <p className={cn("text-transparent select-none", compact ? "text-[10px] leading-snug lg:text-xs" : "text-xs sm:text-sm")}>
+        -
+      </p>
+    </div>
+  );
 }
 
 function PricingSection({
@@ -238,50 +264,76 @@ function PricingSection({
   whatsAppHref,
   packageSlug,
   packageTitle,
+  compact = false,
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
   whatsAppHref?: string;
   packageSlug?: string;
   packageTitle?: string;
+  compact?: boolean;
 }) {
   const isLanding = variant === "landing";
   const isDetailed = variant === "listing" || variant === "preview";
-  const showFooter = Boolean(data.installmentText);
+  const showFooter = true;
   const showLandingSaibaMais = isLanding && packageSlug && whatsAppHref;
-  const pricePadding = isDetailed ? "px-4 py-2.5 sm:px-5 sm:py-3" : "px-3.5 py-2.5 sm:px-4 sm:py-3";
-  const actionPadding = isDetailed ? "px-4 py-3 sm:px-5 sm:py-3.5 lg:px-5" : "px-3.5 py-3 sm:px-4 sm:py-3.5";
+  const pricePadding = compact
+    ? "px-2.5 py-1.5 lg:py-2"
+    : isDetailed
+      ? "px-4 py-2.5 sm:px-5 sm:py-3"
+      : "px-3.5 py-2.5 sm:px-4 sm:py-3";
+  const actionPadding = compact
+    ? "px-2.5 py-1.5"
+    : isDetailed
+      ? "px-4 py-3 sm:px-5 sm:py-3.5 lg:px-5"
+      : "px-3.5 py-3 sm:px-4 sm:py-3.5";
+  const stackedActionsPadding = compact
+    ? "px-2.5 py-1.5"
+    : "px-3.5 py-2.5 sm:px-4 sm:py-3";
 
   return (
     <>
       <div className={pricePadding}>
-        <PriceBlock data={data} variant={variant} />
+        <PriceBlock data={data} variant={variant} compact={compact} />
       </div>
 
-      {whatsAppHref ? (
+      {showLandingSaibaMais ? (
         <div
           className={cn(
-            actionPadding,
-            showLandingSaibaMais && "pb-2 sm:pb-2.5",
-            showFooter && !showLandingSaibaMais && "border-b border-border/70",
+            stackedActionsPadding,
+            "flex flex-col gap-1",
+            showFooter && "border-b border-border/70",
           )}
         >
-          <PackageWhatsAppCta href={whatsAppHref} />
+          <PackageWhatsAppCta
+            href={whatsAppHref}
+            className={compact ? compactActionButtonClassName : undefined}
+            iconClassName={compact ? "size-2.5 lg:size-3" : undefined}
+          />
+          <LandingSaibaMaisAction
+            slug={packageSlug}
+            packageTitle={packageTitle}
+            unstyled
+            buttonClassName={compact ? compactActionButtonClassName : undefined}
+          />
         </div>
-      ) : null}
-
-      {showLandingSaibaMais ? (
-        <LandingSaibaMaisAction
-          slug={packageSlug}
-          packageTitle={packageTitle}
-          className={cn("border-t-0 pt-0", showFooter && "border-b border-border/70")}
-        />
+      ) : whatsAppHref ? (
+        <div
+          className={cn(actionPadding, showFooter && "border-b border-border/70")}
+        >
+          <PackageWhatsAppCta
+            href={whatsAppHref}
+            className={compact ? compactActionButtonClassName : undefined}
+            iconClassName={compact ? "size-2.5 lg:size-3" : undefined}
+          />
+        </div>
       ) : null}
 
       {showFooter ? (
         <PriceFooter
           data={data}
           variant={variant}
+          compact={compact}
           withTopBorder={!whatsAppHref && !showLandingSaibaMais}
         />
       ) : null}
@@ -293,20 +345,14 @@ function ListingHeading({ data }: { data: PackageCardData }) {
   const destination = data.destination || data.title || "Destino";
 
   return (
-    <>
-      <h3 className="line-clamp-2 font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-        {destination}
-      </h3>
-      {data.title && data.title !== data.destination ? (
-        <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{data.title}</p>
-      ) : null}
-    </>
+    <h3 className="line-clamp-2 font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+      {destination}
+    </h3>
   );
 }
 
 const layoutClassNames = {
-  carousel:
-    "w-[min(100%,240px)] shrink-0 sm:w-[250px] md:w-[260px] lg:w-[272px] xl:w-[288px]",
+  carousel: "w-full min-w-0",
   grid: "mx-auto w-full max-w-none sm:max-w-[288px] xl:mx-0 xl:max-w-none",
   preview: "w-full",
 } as const;
@@ -318,6 +364,7 @@ export function PackageCard({
   layout = "carousel",
   priority = false,
   variant = "listing",
+  size = "default",
   showChecklist = false,
   packageSlug,
   whatsAppHref,
@@ -326,16 +373,19 @@ export function PackageCard({
   const resolvedImageSrc = imageSrc || data.image;
   const isLanding = variant === "landing";
   const isDetailed = variant === "listing" || variant === "preview";
+  const isCompact = size === "compact" && isLanding;
   const showOrigin = data.type !== "HOTEL" && data.type !== "TICKET";
   const showHotelName = isDetailed && (data.type === "HOTEL" || data.type === "CRUISE") && data.hotelName;
   const showChecklistBlock = showChecklist && data.includedItems.length > 0;
   const cardLabel = data.destination || data.title || "Pacote turístico";
+  const imageAlt = data.destination || data.title || "Pacote turístico";
 
   return (
     <article
       aria-label={cardLabel}
       className={cn(
-        "flex h-full flex-col overflow-hidden rounded-2xl bg-card ring-1 ring-border/60",
+        "flex h-full flex-col overflow-hidden bg-card ring-1 ring-border/60",
+        isCompact ? "rounded-xl" : "rounded-2xl",
         layoutClassNames[layout],
         cardShadowClassName,
         (isLanding || isDetailed) &&
@@ -344,11 +394,11 @@ export function PackageCard({
       )}
     >
       <div className="flex h-full flex-col">
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted/30">
+        <div className={cn("relative overflow-hidden bg-muted/30", isCompact ? "aspect-[5/3]" : "aspect-[4/3]")}>
           {resolvedImageSrc ? (
             <BlogImage
               src={resolvedImageSrc}
-              alt={data.title || "Pacote turístico"}
+              alt={imageAlt}
               fill
               priority={priority}
               sizes={
@@ -356,7 +406,9 @@ export function PackageCard({
                   ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 288px"
                   : layout === "preview"
                     ? "(max-width: 768px) 100vw, 420px"
-                    : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px"
+                    : isCompact
+                      ? "(max-width: 640px) 85vw, (max-width: 1024px) 33vw, 220px"
+                      : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px"
               }
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               containerClassName="absolute inset-0"
@@ -370,31 +422,34 @@ export function PackageCard({
             </div>
           )}
 
-          <div className="absolute top-2.5 right-2.5 z-10 flex max-w-[calc(100%-1.25rem)] flex-wrap gap-1.5 justify-end">
-            <DurationBadge daysCount={data.daysCount} nightsCount={data.nightsCount} type={data.type} />
-            <DiscountBadge oldPrice={data.oldPrice} currentPrice={data.price} />
+          <div className={cn("absolute z-10 flex max-w-[calc(100%-1.25rem)] flex-wrap items-center justify-end gap-1.5", isCompact ? "top-1.5 right-1.5" : "top-2.5 right-2.5")}>
+            <DiscountBadge oldPrice={data.oldPrice} currentPrice={data.price} compact={isCompact} />
           </div>
         </div>
 
         <div
           className={cn(
             "flex flex-1 flex-col",
-            isDetailed ? "px-4 pt-3.5 pb-3.5 sm:px-5 sm:pt-4 sm:pb-4" : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
+            isCompact
+              ? "px-2.5 pt-2 pb-1.5"
+              : isDetailed
+                ? "px-4 pt-3.5 pb-3.5 sm:px-5 sm:pt-4 sm:pb-4"
+                : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
           )}
         >
-          <CardTypeLabel type={data.type} />
+          <CardTypeLabel type={data.type} compact={isCompact} />
 
           {isLanding ? (
-            <>
-              <h3 className="line-clamp-2 font-heading text-[0.95rem] font-semibold tracking-tight text-foreground sm:text-base">
-                {data.destination || data.title || "Destino"}
-              </h3>
-              {data.title && data.title !== data.destination ? (
-                <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground sm:text-sm">
-                  {data.title}
-                </p>
-              ) : null}
-            </>
+            <h3
+              className={cn(
+                "line-clamp-2 font-heading font-semibold tracking-tight text-foreground",
+                isCompact
+                  ? "text-xs leading-snug lg:text-sm xl:text-[0.9375rem]"
+                  : "text-[0.95rem] sm:text-base",
+              )}
+            >
+              {data.destination || data.title || "Destino"}
+            </h3>
           ) : isDetailed ? (
             <ListingHeading data={data} />
           ) : (
@@ -404,9 +459,14 @@ export function PackageCard({
           )}
 
           {showOrigin ? (
-            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+            <p
+              className={cn(
+                "text-muted-foreground",
+                isCompact ? "mt-0.5 text-[10px] leading-snug lg:text-xs" : "mt-1 text-xs sm:text-sm",
+              )}
+            >
               Saindo de{" "}
-              <span className="font-medium text-brand underline decoration-brand/30 underline-offset-4">
+              <span className="font-medium text-brand underline decoration-brand/30 underline-offset-2">
                 {departureCity}
               </span>
             </p>
@@ -444,6 +504,7 @@ export function PackageCard({
             whatsAppHref={whatsAppHref}
             packageSlug={packageSlug}
             packageTitle={cardLabel}
+            compact={isCompact}
           />
         </div>
       </div>
@@ -467,8 +528,6 @@ export function toPackageCardDataFromPublicPackage(
     airline: pkg.airline,
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems,
-    daysCount: pkg.daysCount,
-    nightsCount: pkg.nightsCount,
     featured: pkg.featured,
   };
 }

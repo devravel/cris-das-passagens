@@ -22,8 +22,8 @@ export const packageShowcaseSections: PackageShowcaseConfig[] = [
     icon: "suitcase",
     reverse: false,
     heading: {
-      before: "Os melhores ",
-      highlight: "pacotes",
+      before: "O pacote ",
+      highlight: "ideal",
       after: " para sua viagem",
     },
   },

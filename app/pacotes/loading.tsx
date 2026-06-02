@@ -36,7 +36,7 @@ function PackageListingCardSkeleton({ className }: { className?: string }) {
 
 export default function PacotesLoading() {
   return (
-    <Section spacing="default" background="default" bordered aria-busy="true" aria-label="Carregando pacotes">
+    <Section spacing="page" background="default" bordered aria-busy="true" aria-label="Carregando pacotes">
       <div className="mb-6 sm:mb-8">
         <div className="h-9 w-48 animate-pulse rounded-lg bg-muted/70" />
       </div>

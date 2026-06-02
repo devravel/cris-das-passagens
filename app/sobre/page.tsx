@@ -1,0 +1,97 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+import { Container } from "@/components/layout/container";
+import { Section } from "@/components/layout/section";
+import {
+  bodyTextClassName,
+  SectionHeader,
+} from "@/components/layout/section-header";
+import { Button } from "@/components/ui/button";
+import { content } from "@/config/content";
+import { createMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = createMetadata({
+  title: content.about.title,
+  description: content.about.description,
+  path: "/sobre",
+  keywords: [
+    "Cris das Passagens",
+    "agência de viagens",
+    "passagens aéreas",
+    "milhas aéreas",
+    "turismo",
+  ],
+});
+
+export default function SobrePage() {
+  const { title, storyTitle, paragraphs, closing, cta } = content.about;
+
+  return (
+    <Section
+      spacing="page"
+      background="default"
+      bordered
+      aria-labelledby="sobre-page-heading"
+    >
+      <div className="mb-6 sm:mb-8">
+        <Button
+          asChild
+          variant="ghost"
+          className="h-9 rounded-lg px-3 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <Link href="/">
+            <ArrowLeft className="size-4" aria-hidden />
+            Voltar para a página inicial
+          </Link>
+        </Button>
+      </div>
+
+      <SectionHeader
+        id="sobre-page-heading"
+        title={title}
+        className="mb-10 sm:mb-12"
+      />
+
+      <Container size="narrow" padding="none">
+        <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+          {storyTitle}
+        </h2>
+
+        <div className="mt-6 space-y-4 sm:mt-8">
+          {paragraphs.map((paragraph) => (
+            <p key={paragraph} className={bodyTextClassName}>
+              {paragraph}
+            </p>
+          ))}
+
+          {closing ? (
+            <p
+              className={cn(
+                "pt-2 font-medium text-foreground",
+                bodyTextClassName,
+              )}
+            >
+              {closing}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="mt-8 flex justify-center sm:mt-10">
+          <Button
+            asChild
+            size="lg"
+            className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
+          >
+            <Link href={cta.href} className="gap-2">
+              {cta.label}
+              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            </Link>
+          </Button>
+        </div>
+      </Container>
+    </Section>
+  );
+}

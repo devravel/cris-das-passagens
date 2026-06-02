@@ -148,6 +148,23 @@ function splitPackagesByType(packages: PublicPackage[]): HomepagePackages {
   };
 }
 
+export const getFeaturedPackages = cache(async (): Promise<PublicPackage[]> => {
+  try {
+    const packages = await prisma.package.findMany({
+      where: {
+        active: true,
+        featured: true,
+      },
+      orderBy: [{ createdAt: "desc" }],
+      select: publicPackageSelect,
+    });
+
+    return packages.map(mapPublicPackage);
+  } catch {
+    return [];
+  }
+});
+
 export const getHomepagePackages = cache(async (): Promise<HomepagePackages> => {
   try {
     const packages = await prisma.package.findMany({

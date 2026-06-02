@@ -1,5 +1,5 @@
 import { DEFAULT_DEPARTURE_CITY } from "@/config/packages-showcase";
-import { PublicPackageCard } from "@/components/packages/public-package-card";
+import { PackageCardsCarousel } from "@/components/packages/package-cards-carousel";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -36,33 +36,20 @@ export function PackagesGrid({
   }
 
   return (
-    <ul
+    <div
       id={id}
       role={role}
       aria-labelledby={ariaLabelledBy}
-      className={cn(
-        "grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:justify-items-center sm:gap-5 lg:grid-cols-3 lg:justify-items-center lg:gap-6 xl:grid-cols-4 xl:justify-items-stretch xl:gap-6",
-        className,
-      )}
+      className={cn("min-w-0", className)}
     >
-      {packages.map((pkg, index) => (
-        <li
-          key={pkg.id}
-          id={`pacote-${pkg.slug}`}
-          tabIndex={-1}
-          className="package-card-anchor flex w-full scroll-mt-28 items-stretch outline-none"
-        >
-          <PublicPackageCard
-            pkg={pkg}
-            departureCity={departureCity}
-            layout="grid"
-            variant="listing"
-            priority={index < 4}
-            showChecklist
-            className="h-full"
-          />
-        </li>
-      ))}
-    </ul>
+      <PackageCardsCarousel
+        packages={packages}
+        departureCity={departureCity}
+        ariaLabel="Pacotes disponíveis"
+        variant="listing"
+        showChecklist
+        anchorCards
+      />
+    </div>
   );
 }

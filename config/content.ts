@@ -68,7 +68,7 @@ export const content = {
   hero: {
     headline: "Mais que uma viagem, Um Sonho!",
     services: [
-      { label: "Viagens Nacionais" },
+      { label: "Nacionais" },
       { label: "Internacionais" },
       { label: "Pacotes" },
       { label: "Hospedagem" },
@@ -82,6 +82,9 @@ export const content = {
       label: "Confira todos os Pacotes",
       href: "/pacotes",
     } satisfies ContentCta,
+    featuredPackages: {
+      title: "Confira nossos melhores pacotes",
+    },
   },
 
   quickActions: {
@@ -123,11 +126,25 @@ export const content = {
   },
 
   about: {
-    title: "Sobre a Cris das Passagens",
+    title: "Sobre",
+    storyTitle: "A história do Cris das Passagens",
+    description:
+      "Conheça a história do Cris das Passagens: atendimento humanizado, suporte em todas as etapas da viagem e mais de 1.500 emissões realizadas.",
     paragraphs: [
-      "Nasceu e permanece com um único propósito: ajudar pessoas a viajarem tranquilamente: Sem dores de cabeça e com atendimento do início ao fim da sua viagem.",
-      "Aqui nosso foco é facilitar sua vida na hora de viajar. Cuidamos de cada detalhe para que você tenha uma experiência sem estresse, com economia, praticidade e suporte de verdade.",
+      "O Cris das Passagens nasceu durante um dos momentos mais desafiadores do mundo: a pandemia.",
+      "Na época, Cris trabalhava diretamente com eventos, um setor que foi fortemente impactado e praticamente parou por completo. Sem poder atuar na sua profissão, decidiu dedicar seu tempo a algo que sempre gostou: o universo das milhas e viagens.",
+      "O que antes era apenas um hobby começou a se tornar algo muito maior. Cris passou a estudar profundamente sobre milhas aéreas, estratégias de acúmulo em larga escala e formas inteligentes de viajar economizando.",
+      "Com o tempo, um amigo perguntou sobre as viagens que ele já fazia e demonstrou vontade de viajar também. Como Cris já possuía conhecimento e milhas suficientes, decidiu ajudar realizando a emissão da passagem. Mas não foi apenas uma venda: como aquele amigo nunca havia viajado antes, Cris ofereceu todo o suporte, atenção e orientação necessária para que a experiência fosse tranquila e inesquecível.",
+      "Foi aí que tudo começou.",
+      "Com experiências em viagens pela Europa, América do Sul e também pelo Brasil, Cris passou a entender cada vez mais as necessidades reais de um viajante. Mais do que vender passagens, percebeu a importância do atendimento humanizado, do suporte e da confiança.",
+      'No início, era apenas "o Cris que vendia passagens". Até que, em um encontro entre amigos, havia dois Cristian no grupo. Para diferenciar um do outro, alguém falou: "Ah, esse é o Cris das Passagens."',
+      "E assim nasceu o nome que hoje representa um trabalho feito com dedicação, responsabilidade e paixão por conectar pessoas aos seus sonhos.",
+      "Hoje, com mais de 1.500 emissões realizadas e mais de 5 mil pessoas atendidas, o Cris das Passagens tem como principal compromisso o atendimento e o suporte ao cliente em todas as etapas da viagem.",
+      "Além das passagens aéreas, também oferecemos diversos serviços ligados ao turismo, como hospedagens, circuitos, passeios, aluguel de carros e seguros viagem.",
+      "Contamos ainda com parceiros e influenciadores que acreditam e conhecem nosso trabalho, fortalecendo diariamente a nossa missão de crescer cada vez mais e proporcionar experiências únicas para cada cliente.",
     ],
+    closing:
+      "Mais do que viagens, entregamos confiança, suporte e sonhos realizados.",
     cta: {
       label: "Quero Cotar AGORA!",
       href: contentLinks.quote,
@@ -138,7 +155,6 @@ export const content = {
     title: "Suporte Total",
     intro: "Viajar com segurança, praticidade e suporte completo? Você pode!",
     paragraphs: [
-      "O Cris das Passagens oferece muito mais do que apenas a emissão de passagens aéreas.",
       "Aqui, você conta com suporte completo do início ao fim da sua viagem, com uma equipe experiente e atenciosa, sempre pronta para te ajudar.",
       "Com o Cris das Passagens, você viaja com economia, apoio e confiança.",
     ],
@@ -239,13 +255,9 @@ export const content = {
   },
 
   cadastur: {
-    title: "Cris das Passagens é uma agência certificada pelo CADASTUR",
-    paragraphs: [
-      "Somos uma empresa comprometida com o turismo responsável e registrada no Ministério do Turismo.",
-      "Cumprimos normas e exigências que garantem aos nossos clientes a confiança de que eles terão a melhor experiência de viagem.",
-      "Garantimos segurança e qualidade nos serviços que oferecemos, com suporte para o que o nosso cliente precisar, a todo momento.",
-      "Viajar com o Cris das Passagens é ter a certeza de que está contratando uma empresa legalizada e comprometida.",
-    ],
+    title: "Agência certificada CADASTUR",
+    shortText:
+      "Empresa registrada no Ministério do Turismo. Verifique nossa autenticidade pelo QR Code ou no site oficial.",
     verification:
       "A autenticidade dessa informação pode ser verificada através do código acima (basta apontar a câmera) ou através de consulta no site do Governo Federal.",
     verifyUrl: contentLinks.cadastur,
@@ -253,6 +265,24 @@ export const content = {
     qrCode: "/cadastur-qrcode.png",
     qrCodeAlt:
       "QR Code para verificar a certificação CADASTUR no site do Governo Federal",
+    logo: "/cadastur-logo.png",
+    logoAlt: "Logo CADASTUR — Cadastro de Prestadores de Serviços Turísticos",
+    paragraphs: [
+      "Somos uma empresa comprometida com o turismo responsável e registrada no Ministério do Turismo.",
+      "Cumprimos normas e exigências que garantem aos nossos clientes a confiança de que eles terão a melhor experiência de viagem.",
+      "Garantimos segurança e qualidade nos serviços que oferecemos, com suporte para o que o nosso cliente precisar, a todo momento.",
+      "Viajar com o Cris das Passagens é ter a certeza de que está contratando uma empresa legalizada e comprometida.",
+    ],
+  },
+
+  partners: {
+    title: "Empresas parceiras",
+    logos: [
+      { src: "/partners/partner-1.jpeg", alt: "Parceiro 1" },
+      { src: "/partners/partner-2.jpeg", alt: "Parceiro 2" },
+      { src: "/partners/partner-3.jpeg", alt: "Parceiro 3" },
+      { src: "/partners/partner-4.jpeg", alt: "Parceiro 4" },
+    ],
   },
 
   faq: {
