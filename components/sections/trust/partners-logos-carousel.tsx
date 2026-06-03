@@ -16,6 +16,12 @@ import {
   PartnerLogoImage,
   type PartnerLogoEntry,
 } from "@/components/sections/trust/partners-logo-shared";
+import {
+  applyAutoplayScrollOffset,
+  isCoarsePointerDevice,
+  readAutoplayScrollOffset,
+  syncScrollerToAutoplayOffset,
+} from "@/lib/carousel-autoplay-scroll";
 import { cn } from "@/lib/utils";
 
 /** ~36px/s — fluxo horizontal lento, contínuo e sem saltos. */
@@ -26,6 +32,8 @@ const PAUSE_RECOVERY_MS = 2500;
 const PROGRAMMATIC_SCROLL_MS = 550;
 /** Limite de cópias renderizadas para o loop infinito. */
 const MAX_COPIES = 8;
+/** Tentativas de remedição quando layout/overflow ainda não está pronto (Safari iOS). */
+const MAX_MEASURE_RETRIES = 12;
 
 function PartnerCarouselDots({
   pageCount,
@@ -106,6 +114,10 @@ export function PartnersLogosCarousel({
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
   const programmaticUntilRef = useRef(0);
+  const measureRetriesRef = useRef(0);
+  const measureLayoutRef = useRef<() => void>(() => undefined);
+  const pauseForHoverFocusRef = useRef(true);
+  const virtualScrollLeftRef = useRef(0);
 
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
@@ -115,10 +127,10 @@ export function PartnersLogosCarousel({
 
   const applyPaused = useCallback(() => {
     const paused =
-      isHoverRef.current ||
-      isFocusRef.current ||
       isInteractingRef.current ||
-      (typeof document !== "undefined" && document.hidden);
+      (typeof document !== "undefined" && document.hidden) ||
+      (pauseForHoverFocusRef.current &&
+        (isHoverRef.current || isFocusRef.current));
 
     isPausedRef.current = paused;
     setIsPaused((current) => (current === paused ? current : paused));
@@ -149,7 +161,12 @@ export function PartnersLogosCarousel({
       return;
     }
 
-    const offsetInLoop = ((track.scrollLeft % loop) + loop) % loop;
+    const scrollLeft = readAutoplayScrollOffset(
+      track,
+      contentRef.current,
+      virtualScrollLeftRef.current,
+    );
+    const offsetInLoop = ((scrollLeft % loop) + loop) % loop;
     const nextIndex = Math.max(
       0,
       Math.min(pages - 1, Math.floor(offsetInLoop / viewport)),
@@ -165,6 +182,13 @@ export function PartnersLogosCarousel({
     const last = lastItemRef.current;
 
     if (!track || !content || !first || !last) {
+      if (measureRetriesRef.current < MAX_MEASURE_RETRIES) {
+        measureRetriesRef.current += 1;
+        requestAnimationFrame(() => {
+          measureLayoutRef.current();
+        });
+      }
+
       return;
     }
 
@@ -201,6 +225,24 @@ export function PartnersLogosCarousel({
 
     setCopies((current) => (current === nextCopies ? current : nextCopies));
     syncActivePageFromScroll();
+
+    const hasScrollOverflow = track.scrollWidth > track.clientWidth + 1;
+
+    if (
+      !reduceMotionRef.current &&
+      nextCopies > 1 &&
+      loopSegment > 0 &&
+      !hasScrollOverflow &&
+      measureRetriesRef.current < MAX_MEASURE_RETRIES
+    ) {
+      measureRetriesRef.current += 1;
+      requestAnimationFrame(() => {
+        measureLayoutRef.current();
+      });
+      return;
+    }
+
+    measureRetriesRef.current = 0;
   }, [syncActivePageFromScroll]);
 
   const goToPage = useCallback((index: number) => {
@@ -234,6 +276,14 @@ export function PartnersLogosCarousel({
   useEffect(() => {
     reduceMotionRef.current = reduceMotion;
   }, [reduceMotion]);
+
+  useLayoutEffect(() => {
+    measureLayoutRef.current = measureLayout;
+  }, [measureLayout]);
+
+  useLayoutEffect(() => {
+    pauseForHoverFocusRef.current = !isCoarsePointerDevice();
+  }, []);
 
   // Preferência de movimento reduzido.
   useEffect(() => {
@@ -327,7 +377,8 @@ export function PartnersLogosCarousel({
           next -= loop;
         }
 
-        track.scrollLeft = next;
+        virtualScrollLeftRef.current = next;
+        applyAutoplayScrollOffset(track, contentRef.current, next);
       }
 
       syncActivePageFromScroll();
@@ -357,6 +408,9 @@ export function PartnersLogosCarousel({
         isInteractingRef.current = false;
       }
 
+      isHoverRef.current = false;
+      isFocusRef.current = false;
+
       applyPaused();
     }, PAUSE_RECOVERY_MS);
 
@@ -383,15 +437,37 @@ export function PartnersLogosCarousel({
   }, [applyPaused]);
 
   function handleTouchStart() {
+    const track = trackRef.current;
+
+    if (track) {
+      syncScrollerToAutoplayOffset(
+        track,
+        contentRef.current,
+        virtualScrollLeftRef.current,
+      );
+    }
+
     startInteraction();
   }
 
   function handleTouchEnd() {
+    const track = trackRef.current;
+
+    if (track) {
+      virtualScrollLeftRef.current = track.scrollLeft;
+    }
+
     syncActivePageFromScroll();
     endInteraction();
   }
 
   function handleTouchCancel() {
+    const track = trackRef.current;
+
+    if (track) {
+      virtualScrollLeftRef.current = track.scrollLeft;
+    }
+
     syncActivePageFromScroll();
     endInteraction();
   }
@@ -509,7 +585,7 @@ export function PartnersLogosCarousel({
       <div
         ref={trackRef}
         className={cn(
-          "mx-auto w-full max-w-6xl overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          "mx-auto w-full max-w-6xl touch-pan-x overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
           "cursor-grab active:cursor-grabbing",
         )}
         role="region"

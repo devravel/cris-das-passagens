@@ -13,6 +13,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { CarouselDots } from "@/components/ui/carousel-dots";
+import {
+  applyAutoplayScrollOffset,
+  syncScrollerToAutoplayOffset,
+} from "@/lib/carousel-autoplay-scroll";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +52,8 @@ const MOBILE_AUTOPLAY_SPEED_PX_PER_MS = 0.036;
 const PAUSE_RECOVERY_MS = 2500;
 /** Limite de cópias renderizadas para o loop infinito (mobile). */
 const MAX_COPIES = 8;
+/** Tentativas de remedição quando layout/overflow ainda não está pronto (Safari iOS). */
+const MAX_MEASURE_RETRIES = 12;
 /** Largura mínima confortável para cards compactos (landing) em desktop. */
 const LANDING_MIN_CARD_WIDTH = 160;
 /** Hero "Confira nossos melhores pacotes": mais cards visíveis entre 425px e 1023px para cards mais estreitos. */
@@ -209,7 +215,7 @@ export function PackageCardsContinuousCarousel({
   const lastFrameTimeRef = useRef<number | null>(null);
   const measureRetriesRef = useRef(0);
   const measureLayoutRef = useRef<() => void>(() => undefined);
-  const MAX_MEASURE_RETRIES = 12;
+  const virtualScrollLeftRef = useRef(0);
 
   const hasOverflow = packages.length > 1;
   const useInfiniteTrack = isMobileAutoplay && copies > 1;
@@ -285,15 +291,6 @@ export function PackageCardsContinuousCarousel({
 
     const nextLayout = computeCarouselLayout(trackWidth, viewportWidth, variant);
 
-    if (containerWidth > 0) {
-      measureRetriesRef.current = 0;
-    } else if (measureRetriesRef.current < MAX_MEASURE_RETRIES) {
-      measureRetriesRef.current += 1;
-      requestAnimationFrame(() => {
-        measureLayoutRef.current();
-      });
-    }
-
     setLayout((currentLayout) => {
       if (
         !currentLayout ||
@@ -307,6 +304,19 @@ export function PackageCardsContinuousCarousel({
       return currentLayout;
     });
 
+    if (containerWidth <= 0) {
+      if (measureRetriesRef.current < MAX_MEASURE_RETRIES) {
+        measureRetriesRef.current += 1;
+        requestAnimationFrame(() => {
+          measureLayoutRef.current();
+        });
+      }
+
+      return;
+    }
+
+    let resolvedCopies = 1;
+
     if (mobileAutoplay && content && first && last) {
       const styles = window.getComputedStyle(content);
       const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0;
@@ -316,16 +326,25 @@ export function PackageCardsContinuousCarousel({
 
       loopSegmentRef.current = loopSegment;
 
-      let nextCopies = 1;
-
       if (!reduceMotionRef.current && loopSegment > 0 && containerWidth > 0) {
-        nextCopies = Math.min(
+        resolvedCopies = Math.min(
           MAX_COPIES,
           Math.max(2, 1 + Math.ceil((containerWidth + gap) / loopSegment)),
         );
       }
 
-      setCopies((current) => (current === nextCopies ? current : nextCopies));
+      setCopies((current) =>
+        current === resolvedCopies ? current : resolvedCopies,
+      );
+    } else if (mobileAutoplay) {
+      if (measureRetriesRef.current < MAX_MEASURE_RETRIES) {
+        measureRetriesRef.current += 1;
+        requestAnimationFrame(() => {
+          measureLayoutRef.current();
+        });
+      }
+
+      return;
     } else {
       loopSegmentRef.current = 0;
       setCopies((current) => (current === 1 ? current : 1));
@@ -339,7 +358,27 @@ export function PackageCardsContinuousCarousel({
         current === nextPageCount ? current : nextPageCount,
       );
       updateScrollState();
+      measureRetriesRef.current = 0;
+      return;
     }
+
+    const lacksScrollOverflow =
+      resolvedCopies > 1 &&
+      loopSegmentRef.current > 0 &&
+      container.scrollWidth <= container.clientWidth + 1;
+
+    if (
+      (loopSegmentRef.current <= 0 || lacksScrollOverflow) &&
+      measureRetriesRef.current < MAX_MEASURE_RETRIES
+    ) {
+      measureRetriesRef.current += 1;
+      requestAnimationFrame(() => {
+        measureLayoutRef.current();
+      });
+      return;
+    }
+
+    measureRetriesRef.current = 0;
   }, [variant, packages.length, updateScrollState]);
 
   useLayoutEffect(() => {
@@ -439,7 +478,8 @@ export function PackageCardsContinuousCarousel({
         next -= loop;
       }
 
-      container.scrollLeft = next;
+      virtualScrollLeftRef.current = next;
+      applyAutoplayScrollOffset(container, contentRef.current, next);
       rafRef.current = requestAnimationFrame(tick);
     };
 
@@ -532,6 +572,16 @@ export function PackageCardsContinuousCarousel({
       return;
     }
 
+    const container = containerRef.current;
+
+    if (container) {
+      syncScrollerToAutoplayOffset(
+        container,
+        contentRef.current,
+        virtualScrollLeftRef.current,
+      );
+    }
+
     startInteraction();
   }
 
@@ -540,12 +590,24 @@ export function PackageCardsContinuousCarousel({
       return;
     }
 
+    const container = containerRef.current;
+
+    if (container) {
+      virtualScrollLeftRef.current = container.scrollLeft;
+    }
+
     endInteraction();
   }
 
   function handleTouchCancel() {
     if (!isMobileAutoplay) {
       return;
+    }
+
+    const container = containerRef.current;
+
+    if (container) {
+      virtualScrollLeftRef.current = container.scrollLeft;
     }
 
     endInteraction();
@@ -576,7 +638,7 @@ export function PackageCardsContinuousCarousel({
         className={cn(
           "min-w-0",
           useInfiniteTrack || hasOverflow
-            ? "overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
+            ? "touch-pan-x overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
             : "overflow-hidden",
           useInfiniteTrack && "cursor-grab active:cursor-grabbing",
         )}

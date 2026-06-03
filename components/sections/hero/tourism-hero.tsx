@@ -104,7 +104,6 @@ export function TourismHero({
   const subheadlineEntrance = useEntranceMotion(0.06);
   const servicesEntrance = useEntranceMotion(0.1);
   const ctaEntrance = useEntranceMotion(0.16);
-  const featuredEntrance = useEntranceMotion(0.12, { y: 18, duration: 0.65 });
   const hasFeatured = featuredPackages.length > 0;
 
   return (
@@ -172,16 +171,13 @@ export function TourismHero({
         </div>
 
         {hasFeatured ? (
-          <motion.div
-            className="min-w-0 w-full sm:min-w-[280px] lg:min-w-[300px]"
-            {...featuredEntrance}
-          >
+          <div className="min-w-0 w-full sm:min-w-[280px] lg:min-w-[300px]">
             <HeroFeaturedPackages
               packages={featuredPackages}
               departureCity={departureCity}
               title={featuredTitle}
             />
-          </motion.div>
+          </div>
         ) : null}
       </div>
     </Section>

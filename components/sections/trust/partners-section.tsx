@@ -44,10 +44,10 @@ export function PartnersSection({
           >
             {content.partners.title}
           </h2>
-
-          <PartnersLogosCarousel logos={logos} />
-          <PartnersLogosDesktop logos={logos} />
         </motion.div>
+
+        <PartnersLogosCarousel logos={logos} />
+        <PartnersLogosDesktop logos={logos} />
       </Container>
     </Section>
   );
