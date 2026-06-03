@@ -8,6 +8,7 @@ import {
   PACKAGE_TYPE_CARD_LABELS,
 } from "@/lib/package/constants";
 import { isHighlightedChecklistItem } from "@/lib/package/checklist";
+import { formatPackageTravelDate } from "@/lib/package/dates";
 import { formatPackagePrice } from "@/lib/package/format";
 import type { PackageCardData } from "@/lib/package/schemas";
 import { cardShadowClassName } from "@/lib/card-styles";
@@ -16,10 +17,16 @@ import { cn } from "@/lib/utils";
 export type PackageCardVariant = "landing" | "listing" | "preview";
 
 const packageBadgeClassName =
-  "inline-flex items-center justify-center rounded-full bg-amber-400/95 px-3 py-1.5 text-center text-[11px] leading-none font-semibold tracking-wide text-amber-950 shadow-sm whitespace-nowrap sm:text-xs";
+  "inline-flex items-center justify-center rounded-l-none rounded-r-full bg-amber-400/95 py-1.5 pl-3 pr-3 text-center text-[11px] leading-none font-semibold tracking-wide text-amber-950 shadow-sm whitespace-nowrap sm:text-xs";
 
 const compactBadgeClassName =
-  "inline-flex items-center justify-center rounded-full bg-amber-400/95 px-2 py-1 text-center text-[9px] leading-none font-semibold tracking-wide text-amber-950 shadow-sm whitespace-nowrap lg:text-[10px] xl:text-[11px]";
+  "inline-flex items-center justify-center rounded-l-none rounded-r-full bg-amber-400/95 py-1 pl-2.5 pr-2.5 text-center text-[9px] leading-none font-semibold tracking-wide text-amber-950 shadow-sm whitespace-nowrap lg:text-[10px] xl:text-[11px]";
+
+const airlineBadgeClassName =
+  "inline-flex max-w-full min-w-0 items-center justify-center truncate rounded-full bg-brand px-2.5 py-1.5 text-center text-[11px] leading-tight font-semibold tracking-wide text-brand-foreground shadow-sm sm:px-3 sm:text-xs sm:leading-none";
+
+const compactAirlineBadgeClassName =
+  "inline-flex max-w-full min-w-0 items-center justify-center truncate rounded-full bg-brand px-2 py-1 text-center text-[10px] leading-tight font-semibold tracking-wide text-brand-foreground shadow-sm min-[360px]:px-2.5 min-[360px]:text-[11px] sm:text-xs sm:leading-none";
 
 const compactActionButtonClassName = cn(
   "inline-flex h-6 min-h-6 w-full items-center justify-center gap-0.5 rounded-md px-1 py-0.5 text-[8px] leading-[1.1] font-semibold lg:h-[1.625rem] lg:px-1.5 lg:text-[9px] xl:text-[10px]",
@@ -50,6 +57,7 @@ type PackageCardProps = {
   variant?: PackageCardVariant;
   size?: "default" | "compact";
   showChecklist?: boolean;
+  showAirlineBadge?: boolean;
   packageSlug?: string;
   whatsAppHref?: string;
   className?: string;
@@ -100,12 +108,37 @@ function DiscountBadge({
   );
 }
 
+function AirlineBadge({
+  airline,
+  compact = false,
+}: {
+  airline: string | null;
+  compact?: boolean;
+}) {
+  const label = airline?.trim();
+
+  if (!label) return null;
+
+  const text = `Voando ${label}`;
+
+  return (
+    <span
+      title={text}
+      className={compact ? compactAirlineBadgeClassName : airlineBadgeClassName}
+    >
+      {text}
+    </span>
+  );
+}
+
 function IncludedItemsList({
   items,
   detailed = false,
+  tight = false,
 }: {
   items: string[];
   detailed?: boolean;
+  tight?: boolean;
 }) {
   if (items.length === 0) {
     return null;
@@ -114,7 +147,11 @@ function IncludedItemsList({
   return (
     <ul
       className={cn(
-        detailed ? "mt-3 space-y-2 border-t border-border/50 pt-3" : "mt-2.5 space-y-1.5",
+        detailed
+          ? tight
+            ? "mt-2.5 space-y-1.5 border-t border-border/50 pt-2.5"
+            : "mt-3 space-y-2 border-t border-border/50 pt-3"
+          : "mt-2.5 space-y-1.5",
       )}
       aria-label="Itens inclusos"
     >
@@ -218,14 +255,17 @@ function PriceFooter({
   compact?: boolean;
 }) {
   const isDetailed = variant === "listing" || variant === "preview";
+  const isListing = variant === "listing";
   const footerClassName = cn(
     withTopBorder && "border-t border-border/70",
     "text-center",
     compact
       ? "px-2 py-1"
-      : isDetailed
-        ? "px-4 py-2.5 sm:px-5 sm:py-3"
-        : "px-3.5 py-2.5 sm:px-4 sm:py-3",
+      : isListing
+        ? "px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5"
+        : isDetailed
+          ? "px-4 py-2.5 sm:px-5 sm:py-3"
+          : "px-3.5 py-2.5 sm:px-4 sm:py-3",
   );
 
   if (data.highlightInstallments && data.installmentText) {
@@ -277,16 +317,21 @@ function PricingSection({
   const isDetailed = variant === "listing" || variant === "preview";
   const showFooter = true;
   const showLandingSaibaMais = isLanding && packageSlug && whatsAppHref;
+  const isListing = variant === "listing";
   const pricePadding = compact
     ? "px-2.5 py-1.5 lg:py-2"
-    : isDetailed
-      ? "px-4 py-2.5 sm:px-5 sm:py-3"
-      : "px-3.5 py-2.5 sm:px-4 sm:py-3";
+    : isListing
+      ? "px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5"
+      : isDetailed
+        ? "px-4 py-2.5 sm:px-5 sm:py-3"
+        : "px-3.5 py-2.5 sm:px-4 sm:py-3";
   const actionPadding = compact
     ? "px-2.5 py-1.5"
-    : isDetailed
-      ? "px-4 py-3 sm:px-5 sm:py-3.5 lg:px-5"
-      : "px-3.5 py-3 sm:px-4 sm:py-3.5";
+    : isListing
+      ? "px-3.5 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3"
+      : isDetailed
+        ? "px-4 py-3 sm:px-5 sm:py-3.5 lg:px-5"
+        : "px-3.5 py-3 sm:px-4 sm:py-3.5";
   const stackedActionsPadding = compact
     ? "px-2.5 py-1.5"
     : "px-3.5 py-2.5 sm:px-4 sm:py-3";
@@ -341,14 +386,54 @@ function PricingSection({
   );
 }
 
-function ListingHeading({ data }: { data: PackageCardData }) {
-  const destination = data.destination || data.title || "Destino";
+function PackageTravelDates({
+  departureDate,
+  returnDate,
+  compact = false,
+}: {
+  departureDate: string | null;
+  returnDate: string | null;
+  compact?: boolean;
+}) {
+  const ida = formatPackageTravelDate(departureDate);
+  const volta = formatPackageTravelDate(returnDate);
+
+  if (!ida && !volta) {
+    return null;
+  }
 
   return (
-    <h3 className="line-clamp-2 font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-      {destination}
+    <div
+      className={cn(
+        "space-y-0.5 text-muted-foreground",
+        compact ? "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs" : "mt-3 text-xs sm:text-sm",
+      )}
+    >
+      {ida ? <p>Ida: {ida}</p> : null}
+      {volta ? <p>Volta: {volta}</p> : null}
+    </div>
+  );
+}
+
+function ListingHeading({ data }: { data: PackageCardData }) {
+  const heading =
+    data.type === "HOTEL"
+      ? data.hotelName?.trim() || data.destination || data.title || "Hotel"
+      : data.destination || data.title || "Destino";
+
+  return (
+    <h3 className="line-clamp-2 font-heading text-lg font-semibold tracking-tight text-foreground lg:text-xl">
+      {heading}
     </h3>
   );
+}
+
+function getCardPrimaryHeading(data: PackageCardData): string {
+  if (data.type === "HOTEL") {
+    return data.hotelName?.trim() || data.destination || data.title || "Hotel";
+  }
+
+  return data.destination || data.title || "Destino";
 }
 
 const layoutClassNames = {
@@ -366,19 +451,34 @@ export function PackageCard({
   variant = "listing",
   size = "default",
   showChecklist = false,
+  showAirlineBadge = false,
   packageSlug,
   whatsAppHref,
   className,
 }: PackageCardProps) {
   const resolvedImageSrc = imageSrc || data.image;
   const isLanding = variant === "landing";
-  const isDetailed = variant === "listing" || variant === "preview";
+  const isListing = variant === "listing";
+  const isDetailed = isListing || variant === "preview";
   const isCompact = size === "compact" && isLanding;
+  const isHotelPackage = data.type === "HOTEL";
   const showOrigin = data.type !== "HOTEL" && data.type !== "TICKET";
-  const showHotelName = isDetailed && (data.type === "HOTEL" || data.type === "CRUISE") && data.hotelName;
+  const showDestinationAsSecondary =
+    isHotelPackage && Boolean(data.destination?.trim());
+  const showCruiseShipName =
+    isDetailed && data.type === "CRUISE" && Boolean(data.hotelName?.trim());
+  const showAirlineBadgeOnCard =
+    showAirlineBadge &&
+    (data.type === "FLIGHT" || data.type === "PACKAGE_COMPLETE") &&
+    Boolean(data.airline?.trim());
   const showChecklistBlock = showChecklist && data.includedItems.length > 0;
-  const cardLabel = data.destination || data.title || "Pacote turístico";
-  const imageAlt = data.destination || data.title || "Pacote turístico";
+  const cardLabel = isHotelPackage
+    ? data.hotelName?.trim() || data.destination || data.title || "Pacote turístico"
+    : data.destination || data.title || "Pacote turístico";
+  const imageAlt = isHotelPackage
+    ? [data.hotelName?.trim(), data.destination].filter(Boolean).join(" - ") ||
+      "Pacote de hospedagem"
+    : data.destination || data.title || "Pacote turístico";
 
   return (
     <article
@@ -394,37 +494,65 @@ export function PackageCard({
       )}
     >
       <div className="flex h-full flex-col">
-        <div className={cn("relative overflow-hidden bg-muted/30", isCompact ? "aspect-[5/3]" : "aspect-[4/3]")}>
-          {resolvedImageSrc ? (
-            <BlogImage
-              src={resolvedImageSrc}
-              alt={imageAlt}
-              fill
-              priority={priority}
-              sizes={
-                layout === "grid"
-                  ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 288px"
-                  : layout === "preview"
-                    ? "(max-width: 768px) 100vw, 420px"
-                    : isCompact
-                      ? "(max-width: 640px) 85vw, (max-width: 1024px) 33vw, 220px"
-                      : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px"
-              }
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              containerClassName="absolute inset-0"
-            />
-          ) : (
-            <div
-              className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground"
-              style={{ aspectRatio: PACKAGE_IMAGE_ASPECT_RATIO }}
-            >
-              Imagem do pacote
-            </div>
-          )}
+        <div className="relative">
+          <div
+            className={cn(
+              "relative w-full overflow-hidden bg-muted/30",
+              isCompact && "aspect-[5/3]",
+              isListing &&
+                "h-[10.5rem] sm:h-[10.75rem] md:h-[11rem] lg:h-[12.25rem]",
+              !isCompact && !isListing && "aspect-[4/3]",
+            )}
+          >
+            {resolvedImageSrc ? (
+              <BlogImage
+                src={resolvedImageSrc}
+                alt={imageAlt}
+                fill
+                priority={priority}
+                sizes={
+                  layout === "grid"
+                    ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 288px"
+                    : layout === "preview"
+                      ? "(max-width: 768px) 100vw, 420px"
+                      : isListing
+                        ? "(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 32vw"
+                        : isCompact
+                          ? "(max-width: 640px) 85vw, (max-width: 1024px) 33vw, 220px"
+                          : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px"
+                }
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                containerClassName="absolute inset-0"
+              />
+            ) : (
+              <div
+                className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground"
+                style={{ aspectRatio: PACKAGE_IMAGE_ASPECT_RATIO }}
+              >
+                Imagem do pacote
+              </div>
+            )}
 
-          <div className={cn("absolute z-10 flex max-w-[calc(100%-1.25rem)] flex-wrap items-center justify-end gap-1.5", isCompact ? "top-1.5 right-1.5" : "top-2.5 right-2.5")}>
-            <DiscountBadge oldPrice={data.oldPrice} currentPrice={data.price} compact={isCompact} />
+            <div
+              className={cn(
+                "absolute z-10 flex min-w-0 max-w-[calc(100%-0.75rem)] items-center justify-start sm:max-w-[calc(100%-1.25rem)]",
+                isCompact ? "top-1.5 left-0" : "top-2 left-0 sm:top-2.5",
+              )}
+            >
+              <DiscountBadge oldPrice={data.oldPrice} currentPrice={data.price} compact={isCompact} />
+            </div>
           </div>
+
+          {showAirlineBadgeOnCard ? (
+            <div
+              className={cn(
+                "absolute z-20 flex min-w-0 max-w-[calc(100%-0.75rem)] translate-y-1/2 justify-end sm:max-w-[calc(100%-1.25rem)]",
+                isCompact ? "right-1.5 bottom-0" : "right-2 bottom-0 sm:right-2.5",
+              )}
+            >
+              <AirlineBadge airline={data.airline} compact={isCompact} />
+            </div>
+          ) : null}
         </div>
 
         <div
@@ -432,9 +560,11 @@ export function PackageCard({
             "flex flex-1 flex-col",
             isCompact
               ? "px-2.5 pt-2 pb-1.5"
-              : isDetailed
-                ? "px-4 pt-3.5 pb-3.5 sm:px-5 sm:pt-4 sm:pb-4"
-                : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
+              : isListing
+                ? "px-3.5 pt-2.5 pb-2.5 sm:px-4 sm:pt-3 sm:pb-3 lg:px-5 lg:pt-3.5 lg:pb-3.5"
+                : isDetailed
+                  ? "px-4 pt-3.5 pb-3.5 sm:px-5 sm:pt-4 sm:pb-4"
+                  : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
           )}
         >
           <CardTypeLabel type={data.type} compact={isCompact} />
@@ -448,7 +578,7 @@ export function PackageCard({
                   : "text-[0.95rem] sm:text-base",
               )}
             >
-              {data.destination || data.title || "Destino"}
+              {getCardPrimaryHeading(data)}
             </h3>
           ) : isDetailed ? (
             <ListingHeading data={data} />
@@ -472,24 +602,41 @@ export function PackageCard({
             </p>
           ) : null}
 
-          {showHotelName ? (
+          <PackageTravelDates
+            departureDate={data.departureDate}
+            returnDate={data.returnDate}
+            compact={isCompact}
+          />
+
+          {showDestinationAsSecondary ? (
+            <p className="mt-1.5 line-clamp-1 text-xs font-medium tracking-wide text-muted-foreground uppercase sm:text-sm">
+              {data.destination}
+            </p>
+          ) : null}
+
+          {showCruiseShipName ? (
             <p className="mt-1.5 line-clamp-1 text-xs font-medium tracking-wide text-muted-foreground uppercase sm:text-sm">
               {data.hotelName}
             </p>
           ) : null}
 
-          {isDetailed && data.type === "FLIGHT" && data.airline ? (
-            <p className="mt-1.5 text-xs font-medium text-foreground/80 sm:text-sm">{data.airline}</p>
-          ) : null}
-
           {isDetailed && data.shortDescription ? (
-            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground/80">
+            <p
+              className={cn(
+                "mt-2 text-sm leading-relaxed text-foreground/80",
+                isListing ? "line-clamp-2" : "line-clamp-3",
+              )}
+            >
               {data.shortDescription}
             </p>
           ) : null}
 
           {showChecklistBlock ? (
-            <IncludedItemsList items={data.includedItems} detailed={isDetailed} />
+            <IncludedItemsList
+              items={data.includedItems}
+              detailed={isDetailed}
+              tight={isListing}
+            />
           ) : null}
 
           {isDetailed && data.type === "FLIGHT" && !showChecklistBlock ? (
@@ -529,5 +676,7 @@ export function toPackageCardDataFromPublicPackage(
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems,
     featured: pkg.featured,
+    departureDate: pkg.departureDate,
+    returnDate: pkg.returnDate,
   };
 }

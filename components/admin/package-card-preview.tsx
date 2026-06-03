@@ -7,15 +7,21 @@ import { cn } from "@/lib/utils";
 
 type PackageCardPreviewProps = {
   data: PackageCardPreviewData;
+  departureCity?: string;
   imageSrc?: string;
   className?: string;
 };
 
-export function PackageCardPreview({ data, imageSrc, className }: PackageCardPreviewProps) {
+export function PackageCardPreview({
+  data,
+  departureCity = DEFAULT_DEPARTURE_CITY,
+  imageSrc,
+  className,
+}: PackageCardPreviewProps) {
   return (
     <PackageCard
       data={data}
-      departureCity={DEFAULT_DEPARTURE_CITY}
+      departureCity={departureCity}
       imageSrc={imageSrc}
       layout="preview"
       variant="preview"

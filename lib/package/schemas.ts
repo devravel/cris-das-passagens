@@ -7,6 +7,8 @@ import {
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
 } from "@/lib/package/constants";
+import { packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
+import { isValidPackageDateInput } from "@/lib/package/dates";
 
 const priceSchema = z.number().min(0, "O preço deve ser maior ou igual a zero.");
 
@@ -47,14 +49,13 @@ const packageFormFieldsSchema = z.object({
   highlightInstallments: z.boolean(),
   airline: z.string().trim(),
   hotelName: z.string().trim(),
+  departureCity: z.string().trim(),
+  departureDate: z.string().trim(),
+  returnDate: z.string().trim(),
   includedItems: z
     .array(z.string())
     .transform((items) => items.map((item) => item.trim()).filter(Boolean))
     .pipe(z.array(includedItemSchema).max(12, "Adicione no máximo 12 itens.")),
-  includesTickets: z.boolean(),
-  includesHotel: z.boolean(),
-  includesFlight: z.boolean(),
-  includesCruise: z.boolean(),
   showOnLandingPage: z.boolean(),
   active: z.boolean(),
   featured: z.boolean(),
@@ -93,14 +94,28 @@ function validatePackageRules(
     });
   }
 
-  if (type === "PACKAGE_COMPLETE") {
-    if (!data.includesFlight && !data.includesHotel && !data.includesTickets) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["includesFlight"],
-        message: "Selecione ao menos um item incluso no pacote.",
-      });
-    }
+  if (type === "HOTEL" && !data.hotelName.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["hotelName"],
+      message: "Informe o nome do hotel.",
+    });
+  }
+
+  if (packageTypeShowsDepartureCity(type) && !data.departureCity.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["departureCity"],
+      message: "Informe a cidade de origem.",
+    });
+  }
+
+  if (packageTypeShowsDepartureCity(type) && data.departureCity.trim().length > 80) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["departureCity"],
+      message: "A origem deve ter no máximo 80 caracteres.",
+    });
   }
 
   if (data.oldPrice != null && data.oldPrice <= data.price) {
@@ -116,6 +131,34 @@ function validatePackageRules(
       code: "custom",
       path: ["installmentText"],
       message: "Informe o parcelamento para destacá-lo no card.",
+    });
+  }
+
+  if (!isValidPackageDateInput(data.departureDate)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["departureDate"],
+      message: "Informe uma data de ida válida.",
+    });
+  }
+
+  if (!isValidPackageDateInput(data.returnDate)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["returnDate"],
+      message: "Informe uma data de volta válida.",
+    });
+  }
+
+  if (
+    data.departureDate.trim() &&
+    data.returnDate.trim() &&
+    data.returnDate < data.departureDate
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["returnDate"],
+      message: "A data de volta deve ser igual ou posterior à data de ida.",
     });
   }
 }
@@ -137,6 +180,8 @@ export type PackageCardData = {
   hotelName: string | null;
   includedItems: string[];
   featured: boolean;
+  departureDate: string | null;
+  returnDate: string | null;
 };
 
 export type PackageCardPreviewData = PackageCardData;
@@ -160,47 +205,9 @@ export function toPackageCardPreviewData(
     hotelName: values.hotelName.trim() || null,
     includedItems: values.includedItems.map((item) => item.trim()).filter(Boolean),
     featured: values.featured,
+    departureDate: values.departureDate.trim() || null,
+    returnDate: values.returnDate.trim() || null,
   };
-}
-
-export function getDefaultIncludesForType(type: PackageTypeValue) {
-  switch (type) {
-    case "FLIGHT":
-      return {
-        includesFlight: true,
-        includesHotel: false,
-        includesTickets: false,
-        includesCruise: false,
-      };
-    case "HOTEL":
-      return {
-        includesFlight: false,
-        includesHotel: true,
-        includesTickets: false,
-        includesCruise: false,
-      };
-    case "TICKET":
-      return {
-        includesFlight: false,
-        includesHotel: false,
-        includesTickets: true,
-        includesCruise: false,
-      };
-    case "CRUISE":
-      return {
-        includesFlight: false,
-        includesHotel: false,
-        includesTickets: false,
-        includesCruise: true,
-      };
-    default:
-      return {
-        includesFlight: true,
-        includesHotel: true,
-        includesTickets: false,
-        includesCruise: false,
-      };
-  }
 }
 
 export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
@@ -216,11 +223,10 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   highlightInstallments: false,
   airline: "",
   hotelName: "",
+  departureCity: "São Paulo, SP",
+  departureDate: "",
+  returnDate: "",
   includedItems: [],
-  includesTickets: false,
-  includesFlight: true,
-  includesHotel: true,
-  includesCruise: false,
   showOnLandingPage: true,
   active: true,
   featured: false,

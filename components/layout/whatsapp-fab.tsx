@@ -26,7 +26,7 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function WhatsAppFab({
   className,
-  label = "Fale com um agente",
+  label = "Em que podemos ajudar?",
 }: WhatsAppFabProps) {
   const [showBanner, setShowBanner] = useState(true);
 

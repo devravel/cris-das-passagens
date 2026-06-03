@@ -22,7 +22,7 @@ export const navigation: NavItem[] = [
   { label: "Início", href: "/" },
   { label: "Sobre", href: "/sobre" },
   { label: "Pacotes", href: "/pacotes" },
-  { label: "Blog", href: contentLinks.blog },
+  { label: "Blogs", href: contentLinks.blog },
   { label: "Avaliações", href: `/#${HOME_TESTIMONIALS_SECTION_ID}` },
 ];
 

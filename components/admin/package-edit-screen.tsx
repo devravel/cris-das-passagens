@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { PackageForm } from "@/components/admin/package-form";
 import { Button } from "@/components/ui/button";
+import { DEFAULT_PACKAGE_DEPARTURE_CITY, packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
 import type { AdminPackageDetail } from "@/lib/package/queries";
 
 type PackageEditScreenProps = {
@@ -52,11 +53,14 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
             highlightInstallments: pkg.highlightInstallments,
             airline: pkg.airline ?? "",
             hotelName: pkg.hotelName ?? "",
+            departureCity:
+              pkg.departureCity ??
+              (packageTypeShowsDepartureCity(pkg.type)
+                ? DEFAULT_PACKAGE_DEPARTURE_CITY
+                : ""),
+            departureDate: pkg.departureDate ?? "",
+            returnDate: pkg.returnDate ?? "",
             includedItems: pkg.includedItems,
-            includesTickets: pkg.includesTickets,
-            includesHotel: pkg.includesHotel,
-            includesFlight: pkg.includesFlight,
-            includesCruise: pkg.includesCruise,
             showOnLandingPage: pkg.showOnLandingPage,
             active: pkg.active,
             featured: pkg.featured,

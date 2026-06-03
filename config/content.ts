@@ -214,7 +214,7 @@ export const content = {
 
   testimonials: {
     title: "Veja o que os Clientes têm a dizer",
-    subtitle: "Muitos clientes já viveram essa experiência",
+    subtitle: "Depoimentos de quem já viveu essa experiência.",
     items: [
       {
         quote:
@@ -276,12 +276,13 @@ export const content = {
   },
 
   partners: {
-    title: "Empresas parceiras",
+    title: "Nossos parceiros",
     logos: [
-      { src: "/partners/partner-1.jpeg", alt: "Parceiro 1" },
-      { src: "/partners/partner-2.jpeg", alt: "Parceiro 2" },
-      { src: "/partners/partner-3.jpeg", alt: "Parceiro 3" },
-      { src: "/partners/partner-4.jpeg", alt: "Parceiro 4" },
+      { src: "/partners/debate-raiz.svg", alt: "Debate Raiz", size: "sm" },
+      { src: "/partners/bage-tv.svg", alt: "Bagé TV" },
+      { src: "/partners/por-ai-de-kombi.svg", alt: "Por Aí de Kombi" },
+      { src: "/partners/nicoly-owicki.svg", alt: "Nicoly Owicki", size: "sm" },
+      { src: "/partners/diogo-rossi.svg", alt: "Diogo Rossi", size: "sm" },
     ],
   },
 
@@ -386,6 +387,7 @@ export const content = {
   },
 
   finalCta: {
+    enabled: false,
     title: "Pronto para sua próxima viagem?",
     subtitle: "Solicite sua cotação agora mesmo.",
     footnote: "Atendimento humanizado · Pagamento facilitado",

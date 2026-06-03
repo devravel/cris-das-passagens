@@ -1,6 +1,11 @@
+"use client";
+
+import { useMemo, useState } from "react";
+
+import { PackageCategoryToggle } from "@/components/packages/package-category-toggle";
 import { PackagesListingSection } from "@/components/sections/packages/packages-listing-section";
 import { packagesPageContent, packagesPageSections } from "@/config/packages-page";
-import type { PackageTypeValue } from "@/lib/package/constants";
+import type { PackageCategoryValue, PackageTypeValue } from "@/lib/package/constants";
 import type { PackagesPageData, PublicPackage } from "@/lib/package/queries";
 
 type PackagesPageContentProps = {
@@ -25,12 +30,28 @@ function getPackagesForType(data: PackagesPageData, type: PackageTypeValue): Pub
 }
 
 export function PackagesPageContent({ data }: PackagesPageContentProps) {
-  const sections = packagesPageSections
-    .map((config) => ({
-      config,
-      packages: getPackagesForType(data, config.type),
-    }))
-    .filter((section) => section.packages.length > 0);
+  const [category, setCategory] = useState<PackageCategoryValue>("NATIONAL");
+
+  const sections = useMemo(
+    () =>
+      packagesPageSections
+        .map((config) => ({
+          config,
+          packages: getPackagesForType(data, config.type),
+        }))
+        .filter((section) => section.packages.length > 0),
+    [data],
+  );
+
+  const filterablePanelIds = useMemo(
+    () =>
+      sections
+        .filter(({ config }) => config.hasCategoryFilter)
+        .map(({ config }) => `${config.sectionId}-panel`),
+    [sections],
+  );
+
+  const showCategoryToggle = filterablePanelIds.length > 0;
 
   if (sections.length === 0) {
     return (
@@ -41,15 +62,31 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
   }
 
   return (
-    <div className="space-y-14 sm:space-y-16 lg:space-y-20">
-      {sections.map(({ config, packages }, index) => (
-        <PackagesListingSection
-          key={config.sectionId}
-          config={config}
-          packages={packages}
-          className={index > 0 ? "border-t border-border/50 pt-14 sm:pt-16 lg:pt-20" : undefined}
-        />
-      ))}
-    </div>
+    <>
+      {showCategoryToggle ? (
+        <div className="mb-10 flex justify-center sm:mb-12 lg:mb-14">
+          <PackageCategoryToggle
+            value={category}
+            onChange={setCategory}
+            layoutId="pacotes-page"
+            panelId={filterablePanelIds}
+            labelledBy="pacotes-page-heading"
+            className="w-full sm:w-auto"
+          />
+        </div>
+      ) : null}
+
+      <div className="space-y-14 sm:space-y-16 lg:space-y-20">
+        {sections.map(({ config, packages }, index) => (
+          <PackagesListingSection
+            key={config.sectionId}
+            config={config}
+            packages={packages}
+            category={category}
+            className={index > 0 ? "border-t border-border/50 pt-14 sm:pt-16 lg:pt-20" : undefined}
+          />
+        ))}
+      </div>
+    </>
   );
 }

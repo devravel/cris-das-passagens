@@ -1,5 +1,8 @@
 import { PackageShowcaseSection } from "@/components/sections/packages/package-showcase-section";
-import { packageShowcaseSections } from "@/config/packages-showcase";
+import {
+  LANDING_PACKAGE_CATEGORY_SECTIONS_ENABLED,
+  packageShowcaseSections,
+} from "@/config/packages-showcase";
 import type { PackageTypeValue } from "@/lib/package/constants";
 import { getHomepagePackages, type HomepagePackages } from "@/lib/package/queries";
 
@@ -27,6 +30,11 @@ function getPackagesForType(homepagePackages: HomepagePackages, type: PackageTyp
 }
 
 export async function HomePackagesSections() {
+  // Seções de categorias de pacotes desabilitadas temporariamente na Landing Page. Reativar quando necessário.
+  if (!LANDING_PACKAGE_CATEGORY_SECTIONS_ENABLED) {
+    return null;
+  }
+
   const homepagePackages = await getHomepagePackages();
 
   const sections = packageShowcaseSections

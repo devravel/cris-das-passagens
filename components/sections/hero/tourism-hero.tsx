@@ -114,6 +114,8 @@ export function TourismHero({
       bordered
       className={cn(
         "overflow-hidden pb-12 pt-8 sm:pb-20 sm:pt-14 lg:pb-24 lg:pt-16",
+        !hasFeatured &&
+          "min-[769px]:flex min-[769px]:min-h-[calc(100dvh-4.5rem)] min-[769px]:flex-col min-[769px]:justify-center min-[769px]:py-0",
         className,
       )}
       aria-labelledby="hero-headline"
@@ -121,7 +123,9 @@ export function TourismHero({
       <div
         className={cn(
           "grid items-start gap-8 sm:gap-10 lg:gap-14",
-          hasFeatured ? "lg:grid-cols-2 xl:gap-16" : "max-w-3xl",
+          hasFeatured
+            ? "lg:grid-cols-2 xl:gap-16"
+            : "max-w-3xl min-[769px]:mx-auto",
         )}
       >
         <div className="flex min-w-0 flex-col gap-6 sm:gap-7">
@@ -134,7 +138,11 @@ export function TourismHero({
           </motion.h1>
 
           <motion.p
-            className={cn("max-w-2xl", bodyTextClassName)}
+            className={cn(
+              "max-w-2xl",
+              bodyTextClassName,
+              "min-[321px]:max-[410px]:!text-center min-[321px]:max-[410px]:[hyphens:none]",
+            )}
             {...subheadlineEntrance}
           >
             {subheadline}
@@ -164,7 +172,10 @@ export function TourismHero({
         </div>
 
         {hasFeatured ? (
-          <motion.div className="min-w-0" {...featuredEntrance}>
+          <motion.div
+            className="min-w-0 w-full sm:min-w-[280px] lg:min-w-[300px]"
+            {...featuredEntrance}
+          >
             <HeroFeaturedPackages
               packages={featuredPackages}
               departureCity={departureCity}

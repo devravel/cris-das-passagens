@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 
@@ -9,10 +17,19 @@ import { cn } from "@/lib/utils";
 
 const CLIENT_ID_STORAGE_KEY = "cris-blog-like-client-id";
 
-type BlogPostLikeButtonProps = {
+type BlogPostLikeContextValue = {
+  liked: boolean;
+  likeCount: number;
+  isPending: boolean;
+  toggleLike: () => void;
+};
+
+const BlogPostLikeContext = createContext<BlogPostLikeContextValue | null>(null);
+
+type BlogPostLikeProviderProps = {
   postId: string;
   initialLikeCount: number;
-  className?: string;
+  children: ReactNode;
 };
 
 function getOrCreateClientId() {
@@ -46,16 +63,16 @@ function readInitialLiked(postId: string) {
   return window.localStorage.getItem(getLikedStorageKey(postId)) === "1";
 }
 
-export function BlogPostLikeButton({
+export function BlogPostLikeProvider({
   postId,
   initialLikeCount,
-  className,
-}: BlogPostLikeButtonProps) {
+  children,
+}: BlogPostLikeProviderProps) {
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [liked, setLiked] = useState(() => readInitialLiked(postId));
   const [isPending, startTransition] = useTransition();
 
-  function handleToggleLike() {
+  const toggleLike = useCallback(() => {
     const clientId = getOrCreateClientId();
     if (!clientId) return;
 
@@ -71,15 +88,56 @@ export function BlogPostLikeButton({
       setLikeCount(result.data.likeCount);
       window.localStorage.setItem(getLikedStorageKey(postId), result.data.liked ? "1" : "0");
     });
+  }, [postId]);
+
+  const value = useMemo(
+    () => ({
+      liked,
+      likeCount,
+      isPending,
+      toggleLike,
+    }),
+    [liked, likeCount, isPending, toggleLike],
+  );
+
+  return <BlogPostLikeContext.Provider value={value}>{children}</BlogPostLikeContext.Provider>;
+}
+
+function useBlogPostLike() {
+  const context = useContext(BlogPostLikeContext);
+
+  if (!context) {
+    throw new Error("BlogPostLikeButton must be used within BlogPostLikeProvider.");
   }
+
+  return context;
+}
+
+type BlogPostLikeButtonProps = {
+  className?: string;
+  variant?: "default" | "sidebar";
+};
+
+export function BlogPostLikeButton({
+  className,
+  variant = "default",
+}: BlogPostLikeButtonProps) {
+  const { liked, likeCount, isPending, toggleLike } = useBlogPostLike();
+
+  const likeCountLabel =
+    likeCount === 1 ? "1 Curtida" : `${likeCount} Curtidas`;
 
   return (
     <button
       type="button"
-      onClick={handleToggleLike}
+      onClick={toggleLike}
       disabled={isPending}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:border-brand/30 hover:bg-brand/5 disabled:opacity-60",
+        "inline-flex items-center gap-2 text-sm font-medium text-foreground transition-all duration-200 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
+        variant === "default" &&
+          "rounded-full border border-border/70 bg-background px-3 py-2 hover:border-brand/30 hover:bg-brand/5",
+        variant === "sidebar" &&
+          "w-full rounded-lg border border-border/70 bg-background px-3 py-2 hover:border-brand/30 hover:bg-brand/5",
         liked && "border-brand/40 bg-brand/10 text-brand",
         className,
       )}
@@ -94,8 +152,14 @@ export function BlogPostLikeButton({
         )}
         aria-hidden
       />
-      <span>{likeCount}</span>
-      <span>{liked ? "Curtido" : "Curtir"}</span>
+      {variant === "sidebar" ? (
+        <span>{likeCountLabel}</span>
+      ) : (
+        <>
+          <span>{likeCount}</span>
+          <span>{liked ? "Curtido" : "Curtir"}</span>
+        </>
+      )}
     </button>
   );
 }

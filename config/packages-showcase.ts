@@ -1,5 +1,13 @@
 import type { PackageTypeValue } from "@/lib/package/constants";
 
+/**
+ * Seções de categorias de pacotes desabilitadas temporariamente na Landing Page.
+ * Reativar quando necessário: defina como `true` para exibir Pacotes Completos,
+ * Passagens Aéreas e Hospedagem abaixo da Hero (a seção "Confira nossos melhores
+ * pacotes" na Hero permanece independente desta flag).
+ */
+export const LANDING_PACKAGE_CATEGORY_SECTIONS_ENABLED = false;
+
 export const DEFAULT_DEPARTURE_CITY = "São Paulo";
 
 export type PackageShowcaseConfig = {

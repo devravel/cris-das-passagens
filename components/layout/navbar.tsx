@@ -40,9 +40,28 @@ export type NavbarProps = {
   className?: string;
 };
 
+const HOME_HREF = "/";
+
 function routeIsActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
+  if (href === HOME_HREF) return pathname === HOME_HREF;
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function scrollToPageTop() {
+  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+}
+
+/** Logo e Início: na home, rola ao topo; em outras rotas, o Link navega (scroll padrão do Next). */
+function handleHomeLinkClick(
+  event: React.MouseEvent<HTMLAnchorElement>,
+  pathname: string,
+  href: string,
+  onNavigate?: () => void,
+) {
+  onNavigate?.();
+  if (href !== HOME_HREF || pathname !== HOME_HREF) return;
+  event.preventDefault();
+  scrollToPageTop();
 }
 
 function NavLink({
@@ -62,7 +81,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      onClick={onNavigate}
+      onClick={(event) => handleHomeLinkClick(event, pathname, href, onNavigate)}
       className={cn(
         "group relative inline-flex items-center py-1 text-[0.9375rem] font-medium tracking-tight transition-colors duration-200",
         active
@@ -179,7 +198,9 @@ function MobileNavLinks({
         const link = (
           <Link
             href={item.href}
-            onClick={onNavigate}
+            onClick={(event) =>
+              handleHomeLinkClick(event, pathname, item.href, onNavigate)
+            }
             className={cn(
               "block rounded-lg px-4 py-3.5 text-base font-medium tracking-tight transition-colors duration-200",
               active
@@ -220,6 +241,7 @@ export function Navbar({
   cta = navbarCta,
   className,
 }: NavbarProps) {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -245,6 +267,7 @@ export function Navbar({
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-18">
         <Link
           href={logoHref}
+          onClick={(event) => handleHomeLinkClick(event, pathname, logoHref)}
           className="group flex shrink-0 items-center rounded-md outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <Image
@@ -283,7 +306,7 @@ export function Navbar({
               <NavbarCtaButton
                 cta={cta}
                 compact
-                className="inline-flex sm:hidden"
+                className="inline-flex sm:hidden max-[320px]:h-8 max-[320px]:w-8 max-[320px]:min-w-8"
               />
             </>
           ) : null}
@@ -291,9 +314,9 @@ export function Navbar({
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button
-                variant="outline"
-                size="icon-sm"
-                className="shrink-0 rounded-lg border-border/80 bg-background/50 transition-[transform,background-color] duration-200 hover:bg-muted/80 active:scale-[0.98] lg:hidden"
+                variant="ghost"
+                size="icon"
+                className="shrink-0 rounded-lg bg-muted/50 text-foreground transition-[transform,background-color] duration-200 hover:bg-muted/80 active:scale-[0.98] max-[320px]:mr-1 lg:hidden"
                 aria-label="Abrir menu de navegação"
               >
                 <Menu className="size-[18px]" strokeWidth={1.75} />

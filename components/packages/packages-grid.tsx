@@ -48,6 +48,7 @@ export function PackagesGrid({
         ariaLabel="Pacotes disponíveis"
         variant="listing"
         showChecklist
+        showAirlineBadge
         anchorCards
       />
     </div>

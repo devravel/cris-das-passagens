@@ -1,4 +1,4 @@
-import { PackageCardsCarousel } from "@/components/packages/package-cards-carousel";
+import { PackageCardsContinuousCarousel } from "@/components/packages/package-cards-carousel-continuous";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -20,16 +20,24 @@ export function HeroFeaturedPackages({
   }
 
   return (
-    <div className={cn("flex min-w-0 flex-col gap-4 sm:gap-5", className)}>
+    <div
+      className={cn(
+        "flex w-full min-w-0 flex-col gap-4 sm:min-w-[280px] sm:gap-5 lg:min-w-[300px]",
+        className,
+      )}
+    >
       <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl lg:text-[1.35rem]">
         {title}
       </h2>
 
-      <PackageCardsCarousel
+      <PackageCardsContinuousCarousel
         packages={packages}
         departureCity={departureCity}
         ariaLabel="Pacotes em destaque"
         variant="landing"
+        showDots={packages.length > 1}
+        scrollHintAlwaysVisible
+        showNavButtons
       />
     </div>
   );

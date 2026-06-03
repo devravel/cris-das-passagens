@@ -1,13 +1,22 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+
+import { FEATURED_PACKAGES_CACHE_TAG } from "@/lib/package/cache-tags";
 import { z } from "zod";
 
+import { getActionErrorMessage } from "@/lib/admin/action-error";
 import type { ActionResult } from "@/lib/admin/action-result";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
 import { prisma } from "@/lib/prisma";
+import { parseOptionalPackageDateInput } from "@/lib/package/dates";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 import { packageFormSchema, type PackageFormValues } from "@/lib/package/schemas";
+import type { PackageTypeValue } from "@/lib/package/constants";
+import {
+  DEFAULT_PACKAGE_DEPARTURE_CITY,
+  packageTypeShowsDepartureCity,
+} from "@/lib/package/departure-city";
 import { uploadPackageImageToStorage } from "@/lib/package/storage";
 
 const uploadImageSchema = z.object({
@@ -36,7 +45,45 @@ function toFieldErrors(error: z.ZodError<PackageFormValues>) {
   return error.flatten().fieldErrors;
 }
 
+function normalizeAirlineAndHotel(
+  type: PackageTypeValue,
+  airline: string | null | undefined,
+  hotelName: string | null | undefined,
+) {
+  const trimmedAirline = airline?.trim() || null;
+  const trimmedHotel = hotelName?.trim() || null;
+
+  if (type === "PACKAGE_COMPLETE" || type === "FLIGHT") {
+    return { airline: trimmedAirline, hotelName: null };
+  }
+
+  if (type === "HOTEL") {
+    return { airline: null, hotelName: trimmedHotel };
+  }
+
+  if (type === "CRUISE") {
+    return { airline: null, hotelName: trimmedHotel };
+  }
+
+  return { airline: null, hotelName: null };
+}
+
+function normalizeDepartureCity(type: PackageTypeValue, departureCity: string | undefined) {
+  if (!packageTypeShowsDepartureCity(type)) {
+    return null;
+  }
+
+  return departureCity?.trim() || DEFAULT_PACKAGE_DEPARTURE_CITY;
+}
+
 function normalizeInput(input: PackageFormValues) {
+  const { airline, hotelName } = normalizeAirlineAndHotel(
+    input.type,
+    input.airline,
+    input.hotelName,
+  );
+  const departureCity = normalizeDepartureCity(input.type, input.departureCity);
+
   return {
     title: input.title.trim(),
     slug: input.slug.trim(),
@@ -49,13 +96,12 @@ function normalizeInput(input: PackageFormValues) {
     oldPrice: input.oldPrice ?? null,
     installmentText: input.installmentText?.trim() || null,
     highlightInstallments: input.highlightInstallments,
-    airline: input.airline?.trim() || null,
-    hotelName: input.hotelName?.trim() || null,
+    airline,
+    hotelName,
+    departureCity,
+    departureDate: parseOptionalPackageDateInput(input.departureDate),
+    returnDate: parseOptionalPackageDateInput(input.returnDate),
     includedItems: input.includedItems.map((item) => item.trim()).filter(Boolean),
-    includesTickets: input.includesTickets,
-    includesHotel: input.includesHotel,
-    includesFlight: input.includesFlight,
-    includesCruise: input.includesCruise,
     daysCount: input.daysCount ?? null,
     nightsCount: input.nightsCount ?? null,
     showOnLandingPage: input.showOnLandingPage,
@@ -65,6 +111,7 @@ function normalizeInput(input: PackageFormValues) {
 }
 
 function revalidatePackagePaths() {
+  updateTag(FEATURED_PACKAGES_CACHE_TAG);
   revalidatePath("/admin/packages");
   revalidatePath("/");
   revalidatePath("/pacotes");
@@ -114,10 +161,10 @@ export async function createPackageAction(
         : "Pacote criado como inativo.",
       data: pkg,
     };
-  } catch {
+  } catch (error) {
     return {
       ok: false,
-      message: "Não foi possível criar o pacote agora.",
+      message: getActionErrorMessage(error, "Não foi possível criar o pacote agora."),
     };
   }
 }
@@ -179,10 +226,10 @@ export async function updatePackageAction(
       ok: true,
       message: values.active ? "Pacote atualizado e ativo." : "Pacote atualizado como inativo.",
     };
-  } catch {
+  } catch (error) {
     return {
       ok: false,
-      message: "Não foi possível atualizar o pacote agora.",
+      message: getActionErrorMessage(error, "Não foi possível atualizar o pacote agora."),
     };
   }
 }

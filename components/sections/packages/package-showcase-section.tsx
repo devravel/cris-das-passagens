@@ -107,6 +107,7 @@ export function PackageShowcaseSection({
             packages={packages}
             departureCity={departureCity}
             ariaLabel={carouselLabel}
+            variant="landing"
           />
         </ScrollReveal>
       </div>

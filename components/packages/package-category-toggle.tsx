@@ -15,7 +15,7 @@ type PackageCategoryToggleProps = {
   value: PackageCategoryValue;
   onChange: (value: PackageCategoryValue) => void;
   layoutId: string;
-  panelId: string;
+  panelId: string | readonly string[];
   className?: string;
   labelledBy?: string;
 };
@@ -29,6 +29,7 @@ export function PackageCategoryToggle({
   labelledBy,
 }: PackageCategoryToggleProps) {
   const indicatorLayoutId = `${layoutId}-category-indicator`;
+  const panelControls = typeof panelId === "string" ? panelId : panelId.join(" ");
 
   function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, category: PackageCategoryValue) {
     const currentIndex = PACKAGE_CATEGORIES.indexOf(category);
@@ -74,7 +75,7 @@ export function PackageCategoryToggle({
             type="button"
             role="tab"
             aria-selected={isActive}
-            aria-controls={panelId}
+            aria-controls={panelControls}
             tabIndex={isActive ? 0 : -1}
             className={cn(
               "relative z-10 flex-1 rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:min-w-[7.5rem] sm:flex-none sm:px-4",

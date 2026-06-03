@@ -1,7 +1,10 @@
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+import { FEATURED_PACKAGES_CACHE_TAG } from "@/lib/package/cache-tags";
 import { prisma } from "@/lib/prisma";
 import type { PackageCategoryValue, PackageTypeValue } from "@/lib/package/constants";
+import { packageDateToIsoString } from "@/lib/package/dates";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 
 export type PublicPackage = {
@@ -20,10 +23,9 @@ export type PublicPackage = {
   airline: string | null;
   hotelName: string | null;
   includedItems: string[];
-  includesTickets: boolean;
-  includesHotel: boolean;
-  includesFlight: boolean;
-  includesCruise: boolean;
+  departureCity: string | null;
+  departureDate: string | null;
+  returnDate: string | null;
   daysCount: number | null;
   nightsCount: number | null;
   featured: boolean;
@@ -61,10 +63,9 @@ const publicPackageSelect = {
   airline: true,
   hotelName: true,
   includedItems: true,
-  includesTickets: true,
-  includesHotel: true,
-  includesFlight: true,
-  includesCruise: true,
+  departureCity: true,
+  departureDate: true,
+  returnDate: true,
   daysCount: true,
   nightsCount: true,
   featured: true,
@@ -103,10 +104,9 @@ function mapPublicPackage(
     airline: string | null;
     hotelName: string | null;
     includedItems: string[];
-    includesTickets: boolean;
-    includesHotel: boolean;
-    includesFlight: boolean;
-    includesCruise: boolean;
+    departureCity: string | null;
+    departureDate: Date | null;
+    returnDate: Date | null;
     daysCount: number | null;
     nightsCount: number | null;
     featured: boolean;
@@ -128,10 +128,9 @@ function mapPublicPackage(
     airline: pkg.airline,
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems ?? [],
-    includesTickets: pkg.includesTickets,
-    includesHotel: pkg.includesHotel,
-    includesFlight: pkg.includesFlight,
-    includesCruise: pkg.includesCruise,
+    departureCity: pkg.departureCity,
+    departureDate: packageDateToIsoString(pkg.departureDate),
+    returnDate: packageDateToIsoString(pkg.returnDate),
     daysCount: pkg.daysCount,
     nightsCount: pkg.nightsCount,
     featured: pkg.featured,
@@ -148,19 +147,30 @@ function splitPackagesByType(packages: PublicPackage[]): HomepagePackages {
   };
 }
 
+async function fetchFeaturedPackagesFromDb(): Promise<PublicPackage[]> {
+  const packages = await prisma.package.findMany({
+    where: {
+      active: true,
+      featured: true,
+    },
+    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+    select: publicPackageSelect,
+  });
+
+  return packages.map(mapPublicPackage);
+}
+
+const getCachedFeaturedPackages = unstable_cache(
+  fetchFeaturedPackagesFromDb,
+  ["featured-packages"],
+  { tags: [FEATURED_PACKAGES_CACHE_TAG] },
+);
+
 export const getFeaturedPackages = cache(async (): Promise<PublicPackage[]> => {
   try {
-    const packages = await prisma.package.findMany({
-      where: {
-        active: true,
-        featured: true,
-      },
-      orderBy: [{ createdAt: "desc" }],
-      select: publicPackageSelect,
-    });
-
-    return packages.map(mapPublicPackage);
-  } catch {
+    return await getCachedFeaturedPackages();
+  } catch (error) {
+    console.error("[getFeaturedPackages] Failed to load featured packages:", error);
     return [];
   }
 });
@@ -232,10 +242,9 @@ export type AdminPackageListItem = {
   airline: string | null;
   hotelName: string | null;
   includedItems: string[];
-  includesTickets: boolean;
-  includesHotel: boolean;
-  includesFlight: boolean;
-  includesCruise: boolean;
+  departureCity: string | null;
+  departureDate: string | null;
+  returnDate: string | null;
   daysCount: number | null;
   nightsCount: number | null;
   showOnLandingPage: boolean;
@@ -261,10 +270,9 @@ const adminPackageSelect = {
   airline: true,
   hotelName: true,
   includedItems: true,
-  includesTickets: true,
-  includesHotel: true,
-  includesFlight: true,
-  includesCruise: true,
+  departureCity: true,
+  departureDate: true,
+  returnDate: true,
   daysCount: true,
   nightsCount: true,
   showOnLandingPage: true,
@@ -291,10 +299,9 @@ function mapAdminPackage(
     airline: string | null;
     hotelName: string | null;
     includedItems: string[];
-    includesTickets: boolean;
-    includesHotel: boolean;
-    includesFlight: boolean;
-    includesCruise: boolean;
+    departureCity: string | null;
+    departureDate: Date | null;
+    returnDate: Date | null;
     daysCount: number | null;
     nightsCount: number | null;
     showOnLandingPage: boolean;
@@ -320,10 +327,9 @@ function mapAdminPackage(
     airline: pkg.airline,
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems ?? [],
-    includesTickets: pkg.includesTickets,
-    includesHotel: pkg.includesHotel,
-    includesFlight: pkg.includesFlight,
-    includesCruise: pkg.includesCruise,
+    departureCity: pkg.departureCity,
+    departureDate: packageDateToIsoString(pkg.departureDate),
+    returnDate: packageDateToIsoString(pkg.returnDate),
     daysCount: pkg.daysCount,
     nightsCount: pkg.nightsCount,
     showOnLandingPage: pkg.showOnLandingPage,

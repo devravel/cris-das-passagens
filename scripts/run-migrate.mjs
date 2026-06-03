@@ -30,4 +30,8 @@ execSync("npx prisma migrate deploy", {
   },
 });
 
+console.log("Regenerating Prisma Client...");
+execSync("npx prisma generate", { stdio: "inherit" });
+
 console.log("Migrations applied successfully.");
+console.log("Reinicie o servidor de desenvolvimento (npm run dev) se ele estiver aberto.");

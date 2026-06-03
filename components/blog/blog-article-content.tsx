@@ -11,6 +11,7 @@ export function BlogArticleContent({ html, className }: BlogArticleContentProps)
 
   return (
     <div
+      data-article-content
       className={cn(blogArticleContentClassName, className)}
       dangerouslySetInnerHTML={{ __html: enhancedHtml }}
     />

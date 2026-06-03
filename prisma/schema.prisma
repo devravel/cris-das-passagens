@@ -88,10 +88,9 @@ model Package {
   airline               String?
   hotelName             String?
   includedItems         String[]         @default([])
-  includesTickets       Boolean          @default(false)
-  includesHotel         Boolean          @default(false)
-  includesFlight        Boolean          @default(false)
-  includesCruise        Boolean          @default(false)
+  departureCity         String?
+  departureDate         DateTime?        @db.Date
+  returnDate            DateTime?        @db.Date
   daysCount             Int?
   nightsCount           Int?
   showOnLandingPage     Boolean          @default(true)

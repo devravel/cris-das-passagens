@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PublicPackageCard } from "@/components/packages/public-package-card";
+import { CarouselDots } from "@/components/ui/carousel-dots";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,7 @@ type PackageCardsCarouselProps = {
   className?: string;
   variant?: "landing" | "listing";
   showChecklist?: boolean;
+  showAirlineBadge?: boolean;
   anchorCards?: boolean;
   cardClassName?: string;
 };
@@ -29,8 +31,28 @@ const CARD_GAP_DESKTOP = 14;
 
 /** Largura mínima confortável para cards compactos (landing) em desktop. */
 const LANDING_MIN_CARD_WIDTH = 160;
-/** Largura mínima confortável para cards detalhados (listing) em desktop. */
-const LISTING_MIN_CARD_WIDTH = 240;
+/** Largura mínima para cards de listing em desktop (≥1024px). */
+const LISTING_MIN_CARD_WIDTH_DESKTOP = 240;
+/** Largura mínima em tablet largo (768px–1023px) — permite 3 cards com boa legibilidade. */
+const LISTING_MIN_CARD_WIDTH_TABLET = 196;
+/** Largura mínima em tablet estreito (640px–767px) — mantém 2 cards com proporções de referência. */
+const LISTING_MIN_CARD_WIDTH_SMALL_TABLET = 188;
+/** Faixa mobile largo (426px–639px) — alinhada à proporção visual de 640px com 2 colunas. */
+const LISTING_MID_VIEWPORT_MIN = 426;
+/** Largura típica de card com 2 colunas em viewport de 640px (track ~536px, gap 14px). */
+const LISTING_REFERENCE_CARD_WIDTH_AT_640 = 261;
+
+function getListingMinCardWidth(viewportWidth: number): number {
+  if (viewportWidth >= 1024) {
+    return LISTING_MIN_CARD_WIDTH_DESKTOP;
+  }
+
+  if (viewportWidth >= 768) {
+    return LISTING_MIN_CARD_WIDTH_TABLET;
+  }
+
+  return LISTING_MIN_CARD_WIDTH_SMALL_TABLET;
+}
 
 function getCardGap(viewportWidth: number): number {
   return viewportWidth >= 640 ? CARD_GAP_DESKTOP : CARD_GAP_MOBILE;
@@ -61,23 +83,37 @@ function getCardsPerView(
   viewportWidth: number,
   variant: "landing" | "listing",
 ): number {
-  if (viewportWidth < 1024) {
-    if (variant === "listing") {
-      if (viewportWidth >= 640) return 2;
+  if (variant === "listing") {
+    if (viewportWidth < LISTING_MID_VIEWPORT_MIN) {
       return 1;
     }
 
+    if (viewportWidth < 640) {
+      const gap = getCardGap(viewportWidth);
+      return resolveCardsPerView(
+        trackWidth,
+        gap,
+        2,
+        LISTING_MIN_CARD_WIDTH_SMALL_TABLET,
+      );
+    }
+
+    const gap = getCardGap(viewportWidth);
+    return resolveCardsPerView(
+      trackWidth,
+      gap,
+      3,
+      getListingMinCardWidth(viewportWidth),
+    );
+  }
+
+  if (viewportWidth < 1024) {
     if (viewportWidth >= 640) return 2;
     return 1;
   }
 
   const gap = getCardGap(viewportWidth);
-  const maxCards =
-    variant === "listing" ? (viewportWidth >= 1280 ? 4 : 3) : 3;
-  const minCardWidth =
-    variant === "landing" ? LANDING_MIN_CARD_WIDTH : LISTING_MIN_CARD_WIDTH;
-
-  return resolveCardsPerView(trackWidth, gap, maxCards, minCardWidth);
+  return resolveCardsPerView(trackWidth, gap, 3, LANDING_MIN_CARD_WIDTH);
 }
 
 function computeCarouselLayout(
@@ -88,7 +124,15 @@ function computeCarouselLayout(
   const gap = getCardGap(viewportWidth);
   const cardsPerView = getCardsPerView(trackWidth, viewportWidth, variant);
   const totalGap = gap * Math.max(cardsPerView - 1, 0);
-  const cardWidth = trackWidth > 0 ? Math.max(0, (trackWidth - totalGap) / cardsPerView) : 0;
+  let cardWidth = trackWidth > 0 ? Math.max(0, (trackWidth - totalGap) / cardsPerView) : 0;
+
+  if (
+    variant === "listing" &&
+    viewportWidth >= LISTING_MID_VIEWPORT_MIN &&
+    viewportWidth < 640
+  ) {
+    cardWidth = Math.min(cardWidth, LISTING_REFERENCE_CARD_WIDTH_AT_640);
+  }
 
   return { cardWidth, gap, cardsPerView };
 }
@@ -106,6 +150,7 @@ export function PackageCardsCarousel({
   className,
   variant = "landing",
   showChecklist = false,
+  showAirlineBadge = false,
   anchorCards = false,
   cardClassName,
 }: PackageCardsCarouselProps) {
@@ -113,18 +158,26 @@ export function PackageCardsCarousel({
   const [layout, setLayout] = useState<CarouselLayout | null>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(1);
 
   const updateScrollState = useCallback(() => {
     const track = trackRef.current;
 
-    if (!track) {
+    if (!track || !layout) {
       return;
     }
 
     const maxScroll = track.scrollWidth - track.clientWidth;
     setCanScrollPrev(track.scrollLeft > 8);
     setCanScrollNext(maxScroll > 8 && track.scrollLeft < maxScroll - 8);
-  }, []);
+
+    // Calculate current page based on scroll position
+    const scrollPosition = track.scrollLeft;
+    const pageWidth = track.clientWidth;
+    const newCurrentPage = Math.round(scrollPosition / pageWidth);
+    setCurrentPage(Math.max(0, Math.min(newCurrentPage, pageCount - 1)));
+  }, [layout, pageCount]);
 
   const syncLayout = useCallback(() => {
     const track = trackRef.current;
@@ -139,9 +192,31 @@ export function PackageCardsCarousel({
       variant,
     );
 
-    setLayout(nextLayout);
+    setLayout((currentLayout) => {
+      // Only update if there's a meaningful change
+      if (!currentLayout || 
+          Math.abs(currentLayout.cardWidth - nextLayout.cardWidth) > 1 ||
+          currentLayout.cardsPerView !== nextLayout.cardsPerView ||
+          currentLayout.gap !== nextLayout.gap) {
+        return nextLayout;
+      }
+      return currentLayout;
+    });
+
+    // Calculate page count based on packages and cards per view
+    const newPageCount = nextLayout.cardsPerView > 0 
+      ? Math.ceil(packages.length / nextLayout.cardsPerView)
+      : 1;
+    
+    setPageCount((currentPageCount) => {
+      if (currentPageCount !== newPageCount) {
+        return newPageCount;
+      }
+      return currentPageCount;
+    });
+
     updateScrollState();
-  }, [updateScrollState, variant]);
+  }, [updateScrollState, variant, packages.length]);
 
   useLayoutEffect(() => {
     syncLayout();
@@ -177,6 +252,22 @@ export function PackageCardsCarousel({
     });
   }, []);
 
+  const goToPage = useCallback((pageIndex: number) => {
+    const track = trackRef.current;
+
+    if (!track) {
+      return;
+    }
+
+    const pageWidth = track.clientWidth;
+    const targetScrollLeft = pageIndex * pageWidth;
+
+    track.scrollTo({
+      left: targetScrollLeft,
+      behavior: "smooth",
+    });
+  }, []);
+
   if (packages.length === 0) {
     return null;
   }
@@ -200,7 +291,7 @@ export function PackageCardsCarousel({
 
         <div
           ref={trackRef}
-          className="min-w-0 flex-1 snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 flex-1 snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
           role="region"
           aria-roledescription="carousel"
           aria-label={ariaLabel}
@@ -228,8 +319,9 @@ export function PackageCardsCarousel({
                   layout="carousel"
                   variant={variant}
                   size={variant === "landing" ? "compact" : "default"}
-                  priority={variant === "listing" ? index < 4 : index === 0}
+                  priority={index < 4}
                   showChecklist={showChecklist}
+                  showAirlineBadge={showAirlineBadge}
                   className={cn("h-full min-w-0", cardClassName)}
                 />
               </div>
@@ -247,6 +339,17 @@ export function PackageCardsCarousel({
           <ChevronRight className={navIconClassName} aria-hidden />
         </button>
       </div>
+
+      {hasOverflow && pageCount > 1 ? (
+        <CarouselDots
+          pageCount={pageCount}
+          activeIndex={currentPage}
+          onSelect={goToPage}
+          ariaLabel="Navegar pacotes"
+          getItemLabel={(index, total) => `Ver página ${index + 1} de ${total} dos pacotes`}
+          className="mt-4 lg:hidden"
+        />
+      ) : null}
 
       {hasOverflow ? (
         <p className="mt-2 text-center text-xs text-muted-foreground sm:hidden">

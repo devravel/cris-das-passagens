@@ -31,12 +31,19 @@ import {
 } from "@/lib/package/constants";
 import {
   EMPTY_PACKAGE_FORM_VALUES,
-  getDefaultIncludesForType,
   packageFormSchema,
   toPackageCardPreviewData,
   type PackageFormInput,
   type PackageFormValues,
 } from "@/lib/package/schemas";
+import {
+  DEFAULT_PACKAGE_DEPARTURE_CITY,
+  PACKAGE_DEPARTURE_CITY_PRESETS,
+  departureCityFromPreset,
+  packageTypeShowsDepartureCity,
+  resolveDepartureCityPreset,
+  type DepartureCityPresetId,
+} from "@/lib/package/departure-city";
 import { resolveStorageImageSrc } from "@/lib/storage/media-url";
 import { cn } from "@/lib/utils";
 
@@ -61,15 +68,6 @@ export function PackageForm({
   const [previewErroredUrl, setPreviewErroredUrl] = useState<string | null>(
     null,
   );
-  const [informAirlineAndHotel, setInformAirlineAndHotel] = useState(() => {
-    if (mode === "edit") {
-      return Boolean(
-        initialValues?.airline?.trim() || initialValues?.hotelName?.trim(),
-      );
-    }
-
-    return false;
-  });
 
   const values = useMemo(
     () => ({
@@ -92,6 +90,13 @@ export function PackageForm({
     "PACKAGE_COMPLETE") as PackageTypeValue;
   const imageValue = watchedValues.image ?? "";
   const showCategory = PACKAGE_TYPES_WITH_CATEGORY.has(typeValue);
+  const showAirlineFieldAfterDestination =
+    typeValue === "FLIGHT" || typeValue === "PACKAGE_COMPLETE";
+  const showHotelField = typeValue === "HOTEL";
+  const showDepartureCityField = packageTypeShowsDepartureCity(typeValue);
+  const departureCityValue =
+    watchedValues.departureCity ?? DEFAULT_PACKAGE_DEPARTURE_CITY;
+  const departurePreset = resolveDepartureCityPreset(departureCityValue);
 
   const previewUrl = useMemo(() => {
     if (!imageValue.trim()) {
@@ -133,26 +138,44 @@ export function PackageForm({
 
     previousTypeRef.current = typeValue;
 
-    const defaults = getDefaultIncludesForType(typeValue);
-    form.setValue("includesFlight", defaults.includesFlight, {
-      shouldDirty: true,
-    });
-    form.setValue("includesHotel", defaults.includesHotel, {
-      shouldDirty: true,
-    });
-    form.setValue("includesTickets", defaults.includesTickets, {
-      shouldDirty: true,
-    });
-    form.setValue("includesCruise", defaults.includesCruise, {
-      shouldDirty: true,
-    });
+    if (showAirlineFieldAfterDestination) {
+      form.setValue("hotelName", "", { shouldDirty: true, shouldValidate: true });
+    } else if (showHotelField) {
+      form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
+    } else {
+      form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
+      if (typeValue === "TICKET") {
+        form.setValue("hotelName", "", { shouldDirty: true, shouldValidate: true });
+      }
+    }
 
     if (!PACKAGE_TYPES_WITH_CATEGORY.has(typeValue)) {
       form.setValue("category", null, { shouldDirty: true });
     } else if (!form.getValues("category")) {
       form.setValue("category", "NATIONAL", { shouldDirty: true });
     }
-  }, [form, typeValue]);
+
+    if (!packageTypeShowsDepartureCity(typeValue)) {
+      form.setValue("departureCity", "", { shouldDirty: true, shouldValidate: true });
+    } else if (!form.getValues("departureCity")?.trim()) {
+      form.setValue("departureCity", DEFAULT_PACKAGE_DEPARTURE_CITY, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [form, showAirlineFieldAfterDestination, showHotelField, typeValue]);
+
+  function handleDeparturePresetChange(preset: DepartureCityPresetId) {
+    if (preset === "OTHER") {
+      form.setValue("departureCity", "", { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    form.setValue("departureCity", departureCityFromPreset(preset), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }
 
   function handleAutoSlug() {
     const destination = form.getValues("destination");
@@ -201,80 +224,6 @@ export function PackageForm({
     >
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
         <div className="space-y-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="slug"
-                className="text-sm font-medium text-foreground"
-              >
-                Slug
-              </label>
-              <div className="flex gap-2">
-                <Input
-                  id="slug"
-                  className="h-10 rounded-xl"
-                  placeholder="rio-de-janeiro"
-                  {...form.register("slug")}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-10 shrink-0 rounded-xl"
-                  onClick={handleAutoSlug}
-                >
-                  <Wand2 className="size-4" aria-hidden />
-                  Gerar
-                </Button>
-              </div>
-              {form.formState.errors.slug ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.slug.message}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="space-y-1.5">
-              <label
-                htmlFor="destination"
-                className="text-sm font-medium text-foreground"
-              >
-                Destino
-              </label>
-              <Input
-                id="destination"
-                className="h-10 rounded-xl"
-                placeholder="Ex.: Rio de Janeiro - RJ"
-                {...form.register("destination")}
-              />
-              {form.formState.errors.destination ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.destination.message}
-                </p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label
-              htmlFor="shortDescription"
-              className="text-sm font-medium text-foreground"
-            >
-              Descrição curta{" "}
-              <span className="text-muted-foreground">(opcional)</span>
-            </label>
-            <Textarea
-              id="shortDescription"
-              className="min-h-24 rounded-xl"
-              placeholder="Resumo premium exibido no card do pacote."
-              {...form.register("shortDescription")}
-            />
-            {form.formState.errors.shortDescription ? (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.shortDescription.message}
-              </p>
-            ) : null}
-          </div>
-
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label
@@ -338,6 +287,225 @@ export function PackageForm({
                   </p>
                 ) : null}
               </div>
+            ) : null}
+          </div>
+
+          {showHotelField ? (
+            <div className="space-y-1.5">
+              <label
+                htmlFor="hotelName"
+                className="text-sm font-medium text-foreground"
+              >
+                Hotel
+              </label>
+              <Input
+                id="hotelName"
+                className="h-10 rounded-xl"
+                placeholder="Ex.: Disney's All-Star Movies"
+                {...form.register("hotelName")}
+              />
+              {form.formState.errors.hotelName ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.hotelName.message}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="destination"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Destino
+                </label>
+                <Input
+                  id="destination"
+                  className="h-10 rounded-xl"
+                  placeholder="Ex.: Rio de Janeiro - RJ"
+                  {...form.register("destination")}
+                />
+                {form.formState.errors.destination ? (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.destination.message}
+                  </p>
+                ) : null}
+              </div>
+
+              {showAirlineFieldAfterDestination ? (
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="airline"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Companhia aérea{" "}
+                    <span className="text-muted-foreground">(opcional)</span>
+                  </label>
+                  <Input
+                    id="airline"
+                    className="h-10 rounded-xl"
+                    placeholder="Ex.: Azul, Gol, LATAM, TAP, Emirates"
+                    {...form.register("airline")}
+                  />
+                  {form.formState.errors.airline ? (
+                    <p className="text-xs text-destructive">
+                      {form.formState.errors.airline.message}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="slug"
+                className="text-sm font-medium text-foreground"
+              >
+                Slug
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  id="slug"
+                  className="h-10 rounded-xl"
+                  placeholder="rio-de-janeiro"
+                  {...form.register("slug")}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 shrink-0 rounded-xl"
+                  onClick={handleAutoSlug}
+                >
+                  <Wand2 className="size-4" aria-hidden />
+                  Gerar
+                </Button>
+              </div>
+              {form.formState.errors.slug ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.slug.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          {showDepartureCityField ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="departureCityPreset"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Saindo de
+                </label>
+                <select
+                  id="departureCityPreset"
+                  className={selectClassName}
+                  value={departurePreset}
+                  onChange={(event) =>
+                    handleDeparturePresetChange(
+                      event.target.value as DepartureCityPresetId,
+                    )
+                  }
+                >
+                  <option value="SAO_PAULO">
+                    {PACKAGE_DEPARTURE_CITY_PRESETS.SAO_PAULO}
+                  </option>
+                  <option value="PORTO_ALEGRE">
+                    {PACKAGE_DEPARTURE_CITY_PRESETS.PORTO_ALEGRE}
+                  </option>
+                  <option value="OTHER">Outro</option>
+                </select>
+              </div>
+
+              {departurePreset === "OTHER" ? (
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="departureCity"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Cidade, Estado
+                  </label>
+                  <Input
+                    id="departureCity"
+                    className="h-10 rounded-xl"
+                    placeholder="Ex.: Curitiba, PR"
+                    {...form.register("departureCity")}
+                  />
+                </div>
+              ) : null}
+
+              {form.formState.errors.departureCity ? (
+                <p className="text-xs text-destructive sm:col-span-2">
+                  {form.formState.errors.departureCity.message}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="departureDate"
+                className="text-sm font-medium text-foreground"
+              >
+                Ida{" "}
+                <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="departureDate"
+                type="date"
+                className="h-10 rounded-xl"
+                {...form.register("departureDate")}
+              />
+              {form.formState.errors.departureDate ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.departureDate.message}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="returnDate"
+                className="text-sm font-medium text-foreground"
+              >
+                Volta{" "}
+                <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="returnDate"
+                type="date"
+                className="h-10 rounded-xl"
+                {...form.register("returnDate")}
+              />
+              {form.formState.errors.returnDate ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.returnDate.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="shortDescription"
+              className="text-sm font-medium text-foreground"
+            >
+              Descrição curta{" "}
+              <span className="text-muted-foreground">(opcional)</span>
+            </label>
+            <Textarea
+              id="shortDescription"
+              className="min-h-24 rounded-xl"
+              placeholder="Resumo premium exibido no card do pacote."
+              {...form.register("shortDescription")}
+            />
+            {form.formState.errors.shortDescription ? (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.shortDescription.message}
+              </p>
             ) : null}
           </div>
 
@@ -430,49 +598,6 @@ export function PackageForm({
             Destacar parcelamento
           </label>
 
-          {typeValue === "PACKAGE_COMPLETE" ? (
-            <fieldset className="space-y-2 rounded-xl border border-border/70 bg-muted/20 p-3">
-              <legend className="px-1 text-sm font-medium text-foreground">
-                Composição do pacote
-              </legend>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {(
-                  [
-                    ["includesFlight", "Voo"],
-                    ["includesHotel", "Hotel"],
-                    ["includesTickets", "Ingressos"],
-                    ["includesCruise", "Cruzeiro"],
-                  ] as const
-                ).map(([field, label]) => (
-                  <label
-                    key={field}
-                    htmlFor={field}
-                    className="inline-flex cursor-pointer items-center gap-2 text-sm"
-                  >
-                    <input
-                      id={field}
-                      type="checkbox"
-                      className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      checked={Boolean(watchedValues[field])}
-                      onChange={(event) =>
-                        form.setValue(field, event.target.checked, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        })
-                      }
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-              {form.formState.errors.includesFlight ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.includesFlight.message}
-                </p>
-              ) : null}
-            </fieldset>
-          ) : null}
-
           <PackageIncludedItemsField
             value={watchedValues.includedItems ?? []}
             onChange={(items) =>
@@ -483,86 +608,6 @@ export function PackageForm({
             }
             error={form.formState.errors.includedItems?.message}
           />
-
-          <div className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3">
-            <label
-              htmlFor="informAirlineAndHotel"
-              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
-            >
-              <input
-                id="informAirlineAndHotel"
-                type="checkbox"
-                className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                checked={informAirlineAndHotel}
-                onChange={(event) => {
-                  const checked = event.target.checked;
-                  setInformAirlineAndHotel(checked);
-
-                  if (!checked) {
-                    form.setValue("airline", "", {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    });
-                    form.setValue("hotelName", "", {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    });
-                  }
-                }}
-              />
-              Informar companhia aérea e hotel
-            </label>
-
-            {informAirlineAndHotel ? (
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor="airline"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Companhia aérea{" "}
-                    <span className="text-muted-foreground">(opcional)</span>
-                  </label>
-                  <Input
-                    id="airline"
-                    className="h-10 rounded-xl"
-                    placeholder="Ex.: LATAM"
-                    {...form.register("airline")}
-                  />
-                  {form.formState.errors.airline ? (
-                    <p className="text-xs text-destructive">
-                      {form.formState.errors.airline.message}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor="hotelName"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    {typeValue === "CRUISE" ? "Navio / cruzeiro" : "Hotel"}{" "}
-                    <span className="text-muted-foreground">(opcional)</span>
-                  </label>
-                  <Input
-                    id="hotelName"
-                    className="h-10 rounded-xl"
-                    placeholder={
-                      typeValue === "CRUISE"
-                        ? "Ex.: MSC Seaview"
-                        : "Ex.: Disney's All-Star Movies"
-                    }
-                    {...form.register("hotelName")}
-                  />
-                  {form.formState.errors.hotelName ? (
-                    <p className="text-xs text-destructive">
-                      {form.formState.errors.hotelName.message}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
-          </div>
 
           <div className="space-y-1.5">
             <label
@@ -627,6 +672,9 @@ export function PackageForm({
               />
               Destaque
             </label>
+            <p className="w-full text-xs text-muted-foreground">
+              Todos os pacotes ativos em destaque aparecem no carrossel da homepage (deslize ou use as setas).
+            </p>
             <label
               htmlFor="showOnLandingPage"
               className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
@@ -657,6 +705,11 @@ export function PackageForm({
           </p>
           <PackageCardPreview
             data={cardPreviewData}
+            departureCity={
+              showDepartureCityField
+                ? departureCityValue.trim() || DEFAULT_PACKAGE_DEPARTURE_CITY
+                : DEFAULT_PACKAGE_DEPARTURE_CITY
+            }
             imageSrc={hasValidPreview ? previewSrc : undefined}
           />
         </div>
