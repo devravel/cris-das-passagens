@@ -8,10 +8,12 @@ import {
   createOrganizationJsonLd,
   createWebsiteJsonLd,
   rootMetadata,
+  rootViewport,
 } from "@/lib/seo";
 import "./globals.css";
 
 export const metadata = rootMetadata;
+export const viewport = rootViewport;
 
 export default function RootLayout({
   children,

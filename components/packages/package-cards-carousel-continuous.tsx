@@ -7,6 +7,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type PointerEvent,
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -43,6 +44,8 @@ const CARD_GAP_DESKTOP = 14;
 const MOBILE_AUTOPLAY_MAX_WIDTH_PX = 640;
 /** Mesma velocidade da seção de parceiros (PartnersLogosCarousel). */
 const MOBILE_AUTOPLAY_SPEED_PX_PER_MS = 0.036;
+/** Destrava pausa presa no Safari iOS (ex.: touchcancel sem touchend). */
+const PAUSE_RECOVERY_MS = 2500;
 /** Limite de cópias renderizadas para o loop infinito (mobile). */
 const MAX_COPIES = 8;
 /** Largura mínima confortável para cards compactos (landing) em desktop. */
@@ -390,13 +393,9 @@ export function PackageCardsContinuousCarousel({
   }, []);
 
   // Autoplay mobile: mesma estratégia de PartnersLogosCarousel (RAF + scrollLeft + loop).
+  // isPausedRef controla pausa dentro do tick — o RAF permanece ativo para retomar sem remount.
   useEffect(() => {
-    if (
-      !isMobileAutoplay ||
-      reduceMotion ||
-      isPaused ||
-      packages.length === 0
-    ) {
+    if (!isMobileAutoplay || reduceMotion || packages.length === 0) {
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -409,9 +408,14 @@ export function PackageCardsContinuousCarousel({
     const tick = (timestamp: number) => {
       const container = containerRef.current;
 
-      if (!container || isPausedRef.current || document.hidden) {
+      if (!container) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (isPausedRef.current || document.hidden) {
         lastFrameTimeRef.current = null;
-        rafRef.current = null;
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 
@@ -449,7 +453,26 @@ export function PackageCardsContinuousCarousel({
 
       lastFrameTimeRef.current = null;
     };
-  }, [isMobileAutoplay, isPaused, reduceMotion, packages.length]);
+  }, [isMobileAutoplay, reduceMotion, packages.length]);
+
+  // Safety net: destrava isInteractingRef preso após gestos cancelados no Safari iOS.
+  useEffect(() => {
+    if (!isMobileAutoplay || !isPaused || reduceMotion || packages.length === 0) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (isInteractingRef.current) {
+        isInteractingRef.current = false;
+      }
+
+      applyPaused();
+    }, PAUSE_RECOVERY_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isMobileAutoplay, isPaused, reduceMotion, packages.length, applyPaused]);
 
   useEffect(() => {
     function handleVisibilityChange() {
@@ -520,6 +543,22 @@ export function PackageCardsContinuousCarousel({
     endInteraction();
   }
 
+  function handleTouchCancel() {
+    if (!isMobileAutoplay) {
+      return;
+    }
+
+    endInteraction();
+  }
+
+  function handlePointerCancel(event: PointerEvent<HTMLDivElement>) {
+    if (!isMobileAutoplay || event.pointerType !== "touch") {
+      return;
+    }
+
+    endInteraction();
+  }
+
   if (packages.length === 0) {
     return null;
   }
@@ -546,6 +585,8 @@ export function PackageCardsContinuousCarousel({
         aria-label={ariaLabel}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
+        onPointerCancel={handlePointerCancel}
         onScroll={isMobileAutoplay ? undefined : updateScrollState}
       >
         <div

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { content } from "@/config/content";
 import { siteConfig } from "@/config/site";
@@ -134,6 +134,11 @@ export function createNoIndexMetadata(input: {
     robots: noIndexRobots,
   };
 }
+
+export const rootViewport: Viewport = {
+  themeColor: "#ffffff",
+  viewportFit: "cover",
+};
 
 export const rootMetadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),

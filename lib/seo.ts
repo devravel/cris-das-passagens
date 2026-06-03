@@ -14,4 +14,5 @@ export {
   indexableRobots,
   noIndexRobots,
   rootMetadata,
+  rootViewport,
 } from "@/lib/seo/metadata";

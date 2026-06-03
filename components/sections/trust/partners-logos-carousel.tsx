@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils";
 
 /** ~36px/s — fluxo horizontal lento, contínuo e sem saltos. */
 const AUTOPLAY_SPEED_PX_PER_MS = 0.036;
+/** Destrava pausa presa no Safari iOS (ex.: touchcancel sem touchend). */
+const PAUSE_RECOVERY_MS = 2500;
 /** Janela curta em que o autoplay não avança durante um scroll suave por clique no dot. */
 const PROGRAMMATIC_SCROLL_MS = 550;
 /** Limite de cópias renderizadas para o loop infinito. */
@@ -278,8 +280,9 @@ export function PartnersLogosCarousel({
   }, [measureLayout]);
 
   // Loop de animação: fluxo horizontal constante via scrollLeft (sem re-render).
+  // isPausedRef controla pausa dentro do tick — o RAF permanece ativo para retomar sem remount.
   useEffect(() => {
-    if (reduceMotion || isPaused || logos.length === 0) {
+    if (reduceMotion || logos.length === 0) {
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -292,9 +295,14 @@ export function PartnersLogosCarousel({
     const tick = (timestamp: number) => {
       const track = trackRef.current;
 
-      if (!track || isPausedRef.current || document.hidden) {
+      if (!track) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (isPausedRef.current || document.hidden) {
         lastFrameTimeRef.current = null;
-        rafRef.current = null;
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 
@@ -336,7 +344,26 @@ export function PartnersLogosCarousel({
 
       lastFrameTimeRef.current = null;
     };
-  }, [isPaused, reduceMotion, logos.length, syncActivePageFromScroll]);
+  }, [reduceMotion, logos.length, syncActivePageFromScroll]);
+
+  // Safety net: destrava isInteractingRef preso após gestos cancelados no Safari iOS.
+  useEffect(() => {
+    if (!isPaused || reduceMotion || logos.length === 0) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (isInteractingRef.current) {
+        isInteractingRef.current = false;
+      }
+
+      applyPaused();
+    }, PAUSE_RECOVERY_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isPaused, reduceMotion, logos.length, applyPaused]);
 
   // Pausa quando a aba fica oculta.
   useEffect(() => {
@@ -360,6 +387,11 @@ export function PartnersLogosCarousel({
   }
 
   function handleTouchEnd() {
+    syncActivePageFromScroll();
+    endInteraction();
+  }
+
+  function handleTouchCancel() {
     syncActivePageFromScroll();
     endInteraction();
   }
@@ -400,6 +432,27 @@ export function PartnersLogosCarousel({
 
   function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
     if (event.pointerType === "touch") {
+      return;
+    }
+
+    const track = trackRef.current;
+
+    if (isDragging.current) {
+      isDragging.current = false;
+
+      if (track?.hasPointerCapture(event.pointerId)) {
+        track.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    syncActivePageFromScroll();
+    endInteraction();
+  }
+
+  function handlePointerCancel(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "touch") {
+      syncActivePageFromScroll();
+      endInteraction();
       return;
     }
 
@@ -466,10 +519,11 @@ export function PartnersLogosCarousel({
         onScroll={syncActivePageFromScroll}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
         onKeyDown={handleKeyDown}
       >
         <div
