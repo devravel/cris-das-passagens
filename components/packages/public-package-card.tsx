@@ -14,6 +14,8 @@ type PublicPackageCardProps = {
   layout?: "carousel" | "grid";
   variant?: "landing" | "listing";
   size?: "default" | "compact";
+  /** Tipografia compacta um pouco maior em viewports <= 425px (hero em destaque). */
+  narrowMobileTypography?: boolean;
   showChecklist?: boolean;
   showAirlineBadge?: boolean;
   className?: string;
@@ -26,6 +28,7 @@ export function PublicPackageCard({
   layout = "carousel",
   variant = layout === "carousel" ? "landing" : "listing",
   size = "default",
+  narrowMobileTypography = false,
   showChecklist = false,
   showAirlineBadge = false,
   className,
@@ -49,6 +52,7 @@ export function PublicPackageCard({
         priority={priority}
         variant={variant}
         size={size}
+        narrowMobileTypography={narrowMobileTypography}
         showChecklist={showChecklist}
         showAirlineBadge={showAirlineBadge}
         packageSlug={variant === "landing" ? pkg.slug : undefined}

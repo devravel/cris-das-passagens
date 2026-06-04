@@ -58,6 +58,9 @@ const MAX_MEASURE_RETRIES = 12;
 const LANDING_MIN_CARD_WIDTH = 160;
 /** Hero "Confira nossos melhores pacotes": mais cards visíveis entre 425px e 1023px para cards mais estreitos. */
 const LANDING_FEATURED_NARROW_MIN_VIEWPORT = 425;
+/** Até este viewport, cards da hero ficam mais estreitos que o track para indicar scroll lateral. */
+const LANDING_HERO_PEEK_MOBILE_MAX_VIEWPORT = 425;
+const LANDING_HERO_PEEK_CARD_WIDTH_RATIO = 0.78;
 const LANDING_FEATURED_NARROW_MAX_VIEWPORT = 1024;
 /**
  * Hero em grid 50% (lg): a coluna fica estreita e resolveCardsPerView(160px) cai para 2 cards.
@@ -149,7 +152,16 @@ function computeCarouselLayout(
   const gap = getCardGap(viewportWidth);
   const cardsPerView = getCardsPerView(trackWidth, viewportWidth, variant);
   const totalGap = gap * Math.max(cardsPerView - 1, 0);
-  const cardWidth = trackWidth > 0 ? Math.max(0, (trackWidth - totalGap) / cardsPerView) : 0;
+  let cardWidth =
+    trackWidth > 0 ? Math.max(0, (trackWidth - totalGap) / cardsPerView) : 0;
+
+  if (
+    variant === "landing" &&
+    viewportWidth <= LANDING_HERO_PEEK_MOBILE_MAX_VIEWPORT &&
+    cardWidth > 0
+  ) {
+    cardWidth = Math.round(cardWidth * LANDING_HERO_PEEK_CARD_WIDTH_RATIO);
+  }
 
   return { cardWidth, gap, cardsPerView };
 }
@@ -698,6 +710,7 @@ export function PackageCardsContinuousCarousel({
                     layout="carousel"
                     variant={variant}
                     size={variant === "landing" ? "compact" : "default"}
+                    narrowMobileTypography={variant === "landing"}
                     priority={copyIndex === 0 && packageIndex < 4}
                     showChecklist={showChecklist}
                     className={cn("h-full min-w-0", cardClassName)}

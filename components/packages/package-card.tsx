@@ -36,6 +36,36 @@ const compactActionButtonClassName = cn(
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
 );
 
+function compactNarrowMobileActionButtonClassName(enabled: boolean) {
+  return enabled
+    ? "max-[425px]:h-8 max-[425px]:min-h-8 max-[425px]:px-2 max-[425px]:text-[11px]"
+    : undefined;
+}
+
+function compactNarrowMobileTypeClassName(enabled: boolean) {
+  return enabled ? "max-[425px]:text-xs" : undefined;
+}
+
+function compactNarrowMobileTitleClassName(enabled: boolean) {
+  return enabled ? "max-[425px]:text-base" : undefined;
+}
+
+function compactNarrowMobilePriceClassName(enabled: boolean) {
+  return enabled ? "max-[425px]:text-xl" : undefined;
+}
+
+function compactNarrowMobileFooterClassName(enabled: boolean) {
+  return enabled ? "max-[425px]:text-xs" : undefined;
+}
+
+function compactNarrowMobileBadgeClassName(enabled: boolean) {
+  return enabled ? "max-[425px]:text-[11px]" : undefined;
+}
+
+function compactNarrowMobileAirlineBadgeClassName(enabled: boolean) {
+  return enabled ? "max-[425px]:text-xs" : undefined;
+}
+
 function calculateDiscountPercent(oldPrice: number | null, currentPrice: number): number | null {
   if (!oldPrice || oldPrice <= currentPrice) return null;
   
@@ -60,10 +90,19 @@ type PackageCardProps = {
   showAirlineBadge?: boolean;
   packageSlug?: string;
   whatsAppHref?: string;
+  narrowMobileTypography?: boolean;
   className?: string;
 };
 
-function CardTypeLabel({ type, compact = false }: { type: PackageCardData["type"]; compact?: boolean }) {
+function CardTypeLabel({
+  type,
+  compact = false,
+  narrowMobileTypography = false,
+}: {
+  type: PackageCardData["type"];
+  compact?: boolean;
+  narrowMobileTypography?: boolean;
+}) {
   const Icon =
     type === "FLIGHT"
       ? Plane
@@ -79,10 +118,22 @@ function CardTypeLabel({ type, compact = false }: { type: PackageCardData["type"
     <span
       className={cn(
         "inline-flex items-center gap-1.5 font-medium text-muted-foreground",
-        compact ? "mb-1 text-[10px] lg:text-[11px] xl:text-xs" : "mb-1.5 text-xs sm:text-sm",
+        compact
+          ? cn(
+              "mb-1 text-[10px] lg:text-[11px] xl:text-xs",
+              compactNarrowMobileTypeClassName(narrowMobileTypography),
+            )
+          : "mb-1.5 text-xs sm:text-sm",
       )}
     >
-      <Icon className={cn("shrink-0", compact ? "size-3" : "size-4")} strokeWidth={1.75} aria-hidden />
+      <Icon
+        className={cn(
+          "shrink-0",
+          compact ? cn("size-3", narrowMobileTypography && "max-[425px]:size-4") : "size-4",
+        )}
+        strokeWidth={1.75}
+        aria-hidden
+      />
       {PACKAGE_TYPE_CARD_LABELS[type]}
     </span>
   );
@@ -92,17 +143,24 @@ function DiscountBadge({
   oldPrice,
   currentPrice,
   compact = false,
+  narrowMobileTypography = false,
 }: {
   oldPrice: number | null;
   currentPrice: number;
   compact?: boolean;
+  narrowMobileTypography?: boolean;
 }) {
   const discount = calculateDiscountPercent(oldPrice, currentPrice);
   
   if (!discount) return null;
   
   return (
-    <span className={compact ? compactBadgeClassName : packageBadgeClassName}>
+    <span
+      className={cn(
+        compact ? compactBadgeClassName : packageBadgeClassName,
+        compact && compactNarrowMobileBadgeClassName(narrowMobileTypography),
+      )}
+    >
       Até {discount}% de desconto!
     </span>
   );
@@ -111,9 +169,11 @@ function DiscountBadge({
 function AirlineBadge({
   airline,
   compact = false,
+  narrowMobileTypography = false,
 }: {
   airline: string | null;
   compact?: boolean;
+  narrowMobileTypography?: boolean;
 }) {
   const label = airline?.trim();
 
@@ -124,7 +184,10 @@ function AirlineBadge({
   return (
     <span
       title={text}
-      className={compact ? compactAirlineBadgeClassName : airlineBadgeClassName}
+      className={cn(
+        compact ? compactAirlineBadgeClassName : airlineBadgeClassName,
+        compact && compactNarrowMobileAirlineBadgeClassName(narrowMobileTypography),
+      )}
     >
       {text}
     </span>
@@ -194,23 +257,37 @@ function PriceBlock({
   data,
   variant,
   compact = false,
+  narrowMobileTypography = false,
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
   compact?: boolean;
+  narrowMobileTypography?: boolean;
 }) {
   const hideOldPrice = variant === "landing";
 
   if (data.highlightInstallments && data.installmentText) {
     return (
       <div className="space-y-0.5">
-        <p className={cn("text-muted-foreground", compact ? "text-[10px] lg:text-xs" : "text-xs sm:text-sm")}>
+        <p
+          className={cn(
+            "text-muted-foreground",
+            compact
+              ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+              : "text-xs sm:text-sm",
+          )}
+        >
           A partir de
         </p>
         <p
           className={cn(
             "font-heading font-semibold leading-none tracking-tight text-foreground",
-            compact ? "text-base lg:text-lg xl:text-xl" : "text-[1.35rem] sm:text-2xl",
+            compact
+              ? cn(
+                  "text-base lg:text-lg xl:text-xl",
+                  compactNarrowMobilePriceClassName(narrowMobileTypography),
+                )
+              : "text-[1.35rem] sm:text-2xl",
           )}
         >
           {data.installmentText}
@@ -223,19 +300,38 @@ function PriceBlock({
 
   return (
     <div className="space-y-0.5">
-      <p className={cn("text-muted-foreground", compact ? "text-[10px] lg:text-xs" : "text-xs sm:text-sm")}>
+      <p
+        className={cn(
+          "text-muted-foreground",
+          compact
+            ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+            : "text-xs sm:text-sm",
+        )}
+      >
         {priceLabel}
       </p>
       <p
         className={cn(
           "font-heading font-semibold leading-none tracking-tight text-foreground",
-          compact ? "text-base lg:text-lg xl:text-xl" : "text-[1.35rem] sm:text-2xl",
+          compact
+            ? cn(
+                "text-base lg:text-lg xl:text-xl",
+                compactNarrowMobilePriceClassName(narrowMobileTypography),
+              )
+            : "text-[1.35rem] sm:text-2xl",
         )}
       >
         {formatPackagePrice(data.price)}
       </p>
       {!hideOldPrice && data.oldPrice != null && data.oldPrice > data.price ? (
-        <p className={cn("text-muted-foreground line-through", compact ? "text-[10px] lg:text-xs" : "text-xs sm:text-sm")}>
+        <p
+          className={cn(
+            "text-muted-foreground line-through",
+            compact
+              ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+              : "text-xs sm:text-sm",
+          )}
+        >
           {formatPackagePrice(data.oldPrice)}
         </p>
       ) : null}
@@ -248,11 +344,13 @@ function PriceFooter({
   variant,
   withTopBorder = true,
   compact = false,
+  narrowMobileTypography = false,
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
   withTopBorder?: boolean;
   compact?: boolean;
+  narrowMobileTypography?: boolean;
 }) {
   const isDetailed = variant === "listing" || variant === "preview";
   const isListing = variant === "listing";
@@ -271,7 +369,17 @@ function PriceFooter({
   if (data.highlightInstallments && data.installmentText) {
     return (
       <div className={footerClassName}>
-        <p className={cn("font-medium text-muted-foreground", compact ? "text-[9px] leading-snug lg:text-[10px] xl:text-xs" : "text-[11px] sm:text-xs")}>
+        <p
+          className={cn(
+            "font-medium text-muted-foreground",
+            compact
+              ? cn(
+                  "text-[9px] leading-snug lg:text-[10px] xl:text-xs",
+                  compactNarrowMobileFooterClassName(narrowMobileTypography),
+                )
+              : "text-[11px] sm:text-xs",
+          )}
+        >
           Total por pessoa: {formatPackagePrice(data.price)}{" "}
           <span className="font-bold text-foreground">| Taxas inclusas</span>
         </p>
@@ -282,7 +390,17 @@ function PriceFooter({
   if (data.installmentText) {
     return (
       <div className={footerClassName}>
-        <p className={cn("text-foreground", compact ? "text-[10px] leading-snug lg:text-xs" : "text-xs sm:text-sm")}>
+        <p
+          className={cn(
+            "text-foreground",
+            compact
+              ? cn(
+                  "text-[10px] leading-snug lg:text-xs",
+                  compactNarrowMobileFooterClassName(narrowMobileTypography),
+                )
+              : "text-xs sm:text-sm",
+          )}
+        >
           {data.installmentText}
         </p>
       </div>
@@ -291,7 +409,17 @@ function PriceFooter({
 
   return (
     <div className={footerClassName} aria-hidden>
-      <p className={cn("text-transparent select-none", compact ? "text-[10px] leading-snug lg:text-xs" : "text-xs sm:text-sm")}>
+      <p
+        className={cn(
+          "text-transparent select-none",
+          compact
+            ? cn(
+                "text-[10px] leading-snug lg:text-xs",
+                compactNarrowMobileFooterClassName(narrowMobileTypography),
+              )
+            : "text-xs sm:text-sm",
+        )}
+      >
         -
       </p>
     </div>
@@ -305,6 +433,7 @@ function PricingSection({
   packageSlug,
   packageTitle,
   compact = false,
+  narrowMobileTypography = false,
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
@@ -312,6 +441,7 @@ function PricingSection({
   packageSlug?: string;
   packageTitle?: string;
   compact?: boolean;
+  narrowMobileTypography?: boolean;
 }) {
   const isLanding = variant === "landing";
   const isDetailed = variant === "listing" || variant === "preview";
@@ -339,7 +469,12 @@ function PricingSection({
   return (
     <>
       <div className={pricePadding}>
-        <PriceBlock data={data} variant={variant} compact={compact} />
+        <PriceBlock
+          data={data}
+          variant={variant}
+          compact={compact}
+          narrowMobileTypography={narrowMobileTypography}
+        />
       </div>
 
       {showLandingSaibaMais ? (
@@ -352,14 +487,32 @@ function PricingSection({
         >
           <PackageWhatsAppCta
             href={whatsAppHref}
-            className={compact ? compactActionButtonClassName : undefined}
-            iconClassName={compact ? "size-2.5 lg:size-3" : undefined}
+            className={
+              compact
+                ? cn(
+                    compactActionButtonClassName,
+                    compactNarrowMobileActionButtonClassName(narrowMobileTypography),
+                  )
+                : undefined
+            }
+            iconClassName={
+              compact
+                ? cn("size-2.5 lg:size-3", narrowMobileTypography && "max-[425px]:size-3.5")
+                : undefined
+            }
           />
           <LandingSaibaMaisAction
             slug={packageSlug}
             packageTitle={packageTitle}
             unstyled
-            buttonClassName={compact ? compactActionButtonClassName : undefined}
+            buttonClassName={
+              compact
+                ? cn(
+                    compactActionButtonClassName,
+                    compactNarrowMobileActionButtonClassName(narrowMobileTypography),
+                  )
+                : undefined
+            }
           />
         </div>
       ) : whatsAppHref ? (
@@ -368,8 +521,19 @@ function PricingSection({
         >
           <PackageWhatsAppCta
             href={whatsAppHref}
-            className={compact ? compactActionButtonClassName : undefined}
-            iconClassName={compact ? "size-2.5 lg:size-3" : undefined}
+            className={
+              compact
+                ? cn(
+                    compactActionButtonClassName,
+                    compactNarrowMobileActionButtonClassName(narrowMobileTypography),
+                  )
+                : undefined
+            }
+            iconClassName={
+              compact
+                ? cn("size-2.5 lg:size-3", narrowMobileTypography && "max-[425px]:size-3.5")
+                : undefined
+            }
           />
         </div>
       ) : null}
@@ -379,6 +543,7 @@ function PricingSection({
           data={data}
           variant={variant}
           compact={compact}
+          narrowMobileTypography={narrowMobileTypography}
           withTopBorder={!whatsAppHref && !showLandingSaibaMais}
         />
       ) : null}
@@ -390,10 +555,12 @@ function PackageTravelDates({
   departureDate,
   returnDate,
   compact = false,
+  narrowMobileTypography = false,
 }: {
   departureDate: string | null;
   returnDate: string | null;
   compact?: boolean;
+  narrowMobileTypography?: boolean;
 }) {
   const ida = formatPackageTravelDate(departureDate);
   const volta = formatPackageTravelDate(returnDate);
@@ -406,7 +573,12 @@ function PackageTravelDates({
     <div
       className={cn(
         "space-y-0.5 text-muted-foreground",
-        compact ? "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs" : "mt-3 text-xs sm:text-sm",
+        compact
+          ? cn(
+              "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs",
+              compactNarrowMobileTypeClassName(narrowMobileTypography),
+            )
+          : "mt-3 text-xs sm:text-sm",
       )}
     >
       {ida ? <p>Ida: {ida}</p> : null}
@@ -454,6 +626,7 @@ export function PackageCard({
   showAirlineBadge = false,
   packageSlug,
   whatsAppHref,
+  narrowMobileTypography = false,
   className,
 }: PackageCardProps) {
   const resolvedImageSrc = imageSrc || data.image;
@@ -539,7 +712,12 @@ export function PackageCard({
                 isCompact ? "top-1.5 left-0" : "top-2 left-0 sm:top-2.5",
               )}
             >
-              <DiscountBadge oldPrice={data.oldPrice} currentPrice={data.price} compact={isCompact} />
+              <DiscountBadge
+                oldPrice={data.oldPrice}
+                currentPrice={data.price}
+                compact={isCompact}
+                narrowMobileTypography={narrowMobileTypography}
+              />
             </div>
           </div>
 
@@ -550,7 +728,11 @@ export function PackageCard({
                 isCompact ? "right-1.5 bottom-0" : "right-2 bottom-0 sm:right-2.5",
               )}
             >
-              <AirlineBadge airline={data.airline} compact={isCompact} />
+              <AirlineBadge
+                airline={data.airline}
+                compact={isCompact}
+                narrowMobileTypography={narrowMobileTypography}
+              />
             </div>
           ) : null}
         </div>
@@ -567,14 +749,21 @@ export function PackageCard({
                   : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
           )}
         >
-          <CardTypeLabel type={data.type} compact={isCompact} />
+          <CardTypeLabel
+            type={data.type}
+            compact={isCompact}
+            narrowMobileTypography={narrowMobileTypography}
+          />
 
           {isLanding ? (
             <h3
               className={cn(
                 "line-clamp-2 font-heading font-semibold tracking-tight text-foreground",
                 isCompact
-                  ? "text-xs leading-snug lg:text-sm xl:text-[0.9375rem]"
+                  ? cn(
+                      "text-xs leading-snug lg:text-sm xl:text-[0.9375rem]",
+                      compactNarrowMobileTitleClassName(narrowMobileTypography),
+                    )
                   : "text-[0.95rem] sm:text-base",
               )}
             >
@@ -592,7 +781,12 @@ export function PackageCard({
             <p
               className={cn(
                 "text-muted-foreground",
-                isCompact ? "mt-0.5 text-[10px] leading-snug lg:text-xs" : "mt-1 text-xs sm:text-sm",
+                isCompact
+                  ? cn(
+                      "mt-0.5 text-[10px] leading-snug lg:text-xs",
+                      compactNarrowMobileTypeClassName(narrowMobileTypography),
+                    )
+                  : "mt-1 text-xs sm:text-sm",
               )}
             >
               Saindo de{" "}
@@ -606,6 +800,7 @@ export function PackageCard({
             departureDate={data.departureDate}
             returnDate={data.returnDate}
             compact={isCompact}
+            narrowMobileTypography={narrowMobileTypography}
           />
 
           {showDestinationAsSecondary ? (
@@ -652,6 +847,7 @@ export function PackageCard({
             packageSlug={packageSlug}
             packageTitle={cardLabel}
             compact={isCompact}
+            narrowMobileTypography={narrowMobileTypography}
           />
         </div>
       </div>
