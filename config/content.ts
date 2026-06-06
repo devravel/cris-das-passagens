@@ -83,7 +83,7 @@ export const content = {
       href: "/pacotes",
     } satisfies ContentCta,
     featuredPackages: {
-      title: "Confira nossos melhores pacotes",
+      title: "Nossos melhores pacotes",
     },
   },
 
@@ -355,7 +355,7 @@ export const content = {
       },
     ] satisfies BlogPostPreview[],
     cta: {
-      label: "Ver Todos os Blogs",
+      label: "Ver blog",
       href: contentLinks.blog,
     } satisfies ContentCta,
   },
@@ -405,10 +405,15 @@ export const content = {
     neighborhood: "Santa Luzia",
     city: "Osório",
     state: "RS",
+    postalCode: "94675-210",
     phone: "(51) 9 9251-9187",
+    phoneE164: "+5551992519187",
     phoneHref: "tel:+5551992519187",
+    email: "cridaspassagens@gmail.com",
+    emailHref: "mailto:cridaspassagens@gmail.com",
     whatsapp: contentLinks.whatsapp,
-    formattedAddress: "Rua Colombo, 250 — Santa Luzia, Osório — RS",
+    formattedAddress:
+      "Rua Colombo, 250 — Santa Luzia, Osório — RS — CEP 94675-210",
   },
 } as const;
 

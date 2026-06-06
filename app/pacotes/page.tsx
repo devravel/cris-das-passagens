@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowLeft } from "lucide-react";
 
+import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { Section } from "@/components/layout/section";
+import { brandPageBreadcrumbs } from "@/config/navigation";
 import { PackageHighlightOnLoad } from "@/components/packages/package-highlight-on-load";
 import { PackagesPageContent } from "@/components/sections/packages/packages-page-content";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { Button } from "@/components/ui/button";
 import { packagesPageContent } from "@/config/packages-page";
 import { getPackagesPageData } from "@/lib/package/queries";
 import { createMetadata } from "@/lib/seo";
@@ -41,18 +40,7 @@ export default async function PacotesPage() {
       bordered
       aria-labelledby="pacotes-page-heading"
     >
-      <div className="mb-6 sm:mb-8">
-        <Button
-          asChild
-          variant="ghost"
-          className="h-9 rounded-lg px-3 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Link href="/">
-            <ArrowLeft className="size-4" aria-hidden />
-            Voltar para a página inicial
-          </Link>
-        </Button>
-      </div>
+      <PageBreadcrumb items={brandPageBreadcrumbs.pacotes} />
 
       <ScrollReveal y={scrollRevealDefaults.y}>
         <header className="mx-auto mb-10 max-w-3xl space-y-3 text-center sm:mb-12 lg:mb-14">

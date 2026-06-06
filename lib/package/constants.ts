@@ -8,8 +8,11 @@ export const PACKAGE_TYPES = [
 
 export const PACKAGE_CATEGORIES = ["NATIONAL", "INTERNATIONAL"] as const;
 
+export const PACKAGE_PRICE_SCOPES = ["PER_PERSON", "COUPLE", "FAMILY"] as const;
+
 export type PackageTypeValue = (typeof PACKAGE_TYPES)[number];
 export type PackageCategoryValue = (typeof PACKAGE_CATEGORIES)[number];
+export type PackagePriceScopeValue = (typeof PACKAGE_PRICE_SCOPES)[number];
 
 export const PACKAGE_TYPE_LABELS: Record<PackageTypeValue, string> = {
   PACKAGE_COMPLETE: "Pacote completo",
@@ -30,6 +33,12 @@ export const PACKAGE_TYPE_CARD_LABELS: Record<PackageTypeValue, string> = {
 export const PACKAGE_CATEGORY_LABELS: Record<PackageCategoryValue, string> = {
   NATIONAL: "Nacional",
   INTERNATIONAL: "Internacional",
+};
+
+export const PACKAGE_PRICE_SCOPE_LABELS: Record<PackagePriceScopeValue, string> = {
+  PER_PERSON: "Por pessoa",
+  COUPLE: "Casal",
+  FAMILY: "Família",
 };
 
 export const PACKAGE_TYPES_WITH_CATEGORY = new Set<PackageTypeValue>([

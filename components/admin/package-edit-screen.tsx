@@ -49,6 +49,7 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
             category: pkg.category,
             price: pkg.price,
             oldPrice: pkg.oldPrice,
+            priceScope: pkg.priceScope,
             installmentText: pkg.installmentText ?? "",
             highlightInstallments: pkg.highlightInstallments,
             airline: pkg.airline ?? "",

@@ -94,6 +94,7 @@ function normalizeInput(input: PackageFormValues) {
     category: input.category ?? null,
     price: input.price,
     oldPrice: input.oldPrice ?? null,
+    priceScope: input.priceScope ?? null,
     installmentText: input.installmentText?.trim() || null,
     highlightInstallments: input.highlightInstallments,
     airline,

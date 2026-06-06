@@ -2,9 +2,10 @@ import { Anchor, BedDouble, Check, Luggage, Plane, Ticket } from "lucide-react";
 
 import { BlogImage } from "@/components/blog/blog-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
-import { PackageWhatsAppCta } from "@/components/packages/package-whatsapp-cta";
+import { PackageWhatsAppButton } from "@/components/packages/package-whatsapp-button";
 import {
   PACKAGE_IMAGE_ASPECT_RATIO,
+  PACKAGE_PRICE_SCOPE_LABELS,
   PACKAGE_TYPE_CARD_LABELS,
 } from "@/lib/package/constants";
 import { isHighlightedChecklistItem } from "@/lib/package/checklist";
@@ -89,7 +90,7 @@ type PackageCardProps = {
   showChecklist?: boolean;
   showAirlineBadge?: boolean;
   packageSlug?: string;
-  whatsAppHref?: string;
+  whatsAppPackageTitle?: string;
   narrowMobileTypography?: boolean;
   className?: string;
 };
@@ -253,6 +254,33 @@ function IncludedItemsList({
   );
 }
 
+function PriceScopeLabel({
+  priceScope,
+  compact = false,
+  narrowMobileTypography = false,
+}: {
+  priceScope: PackageCardData["priceScope"];
+  compact?: boolean;
+  narrowMobileTypography?: boolean;
+}) {
+  if (!priceScope) {
+    return null;
+  }
+
+  return (
+    <p
+      className={cn(
+        "text-muted-foreground",
+        compact
+          ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+          : "text-xs sm:text-sm",
+      )}
+    >
+      {PACKAGE_PRICE_SCOPE_LABELS[priceScope]}
+    </p>
+  );
+}
+
 function PriceBlock({
   data,
   variant,
@@ -264,34 +292,44 @@ function PriceBlock({
   compact?: boolean;
   narrowMobileTypography?: boolean;
 }) {
+  const isListing = variant === "listing";
   const hideOldPrice = variant === "landing";
+  const showOldPrice = !hideOldPrice && data.oldPrice != null && data.oldPrice > data.price;
+
+  const labelClassName = cn(
+    "text-muted-foreground",
+    compact
+      ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+      : "text-xs sm:text-sm",
+  );
+
+  const priceClassName = cn(
+    "font-heading font-semibold leading-none tracking-tight text-foreground",
+    compact
+      ? cn(
+          "text-base lg:text-lg xl:text-xl",
+          compactNarrowMobilePriceClassName(narrowMobileTypography),
+        )
+      : "text-[1.35rem] sm:text-2xl",
+  );
+
+  const oldPriceClassName = cn(
+    "text-muted-foreground line-through",
+    compact
+      ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+      : "text-xs sm:text-sm",
+  );
 
   if (data.highlightInstallments && data.installmentText) {
     return (
       <div className="space-y-0.5">
-        <p
-          className={cn(
-            "text-muted-foreground",
-            compact
-              ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
-              : "text-xs sm:text-sm",
-          )}
-        >
-          A partir de
-        </p>
-        <p
-          className={cn(
-            "font-heading font-semibold leading-none tracking-tight text-foreground",
-            compact
-              ? cn(
-                  "text-base lg:text-lg xl:text-xl",
-                  compactNarrowMobilePriceClassName(narrowMobileTypography),
-                )
-              : "text-[1.35rem] sm:text-2xl",
-          )}
-        >
-          {data.installmentText}
-        </p>
+        <p className={labelClassName}>A partir de</p>
+        <p className={priceClassName}>{data.installmentText}</p>
+        <PriceScopeLabel
+          priceScope={data.priceScope}
+          compact={compact}
+          narrowMobileTypography={narrowMobileTypography}
+        />
       </div>
     );
   }
@@ -300,41 +338,25 @@ function PriceBlock({
 
   return (
     <div className="space-y-0.5">
-      <p
-        className={cn(
-          "text-muted-foreground",
-          compact
-            ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
-            : "text-xs sm:text-sm",
-        )}
-      >
-        {priceLabel}
-      </p>
-      <p
-        className={cn(
-          "font-heading font-semibold leading-none tracking-tight text-foreground",
-          compact
-            ? cn(
-                "text-base lg:text-lg xl:text-xl",
-                compactNarrowMobilePriceClassName(narrowMobileTypography),
-              )
-            : "text-[1.35rem] sm:text-2xl",
-        )}
-      >
-        {formatPackagePrice(data.price)}
-      </p>
-      {!hideOldPrice && data.oldPrice != null && data.oldPrice > data.price ? (
-        <p
-          className={cn(
-            "text-muted-foreground line-through",
-            compact
-              ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
-              : "text-xs sm:text-sm",
-          )}
-        >
-          {formatPackagePrice(data.oldPrice)}
-        </p>
-      ) : null}
+      <p className={labelClassName}>{priceLabel}</p>
+      {isListing && showOldPrice ? (
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
+          <p className={oldPriceClassName}>{formatPackagePrice(data.oldPrice!)}</p>
+        </div>
+      ) : (
+        <>
+          <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
+          {showOldPrice ? (
+            <p className={oldPriceClassName}>{formatPackagePrice(data.oldPrice!)}</p>
+          ) : null}
+        </>
+      )}
+      <PriceScopeLabel
+        priceScope={data.priceScope}
+        compact={compact}
+        narrowMobileTypography={narrowMobileTypography}
+      />
     </div>
   );
 }
@@ -429,7 +451,7 @@ function PriceFooter({
 function PricingSection({
   data,
   variant,
-  whatsAppHref,
+  whatsAppPackageTitle,
   packageSlug,
   packageTitle,
   compact = false,
@@ -437,7 +459,7 @@ function PricingSection({
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
-  whatsAppHref?: string;
+  whatsAppPackageTitle?: string;
   packageSlug?: string;
   packageTitle?: string;
   compact?: boolean;
@@ -446,7 +468,7 @@ function PricingSection({
   const isLanding = variant === "landing";
   const isDetailed = variant === "listing" || variant === "preview";
   const showFooter = true;
-  const showLandingSaibaMais = isLanding && packageSlug && whatsAppHref;
+  const showLandingSaibaMais = isLanding && packageSlug && whatsAppPackageTitle;
   const isListing = variant === "listing";
   const pricePadding = compact
     ? "px-2.5 py-1.5 lg:py-2"
@@ -485,8 +507,8 @@ function PricingSection({
             showFooter && "border-b border-border/70",
           )}
         >
-          <PackageWhatsAppCta
-            href={whatsAppHref}
+          <PackageWhatsAppButton
+            packageTitle={whatsAppPackageTitle}
             className={
               compact
                 ? cn(
@@ -515,12 +537,12 @@ function PricingSection({
             }
           />
         </div>
-      ) : whatsAppHref ? (
+      ) : whatsAppPackageTitle ? (
         <div
           className={cn(actionPadding, showFooter && "border-b border-border/70")}
         >
-          <PackageWhatsAppCta
-            href={whatsAppHref}
+          <PackageWhatsAppButton
+            packageTitle={whatsAppPackageTitle}
             className={
               compact
                 ? cn(
@@ -544,7 +566,7 @@ function PricingSection({
           variant={variant}
           compact={compact}
           narrowMobileTypography={narrowMobileTypography}
-          withTopBorder={!whatsAppHref && !showLandingSaibaMais}
+          withTopBorder={!whatsAppPackageTitle && !showLandingSaibaMais}
         />
       ) : null}
     </>
@@ -625,7 +647,7 @@ export function PackageCard({
   showChecklist = false,
   showAirlineBadge = false,
   packageSlug,
-  whatsAppHref,
+  whatsAppPackageTitle,
   narrowMobileTypography = false,
   className,
 }: PackageCardProps) {
@@ -843,7 +865,7 @@ export function PackageCard({
           <PricingSection
             data={data}
             variant={variant}
-            whatsAppHref={whatsAppHref}
+            whatsAppPackageTitle={whatsAppPackageTitle}
             packageSlug={packageSlug}
             packageTitle={cardLabel}
             compact={isCompact}
@@ -866,6 +888,7 @@ export function toPackageCardDataFromPublicPackage(
     type: pkg.type,
     price: pkg.price,
     oldPrice: pkg.oldPrice,
+    priceScope: pkg.priceScope,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
     airline: pkg.airline,

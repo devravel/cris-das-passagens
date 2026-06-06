@@ -140,6 +140,16 @@ export const rootViewport: Viewport = {
   viewportFit: "cover",
 };
 
+const brandKeywords = [
+  "Cris das Passagens",
+  "agência de viagens",
+  "passagens aéreas",
+  "pacotes de viagem",
+  "hospedagem",
+  "Osório RS",
+  "CADASTUR",
+] as const;
+
 export const rootMetadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
@@ -147,6 +157,7 @@ export const rootMetadata: Metadata = {
     template: `%s | ${siteConfig.name}`,
   },
   description: defaultDescription,
+  keywords: [...brandKeywords],
   applicationName: siteConfig.name,
   category: "travel",
   creator: siteConfig.name,

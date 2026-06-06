@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Menu, MessageCircle, Phone } from "lucide-react";
+import { Menu, MessageCircle } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { navigation as defaultItems, navbarCta } from "@/config/navigation";
@@ -283,20 +283,6 @@ export function Navbar({
         <div className="flex min-w-0 items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
           <DesktopNavLinks items={items} />
 
-          {siteConfig.phone ? (
-            <a
-              href={siteConfig.phoneHref}
-              className="group relative hidden items-center gap-1.5 py-1 text-[0.9375rem] font-medium text-foreground/75 transition-colors duration-200 hover:text-foreground md:inline-flex"
-            >
-              <Phone className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="whitespace-nowrap">{siteConfig.phone}</span>
-              <span
-                className="pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 bg-foreground transition-transform duration-200 ease-out group-hover:scale-x-100"
-                aria-hidden
-              />
-            </a>
-          ) : null}
-
           {cta ? (
             <>
               <NavbarCtaButton
@@ -332,18 +318,6 @@ export function Navbar({
                 </SheetTitle>
               </SheetHeader>
               <MobileNavLinks items={items} onNavigate={closeMobile} />
-              {siteConfig.phone ? (
-                <div className="border-t border-border/50 px-4 py-3">
-                  <a
-                    href={siteConfig.phoneHref}
-                    onClick={closeMobile}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground"
-                  >
-                    <Phone className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
-                    {siteConfig.phone}
-                  </a>
-                </div>
-              ) : null}
               {cta ? (
                 <div className="border-t border-border/50 p-4">
                   <NavbarCtaButton

@@ -4,11 +4,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
+import { CouponApplyForm } from "@/components/coupon/coupon-apply-form";
 import { HeroFeaturedPackages } from "@/components/sections/hero/hero-featured-packages";
+import { ReiDaCopaHeroCta } from "@/components/rei-da-copa/rei-da-copa-hero-cta";
 import { Section } from "@/components/layout/section";
 import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
+import { reiDaCopaHomeHeroCta } from "@/config/rei-da-copa-campaign";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
@@ -165,9 +168,23 @@ export function TourismHero({
             className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
             {...ctaEntrance}
           >
-            <HeroCtaLink cta={primaryCta} variant="primary" />
+            {primaryCta.href === reiDaCopaHomeHeroCta.href ? (
+              <ReiDaCopaHeroCta />
+            ) : (
+              <HeroCtaLink cta={primaryCta} variant="primary" />
+            )}
             <HeroCtaLink cta={secondaryCta} variant="secondary" />
           </motion.div>
+
+          {hasFeatured ? (
+            <div className="hidden w-full lg:block">
+              <CouponApplyForm
+                inputId="coupon-code-input-desktop"
+                showDescription
+                className="w-full max-w-none flex-none lg:max-w-none"
+              />
+            </div>
+          ) : null}
         </div>
 
         {hasFeatured ? (

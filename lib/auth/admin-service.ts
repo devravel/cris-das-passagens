@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 
+import { ADMIN_LOGIN_DUMMY_BCRYPT_HASH } from "@/lib/auth/admin-login-timing";
 import { prisma } from "@/lib/prisma";
 
 export async function validateAdminCredentials(email: string, password: string) {
@@ -9,13 +10,10 @@ export async function validateAdminCredentials(email: string, password: string) 
     where: { email: normalizedEmail },
   });
 
-  if (!admin) {
-    return null;
-  }
+  const passwordHash = admin?.passwordHash ?? ADMIN_LOGIN_DUMMY_BCRYPT_HASH;
+  const isPasswordValid = await bcrypt.compare(password, passwordHash);
 
-  const isPasswordValid = await bcrypt.compare(password, admin.passwordHash);
-
-  if (!isPasswordValid) {
+  if (!admin || !isPasswordValid) {
     return null;
   }
 

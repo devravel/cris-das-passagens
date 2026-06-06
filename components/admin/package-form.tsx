@@ -24,6 +24,8 @@ import { normalizeSlug } from "@/lib/blog/utils";
 import {
   PACKAGE_CATEGORIES,
   PACKAGE_CATEGORY_LABELS,
+  PACKAGE_PRICE_SCOPE_LABELS,
+  PACKAGE_PRICE_SCOPES,
   PACKAGE_TYPE_LABELS,
   PACKAGE_TYPES,
   PACKAGE_TYPES_WITH_CATEGORY,
@@ -577,6 +579,42 @@ export function PackageForm({
                 </p>
               ) : null}
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="priceScope"
+              className="text-sm font-medium text-foreground"
+            >
+              Preço referente a{" "}
+              <span className="text-muted-foreground">(opcional)</span>
+            </label>
+            <select
+              id="priceScope"
+              className={selectClassName}
+              value={watchedValues.priceScope ?? ""}
+              onChange={(event) =>
+                form.setValue(
+                  "priceScope",
+                  event.target.value === ""
+                    ? null
+                    : (event.target.value as (typeof PACKAGE_PRICE_SCOPES)[number]),
+                  { shouldDirty: true, shouldValidate: true },
+                )
+              }
+            >
+              <option value="">Não informar</option>
+              {PACKAGE_PRICE_SCOPES.map((scope) => (
+                <option key={scope} value={scope}>
+                  {PACKAGE_PRICE_SCOPE_LABELS[scope]}
+                </option>
+              ))}
+            </select>
+            {form.formState.errors.priceScope ? (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.priceScope.message}
+              </p>
+            ) : null}
           </div>
 
           <label

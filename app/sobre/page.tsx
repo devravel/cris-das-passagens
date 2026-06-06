@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
+import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
+import { brandPageBreadcrumbs } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
 import {
   bodyTextClassName,
@@ -36,18 +38,7 @@ export default function SobrePage() {
       bordered
       aria-labelledby="sobre-page-heading"
     >
-      <div className="mb-6 sm:mb-8">
-        <Button
-          asChild
-          variant="ghost"
-          className="h-9 rounded-lg px-3 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Link href="/">
-            <ArrowLeft className="size-4" aria-hidden />
-            Voltar para a página inicial
-          </Link>
-        </Button>
-      </div>
+      <PageBreadcrumb items={brandPageBreadcrumbs.sobre} />
 
       <SectionHeader
         id="sobre-page-heading"

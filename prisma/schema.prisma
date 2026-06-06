@@ -72,6 +72,12 @@ enum PackageCategory {
   INTERNATIONAL
 }
 
+enum PackagePriceScope {
+  PER_PERSON
+  COUPLE
+  FAMILY
+}
+
 model Package {
   id                    String           @id @default(cuid())
   title                 String
@@ -83,6 +89,7 @@ model Package {
   category              PackageCategory?
   price                 Decimal          @db.Decimal(10, 2)
   oldPrice              Decimal?         @db.Decimal(10, 2)
+  priceScope            PackagePriceScope?
   installmentText       String?
   highlightInstallments Boolean          @default(false)
   airline               String?
@@ -110,4 +117,119 @@ model AdminUser {
   email        String   @unique
   passwordHash String
   createdAt    DateTime @default(now())
+}
+
+enum ReiDaCopaKeywordStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ReiDaCopaParticipant {
+  id                 String   @id @default(cuid())
+  registrationNumber Int      @unique @default(autoincrement())
+  name               String
+  phone              String
+  instagram          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  keywordSubmissions ReiDaCopaKeywordSubmission[]
+  ranking            ReiDaCopaRanking?
+
+  @@unique([phone])
+  @@unique([instagram])
+  @@index([name])
+  @@index([createdAt])
+  @@map("rei_da_copa_participants")
+}
+
+model ReiDaCopaKeyword {
+  id        String   @id @default(cuid())
+  value     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@map("rei_da_copa_keywords")
+}
+
+model ReiDaCopaKeywordSubmission {
+  id            String                 @id @default(cuid())
+  participantId String
+  keyword       String
+  status        ReiDaCopaKeywordStatus @default(PENDING)
+  createdAt     DateTime               @default(now())
+
+  participant ReiDaCopaParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([participantId])
+  @@index([status, createdAt])
+  @@index([keyword])
+  @@map("rei_da_copa_keyword_submissions")
+}
+
+model ReiDaCopaRanking {
+  id            String   @id @default(cuid())
+  participantId String   @unique
+  points        Int      @default(0)
+  position      Int
+  updatedAt     DateTime @updatedAt
+
+  participant ReiDaCopaParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@index([position])
+  @@map("rei_da_copa_ranking")
+}
+
+model ReiDaCopaSettings {
+  id                String    @id @default("default")
+  startDate         DateTime? @db.Date
+  endDate           DateTime? @db.Date
+  firstPlacePrize   String?
+  secondPlacePrize  String?
+  thirdPlacePrize   String?
+  regulation        String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("rei_da_copa_settings")
+}
+
+enum CouponDiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id            String             @id @default(cuid())
+  code          String             @unique
+  name          String
+  discountType  CouponDiscountType
+  discountValue Decimal            @db.Decimal(10, 2)
+  isActive      Boolean            @default(true)
+  maxUses       Int?
+  currentUses   Int                @default(0)
+  expiresAt     DateTime?
+  description   String?            @db.Text
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  redemptions   CouponRedemption[]
+
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id           String   @id @default(cuid())
+  couponId     String
+  packageTitle String?
+  usedAt       DateTime @default(now())
+  coupon       Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@index([couponId])
+  @@index([usedAt])
+  @@map("coupon_redemptions")
 }

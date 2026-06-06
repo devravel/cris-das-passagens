@@ -4,6 +4,49 @@ import { absoluteUrl, buildCanonicalUrl, getSiteUrl } from "@/lib/seo/site-url";
 
 export type JsonLd = Record<string, unknown>;
 
+function buildPostalAddressJsonLd() {
+  const { street, city, state, postalCode } = siteConfig.addressDetails;
+
+  return {
+    "@type": "PostalAddress",
+    streetAddress: street,
+    addressLocality: city,
+    addressRegion: state,
+    postalCode,
+    addressCountry: "BR",
+  };
+}
+
+function buildOrganizationSameAs(): string[] {
+  const links = [
+    getSiteUrl(),
+    siteConfig.links.cadastur,
+    siteConfig.links.instagram,
+    siteConfig.links.facebook,
+  ].filter((url): url is string => Boolean(url?.trim()));
+
+  return [...new Set(links)];
+}
+
+function buildOrganizationContactPoints() {
+  return [
+    {
+      "@type": "ContactPoint",
+      telephone: siteConfig.phoneHref.replace("tel:", ""),
+      contactType: "customer service",
+      availableLanguage: ["Portuguese", "pt-BR"],
+      areaServed: "BR",
+    },
+    {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      url: siteConfig.whatsapp,
+      availableLanguage: ["Portuguese", "pt-BR"],
+      areaServed: "BR",
+    },
+  ];
+}
+
 export function createOrganizationJsonLd(): JsonLd {
   return {
     "@context": "https://schema.org",
@@ -12,17 +55,31 @@ export function createOrganizationJsonLd(): JsonLd {
     name: siteConfig.name,
     legalName: siteConfig.legalName,
     url: getSiteUrl(),
-    logo: absoluteUrl(siteConfig.logo),
-    description: siteConfig.description,
-    telephone: siteConfig.phone,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: siteConfig.addressDetails.street,
-      addressLocality: siteConfig.addressDetails.city,
-      addressRegion: siteConfig.addressDetails.state,
-      addressCountry: "BR",
+    logo: {
+      "@type": "ImageObject",
+      url: absoluteUrl(siteConfig.logo),
     },
-    sameAs: [contentLinks.whatsapp, contentLinks.cadastur].filter(Boolean),
+    image: absoluteUrl(siteConfig.logo),
+    description: siteConfig.description,
+    telephone: siteConfig.phoneHref.replace("tel:", ""),
+    taxID: siteConfig.addressDetails.cnpj,
+    address: buildPostalAddressJsonLd(),
+    areaServed: {
+      "@type": "Country",
+      name: "Brasil",
+    },
+    contactPoint: buildOrganizationContactPoints(),
+    hasCredential: {
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: "certification",
+      name: "CADASTUR",
+      recognizedBy: {
+        "@type": "Organization",
+        name: "CADASTUR — Cadastro de Prestadores de Serviços Turísticos",
+        url: contentLinks.cadastur,
+      },
+    },
+    sameAs: buildOrganizationSameAs(),
   };
 }
 
@@ -60,17 +117,10 @@ export function createArticleJsonLd(input: {
     datePublished: input.publishedAt.toISOString(),
     dateModified: input.updatedAt.toISOString(),
     author: {
-      "@type": "Organization",
-      name: siteConfig.name,
-      url: getSiteUrl(),
+      "@id": `${getSiteUrl()}/#organization`,
     },
     publisher: {
-      "@type": "Organization",
-      name: siteConfig.name,
-      logo: {
-        "@type": "ImageObject",
-        url: absoluteUrl(siteConfig.logo),
-      },
+      "@id": `${getSiteUrl()}/#organization`,
     },
     mainEntityOfPage: {
       "@type": "WebPage",

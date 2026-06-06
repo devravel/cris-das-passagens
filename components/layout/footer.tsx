@@ -3,8 +3,8 @@ import Link from "next/link";
 import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
-import { content } from "@/config/content";
-import { navigation as defaultNavItems } from "@/config/navigation";
+import { content, contentLinks } from "@/config/content";
+import { brandPrimaryPages as defaultNavItems } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -92,9 +92,9 @@ export function Footer({
             </div>
 
             <div className="flex flex-1 flex-col gap-8 min-w-0 sm:flex-row sm:justify-end sm:gap-12 lg:gap-20">
-              <nav aria-label="Páginas do site">
+              <nav aria-label="Páginas principais">
                 <p className="mb-3 text-sm font-semibold text-white">
-                  Links Rápidos
+                  Páginas
                 </p>
                 <ul className="flex flex-col gap-2 sm:gap-2.5" role="list">
                   {navItems.map((item) => (
@@ -113,6 +113,14 @@ export function Footer({
               <div>
                 <p className="mb-3 text-sm font-semibold text-white">Contato</p>
                 <ul className="flex flex-col gap-3" role="list">
+                  <li>
+                    <Link
+                      href={contentLinks.quote}
+                      className="inline-flex items-start gap-2 text-sm font-medium text-white/70 transition-colors duration-200 hover:text-white"
+                    >
+                      Página de contato
+                    </Link>
+                  </li>
                   {siteConfig.phone ? (
                     <li>
                       <a

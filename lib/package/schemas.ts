@@ -3,9 +3,11 @@ import { z } from "zod";
 import { isValidBlogImageUrl } from "@/lib/blog/image-url";
 import {
   PACKAGE_CATEGORIES,
+  PACKAGE_PRICE_SCOPES,
   PACKAGE_TYPES,
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
+  type PackagePriceScopeValue,
 } from "@/lib/package/constants";
 import { packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
 import { isValidPackageDateInput } from "@/lib/package/dates";
@@ -45,6 +47,7 @@ const packageFormFieldsSchema = z.object({
   category: z.enum(PACKAGE_CATEGORIES).nullable(),
   price: priceSchema,
   oldPrice: optionalPriceSchema,
+  priceScope: z.enum(PACKAGE_PRICE_SCOPES).nullable(),
   installmentText: z.string().trim(),
   highlightInstallments: z.boolean(),
   airline: z.string().trim(),
@@ -174,6 +177,7 @@ export type PackageCardData = {
   type: PackageTypeValue;
   price: number;
   oldPrice: number | null;
+  priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
   airline: string | null;
@@ -199,6 +203,7 @@ export function toPackageCardPreviewData(
     type: values.type,
     price: values.price,
     oldPrice: values.oldPrice ?? null,
+    priceScope: values.priceScope ?? null,
     installmentText: values.installmentText.trim() || null,
     highlightInstallments: values.highlightInstallments,
     airline: values.airline.trim() || null,
@@ -219,6 +224,7 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   category: "NATIONAL",
   price: 0,
   oldPrice: null,
+  priceScope: null,
   installmentText: "",
   highlightInstallments: false,
   airline: "",

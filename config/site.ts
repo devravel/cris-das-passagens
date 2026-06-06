@@ -24,6 +24,7 @@ export const siteConfig = {
     neighborhood: content.contact.neighborhood,
     city: content.contact.city,
     state: content.contact.state,
+    postalCode: content.contact.postalCode,
     cnpj: content.contact.cnpj,
   },
 

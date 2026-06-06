@@ -15,6 +15,8 @@ const containerVariants = cva("mx-auto w-full min-w-0", {
       prose: "max-w-2xl",
       /** Layouts mais amplos (hero, galerias). */
       wide: "max-w-7xl",
+      /** Campanha Rei da Copa — 70% da viewport em telas grandes, com min-w-0 para evitar overflow. */
+      campaign: "rei-da-copa-container min-w-0",
       /** Apenas padding horizontal, sem limite de largura. */
       full: "max-w-none",
     },

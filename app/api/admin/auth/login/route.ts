@@ -5,6 +5,14 @@ import {
   createAdminSessionToken,
   getAdminSessionCookieConfig,
 } from "@/lib/auth/admin-jwt";
+import {
+  ADMIN_LOGIN_INVALID_CREDENTIALS_MESSAGE,
+  ADMIN_LOGIN_RATE_LIMIT_MESSAGE,
+  checkAdminLoginRateLimit,
+  clearAdminLoginRateLimit,
+  recordAdminLoginFailure,
+} from "@/lib/auth/admin-login-rate-limit";
+import { runFailedLoginTimingWork } from "@/lib/auth/admin-login-timing";
 import { getSafeAdminRedirectTarget } from "@/lib/auth/admin-redirect";
 import { validateAdminCredentials } from "@/lib/auth/admin-service";
 
@@ -32,16 +40,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const credentials = await validateAdminCredentials(
-      parsedData.data.email,
-      parsedData.data.password,
-    );
+    const { email, password, redirectTo: redirectToInput } = parsedData.data;
+    const rateLimit = checkAdminLoginRateLimit(request);
 
-    if (!credentials) {
+    if (!rateLimit.allowed) {
+      await runFailedLoginTimingWork(email, password);
+
       return NextResponse.json(
         {
           ok: false,
-          error: "E-mail ou senha inválidos.",
+          error: ADMIN_LOGIN_RATE_LIMIT_MESSAGE,
+        },
+        { status: 429 },
+      );
+    }
+
+    const credentials = await validateAdminCredentials(email, password);
+
+    if (!credentials) {
+      recordAdminLoginFailure(request);
+
+      return NextResponse.json(
+        {
+          ok: false,
+          error: ADMIN_LOGIN_INVALID_CREDENTIALS_MESSAGE,
         },
         { status: 401 },
       );
@@ -53,9 +75,7 @@ export async function POST(request: NextRequest) {
     });
 
     const cookieConfig = getAdminSessionCookieConfig();
-    const redirectTo = getSafeAdminRedirectTarget(
-      parsedData.data.redirectTo ?? null,
-    );
+    const redirectTo = getSafeAdminRedirectTarget(redirectToInput ?? null);
 
     const response = NextResponse.json({
       ok: true,
@@ -63,6 +83,7 @@ export async function POST(request: NextRequest) {
     });
 
     response.cookies.set(cookieConfig.name, token, cookieConfig.options);
+    clearAdminLoginRateLimit(request);
 
     return response;
   } catch {

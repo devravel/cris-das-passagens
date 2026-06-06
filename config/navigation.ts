@@ -5,6 +5,11 @@ export type NavItem = {
   href: string;
 };
 
+export type BreadcrumbItem = {
+  name: string;
+  path: string;
+};
+
 /** ID da seção de blogs em destaque na landing page (âncora de retorno em /blog). */
 export const HOME_BLOG_SECTION_ID = "blog-preview";
 
@@ -17,14 +22,50 @@ export const destinationsNavItem: NavItem = {
   href: "/destinos",
 };
 
-/** Links principais — referência: Pacotes, Sobre, Blog. */
-export const navigation: NavItem[] = [
+/**
+ * Páginas principais da marca — usadas no footer e como base da navegação global.
+ * Ordem intencional: reforça hierarquia para o Google (Home → seções de conversão).
+ */
+export const brandPrimaryPages: NavItem[] = [
   { label: "Início", href: "/" },
-  { label: "Sobre", href: "/sobre" },
+  { label: "REI DA COPA", href: "/rei-da-copa" },
   { label: "Pacotes", href: "/pacotes" },
-  { label: "Blogs", href: contentLinks.blog },
-  { label: "Avaliações", href: `/#${HOME_TESTIMONIALS_SECTION_ID}` },
+  { label: "Blog", href: contentLinks.blog },
+  { label: "Sobre", href: "/sobre" },
+  { label: "Contato", href: contentLinks.quote },
 ];
+
+/** Páginas institucionais extras — reservado para itens secundários futuros. */
+export const secondaryNavItems: NavItem[] = [];
+
+/** Links da navbar — páginas principais primeiro, depois institucionais. */
+export const navigation: NavItem[] = [
+  ...brandPrimaryPages,
+  ...secondaryNavItems,
+];
+
+export const brandPageBreadcrumbs = {
+  pacotes: [
+    { name: "Início", path: "/" },
+    { name: "Pacotes", path: "/pacotes" },
+  ],
+  blog: [
+    { name: "Início", path: "/" },
+    { name: "Blog", path: "/blog" },
+  ],
+  contato: [
+    { name: "Início", path: "/" },
+    { name: "Contato", path: "/contato" },
+  ],
+  reiDaCopa: [
+    { name: "Início", path: "/" },
+    { name: "Rei da Copa", path: "/rei-da-copa" },
+  ],
+  sobre: [
+    { name: "Início", path: "/" },
+    { name: "Sobre", path: "/sobre" },
+  ],
+} as const satisfies Record<string, BreadcrumbItem[]>;
 
 /** CTA da navbar — cotação (referência visual). */
 export const navbarCta = {

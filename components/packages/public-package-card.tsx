@@ -3,7 +3,6 @@ import {
   toPackageCardDataFromPublicPackage,
 } from "@/components/packages/package-card";
 import type { PublicPackage } from "@/lib/package/queries";
-import { getPackageWhatsAppUrl } from "@/lib/package/whatsapp";
 import { DEFAULT_DEPARTURE_CITY } from "@/config/packages-showcase";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +32,7 @@ export function PublicPackageCard({
   showAirlineBadge = false,
   className,
 }: PublicPackageCardProps) {
-  const whatsAppHref = getPackageWhatsAppUrl(pkg);
+  const whatsAppPackageTitle = pkg.title || pkg.destination;
   const resolvedDepartureCity =
     pkg.departureCity?.trim() || departureCity || DEFAULT_DEPARTURE_CITY;
 
@@ -56,7 +55,7 @@ export function PublicPackageCard({
         showChecklist={showChecklist}
         showAirlineBadge={showAirlineBadge}
         packageSlug={variant === "landing" ? pkg.slug : undefined}
-        whatsAppHref={whatsAppHref}
+        whatsAppPackageTitle={whatsAppPackageTitle}
       />
     </div>
   );

@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ChevronDown,
   FileText,
   LayoutDashboard,
   Menu,
   Package,
   CircleUser,
+  TicketPercent,
+  Trophy,
   type LucideIcon,
 } from "lucide-react";
+import { useState } from "react";
 
 import {
   adminNavigationItems,
@@ -31,6 +35,8 @@ const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
   "layout-dashboard": LayoutDashboard,
   "file-text": FileText,
   package: Package,
+  "ticket-percent": TicketPercent,
+  trophy: Trophy,
 };
 
 type AdminSidebarProps = {
@@ -45,6 +51,14 @@ function routeIsActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function routeGroupIsActive(pathname: string, item: AdminNavigationItem) {
+  if ("children" in item && item.children) {
+    return item.children.some((child) => routeIsActive(pathname, child.href));
+  }
+
+  return routeIsActive(pathname, item.href);
+}
+
 function SidebarNav({
   pathname,
   items = adminNavigationItems,
@@ -57,8 +71,23 @@ function SidebarNav({
   return (
     <nav aria-label="Navegação admin" className="space-y-1.5">
       {items.map((item) => {
-        const isActive = routeIsActive(pathname, item.href);
+        const hasChildren = "children" in item && Boolean(item.children?.length);
+        const isGroupActive = routeGroupIsActive(pathname, item);
+        const isActive = !hasChildren && routeIsActive(pathname, item.href);
         const Icon = adminNavigationIcons[item.icon];
+
+        if (hasChildren && item.children) {
+          return (
+            <SidebarNavGroup
+              key={item.href}
+              item={item}
+              pathname={pathname}
+              isGroupActive={isGroupActive}
+              onNavigate={onNavigate}
+            />
+          );
+        }
+
         const linkNode = (
           <Link
             href={item.href}
@@ -95,6 +124,96 @@ function SidebarNav({
         );
       })}
     </nav>
+  );
+}
+
+function SidebarNavGroup({
+  item,
+  pathname,
+  isGroupActive,
+  onNavigate,
+}: {
+  item: AdminNavigationItem;
+  pathname: string;
+  isGroupActive: boolean;
+  onNavigate?: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(isGroupActive);
+  const Icon = adminNavigationIcons[item.icon];
+  const children = "children" in item ? item.children : undefined;
+
+  if (!children) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-1">
+      <button
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+        className={cn(
+          "group flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          isGroupActive
+            ? "bg-brand/10 text-brand"
+            : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
+        )}
+        aria-expanded={isOpen}
+      >
+        <span className="flex items-center gap-3">
+          <Icon
+            className={cn(
+              "size-4 shrink-0",
+              isGroupActive
+                ? "text-brand"
+                : "text-muted-foreground transition-colors group-hover:text-foreground",
+            )}
+            aria-hidden
+          />
+          <span>{item.title}</span>
+        </span>
+        <ChevronDown
+          className={cn(
+            "size-4 shrink-0 transition-transform",
+            isOpen ? "rotate-180" : "",
+            isGroupActive ? "text-brand" : "text-muted-foreground",
+          )}
+          aria-hidden
+        />
+      </button>
+
+      {isOpen ? (
+        <div className="space-y-1 pl-3">
+          {children.map((child) => {
+            const isChildActive = routeIsActive(pathname, child.href);
+            const childLink = (
+              <Link
+                href={child.href}
+                onClick={onNavigate}
+                className={cn(
+                  "block rounded-xl px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  isChildActive
+                    ? "bg-brand/10 text-brand"
+                    : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
+                )}
+                aria-current={isChildActive ? "page" : undefined}
+              >
+                {child.title}
+              </Link>
+            );
+
+            if (!onNavigate) {
+              return <div key={child.href}>{childLink}</div>;
+            }
+
+            return (
+              <SheetClose key={child.href} asChild>
+                {childLink}
+              </SheetClose>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 

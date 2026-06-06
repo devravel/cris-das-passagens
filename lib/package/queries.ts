@@ -3,7 +3,7 @@ import { cache } from "react";
 
 import { FEATURED_PACKAGES_CACHE_TAG } from "@/lib/package/cache-tags";
 import { prisma } from "@/lib/prisma";
-import type { PackageCategoryValue, PackageTypeValue } from "@/lib/package/constants";
+import type { PackageCategoryValue, PackagePriceScopeValue, PackageTypeValue } from "@/lib/package/constants";
 import { packageDateToIsoString } from "@/lib/package/dates";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 
@@ -18,6 +18,7 @@ export type PublicPackage = {
   category: PackageCategoryValue | null;
   price: number;
   oldPrice: number | null;
+  priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
   airline: string | null;
@@ -58,6 +59,7 @@ const publicPackageSelect = {
   category: true,
   price: true,
   oldPrice: true,
+  priceScope: true,
   installmentText: true,
   highlightInstallments: true,
   airline: true,
@@ -99,6 +101,7 @@ function mapPublicPackage(
     category: string | null;
     price: { toNumber?: () => number } | number;
     oldPrice: { toNumber?: () => number } | number | null;
+    priceScope: string | null;
     installmentText: string | null;
     highlightInstallments: boolean;
     airline: string | null;
@@ -123,6 +126,7 @@ function mapPublicPackage(
     category: (pkg.category as PackageCategoryValue | null) ?? null,
     price: decimalToNumber(pkg.price) ?? 0,
     oldPrice: decimalToNumber(pkg.oldPrice),
+    priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
     airline: pkg.airline,
@@ -237,6 +241,7 @@ export type AdminPackageListItem = {
   category: PackageCategoryValue | null;
   price: number;
   oldPrice: number | null;
+  priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
   airline: string | null;
@@ -265,6 +270,7 @@ const adminPackageSelect = {
   category: true,
   price: true,
   oldPrice: true,
+  priceScope: true,
   installmentText: true,
   highlightInstallments: true,
   airline: true,
@@ -294,6 +300,7 @@ function mapAdminPackage(
     category: string | null;
     price: { toNumber?: () => number } | number;
     oldPrice: { toNumber?: () => number } | number | null;
+    priceScope: string | null;
     installmentText: string | null;
     highlightInstallments: boolean;
     airline: string | null;
@@ -322,6 +329,7 @@ function mapAdminPackage(
     category: (pkg.category as PackageCategoryValue | null) ?? null,
     price: decimalToNumber(pkg.price) ?? 0,
     oldPrice: decimalToNumber(pkg.oldPrice),
+    priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
     airline: pkg.airline,

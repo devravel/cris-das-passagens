@@ -26,16 +26,19 @@ type PackageWhatsAppCtaProps = {
   href: string;
   className?: string;
   iconClassName?: string;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
 export function PackageWhatsAppCta({
   href,
   className,
   iconClassName,
+  onClick,
 }: PackageWhatsAppCtaProps) {
   return (
     <a
       href={href}
+      onClick={onClick}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Fale com o Agente de Viagem pelo WhatsApp"
@@ -46,7 +49,7 @@ export function PackageWhatsAppCta({
         className,
       )}
     >
-      <span className="text-center">Fale com o Agente</span>
+      <span className="text-center uppercase">Fale com o Agente</span>
       <WhatsAppIcon className={cn("size-4 shrink-0", iconClassName)} />
     </a>
   );
