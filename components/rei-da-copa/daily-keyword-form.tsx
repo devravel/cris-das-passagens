@@ -14,10 +14,6 @@ import { SoccerBallIcon } from "@/components/rei-da-copa/soccer-ball-icon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  REI_DA_COPA_KEYWORD_NOT_FOUND_MESSAGE,
-  REI_DA_COPA_PARTICIPANT_NOT_FOUND_MESSAGE,
-} from "@/lib/rei-da-copa/constants";
-import {
   dailyKeywordSubmissionSchema,
   EMPTY_DAILY_KEYWORD_SUBMISSION_VALUES,
   type DailyKeywordSubmissionInput,
@@ -30,6 +26,8 @@ type KeywordResponse = {
   message?: string;
   fieldErrors?: Record<string, string[] | undefined>;
 };
+
+const narrowMobilePlaceholderClassName = "max-[425px]:placeholder:text-[13px]";
 
 export function DailyKeywordForm() {
   const [isPending, startTransition] = useTransition();
@@ -113,15 +111,7 @@ export function DailyKeywordForm() {
     );
   }
 
-  const showRegistrationHint =
-    submitError === REI_DA_COPA_PARTICIPANT_NOT_FOUND_MESSAGE ||
-    form.formState.errors.phone?.message ===
-      REI_DA_COPA_PARTICIPANT_NOT_FOUND_MESSAGE;
-
-  const showKeywordHint =
-    submitError === REI_DA_COPA_KEYWORD_NOT_FOUND_MESSAGE ||
-    form.formState.errors.keyword?.message ===
-      REI_DA_COPA_KEYWORD_NOT_FOUND_MESSAGE;
+  const showGuidance = Boolean(submitError) || Boolean(form.formState.errors.phone) || Boolean(form.formState.errors.keyword);
 
   return (
     <form
@@ -145,8 +135,11 @@ export function DailyKeywordForm() {
               type="tel"
               inputMode="numeric"
               autoComplete="tel"
-              placeholder="(XX) XXXXX-XXXX"
-              className="h-10 rounded-xl px-3"
+              placeholder="Seu WhatsApp cadastrado na campanha."
+              className={cn(
+                "h-10 rounded-xl px-3",
+                narrowMobilePlaceholderClassName,
+              )}
               aria-invalid={Boolean(form.formState.errors.phone)}
               getInputRef={ref}
               value={value}
@@ -176,8 +169,11 @@ export function DailyKeywordForm() {
             <Input
               id="keyword"
               type="text"
-              placeholder="Digite a palavra-chave do dia"
-              className="h-10 rounded-xl px-3"
+              placeholder="Digite a palavra-chave encontrada."
+              className={cn(
+                "h-10 rounded-xl px-3",
+                narrowMobilePlaceholderClassName,
+              )}
               aria-invalid={Boolean(form.formState.errors.keyword)}
               ref={ref}
               value={value}
@@ -205,20 +201,13 @@ export function DailyKeywordForm() {
         {submitError ?? " "}
       </div>
 
-      {showRegistrationHint ? (
+      {showGuidance ? (
         <p className="text-sm text-muted-foreground">
-          Ainda não está inscrito? Se inscreva{" "}
+          Confira se o telefone está cadastrado na campanha e se a palavra-chave divulgada está correta. Se ainda não estiver inscrito, inscreva-se{" "}
           <a href="#inscricao" className={reiDaCopaCampaignLinkClassName}>
             aqui
           </a>
           .
-        </p>
-      ) : null}
-
-      {showKeywordHint ? (
-        <p className="text-sm text-muted-foreground">
-          Confira a palavra-chave divulgada na campanha e tente novamente com
-          atenção.
         </p>
       ) : null}
 

@@ -1,11 +1,13 @@
 import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
-  REI_DA_COPA_KEYWORD_NOT_FOUND_MESSAGE,
-  REI_DA_COPA_PARTICIPANT_NOT_FOUND_MESSAGE,
-} from "@/lib/rei-da-copa/constants";
+  REI_DA_COPA_CAMPAIGN_CLOSED_MESSAGE,
+  getCampaignDayRange,
+  isCampaignOpen,
+} from "@/lib/rei-da-copa/campaign-window";
 import { reiDaCopaKeywordsService } from "@/lib/rei-da-copa/keywords.service";
 import { reiDaCopaParticipantsService } from "@/lib/rei-da-copa/participants.service";
+import { reiDaCopaSettingsService } from "@/lib/rei-da-copa/settings.service";
 import { ReiDaCopaSubmissionError } from "@/lib/rei-da-copa/submission-errors";
 import type {
   DailyKeywordSubmissionDto,
@@ -77,25 +79,37 @@ async function resolveKeywordSubmission(
   >;
   keyword: string;
 }> {
+  const settings = await reiDaCopaSettingsService.getSettings();
+
+  if (!isCampaignOpen(settings)) {
+    throw new ReiDaCopaSubmissionError(REI_DA_COPA_CAMPAIGN_CLOSED_MESSAGE, {
+      status: 403,
+    });
+  }
+
   const participant = await reiDaCopaParticipantsService.findParticipantByPhoneOrInstagram({
     phone: input.phone,
     instagram: input.instagram,
   });
 
   if (!participant) {
-    throw new ReiDaCopaSubmissionError(REI_DA_COPA_PARTICIPANT_NOT_FOUND_MESSAGE, {
-      status: 404,
-      field: input.phone ? "phone" : "instagram",
-    });
+    throw new ReiDaCopaSubmissionError(
+      "Não foi possível validar o envio. Verifique seus dados e tente novamente.",
+      {
+        status: 422,
+      },
+    );
   }
 
   const officialKeyword = await reiDaCopaKeywordsService.findActiveKeyword(input.keyword);
 
   if (!officialKeyword) {
-    throw new ReiDaCopaSubmissionError(REI_DA_COPA_KEYWORD_NOT_FOUND_MESSAGE, {
-      status: 422,
-      field: "keyword",
-    });
+    throw new ReiDaCopaSubmissionError(
+      "Não foi possível validar o envio. Verifique seus dados e tente novamente.",
+      {
+        status: 422,
+      },
+    );
   }
 
   return {
@@ -123,6 +137,29 @@ export class ReiDaCopaKeywordSubmissionsService {
     input: DailyKeywordSubmissionDto,
   ): Promise<ReiDaCopaKeywordSubmissionEntity> {
     const { participant, keyword } = await resolveKeywordSubmission(input);
+    const { start, end } = getCampaignDayRange();
+
+    const existingSubmission = await prisma.reiDaCopaKeywordSubmission.findFirst({
+      where: {
+        participantId: participant.id,
+        createdAt: {
+          gte: start,
+          lte: end,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingSubmission) {
+      throw new ReiDaCopaSubmissionError(
+        "Você já enviou a palavra-chave de hoje. Tente novamente amanhã.",
+        {
+          status: 409,
+        },
+      );
+    }
 
     return prisma.reiDaCopaKeywordSubmission.create({
       data: {

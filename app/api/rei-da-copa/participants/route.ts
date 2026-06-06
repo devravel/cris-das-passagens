@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { reiDaCopaParticipantsService } from "@/lib/rei-da-copa/participants.service";
+import { REI_DA_COPA_CAMPAIGN_CLOSED_MESSAGE, isCampaignOpen } from "@/lib/rei-da-copa/campaign-window";
+import { reiDaCopaSettingsService } from "@/lib/rei-da-copa/settings.service";
 import { checkReiDaCopaRateLimit } from "@/lib/rei-da-copa/rate-limit";
 import { participantRegistrationSchema } from "@/lib/rei-da-copa/schemas";
 import { formatParticipantInstagramForDisplay } from "@/lib/rei-da-copa/utils";
@@ -19,6 +21,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const settings = await reiDaCopaSettingsService.getSettings();
+
+    if (!isCampaignOpen(settings)) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: REI_DA_COPA_CAMPAIGN_CLOSED_MESSAGE,
+        },
+        { status: 403 },
+      );
+    }
+
     const body = await request.json();
     const parsed = participantRegistrationSchema.safeParse(body);
 
@@ -50,18 +64,17 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     const message =
-      error instanceof Error
-        ? error.message
-        : "Não foi possível concluir o cadastro agora. Tente novamente.";
-
-    const status = message.includes("já está cadastrado") ? 409 : 500;
+      error instanceof Error &&
+      error.message.includes("já está cadastrado")
+        ? "Já existe uma inscrição com os dados informados."
+        : "Não foi possível concluir a inscrição agora. Tente novamente.";
 
     return NextResponse.json(
       {
         ok: false,
         error: message,
       },
-      { status },
+      { status: message.startsWith("Já existe") ? 409 : 500 },
     );
   }
 }

@@ -12,16 +12,11 @@ export function getReiDaCopaSubmissionErrorResponse(error: unknown) {
     };
   }
 
-  const message =
-    error instanceof Error
-      ? error.message
-      : "Não foi possível enviar a palavra-chave agora. Tente novamente.";
-
   return {
     status: 500,
     body: {
       ok: false as const,
-      error: message,
+      error: "Não foi possível enviar a palavra-chave agora. Tente novamente.",
     },
   };
 }

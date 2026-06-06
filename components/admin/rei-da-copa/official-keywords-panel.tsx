@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2 } from "lucide-react";
@@ -33,6 +34,7 @@ function formatDate(value: string) {
 }
 
 export function OfficialKeywordsPanel({ keywords }: OfficialKeywordsPanelProps) {
+  const router = useRouter();
   const [isCreatePending, startCreateTransition] = useTransition();
   const [isDeactivatePending, startDeactivateTransition] = useTransition();
   const [deactivatingId, setDeactivatingId] = useState<string | null>(null);
@@ -59,6 +61,7 @@ export function OfficialKeywordsPanel({ keywords }: OfficialKeywordsPanelProps) 
 
       toast.success(result.message);
       form.reset({ value: "" });
+      router.refresh();
     });
   }
 
@@ -75,6 +78,7 @@ export function OfficialKeywordsPanel({ keywords }: OfficialKeywordsPanelProps) 
       }
 
       toast.success(result.message);
+      router.refresh();
     });
   }
 

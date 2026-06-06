@@ -92,19 +92,46 @@ export const couponService = {
         };
       }
 
-      if (coupon.maxUses != null && coupon.currentUses >= coupon.maxUses) {
+      let updated: CouponRecord | null = null;
+
+      if (coupon.maxUses == null) {
+        updated = await tx.coupon.update({
+          where: { id: coupon.id },
+          data: {
+            currentUses: { increment: 1 },
+          },
+        });
+      } else {
+        const usageUpdated = await tx.coupon.updateMany({
+          where: {
+            id: coupon.id,
+            currentUses: {
+              lt: coupon.maxUses,
+            },
+          },
+          data: {
+            currentUses: { increment: 1 },
+          },
+        });
+
+        if (usageUpdated.count === 0) {
+          return {
+            success: false as const,
+            message: "Este cupom não está mais disponível. Selecione um pacote sem cupom ou tente outro código.",
+          };
+        }
+
+        updated = await tx.coupon.findUnique({
+          where: { id: coupon.id },
+        });
+      }
+
+      if (!updated) {
         return {
           success: false as const,
           message: "Este cupom não está mais disponível. Selecione um pacote sem cupom ou tente outro código.",
         };
       }
-
-      const updated = await tx.coupon.update({
-        where: { id: coupon.id },
-        data: {
-          currentUses: { increment: 1 },
-        },
-      });
 
       await tx.couponRedemption.create({
         data: {

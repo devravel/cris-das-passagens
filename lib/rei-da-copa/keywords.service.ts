@@ -48,9 +48,16 @@ export class ReiDaCopaKeywordsService {
     const value = normalizeKeywordForLookup(input.value);
 
     try {
-      return await prisma.reiDaCopaKeyword.create({
-        data: { value },
-        select: keywordSelect,
+      return await prisma.$transaction(async (tx) => {
+        await tx.reiDaCopaKeyword.updateMany({
+          where: { isActive: true },
+          data: { isActive: false },
+        });
+
+        return tx.reiDaCopaKeyword.create({
+          data: { value, isActive: true },
+          select: keywordSelect,
+        });
       });
     } catch (error) {
       if (
