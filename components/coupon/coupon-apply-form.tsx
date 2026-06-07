@@ -91,14 +91,12 @@ export function CouponApplyForm({
 }: CouponApplyFormProps) {
   const [code, setCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<StoredCoupon | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const isClient = useIsClient();
   const activeCoupon = isClient ? (appliedCoupon ?? getStoredCoupon()) : null;
 
   function handleApply() {
-    setSuccessMessage(null);
     setErrorMessage(null);
 
     const trimmedCode = code.trim();
@@ -139,9 +137,6 @@ export function CouponApplyForm({
         const stored = getStoredCoupon();
         setAppliedCoupon(stored);
         setCode("");
-        setSuccessMessage(
-          `🎉 Cupom ${result.coupon.name} (${result.coupon.discountLabel}) aplicado! Este benefício será considerado pelo agente durante o atendimento. Selecione um pacote agora mesmo.`,
-        );
       } catch {
         setErrorMessage("Cupom não encontrado ou inválido.");
       }
@@ -190,6 +185,9 @@ export function CouponApplyForm({
   const appliedLabel = activeCoupon
     ? `${activeCoupon.name} (${activeCoupon.discountLabel})`
     : null;
+  const couponDescriptionText = activeCoupon
+    ? `🎉 Cupom ${appliedLabel} aplicado! Este benefício será considerado pelo agente durante o atendimento. Selecione um pacote agora mesmo.`
+    : couponFieldDescriptionShort;
 
   return (
     <div
@@ -259,22 +257,9 @@ export function CouponApplyForm({
         <CouponFieldFootnote className="hidden w-full text-left min-[426px]:max-[639px]:inline-flex" />
 
         <p className={cn(couponMutedTextClassName, "block w-full text-left")}>
-          {couponFieldDescriptionShort}
+          {couponDescriptionText}
         </p>
       </div>
-
-      {activeCoupon && !successMessage ? (
-        <p className="w-full text-right text-[11px] leading-snug text-brand sm:text-xs">
-          Cupom {appliedLabel} ativo. Selecione um pacote para falar com o
-          agente.
-        </p>
-      ) : null}
-
-      {successMessage ? (
-        <p className="w-full rounded-xl border border-brand/20 bg-brand/5 px-3 py-2 text-left text-[11px] leading-relaxed text-foreground sm:text-xs">
-          {successMessage}
-        </p>
-      ) : null}
 
       {errorMessage ? (
         <p className="w-full text-right text-[11px] leading-snug text-destructive sm:text-xs">
