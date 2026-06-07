@@ -1,7 +1,11 @@
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
-import { FEATURED_PACKAGES_CACHE_TAG } from "@/lib/package/cache-tags";
+import {
+  FEATURED_PACKAGES_CACHE_TAG,
+  HOMEPAGE_PACKAGES_CACHE_TAG,
+  PACKAGES_PAGE_CACHE_TAG,
+} from "@/lib/package/cache-tags";
 import { prisma } from "@/lib/prisma";
 import type { PackageCategoryValue, PackagePriceScopeValue, PackageTypeValue } from "@/lib/package/constants";
 import { packageDateToIsoString } from "@/lib/package/dates";
@@ -170,6 +174,65 @@ const getCachedFeaturedPackages = unstable_cache(
   { tags: [FEATURED_PACKAGES_CACHE_TAG] },
 );
 
+async function fetchHomepagePackagesFromDb(): Promise<HomepagePackages> {
+  const packages = await prisma.package.findMany({
+    where: {
+      active: true,
+      showOnLandingPage: true,
+    },
+    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    select: publicPackageSelect,
+  });
+
+  return splitPackagesByType(packages.map(mapPublicPackage));
+}
+
+const getCachedHomepagePackages = unstable_cache(
+  fetchHomepagePackagesFromDb,
+  ["homepage-packages"],
+  { tags: [HOMEPAGE_PACKAGES_CACHE_TAG] },
+);
+
+async function fetchPackagesPageDataFromDb(): Promise<PackagesPageData> {
+  const packages = await prisma.package.findMany({
+    where: { active: true },
+    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    select: publicPackageSelect,
+  });
+
+  const mapped = packages.map(mapPublicPackage);
+
+  return {
+    flights: mapped.filter((pkg) => pkg.type === "FLIGHT"),
+    complete: mapped.filter((pkg) => pkg.type === "PACKAGE_COMPLETE"),
+    hotels: mapped.filter((pkg) => pkg.type === "HOTEL"),
+    tickets: mapped.filter((pkg) => pkg.type === "TICKET"),
+    cruises: mapped.filter((pkg) => pkg.type === "CRUISE"),
+  };
+}
+
+const getCachedPackagesPageData = unstable_cache(
+  fetchPackagesPageDataFromDb,
+  ["packages-page"],
+  { tags: [PACKAGES_PAGE_CACHE_TAG] },
+);
+
+const emptyHomepagePackages: HomepagePackages = {
+  complete: [],
+  flights: [],
+  hotels: [],
+  tickets: [],
+  cruises: [],
+};
+
+const emptyPackagesPageData: PackagesPageData = {
+  flights: [],
+  complete: [],
+  hotels: [],
+  tickets: [],
+  cruises: [],
+};
+
 export const getFeaturedPackages = cache(async (): Promise<PublicPackage[]> => {
   try {
     return await getCachedFeaturedPackages();
@@ -181,52 +244,19 @@ export const getFeaturedPackages = cache(async (): Promise<PublicPackage[]> => {
 
 export const getHomepagePackages = cache(async (): Promise<HomepagePackages> => {
   try {
-    const packages = await prisma.package.findMany({
-      where: {
-        active: true,
-        showOnLandingPage: true,
-      },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      select: publicPackageSelect,
-    });
-
-    return splitPackagesByType(packages.map(mapPublicPackage));
-  } catch {
-    return {
-      complete: [],
-      flights: [],
-      hotels: [],
-      tickets: [],
-      cruises: [],
-    };
+    return await getCachedHomepagePackages();
+  } catch (error) {
+    console.error("[getHomepagePackages] Failed to load homepage packages:", error);
+    return emptyHomepagePackages;
   }
 });
 
 export const getPackagesPageData = cache(async (): Promise<PackagesPageData> => {
   try {
-    const packages = await prisma.package.findMany({
-      where: { active: true },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      select: publicPackageSelect,
-    });
-
-    const mapped = packages.map(mapPublicPackage);
-
-    return {
-      flights: mapped.filter((pkg) => pkg.type === "FLIGHT"),
-      complete: mapped.filter((pkg) => pkg.type === "PACKAGE_COMPLETE"),
-      hotels: mapped.filter((pkg) => pkg.type === "HOTEL"),
-      tickets: mapped.filter((pkg) => pkg.type === "TICKET"),
-      cruises: mapped.filter((pkg) => pkg.type === "CRUISE"),
-    };
-  } catch {
-    return {
-      flights: [],
-      complete: [],
-      hotels: [],
-      tickets: [],
-      cruises: [],
-    };
+    return await getCachedPackagesPageData();
+  } catch (error) {
+    console.error("[getPackagesPageData] Failed to load packages page data:", error);
+    return emptyPackagesPageData;
   }
 });
 

@@ -1,10 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 
 import type { ActionFailure, ActionResult } from "@/lib/admin/action-result";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
+import { FEATURED_HOME_BLOG_POSTS_CACHE_TAG } from "@/lib/blog/cache-tags";
 import { getFeaturedHomePostsLimitMessage } from "@/lib/blog/featured";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { blogPostSchema, type BlogPostInput } from "@/lib/blog/schemas";
@@ -47,6 +48,7 @@ function normalizeInput(input: BlogPostInput) {
 }
 
 function revalidateBlogPaths(slug: string) {
+  updateTag(FEATURED_HOME_BLOG_POSTS_CACHE_TAG);
   revalidatePath("/admin/blogs");
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);

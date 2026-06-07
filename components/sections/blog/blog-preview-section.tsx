@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
-import { BlogImage } from "@/components/blog/blog-image";
+import { StorageImage } from "@/components/ui/storage-image";
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
@@ -58,7 +58,7 @@ function BlogCard({
 
   const imageBlock = (
     <div className="relative aspect-[16/10] overflow-hidden bg-muted/30">
-      <BlogImage
+      <StorageImage
         src={post.coverImage}
         alt={isPlaceholder ? "" : post.title}
         fill

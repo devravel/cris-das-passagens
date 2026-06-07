@@ -13,6 +13,7 @@ import {
 
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
+import { useInViewRef } from "@/hooks/use-in-view-ref";
 import {
   advanceAutoplayScrollOffset,
   isCoarsePointerDevice,
@@ -201,6 +202,7 @@ export function PackageCardsCarouselAutoplay({
 
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
+  const isInViewRef = useInViewRef(() => trackRef.current, [packages.length]);
   const programmaticUntilRef = useRef(0);
   const pauseForHoverFocusRef = useRef(true);
   const virtualScrollLeftRef = useRef(0);
@@ -431,7 +433,7 @@ export function PackageCardsCarouselAutoplay({
         return;
       }
 
-      if (isPausedRef.current || document.hidden) {
+      if (isPausedRef.current || document.hidden || !isInViewRef.current) {
         lastFrameTimeRef.current = null;
         rafRef.current = requestAnimationFrame(tick);
         return;

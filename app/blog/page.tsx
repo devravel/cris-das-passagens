@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import { BlogImage } from "@/components/blog/blog-image";
+import { StorageImage } from "@/components/ui/storage-image";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { brandPageBreadcrumbs } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
@@ -147,7 +147,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       href={href}
                       className="relative block aspect-16/10 overflow-hidden"
                     >
-                      <BlogImage
+                      <StorageImage
                         src={normalizeBlogImageUrl(post.coverImage)}
                         alt={post.title}
                         fill

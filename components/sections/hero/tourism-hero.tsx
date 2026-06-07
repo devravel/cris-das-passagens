@@ -28,6 +28,13 @@ export type TourismHeroProps = {
   className?: string;
 };
 
+/** Coluna esquerda estreita no grid lg — mantém CTAs lado a lado só nesta faixa. */
+const heroCtaRowClassName =
+  "min-[1024px]:max-[1144px]:!flex-nowrap min-[1024px]:max-[1144px]:gap-2";
+
+const heroCtaCompactClassName =
+  "min-[1024px]:max-[1144px]:h-10 min-[1024px]:max-[1144px]:px-3 min-[1024px]:max-[1144px]:text-xs";
+
 function HeroCtaLink({
   cta,
   variant,
@@ -52,6 +59,7 @@ function HeroCtaLink({
         variant={variant === "primary" ? "default" : "outline"}
         className={cn(
           variant === "primary" ? primaryClasses : secondaryClasses,
+          heroCtaCompactClassName,
           className,
         )}
       >
@@ -72,6 +80,7 @@ function HeroCtaLink({
       variant={variant === "primary" ? "default" : "outline"}
       className={cn(
         variant === "primary" ? primaryClasses : secondaryClasses,
+        heroCtaCompactClassName,
         className,
       )}
     >
@@ -165,11 +174,14 @@ export function TourismHero({
           </motion.ul>
 
           <motion.div
-            className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
+            className={cn(
+              "flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center",
+              heroCtaRowClassName,
+            )}
             {...ctaEntrance}
           >
             {primaryCta.href === reiDaCopaHomeHeroCta.href ? (
-              <ReiDaCopaHeroCta />
+              <ReiDaCopaHeroCta className={heroCtaCompactClassName} />
             ) : (
               <HeroCtaLink cta={primaryCta} variant="primary" />
             )}

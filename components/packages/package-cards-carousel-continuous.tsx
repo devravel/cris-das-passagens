@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { CarouselDots } from "@/components/ui/carousel-dots";
+import { useInViewRef } from "@/hooks/use-in-view-ref";
 import {
   advanceAutoplayScrollOffset,
   syncScrollerToAutoplayOffset,
@@ -226,6 +227,10 @@ export function PackageCardsContinuousCarousel({
 
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
+  const isInViewRef = useInViewRef(
+    () => containerRef.current,
+    [isMobileAutoplay, packages.length],
+  );
   const measureRetriesRef = useRef(0);
   const measureLayoutRef = useRef<() => void>(() => undefined);
   const virtualScrollLeftRef = useRef(0);
@@ -465,7 +470,7 @@ export function PackageCardsContinuousCarousel({
         return;
       }
 
-      if (isPausedRef.current || document.hidden) {
+      if (isPausedRef.current || document.hidden || !isInViewRef.current) {
         lastFrameTimeRef.current = null;
         rafRef.current = requestAnimationFrame(tick);
         return;

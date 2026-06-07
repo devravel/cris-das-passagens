@@ -1,6 +1,6 @@
 import { Anchor, BedDouble, Check, Luggage, Plane, Ticket } from "lucide-react";
 
-import { BlogImage } from "@/components/blog/blog-image";
+import { StorageImage } from "@/components/ui/storage-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
 import { PackageWhatsAppButton } from "@/components/packages/package-whatsapp-button";
 import {
@@ -700,7 +700,7 @@ export function PackageCard({
             )}
           >
             {resolvedImageSrc ? (
-              <BlogImage
+              <StorageImage
                 src={resolvedImageSrc}
                 alt={imageAlt}
                 fill

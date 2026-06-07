@@ -1,33 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from "react";
 
-import {
-  PackageWhatsAppCta,
-  packageActionButtonClassName,
-} from "@/components/packages/package-whatsapp-cta";
+import { PackageWhatsAppCta } from "@/components/packages/package-whatsapp-cta";
 import { getPackageWhatsAppUrl } from "@/lib/coupon/whatsapp";
+import { redeemCouponInBackground } from "@/lib/coupon/redeem-client";
 import {
   getStoredCoupon,
   hasRecentlyUsedCoupon,
   recordCouponUsage,
 } from "@/lib/coupon/storage";
-import { cn } from "@/lib/utils";
-
-type RedeemResponse =
-  | {
-      success: true;
-      coupon: {
-        name: string;
-        discountLabel: string;
-      };
-    }
-  | {
-      success: false;
-      message: string;
-    };
 
 type PackageWhatsAppButtonProps = {
   packageTitle: string;
@@ -40,7 +22,6 @@ export function PackageWhatsAppButton({
   className,
   iconClassName,
 }: PackageWhatsAppButtonProps) {
-  const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function openWhatsApp(url: string) {
@@ -63,59 +44,17 @@ export function PackageWhatsAppButton({
       return;
     }
 
-    startTransition(async () => {
-      try {
-        const response = await fetch("/api/coupons/redeem", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: storedCoupon.code,
-            packageTitle,
-          }),
-        });
-
-        const result = (await response.json()) as RedeemResponse;
-
-        if (!result.success) {
-          const message =
-            "Este cupom não está mais disponível. Selecione um pacote sem cupom ou tente outro código.";
-          setErrorMessage(message);
-          toast.error(message);
-          return;
-        }
-
-        recordCouponUsage(storedCoupon.code);
-
-        openWhatsApp(
-          getPackageWhatsAppUrl(packageTitle, {
-            name: result.coupon.name,
-            discountLabel: result.coupon.discountLabel,
-          }),
-        );
-      } catch {
-        const message = "Não foi possível validar o cupom agora. Tente novamente.";
-        setErrorMessage(message);
-        toast.error(message);
-      }
-    });
-  }
-
-  if (isPending) {
-    return (
-      <span
-        className={cn(
-          packageActionButtonClassName,
-          "bg-[#25D366] text-white shadow-sm",
-          className,
-        )}
-        aria-busy="true"
-      >
-        <Loader2 className={cn("size-4 animate-spin", iconClassName)} aria-hidden />
-        <span className="text-center">Validando cupom...</span>
-      </span>
+    openWhatsApp(
+      getPackageWhatsAppUrl(packageTitle, {
+        name: storedCoupon.name,
+        discountLabel: storedCoupon.discountLabel,
+      }),
     );
+    recordCouponUsage(storedCoupon.code);
+    redeemCouponInBackground({
+      code: storedCoupon.code,
+      packageTitle,
+    });
   }
 
   return (

@@ -16,6 +16,7 @@ import {
   PartnerLogoImage,
   type PartnerLogoEntry,
 } from "@/components/sections/trust/partners-logo-shared";
+import { useInViewRef } from "@/hooks/use-in-view-ref";
 import {
   advanceAutoplayScrollOffset,
   isCoarsePointerDevice,
@@ -113,6 +114,7 @@ export function PartnersLogosCarousel({
 
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
+  const isInViewRef = useInViewRef(() => trackRef.current, [logos.length]);
   const programmaticUntilRef = useRef(0);
   const measureRetriesRef = useRef(0);
   const measureLayoutRef = useRef<() => void>(() => undefined);
@@ -350,7 +352,7 @@ export function PartnersLogosCarousel({
         return;
       }
 
-      if (isPausedRef.current || document.hidden) {
+      if (isPausedRef.current || document.hidden || !isInViewRef.current) {
         lastFrameTimeRef.current = null;
         rafRef.current = requestAnimationFrame(tick);
         return;

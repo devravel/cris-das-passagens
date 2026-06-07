@@ -1,6 +1,7 @@
 import "server-only";
 
 import { isValidBlogImageUrl, normalizeBlogImageUrl } from "@/lib/blog/image-url";
+import { STORAGE_UPLOAD_CACHE_CONTROL } from "@/lib/storage/media-url";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 
 export const PROMOTION_IMAGES_BUCKET = "promotion-images";
@@ -63,7 +64,7 @@ export async function uploadPromotionImageToStorage(
     .upload(path, fileBuffer, {
       contentType: mimeType,
       upsert: false,
-      cacheControl: "3600",
+      cacheControl: STORAGE_UPLOAD_CACHE_CONTROL,
     });
 
   if (uploadError) {

@@ -2,7 +2,7 @@
 
 import { revalidatePath, updateTag } from "next/cache";
 
-import { FEATURED_PACKAGES_CACHE_TAG } from "@/lib/package/cache-tags";
+import { PUBLIC_PACKAGE_CACHE_TAGS } from "@/lib/package/cache-tags";
 import { z } from "zod";
 
 import { getActionErrorMessage } from "@/lib/admin/action-error";
@@ -112,7 +112,9 @@ function normalizeInput(input: PackageFormValues) {
 }
 
 function revalidatePackagePaths() {
-  updateTag(FEATURED_PACKAGES_CACHE_TAG);
+  for (const tag of PUBLIC_PACKAGE_CACHE_TAGS) {
+    updateTag(tag);
+  }
   revalidatePath("/admin/packages");
   revalidatePath("/");
   revalidatePath("/pacotes");

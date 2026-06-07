@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 import { BlogArticleContent } from "@/components/blog/blog-article-content";
 import { BlogPostReadingUi } from "@/components/blog/blog-post-reading-ui";
-import { BlogImage } from "@/components/blog/blog-image";
+import { StorageImage } from "@/components/ui/storage-image";
 import { BlogPostLikeButton, BlogPostLikeProvider } from "@/components/blog/blog-post-like";
 import { BlogPostShare } from "@/components/blog/blog-post-share";
 import { BlogPostTags } from "@/components/blog/blog-post-tags";
@@ -186,7 +186,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </header>
 
             <div className="mt-6 sm:mt-8">
-              <BlogImage
+              <StorageImage
                 src={coverImage}
                 alt={post.title}
                 fill

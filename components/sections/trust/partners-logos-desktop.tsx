@@ -14,6 +14,7 @@ import {
   PartnerLogoImage,
   type PartnerLogoEntry,
 } from "@/components/sections/trust/partners-logo-shared";
+import { useInViewRef } from "@/hooks/use-in-view-ref";
 import { cn } from "@/lib/utils";
 
 /** ~36px/s — mesmo fluxo horizontal lento do mobile. */
@@ -48,6 +49,10 @@ export function PartnersLogosDesktop({
 
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
+  const isInViewRef = useInViewRef(
+    () => containerRef.current,
+    [needsAutoplay, logos.length],
+  );
 
   const applyPaused = useCallback(() => {
     const paused =
@@ -160,9 +165,14 @@ export function PartnersLogosDesktop({
     const tick = (timestamp: number) => {
       const container = containerRef.current;
 
-      if (!container || isPausedRef.current || document.hidden) {
+      if (!container) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (isPausedRef.current || document.hidden || !isInViewRef.current) {
         lastFrameTimeRef.current = null;
-        rafRef.current = null;
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 

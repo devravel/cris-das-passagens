@@ -1,21 +1,45 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
 import { BlogPreviewHomeSection } from "@/components/sections/blog/blog-preview-home-section";
-import { FinalCta } from "@/components/sections/cta/final-cta";
 import { FaqModern } from "@/components/sections/faq/faq-modern";
 import { HomeHero } from "@/components/sections/hero/home-hero";
 import { HomeHeroSkeleton } from "@/components/sections/hero/home-hero-skeleton";
 import { HomePackagesSections } from "@/components/sections/packages/home-packages-sections";
 import { HomePackagesSectionsSkeleton } from "@/components/sections/packages/home-packages-sections-skeleton";
 import { SupportSection } from "@/components/sections/about/about-support";
-import { TestimonialsModern } from "@/components/sections/testimonials/testimonials-modern";
-import { CadasturCompactSection } from "@/components/sections/trust/cadastur-compact-section";
-import { PartnersSection } from "@/components/sections/trust/partners-section";
 import { content } from "@/config/content";
 import { LANDING_PACKAGE_CATEGORY_SECTIONS_ENABLED } from "@/config/packages-showcase";
 import { siteConfig } from "@/config/site";
 import { createMetadata } from "@/lib/seo";
+
+const CadasturCompactSection = dynamic(
+  () =>
+    import("@/components/sections/trust/cadastur-compact-section").then(
+      (module) => module.CadasturCompactSection,
+    ),
+);
+
+const TestimonialsModern = dynamic(
+  () =>
+    import("@/components/sections/testimonials/testimonials-modern").then(
+      (module) => module.TestimonialsModern,
+    ),
+  { ssr: false },
+);
+
+const PartnersSection = dynamic(
+  () =>
+    import("@/components/sections/trust/partners-section").then(
+      (module) => module.PartnersSection,
+    ),
+);
+
+const FinalCta = dynamic(
+  () =>
+    import("@/components/sections/cta/final-cta").then((module) => module.FinalCta),
+);
 
 export const metadata: Metadata = createMetadata({
   title: siteConfig.name,

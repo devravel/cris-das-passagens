@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { PublicPackageCard } from "@/components/packages/public-package-card";
+import { useInViewRef } from "@/hooks/use-in-view-ref";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -114,6 +115,10 @@ export function PackageCardsCarouselAutoplayDesktop({
 
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
+  const isInViewRef = useInViewRef(
+    () => containerRef.current,
+    [needsAutoplay, packages.length],
+  );
 
   const applyPaused = useCallback(() => {
     const paused =
@@ -245,9 +250,14 @@ export function PackageCardsCarouselAutoplayDesktop({
     const tick = (timestamp: number) => {
       const container = containerRef.current;
 
-      if (!container || isPausedRef.current || document.hidden) {
+      if (!container) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (isPausedRef.current || document.hidden || !isInViewRef.current) {
         lastFrameTimeRef.current = null;
-        rafRef.current = null;
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 
