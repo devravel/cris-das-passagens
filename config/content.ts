@@ -61,6 +61,7 @@ export const contentLinks = {
   whatsapp: "https://wa.me/5551992519187",
   instagram: "https://www.instagram.com/crisdaspassagens/",
   cadastur: "https://www.cadastur.turismo.gov.br",
+  googleBusinessProfile: "https://share.google/KJPSDMuCaGAzMqGKn",
 } as const;
 
 export const content = {
@@ -252,9 +253,9 @@ export const content = {
   socialProof: {
     title: "Confiança comprovada",
     subtitle: "Números reais de quem já viajou com a Cris das Passagens.",
-    emissions: "800+",
+    emissions: "1.500+",
     emissionsLabel: "emissões realizadas",
-    clients: "2.000+",
+    clients: "5.000+",
     clientsLabel: "clientes atendidos",
     certificationLabel: "Certificação CADASTUR",
     reviewSources: "Google ou Instagram",
@@ -313,7 +314,7 @@ export const content = {
       {
         question: "Não é golpe?",
         answer:
-          "Temos mais de 800 emissões realizadas e mais de 2.000 clientes atendidos. Nas nossas redes sociais, como Google ou Instagram, você pode verificar diversos depoimentos de nossos clientes.",
+          "Temos mais de 1.500 emissões realizadas e mais de 5.000 clientes atendidos. Nas nossas redes sociais, como Google ou Instagram, você pode verificar diversos depoimentos de nossos clientes.",
       },
       {
         question: "Quais as formas de pagamento?",

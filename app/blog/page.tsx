@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { StorageImage } from "@/components/ui/storage-image";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
-import { brandPageBreadcrumbs } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
 import {
@@ -13,8 +12,18 @@ import {
   blogCardExcerptClassName,
   blogCardTitleClassName,
 } from "@/lib/blog/card-styles";
+import {
+  BLOG_POSTS_PER_PAGE,
+  getBlogPageBreadcrumbItems,
+  getBlogPageParam,
+  getBlogPagePath,
+} from "@/lib/blog/pagination";
 import { Button } from "@/components/ui/button";
-import { createMetadata } from "@/lib/seo";
+import {
+  buildCanonicalUrl,
+  createMetadata,
+  withPaginationMetadata,
+} from "@/lib/seo";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { prisma } from "@/lib/prisma";
 import {
@@ -24,40 +33,30 @@ import {
 } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
 
-const POSTS_PER_PAGE = 6;
-
 type BlogPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
-
-function getPageParam(value: string | string[] | undefined): number {
-  const raw = Array.isArray(value) ? value[0] : value;
-  const parsed = Number(raw);
-
-  if (!raw || Number.isNaN(parsed) || parsed < 1) {
-    return 1;
-  }
-
-  return Math.floor(parsed);
-}
-
-function getBlogHref(page: number) {
-  if (page <= 1) return "/blog";
-  return `/blog?page=${page}`;
-}
 
 export async function generateMetadata({
   searchParams,
 }: BlogPageProps): Promise<Metadata> {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const page = getPageParam(resolvedSearchParams.page);
-  const path = page <= 1 ? "/blog" : `/blog?page=${page}`;
+  const requestedPage = getBlogPageParam(resolvedSearchParams.page);
+  const totalPublishedPosts = await prisma.post.count({
+    where: { published: true },
+  });
+  const totalPages = Math.max(
+    1,
+    Math.ceil(totalPublishedPosts / BLOG_POSTS_PER_PAGE),
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
+  const path = getBlogPagePath(currentPage);
 
-  return createMetadata({
+  const metadata = createMetadata({
     title:
-      page <= 1
+      currentPage <= 1
         ? "Blog de Viagens e Dicas"
-        : `Blog de Viagens — Página ${page}`,
+        : `Blog de Viagens — Página ${currentPage}`,
     description:
       "Conteúdos exclusivos da Cris das Passagens com dicas de viagem, destinos e orientações para viajar com mais tranquilidade.",
     path,
@@ -68,13 +67,24 @@ export async function generateMetadata({
       "Cris das Passagens",
     ],
   });
+
+  return withPaginationMetadata(metadata, {
+    previous:
+      currentPage > 1
+        ? buildCanonicalUrl(getBlogPagePath(currentPage - 1))
+        : undefined,
+    next:
+      currentPage < totalPages
+        ? buildCanonicalUrl(getBlogPagePath(currentPage + 1))
+        : undefined,
+  });
 }
 
 export const revalidate = 3600;
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const resolvedSearchParams = (await searchParams) ?? {};
-  const requestedPage = getPageParam(resolvedSearchParams.page);
+  const requestedPage = getBlogPageParam(resolvedSearchParams.page);
 
   const totalPublishedPosts = await prisma.post.count({
     where: { published: true },
@@ -82,10 +92,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(totalPublishedPosts / POSTS_PER_PAGE),
+    Math.ceil(totalPublishedPosts / BLOG_POSTS_PER_PAGE),
   );
   const currentPage = Math.min(requestedPage, totalPages);
-  const skip = (currentPage - 1) * POSTS_PER_PAGE;
+  const skip = (currentPage - 1) * BLOG_POSTS_PER_PAGE;
 
   const posts = await prisma.post.findMany({
     where: { published: true },
@@ -98,7 +108,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       coverImage: true,
       createdAt: true,
     },
-    take: POSTS_PER_PAGE,
+    take: BLOG_POSTS_PER_PAGE,
     skip,
   });
 
@@ -107,11 +117,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <Section spacing="page" background="default" bordered>
-      <PageBreadcrumb items={brandPageBreadcrumbs.blog} />
+      <PageBreadcrumb items={getBlogPageBreadcrumbItems(currentPage)} />
 
       <SectionHeader
         id="blog-page-heading"
         title="Blog"
+        headingLevel="h1"
         subtitle="Dicas, roteiros e inspiração para você viajar com segurança e experiência premium."
         className="mb-10 sm:mb-12"
       />
@@ -202,7 +213,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               className="h-10 min-w-28 rounded-lg border-border/70 bg-background"
             >
               <Link
-                href={hasPreviousPage ? getBlogHref(currentPage - 1) : "#"}
+                href={hasPreviousPage ? getBlogPagePath(currentPage - 1) : "#"}
                 aria-disabled={!hasPreviousPage}
                 tabIndex={hasPreviousPage ? 0 : -1}
                 className={cn(
@@ -225,7 +236,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               className="h-10 min-w-28 rounded-lg border-border/70 bg-background"
             >
               <Link
-                href={hasNextPage ? getBlogHref(currentPage + 1) : "#"}
+                href={hasNextPage ? getBlogPagePath(currentPage + 1) : "#"}
                 aria-disabled={!hasNextPage}
                 tabIndex={hasNextPage ? 0 : -1}
                 className={cn(!hasNextPage && "pointer-events-none opacity-50")}

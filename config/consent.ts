@@ -31,7 +31,7 @@ export const consentCopy = {
       id: "analytics" as const,
       label: "Analytics",
       description:
-        "Medem visitas e desempenho do site. Nenhuma ferramenta de analytics está ativa no momento — categoria reservada para futuras integrações.",
+        "Permitem exibir avaliações do Google via widget Elfsight e, no futuro, medir visitas e desempenho do site.",
       required: false,
     },
     marketing: {

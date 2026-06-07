@@ -81,7 +81,7 @@ Validação pública via `POST /api/coupons/validate`. Cupom aplicado fica em `l
 
 ### Meta Pixel
 
-Rastreamento opcional via `NEXT_PUBLIC_META_PIXEL_ID`. Eventos: `PageView`, `Lead` (cliques WhatsApp), `ViewContent` (pacotes). Excluído em `/admin/*`. Consentimento habilitado por padrão (`lib/meta-pixel/consent.ts`).
+Rastreamento opcional via `NEXT_PUBLIC_META_PIXEL_ID`. Eventos: `PageView`, `Lead` (cliques WhatsApp), `ViewContent` (pacotes). Excluído em `/admin/*`. Meta Pixel e widget Elfsight só carregam após consentimento explícito (opt-in) nas preferências de cookies.
 
 ### Campanha Rei da Copa
 
@@ -297,7 +297,7 @@ Envio de e-mail interno à equipe (`reidacopacrisdaspassagens@gmail.com`) quando
 
 ### Meta Pixel
 
-Script `fbevents.js` carregado em páginas públicas (exceto `/admin`). Eventos: `PageView`, `Lead`, `ViewContent`. Ativado por `NEXT_PUBLIC_META_PIXEL_ID`. Consentimento padrão: concedido (`lib/meta-pixel/consent.ts`).
+Script `fbevents.js` carregado em páginas públicas (exceto `/admin`) somente após aceite de cookies de marketing. Eventos: `PageView`, `Lead`, `ViewContent`. Ativado por `NEXT_PUBLIC_META_PIXEL_ID`. Consentimento padrão: recusado até escolha do visitante (`lib/consent/storage.ts`).
 
 ### Supabase
 

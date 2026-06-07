@@ -3,20 +3,34 @@ export function enhanceBlogContentHtml(html: string): string {
     return html;
   }
 
+  let imageIndex = 0;
+
   return html
     .replace(
       /<img\b([^>]*?)>/gi,
       (_match, attributes: string) => {
-        if (/loading\s*=/.test(attributes)) {
-          return `<img${attributes}>`;
+        imageIndex += 1;
+        const isFirstImage = imageIndex === 1;
+
+        let nextAttributes = attributes;
+
+        if (!/loading\s*=/.test(nextAttributes)) {
+          nextAttributes = `${nextAttributes} loading="${isFirstImage ? "eager" : "lazy"}"`;
         }
 
-        const withLazy = `${attributes} loading="lazy" decoding="async"`;
-        const withClass = /class\s*=/.test(withLazy)
-          ? withLazy.replace(/class\s*=\s*"([^"]*)"/i, (_classMatch, classes: string) => {
+        if (!/decoding\s*=/.test(nextAttributes)) {
+          nextAttributes = `${nextAttributes} decoding="async"`;
+        }
+
+        if (isFirstImage && !/fetchpriority\s*=/.test(nextAttributes)) {
+          nextAttributes = `${nextAttributes} fetchpriority="high"`;
+        }
+
+        const withClass = /class\s*=/.test(nextAttributes)
+          ? nextAttributes.replace(/class\s*=\s*"([^"]*)"/i, (_classMatch, classes: string) => {
               return `class="${classes} blog-content-image"`;
             })
-          : `${withLazy} class="blog-content-image"`;
+          : `${nextAttributes} class="blog-content-image"`;
 
         return `<img${withClass}>`;
       },

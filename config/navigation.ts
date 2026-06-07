@@ -71,6 +71,10 @@ export const brandPageBreadcrumbs = {
     { name: "Início", path: "/" },
     { name: "Sobre", path: "/sobre" },
   ],
+  politicaDePrivacidade: [
+    { name: "Início", path: "/" },
+    { name: "Política de Privacidade", path: "/politica-de-privacidade" },
+  ],
 } as const satisfies Record<string, BreadcrumbItem[]>;
 
 /** CTA da navbar — cotação (referência visual). */

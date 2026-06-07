@@ -11,6 +11,7 @@ import { BlogPostLikeButton, BlogPostLikeProvider } from "@/components/blog/blog
 import { BlogPostShare } from "@/components/blog/blog-post-share";
 import { BlogPostTags } from "@/components/blog/blog-post-tags";
 import { BlogVipCta } from "@/components/blog/blog-vip-cta";
+import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,6 @@ import { prisma } from "@/lib/prisma";
 import {
   createArticleJsonLd,
   createArticleMetadata,
-  createBreadcrumbJsonLd,
   createNoIndexMetadata,
 } from "@/lib/seo";
 import { buildCanonicalUrl } from "@/lib/seo/site-url";
@@ -120,21 +120,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const sidebarPublishedAt = formatBlogSidebarDate(post.createdAt);
 
-  const structuredData = [
-    createArticleJsonLd({
-      title: post.title,
-      description: post.excerpt,
-      slug: post.slug,
-      coverImage,
-      publishedAt: post.createdAt,
-      updatedAt: post.updatedAt,
-    }),
-    createBreadcrumbJsonLd([
-      { name: "Inicio", path: "/" },
-      { name: "Blog", path: "/blog" },
-      { name: post.title, path: `/blog/${post.slug}` },
-    ]),
-  ];
+  const structuredData = createArticleJsonLd({
+    title: post.title,
+    description: post.excerpt,
+    slug: post.slug,
+    coverImage,
+    publishedAt: post.createdAt,
+    updatedAt: post.updatedAt,
+  });
+
+  const breadcrumbItems = [
+    { name: "Início", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${post.slug}` },
+  ] as const;
 
   return (
     <BlogPostLikeProvider postId={post.id} initialLikeCount={likeCount}>
@@ -148,6 +147,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <JsonLdScript data={structuredData} />
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-6 w-full max-w-3xl sm:mb-8">
+            <PageBreadcrumb items={breadcrumbItems} />
             <Button
               asChild
               variant="ghost"

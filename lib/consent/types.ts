@@ -16,6 +16,7 @@ export const DEFAULT_ACCEPTED_PREFERENCES: ConsentPreferences = {
 /** Identificadores de provedores de rastreamento — preparado para expansão futura. */
 export type ConsentProviderId =
   | "meta-pixel"
+  | "elfsight-reviews"
   | "google-analytics"
   | "google-tag-manager"
   | "microsoft-clarity"

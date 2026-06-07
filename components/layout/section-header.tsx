@@ -5,6 +5,7 @@ export type SectionHeaderProps = {
   id: string;
   title: string;
   subtitle?: string;
+  headingLevel?: "h1" | "h2";
   className?: string;
   titleClassName?: string;
   subtitleClassName?: string;
@@ -23,19 +24,22 @@ export function SectionHeader({
   id,
   title,
   subtitle,
+  headingLevel = "h2",
   className,
   titleClassName,
   subtitleClassName,
 }: SectionHeaderProps) {
+  const HeadingTag = headingLevel;
+
   return (
     <Container
       size="prose"
       padding="none"
       className={cn("mb-8 sm:mb-12 lg:mb-14", className)}
     >
-      <h2 id={id} className={cn(sectionHeadingClassName, titleClassName)}>
+      <HeadingTag id={id} className={cn(sectionHeadingClassName, titleClassName)}>
         {title}
-      </h2>
+      </HeadingTag>
       {subtitle ? (
         <p className={cn(sectionSubtitleClassName, subtitleClassName)}>
           {subtitle}

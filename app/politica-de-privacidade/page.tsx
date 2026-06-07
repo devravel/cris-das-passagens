@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
+import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { Section } from "@/components/layout/section";
+import { brandPageBreadcrumbs } from "@/config/navigation";
 import { bodyTextClassName } from "@/components/layout/section-header";
 import { content, contentLinks } from "@/config/content";
 import { createMetadata } from "@/lib/seo";
@@ -69,6 +71,8 @@ export default function PoliticaDePrivacidadePage() {
       bordered
       aria-labelledby="privacidade-page-heading"
     >
+      <PageBreadcrumb items={brandPageBreadcrumbs.politicaDePrivacidade} />
+
       <header className="mx-auto mb-10 max-w-3xl space-y-3 text-center sm:mb-12">
         <h1
           id="privacidade-page-heading"
@@ -400,14 +404,24 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            6.4 Banner e preferências de cookies
+            6.4 Widget de avaliações (Elfsight)
+          </h3>
+          <PolicyParagraph>
+            Na página inicial, podemos exibir avaliações do Google por meio do
+            widget Elfsight. O script da plataforma só é carregado após você{" "}
+            <strong>aceitar cookies de analytics</strong>. Sem esse consentimento,
+            exibimos depoimentos estáticos sem executar scripts de terceiros.
+          </PolicyParagraph>
+
+          <h3 className="font-heading text-lg font-semibold text-foreground">
+            6.5 Banner e preferências de cookies
           </h3>
           <PolicyParagraph>
             Na primeira visita, exibimos um banner solicitando sua escolha sobre
             cookies opcionais. As categorias disponíveis são:{" "}
             <strong>necessários</strong> (sempre ativos),{" "}
-            <strong>analytics</strong> (reservada para futuras ferramentas de
-            métricas — nenhuma ativa no momento) e <strong>marketing</strong> (Meta
+            <strong>analytics</strong> (widget Elfsight de avaliações do Google e,
+            no futuro, ferramentas de métricas) e <strong>marketing</strong> (Meta
             Pixel). O link &quot;Preferências de cookies&quot; no rodapé permite
             revisar ou alterar sua escolha a qualquer momento.
           </PolicyParagraph>
@@ -423,6 +437,10 @@ export default function PoliticaDePrivacidadePage() {
               <>
                 <strong>Meta Platforms (Meta Pixel)</strong> — dados de navegação e
                 eventos de conversão no navegador, quando o pixel está ativo;
+              </>,
+              <>
+                <strong>Elfsight</strong> — exibição de avaliações do Google na
+                página inicial, quando cookies de analytics são aceitos;
               </>,
               <>
                 <strong>WhatsApp / Meta</strong> — mensagens que você envia

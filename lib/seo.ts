@@ -10,6 +10,7 @@ export {
   createNoIndexMetadata,
   createOrganizationJsonLd,
   createWebsiteJsonLd,
+  withPaginationMetadata,
   getSiteUrl,
   indexableRobots,
   noIndexRobots,

@@ -27,6 +27,13 @@ type CreateMetadataOptions = {
   keywords?: string[];
   publishedTime?: string;
   modifiedTime?: string;
+  /** Evita duplicação quando o título já é o nome da marca (ex.: homepage). */
+  absoluteTitle?: boolean;
+};
+
+type PaginationMetadataLinks = {
+  previous?: string;
+  next?: string;
 };
 
 function resolveOgImage(image: OgImageInput | undefined, alt: string) {
@@ -66,12 +73,13 @@ export function createMetadata({
   keywords,
   publishedTime,
   modifiedTime,
+  absoluteTitle = false,
 }: CreateMetadataOptions): Metadata {
   const canonicalUrl = buildCanonicalUrl(path);
   const resolvedImage = resolveOgImage(ogImage, description);
 
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description,
     keywords,
     alternates: {
@@ -122,6 +130,29 @@ export function createArticleMetadata(input: {
     publishedTime: input.publishedAt.toISOString(),
     modifiedTime: input.updatedAt.toISOString(),
   });
+}
+
+export function withPaginationMetadata(
+  metadata: Metadata,
+  links: PaginationMetadataLinks,
+): Metadata {
+  if (!links.previous && !links.next) {
+    return metadata;
+  }
+
+  const alternates =
+    metadata.alternates && typeof metadata.alternates === "object"
+      ? metadata.alternates
+      : {};
+
+  return {
+    ...metadata,
+    alternates: {
+      ...alternates,
+      ...(links.previous ? { previous: links.previous } : {}),
+      ...(links.next ? { next: links.next } : {}),
+    },
+  };
 }
 
 export function createNoIndexMetadata(input: {

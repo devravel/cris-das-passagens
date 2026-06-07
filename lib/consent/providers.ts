@@ -6,6 +6,7 @@ import type { ConsentCategory, ConsentProviderId } from "@/lib/consent/types";
  */
 export const CONSENT_PROVIDER_CATEGORIES: Record<ConsentProviderId, ConsentCategory> = {
   "meta-pixel": "marketing",
+  "elfsight-reviews": "analytics",
   "google-analytics": "analytics",
   "google-tag-manager": "analytics",
   "microsoft-clarity": "analytics",
@@ -13,7 +14,10 @@ export const CONSENT_PROVIDER_CATEGORIES: Record<ConsentProviderId, ConsentCateg
 };
 
 /** Provedores atualmente implementados no projeto. */
-export const ACTIVE_CONSENT_PROVIDERS: ConsentProviderId[] = ["meta-pixel"];
+export const ACTIVE_CONSENT_PROVIDERS: ConsentProviderId[] = [
+  "meta-pixel",
+  "elfsight-reviews",
+];
 
 /** Provedores reservados para integração futura — não carregar até implementar. */
 export const PLANNED_CONSENT_PROVIDERS: ConsentProviderId[] = [

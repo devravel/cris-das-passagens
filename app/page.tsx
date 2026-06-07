@@ -36,6 +36,7 @@ const FinalCta = dynamic(
 
 export const metadata: Metadata = createMetadata({
   title: siteConfig.name,
+  absoluteTitle: true,
   description: content.meta.tagline,
   path: "/",
   keywords: [

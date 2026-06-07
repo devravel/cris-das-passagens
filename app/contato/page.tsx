@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Mail, Phone } from "lucide-react";
+import { ArrowRight, ExternalLink, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 
 import { MetaLeadAnchor } from "@/components/analytics/meta-lead-anchor";
 import { Container } from "@/components/layout/container";
@@ -9,7 +9,7 @@ import { brandPageBreadcrumbs } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
 import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
-import { content } from "@/config/content";
+import { content, contentLinks } from "@/config/content";
 import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
 import { createMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -92,6 +92,73 @@ export default function ContatoPage() {
               </a>
             </li>
 
+            <li>
+              <div className="inline-flex items-start gap-3 text-sm text-foreground">
+                <MapPin
+                  className="mt-0.5 size-4 shrink-0 text-brand"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block font-medium">Endereço</span>
+                  <span className="text-muted-foreground">
+                    {contact.formattedAddress}
+                  </span>
+                </span>
+              </div>
+            </li>
+
+            <li>
+              <div className="inline-flex items-start gap-3 text-sm text-foreground">
+                <ShieldCheck
+                  className="mt-0.5 size-4 shrink-0 text-brand"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block font-medium">CNPJ</span>
+                  <span className="text-muted-foreground">{contact.cnpj}</span>
+                </span>
+              </div>
+            </li>
+
+            <li>
+              <a
+                href={contentLinks.cadastur}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-start gap-3 text-sm text-foreground transition-colors hover:text-brand"
+              >
+                <ShieldCheck
+                  className="mt-0.5 size-4 shrink-0 text-brand"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block font-medium">CADASTUR</span>
+                  <span className="text-muted-foreground">
+                    Agência certificada — verificar no site oficial
+                  </span>
+                </span>
+              </a>
+            </li>
+
+            <li>
+              <a
+                href={contentLinks.googleBusinessProfile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-start gap-3 text-sm text-foreground transition-colors hover:text-brand"
+              >
+                <ExternalLink
+                  className="mt-0.5 size-4 shrink-0 text-brand"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block font-medium">Perfil Google</span>
+                  <span className="text-muted-foreground">
+                    Avaliações e informações da empresa no Google
+                  </span>
+                </span>
+              </a>
+            </li>
           </ul>
         </div>
 

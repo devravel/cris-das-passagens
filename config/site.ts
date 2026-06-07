@@ -34,6 +34,7 @@ export const siteConfig = {
     whatsapp: contentLinks.whatsapp,
     cadastur: contentLinks.cadastur,
     instagram: contentLinks.instagram,
+    googleBusinessProfile: contentLinks.googleBusinessProfile,
     facebook: "",
   },
 } as const;

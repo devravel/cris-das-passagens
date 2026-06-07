@@ -41,6 +41,7 @@ export default function SobrePage() {
       <SectionHeader
         id="sobre-page-heading"
         title={title}
+        headingLevel="h1"
         className="mb-10 sm:mb-12"
       />
 

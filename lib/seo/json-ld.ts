@@ -5,11 +5,12 @@ import { absoluteUrl, buildCanonicalUrl, getSiteUrl } from "@/lib/seo/site-url";
 export type JsonLd = Record<string, unknown>;
 
 function buildPostalAddressJsonLd() {
-  const { street, city, state, postalCode } = siteConfig.addressDetails;
+  const { street, neighborhood, city, state, postalCode } =
+    siteConfig.addressDetails;
 
   return {
     "@type": "PostalAddress",
-    streetAddress: street,
+    streetAddress: `${street}, ${neighborhood}`,
     addressLocality: city,
     addressRegion: state,
     postalCode,
@@ -22,6 +23,7 @@ function buildOrganizationSameAs(): string[] {
     getSiteUrl(),
     siteConfig.links.cadastur,
     siteConfig.links.instagram,
+    siteConfig.links.googleBusinessProfile,
     siteConfig.links.facebook,
   ].filter((url): url is string => Boolean(url?.trim()));
 
@@ -64,10 +66,24 @@ export function createOrganizationJsonLd(): JsonLd {
     telephone: siteConfig.phoneHref.replace("tel:", ""),
     taxID: siteConfig.addressDetails.cnpj,
     address: buildPostalAddressJsonLd(),
-    areaServed: {
-      "@type": "Country",
-      name: "Brasil",
-    },
+    areaServed: [
+      {
+        "@type": "City",
+        name: siteConfig.addressDetails.city,
+        containedInPlace: {
+          "@type": "State",
+          name: siteConfig.addressDetails.state,
+          containedInPlace: {
+            "@type": "Country",
+            name: "Brasil",
+          },
+        },
+      },
+      {
+        "@type": "Country",
+        name: "Brasil",
+      },
+    ],
     contactPoint: buildOrganizationContactPoints(),
     hasCredential: {
       "@type": "EducationalOccupationalCredential",
