@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { Menu, MessageCircle } from "lucide-react";
+import { Menu } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { navigation as defaultItems, navbarCta } from "@/config/navigation";
@@ -19,6 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 export type NavItem = {
@@ -121,49 +122,43 @@ function NavbarCtaButton({
   cta,
   className,
   onNavigate,
-  compact = false,
+  fullWidth = false,
 }: {
   cta: NavbarCta;
   className?: string;
   onNavigate?: () => void;
-  compact?: boolean;
+  fullWidth?: boolean;
 }) {
   const brandStyles = cn(
     "rounded-lg bg-brand font-semibold text-brand-foreground shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 active:translate-y-0",
-    compact && "h-9 px-4 text-xs sm:text-sm",
-    !compact && "h-9 px-5 text-sm",
+    fullWidth
+      ? "h-9 w-full px-5 text-sm"
+      : "h-auto min-h-8 min-w-0 max-w-[9.75rem] shrink px-2.5 py-1.5 text-[0.6875rem] leading-tight whitespace-normal text-center sm:max-w-none sm:h-9 sm:py-0 sm:px-4 sm:text-xs sm:whitespace-nowrap md:px-5 md:text-sm",
   );
 
   if (cta.external) {
     return (
-      <Button
-        asChild
-        size={compact ? "icon-sm" : "default"}
-        className={cn(brandStyles, className)}
-      >
+      <Button asChild size="sm" className={cn(brandStyles, className)}>
         <a
           href={cta.href}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={onNavigate}
-          aria-label={compact ? cta.label : undefined}
+          onClick={() => {
+            trackMetaLeadFromHref(cta.href, {
+              source: "navbar_quote",
+              content_name: cta.label,
+            });
+            onNavigate?.();
+          }}
         >
-          {compact ? (
-            <MessageCircle className="size-[18px]" strokeWidth={1.75} aria-hidden />
-          ) : (
-            cta.label
-          )}
+          {cta.label}
         </a>
       </Button>
     );
   }
 
   return (
-    <Button
-      asChild
-      size={compact ? "sm" : "sm"}
-      className={cn(brandStyles, className)}
-    >
+    <Button asChild size="sm" className={cn(brandStyles, className)}>
       <Link href={cta.href} onClick={onNavigate}>
         {cta.label}
       </Link>
@@ -270,32 +265,20 @@ export function Navbar({
           />
         </Link>
 
-        <div className="flex min-w-0 items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-5 md:gap-6 lg:gap-8">
           <DesktopNavLinks items={items} />
 
-          {cta ? (
-            <>
-              <NavbarCtaButton
-                cta={cta}
-                className="hidden sm:inline-flex"
-              />
-              <NavbarCtaButton
-                cta={cta}
-                compact
-                className="inline-flex sm:hidden max-[320px]:h-8 max-[320px]:w-8 max-[320px]:min-w-8"
-              />
-            </>
-          ) : null}
+          {cta ? <NavbarCtaButton cta={cta} /> : null}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="shrink-0 rounded-lg bg-muted/50 text-foreground transition-[transform,background-color] duration-200 hover:bg-muted/80 active:scale-[0.98] max-[320px]:mr-1 lg:hidden"
+                size="icon-lg"
+                className="size-10 shrink-0 rounded-lg bg-muted/65 text-foreground ring-1 ring-border/45 transition-[transform,background-color,box-shadow] duration-200 hover:bg-muted/90 hover:shadow-sm active:scale-[0.98] sm:size-11 lg:hidden"
                 aria-label="Abrir menu de navegação"
               >
-                <Menu className="size-[18px]" strokeWidth={1.75} />
+                <Menu className="size-5 sm:size-[1.35rem]" strokeWidth={2} />
               </Button>
             </SheetTrigger>
             <SheetContent
@@ -312,7 +295,7 @@ export function Navbar({
                 <div className="border-t border-border/50 p-4">
                   <NavbarCtaButton
                     cta={cta}
-                    className="w-full"
+                    fullWidth
                     onNavigate={closeMobile}
                   />
                 </div>

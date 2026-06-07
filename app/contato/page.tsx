@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Mail, Phone } from "lucide-react";
 
+import { MetaLeadAnchor } from "@/components/analytics/meta-lead-anchor";
 import { Container } from "@/components/layout/container";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { brandPageBreadcrumbs } from "@/config/navigation";
@@ -100,15 +101,19 @@ export default function ContatoPage() {
             size="lg"
             className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
           >
-            <a
+            <MetaLeadAnchor
               href={getQuoteWhatsAppUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="gap-2"
+              leadParams={{
+                source: "contato_quote",
+                content_name: "Faça uma cotação agora",
+              }}
             >
               Faça uma cotação agora
               <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-            </a>
+            </MetaLeadAnchor>
           </Button>
         </div>
 

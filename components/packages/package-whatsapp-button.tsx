@@ -3,6 +3,7 @@
 import { PackageWhatsAppCta } from "@/components/packages/package-whatsapp-cta";
 import { getPackageWhatsAppUrl } from "@/lib/coupon/whatsapp";
 import { getStoredCoupon } from "@/lib/coupon/storage";
+import { trackMetaLead } from "@/lib/meta-pixel";
 
 type PackageWhatsAppButtonProps = {
   packageTitle: string;
@@ -21,6 +22,12 @@ export function PackageWhatsAppButton({
 
   function handleClick(event: React.MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
+
+    trackMetaLead({
+      source: "package_whatsapp",
+      content_name: packageTitle,
+      content_category: "package_quote",
+    });
 
     const storedCoupon = getStoredCoupon();
 

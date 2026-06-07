@@ -25,6 +25,7 @@ export type PublicPackage = {
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  feesText: string | null;
   airline: string | null;
   hotelName: string | null;
   includedItems: string[];
@@ -66,6 +67,7 @@ const publicPackageSelect = {
   priceScope: true,
   installmentText: true,
   highlightInstallments: true,
+  feesText: true,
   airline: true,
   hotelName: true,
   includedItems: true,
@@ -108,6 +110,7 @@ function mapPublicPackage(
     priceScope: string | null;
     installmentText: string | null;
     highlightInstallments: boolean;
+    feesText: string | null;
     airline: string | null;
     hotelName: string | null;
     includedItems: string[];
@@ -133,6 +136,7 @@ function mapPublicPackage(
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    feesText: pkg.feesText,
     airline: pkg.airline,
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems ?? [],
@@ -178,9 +182,9 @@ async function fetchHomepagePackagesFromDb(): Promise<HomepagePackages> {
   const packages = await prisma.package.findMany({
     where: {
       active: true,
-      showOnLandingPage: true,
+      featured: true,
     },
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
     select: publicPackageSelect,
   });
 
@@ -274,6 +278,7 @@ export type AdminPackageListItem = {
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  feesText: string | null;
   airline: string | null;
   hotelName: string | null;
   includedItems: string[];
@@ -282,7 +287,6 @@ export type AdminPackageListItem = {
   returnDate: string | null;
   daysCount: number | null;
   nightsCount: number | null;
-  showOnLandingPage: boolean;
   active: boolean;
   featured: boolean;
   createdAt: string;
@@ -303,6 +307,7 @@ const adminPackageSelect = {
   priceScope: true,
   installmentText: true,
   highlightInstallments: true,
+  feesText: true,
   airline: true,
   hotelName: true,
   includedItems: true,
@@ -311,7 +316,6 @@ const adminPackageSelect = {
   returnDate: true,
   daysCount: true,
   nightsCount: true,
-  showOnLandingPage: true,
   active: true,
   featured: true,
   createdAt: true,
@@ -333,6 +337,7 @@ function mapAdminPackage(
     priceScope: string | null;
     installmentText: string | null;
     highlightInstallments: boolean;
+    feesText: string | null;
     airline: string | null;
     hotelName: string | null;
     includedItems: string[];
@@ -341,7 +346,6 @@ function mapAdminPackage(
     returnDate: Date | null;
     daysCount: number | null;
     nightsCount: number | null;
-    showOnLandingPage: boolean;
     active: boolean;
     featured: boolean;
     createdAt: Date;
@@ -362,6 +366,7 @@ function mapAdminPackage(
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    feesText: pkg.feesText,
     airline: pkg.airline,
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems ?? [],
@@ -370,7 +375,6 @@ function mapAdminPackage(
     returnDate: packageDateToIsoString(pkg.returnDate),
     daysCount: pkg.daysCount,
     nightsCount: pkg.nightsCount,
-    showOnLandingPage: pkg.showOnLandingPage,
     active: pkg.active,
     featured: pkg.featured,
     createdAt: pkg.createdAt.toISOString(),

@@ -37,6 +37,7 @@ import {
   reiDaCopaScoringFootnotes,
   reiDaCopaScoringReminder,
   reiDaCopaScoringRules,
+  reiDaCopaScoringValidationNote,
   reiDaCopaSectionIntros,
 } from "@/config/rei-da-copa-landing";
 import type {
@@ -62,8 +63,7 @@ const tiebreakerTextClassName =
 
 const campaignAccentClassName = "font-semibold text-[#14532d]";
 
-const campaignLinkClassName =
-  `${campaignAccentClassName} underline-offset-2 transition-colors hover:text-[#166534] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`;
+const campaignLinkClassName = `${campaignAccentClassName} underline-offset-2 transition-colors hover:text-[#166534] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`;
 
 function CampaignSection({
   id,
@@ -191,14 +191,11 @@ function ScoringRuleNote({ note }: { note: string }) {
 
 function ScoringCommentExample() {
   return (
-    <div className="rei-da-copa-info-card rei-da-copa-info-card--muted mt-6 rounded-2xl p-5 sm:p-6">
+    <div className="rei-da-copa-info-card rei-da-copa-info-card--muted mt-6 rounded-2xl p-5 sm:p-6 lg:mx-auto lg:max-w-3xl">
       <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-sm">
         {reiDaCopaScoringCommentExample.heading}
       </p>
       <div className="mt-4 rounded-xl border border-[#14532d]/12 bg-white/80 px-4 py-3 sm:px-5 sm:py-4">
-        <p className="rei-da-copa-prose text-sm font-semibold text-foreground sm:text-base">
-          {reiDaCopaScoringCommentExample.match}
-        </p>
         <p className="rei-da-copa-prose mt-1.5 text-sm sm:text-base">
           <ScoringRuleNote note={reiDaCopaScoringCommentExample.comment} />
         </p>
@@ -262,7 +259,25 @@ function HowToStepDescription({
     );
   }
 
-  if (step.step === 4) {
+  if (step.step === 2) {
+    return (
+      <>
+        Siga o{" "}
+        <a
+          href={getReiDaCopaInstagramUrl(reiDaCopaCampaignDefaults.instagram)}
+          className={campaignLinkClassName}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {reiDaCopaCampaignDefaults.instagram}
+        </a>{" "}
+        no Instagram e compartilhe a publicação oficial nos stories, marcando o
+        perfil.
+      </>
+    );
+  }
+
+  if (step.step === 3) {
     return (
       <>
         Suba no{" "}
@@ -297,6 +312,16 @@ function CampaignBulletItem({ children }: { children: ReactNode }) {
 function CampaignLinkedText({ content }: { content: ReiDaCopaMissionNote }) {
   if (typeof content === "string") {
     return <>{content}</>;
+  }
+
+  if ("highlight" in content) {
+    return (
+      <>
+        {content.textBeforeHighlight}
+        <span className="font-bold text-[#c9a227]">{content.highlight}</span>
+        {content.textAfterHighlight}
+      </>
+    );
   }
 
   const isExternalLink = content.linkHref.startsWith("http");
@@ -532,14 +557,14 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                 />
 
                 <ContentPanel>
-                  <ol className="grid gap-6 sm:grid-cols-2">
+                  <ol className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5">
                     {reiDaCopaHowToSteps.map((step) => (
                       <li
                         key={step.step}
-                        className="rei-da-copa-info-card min-w-0 rounded-2xl p-5 sm:p-7"
+                        className="rei-da-copa-info-card min-w-0 rounded-2xl p-4 sm:p-5"
                       >
                         <div
-                          className="rei-da-copa-step-badge flex size-14 items-center justify-center rounded-full sm:size-16"
+                          className="rei-da-copa-step-badge flex size-12 items-center justify-center rounded-full sm:size-14"
                           aria-hidden
                         >
                           <span className="rei-da-copa-step-number">
@@ -696,7 +721,9 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                             key={
                               typeof footnote === "string"
                                 ? footnote
-                                : footnote.linkLabel
+                                : "linkHref" in footnote
+                                  ? footnote.linkLabel
+                                  : footnote.highlight
                             }
                             className="text-sm text-muted-foreground"
                           >
@@ -709,6 +736,16 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                           <ScoringCard key={rule.action} {...rule} />
                         ))}
                       </ul>
+                      <p
+                        className={cn(
+                          campaignProseClassName,
+                          "rei-da-copa-info-card rei-da-copa-info-card--muted mx-auto mt-5 max-w-3xl rounded-2xl px-5 py-4 text-center text-pretty sm:px-6",
+                        )}
+                      >
+                        <ScoringRuleNote
+                          note={reiDaCopaScoringValidationNote}
+                        />
+                      </p>
                       <ScoringCommentExample />
                     </div>
 
@@ -834,7 +871,7 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                       >
                         Instagram
                       </a>{" "}
-                      e o ranking por aqui.
+                      e a classificação por aqui.
                     </p>
                   </div>
                 </div>

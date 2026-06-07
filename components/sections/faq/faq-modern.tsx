@@ -11,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ContentCtaButton } from "@/components/ui/content-cta-button";
+import { SupportCta } from "@/components/sections/about/support-cta";
 import { content, type ContentCta, type FaqItem } from "@/config/content";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { createFaqPageJsonLd } from "@/lib/seo";
@@ -81,7 +81,7 @@ export function FaqModern({
         </div>
 
         <div className="mt-10 flex justify-center sm:mt-12">
-          <ContentCtaButton cta={cta} />
+          <SupportCta cta={cta} trackingSource="faq_whatsapp" />
         </div>
         </Container>
       </ScrollReveal>

@@ -1,8 +1,10 @@
 "use client";
 
 import { X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { siteConfig } from "@/config/site";
+import { trackMetaLead } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
@@ -28,7 +30,12 @@ export function WhatsAppFab({
   className,
   label = "Em que podemos ajudar?",
 }: WhatsAppFabProps) {
+  const pathname = usePathname();
   const [showBanner, setShowBanner] = useState(true);
+
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <div
@@ -61,6 +68,13 @@ export function WhatsAppFab({
           href={siteConfig.whatsapp}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() =>
+            trackMetaLead({
+              source: "whatsapp_fab",
+              content_name: "WhatsApp FAB",
+              content_category: "contact",
+            })
+          }
           aria-label="Falar no WhatsApp com a Cris das Passagens"
           className={cn(
             "flex size-14 items-center justify-center rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.18)] transition-[transform,box-shadow,background-color] duration-200 hover:scale-105 hover:shadow-[0_6px_24px_rgba(0,0,0,0.22)] active:scale-95 motion-reduce:transition-none motion-reduce:hover:scale-100",

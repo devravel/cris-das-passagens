@@ -617,24 +617,46 @@ export function PackageForm({
             ) : null}
           </div>
 
-          <label
-            htmlFor="highlightInstallments"
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-sm font-medium text-foreground"
-          >
-            <input
-              id="highlightInstallments"
-              type="checkbox"
-              className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              checked={Boolean(watchedValues.highlightInstallments)}
-              onChange={(event) =>
-                form.setValue("highlightInstallments", event.target.checked, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
-            />
-            Destacar parcelamento
-          </label>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+            <div className="flex-1 space-y-1.5">
+              <label
+                htmlFor="feesText"
+                className="text-sm font-medium text-foreground"
+              >
+                Taxas
+              </label>
+              <Input
+                id="feesText"
+                className="h-10 rounded-xl"
+                placeholder="Taxas no local"
+                {...form.register("feesText")}
+              />
+              {form.formState.errors.feesText ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.feesText.message}
+                </p>
+              ) : null}
+            </div>
+
+            <label
+              htmlFor="highlightInstallments"
+              className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-sm font-medium text-foreground sm:self-end"
+            >
+              <input
+                id="highlightInstallments"
+                type="checkbox"
+                className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                checked={Boolean(watchedValues.highlightInstallments)}
+                onChange={(event) =>
+                  form.setValue("highlightInstallments", event.target.checked, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              />
+              Destacar parcelamento
+            </label>
+          </div>
 
           <PackageIncludedItemsField
             value={watchedValues.includedItems ?? []}
@@ -713,26 +735,6 @@ export function PackageForm({
             <p className="w-full text-xs text-muted-foreground">
               Todos os pacotes ativos em destaque aparecem no carrossel da homepage (deslize ou use as setas).
             </p>
-            <label
-              htmlFor="showOnLandingPage"
-              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
-            >
-              <input
-                id="showOnLandingPage"
-                type="checkbox"
-                className={cn(
-                  "size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                )}
-                checked={Boolean(watchedValues.showOnLandingPage)}
-                onChange={(event) =>
-                  form.setValue("showOnLandingPage", event.target.checked, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
-              Exibir na landing page
-            </label>
           </div>
         </div>
 

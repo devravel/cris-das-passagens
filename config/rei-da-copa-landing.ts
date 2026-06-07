@@ -55,11 +55,6 @@ export const reiDaCopaHowToSteps: ReiDaCopaHowToStep[] = [
   },
   {
     step: 3,
-    title: "Comente",
-    description: "Comente o placar do jogo oficial no post do dia.",
-  },
-  {
-    step: 4,
     title: "Acumule coroas",
     description:
       "Suba no ranking, complete missões e dispute prêmios incríveis!",
@@ -88,24 +83,21 @@ export type ReiDaCopaScoringRule = {
   note?: string;
 };
 
-const reiDaCopaScoringRuleNote = `Use a hashtag ${reiDaCopaInstagramHashtag} para validar seu comentário. Válido até o apito inicial do jogo.`;
+export const reiDaCopaScoringValidationNote = `Use a hashtag ${reiDaCopaInstagramHashtag} para validar seu comentário. Válido até o apito inicial do jogo.`;
 
 /** Sistema de coroas — arte detalhada. */
 export const reiDaCopaScoringRules: ReiDaCopaScoringRule[] = [
   {
     action: "Comente o placar",
-    points: "05 coroas",
-    note: reiDaCopaScoringRuleNote,
+    points: "10 coroas",
   },
   {
     action: "Acertar o vencedor",
-    points: "10 coroas",
-    note: reiDaCopaScoringRuleNote,
+    points: "20 coroas",
   },
   {
     action: "Acertar o placar exato",
-    points: "20 coroas",
-    note: reiDaCopaScoringRuleNote,
+    points: "30 coroas",
   },
 ];
 
@@ -114,7 +106,7 @@ export const reiDaCopaScoringReminder =
 
 export const reiDaCopaScoringCommentExample = {
   heading: "Exemplo de comentário válido:",
-  comment: `Brasil vence 1x0 ${reiDaCopaInstagramHashtag}.`,
+  comment: `Brasil 1x0 ${reiDaCopaInstagramHashtag}.`,
 } as const;
 
 export type ReiDaCopaMissionNote =
@@ -124,6 +116,11 @@ export type ReiDaCopaMissionNote =
       linkLabel: string;
       linkHref: string;
       textAfterLink?: string;
+    }
+  | {
+      textBeforeHighlight?: string;
+      highlight: string;
+      textAfterHighlight?: string;
     };
 
 export type ReiDaCopaMission = {
@@ -186,7 +183,11 @@ export const reiDaCopaSectionIntros: {
   ranking: ReiDaCopaSectionIntro;
   palavraChave: ReiDaCopaSectionIntro;
 } = {
-  ranking: "Acompanhe o ranking atualizado.",
+  ranking: {
+    textBeforeHighlight: "Acompanhe o ranking atualizado ",
+    highlight: "diariamente",
+    textAfterHighlight: ".",
+  },
   palavraChave: {
     textBeforeLink: "Divulgada diariamente no programa",
     linkLabel: "Debate Raiz",

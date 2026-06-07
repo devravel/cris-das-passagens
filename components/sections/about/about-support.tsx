@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { ArrowRight, Scale, Users } from "lucide-react";
+import { Scale, Users } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { SupportCta } from "@/components/sections/about/support-cta";
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import {
@@ -10,7 +10,6 @@ import {
   bodyTextClassName,
 } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { Button } from "@/components/ui/button";
 import { ContentCtaButton } from "@/components/ui/content-cta-button";
 import { content, type ContentCta } from "@/config/content";
 import {
@@ -20,7 +19,6 @@ import {
 } from "@/lib/card-styles";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 export type AboutSectionProps = {
   sectionId?: string;
@@ -100,48 +98,6 @@ export type SupportSectionProps = {
   cta?: ContentCta;
   className?: string;
 };
-
-function SupportCta({ cta }: { cta: ContentCta }) {
-  const isExternal = cta.href.startsWith("http");
-  const buttonClassName =
-    "h-11 rounded-lg px-6 text-sm shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md active:translate-y-0";
-
-  if (isExternal) {
-    return (
-      <Button
-        asChild
-        size="lg"
-        className={cn(buttonClassName, whatsappSolidButtonClassName)}
-      >
-        <a
-          href={cta.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="gap-2"
-        >
-          {cta.label}
-          <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-        </a>
-      </Button>
-    );
-  }
-
-  return (
-    <Button
-      asChild
-      size="lg"
-      className={cn(
-        buttonClassName,
-        "bg-brand text-brand-foreground hover:bg-brand/90",
-      )}
-    >
-      <Link href={cta.href} className="gap-2">
-        {cta.label}
-        <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-      </Link>
-    </Button>
-  );
-}
 
 export function SupportSection({
   sectionId = "suporte-total",

@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
@@ -19,6 +26,8 @@ type PackageCardsCarouselProps = {
   showAirlineBadge?: boolean;
   anchorCards?: boolean;
   cardClassName?: string;
+  /** Conteúdo alinhado à coluna dos cards (ex.: título da seção em /pacotes). */
+  header?: ReactNode;
 };
 
 type CarouselLayout = {
@@ -144,6 +153,9 @@ const navButtonClassName =
 const navIconClassName =
   "size-5 transition-colors duration-200 group-hover:text-brand motion-reduce:transition-none";
 
+const carouselColumnsClassName =
+  "grid grid-cols-[auto_1fr_auto] gap-x-2 sm:gap-x-3";
+
 export function PackageCardsCarousel({
   packages,
   departureCity,
@@ -154,6 +166,7 @@ export function PackageCardsCarousel({
   showAirlineBadge = false,
   anchorCards = false,
   cardClassName,
+  header,
 }: PackageCardsCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<CarouselLayout | null>(null);
@@ -276,13 +289,28 @@ export function PackageCardsCarousel({
   const hasOverflow = packages.length > 1;
   const cardWidth = layout?.cardWidth ?? 0;
   const cardGap = layout?.gap ?? CARD_GAP_MOBILE;
+  const carouselRowClass = header ? "row-start-2" : "row-start-1";
+  const dotsRowClass = header ? "row-start-3" : "row-start-2";
+  const hintRowClass = header
+    ? hasOverflow && pageCount > 1
+      ? "row-start-4"
+      : "row-start-3"
+    : hasOverflow && pageCount > 1
+      ? "row-start-3"
+      : "row-start-2";
 
   return (
     <div className={cn("relative min-w-0", className)}>
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className={cn(carouselColumnsClassName, "items-center")}>
+        {header ? (
+          <div className="col-start-2 row-start-1 min-w-0 px-0.5 pb-3 sm:pb-4">
+            {header}
+          </div>
+        ) : null}
+
         <button
           type="button"
-          className={navButtonClassName}
+          className={cn(navButtonClassName, carouselRowClass, "col-start-1")}
           onClick={() => scrollByStep(-1)}
           disabled={!canScrollPrev}
           aria-label="Ver pacotes anteriores"
@@ -292,7 +320,10 @@ export function PackageCardsCarousel({
 
         <div
           ref={trackRef}
-          className="min-w-0 flex-1 snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
+          className={cn(
+            "col-start-2 min-w-0 snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden",
+            carouselRowClass,
+          )}
           role="region"
           aria-roledescription="carousel"
           aria-label={ariaLabel}
@@ -332,29 +363,33 @@ export function PackageCardsCarousel({
 
         <button
           type="button"
-          className={navButtonClassName}
+          className={cn(navButtonClassName, carouselRowClass, "col-start-3")}
           onClick={() => scrollByStep(1)}
           disabled={!canScrollNext}
           aria-label="Ver próximos pacotes"
         >
           <ChevronRight className={navIconClassName} aria-hidden />
         </button>
+
+        {hasOverflow && pageCount > 1 ? (
+          <CarouselDots
+            pageCount={pageCount}
+            activeIndex={currentPage}
+            onSelect={goToPage}
+            ariaLabel="Navegar pacotes"
+            getItemLabel={(index, total) =>
+              `Ver página ${index + 1} de ${total} dos pacotes`
+            }
+            className={cn("col-start-2 mt-4 lg:hidden", dotsRowClass)}
+          />
+        ) : null}
+
+        {hasOverflow ? (
+          <PackageCarouselScrollHint
+            className={cn("col-start-2 mt-2 text-xs", hintRowClass)}
+          />
+        ) : null}
       </div>
-
-      {hasOverflow && pageCount > 1 ? (
-        <CarouselDots
-          pageCount={pageCount}
-          activeIndex={currentPage}
-          onSelect={goToPage}
-          ariaLabel="Navegar pacotes"
-          getItemLabel={(index, total) => `Ver página ${index + 1} de ${total} dos pacotes`}
-          className="mt-4 lg:hidden"
-        />
-      ) : null}
-
-      {hasOverflow ? (
-        <PackageCarouselScrollHint className="mt-2 text-xs" />
-      ) : null}
     </div>
   );
 }

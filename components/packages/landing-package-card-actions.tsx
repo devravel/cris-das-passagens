@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 
 import { PackageWhatsAppCta, packageActionButtonClassName } from "@/components/packages/package-whatsapp-cta";
+import { trackMetaViewContent } from "@/lib/meta-pixel";
 import { getPackageHighlightUrl } from "@/lib/package/routes";
 import { cn } from "@/lib/utils";
 
@@ -22,10 +25,18 @@ export function LandingSaibaMaisAction({
   buttonClassName,
   unstyled = false,
 }: LandingSaibaMaisActionProps) {
+  function handleClick() {
+    trackMetaViewContent({
+      content_name: packageTitle ?? slug,
+      content_ids: [slug],
+    });
+  }
+
   return (
     <div className={cn(!unstyled && packageCardActionsClassName, className)}>
       <Link
         href={getPackageHighlightUrl(slug)}
+        onClick={handleClick}
         aria-label={
           packageTitle ? `Saiba mais sobre ${packageTitle}` : "Saiba mais sobre este pacote"
         }

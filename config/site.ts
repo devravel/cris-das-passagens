@@ -33,7 +33,7 @@ export const siteConfig = {
     quote: contentLinks.quote,
     whatsapp: contentLinks.whatsapp,
     cadastur: contentLinks.cadastur,
-    instagram: "",
+    instagram: contentLinks.instagram,
     facebook: "",
   },
 } as const;

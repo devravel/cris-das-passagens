@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { ContentCta } from "@/config/content";
+import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 const defaultButtonClassName =
@@ -24,6 +27,12 @@ export function ContentCtaButton({ cta, className }: ContentCtaButtonProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="gap-2"
+          onClick={() =>
+            trackMetaLeadFromHref(cta.href, {
+              source: "content_cta",
+              content_name: cta.label,
+            })
+          }
         >
           {cta.label}
           <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />

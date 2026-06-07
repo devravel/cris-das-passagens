@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ChevronRight,
@@ -18,6 +20,7 @@ import {
   cardShadowClassName,
 } from "@/lib/card-styles";
 import { scrollRevealDefaults } from "@/lib/motion";
+import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 export type QuickActionsProps = {
@@ -92,6 +95,12 @@ function QuickActionCard({ item }: { item: QuickActionItem }) {
         target="_blank"
         rel="noopener noreferrer"
         className={cardClassName}
+        onClick={() =>
+          trackMetaLeadFromHref(item.href, {
+            source: "quick_action_whatsapp",
+            content_name: item.title,
+          })
+        }
       >
         {body}
       </a>

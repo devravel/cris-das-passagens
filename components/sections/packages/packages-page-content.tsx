@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { PackageCategoryToggle } from "@/components/packages/package-category-toggle";
 import { PackagesListingSection } from "@/components/sections/packages/packages-listing-section";
 import { packagesPageContent, packagesPageSections } from "@/config/packages-page";
+import { packageMatchesCategory } from "@/lib/package/category";
 import type { PackageCategoryValue, PackageTypeValue } from "@/lib/package/constants";
 import type { PackagesPageData, PublicPackage } from "@/lib/package/queries";
 
@@ -32,7 +33,7 @@ function getPackagesForType(data: PackagesPageData, type: PackageTypeValue): Pub
 export function PackagesPageContent({ data }: PackagesPageContentProps) {
   const [category, setCategory] = useState<PackageCategoryValue>("NATIONAL");
 
-  const sections = useMemo(
+  const sectionsWithPackages = useMemo(
     () =>
       packagesPageSections
         .map((config) => ({
@@ -43,17 +44,27 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
     [data],
   );
 
-  const filterablePanelIds = useMemo(
+  const visibleSections = useMemo(
     () =>
-      sections
-        .filter(({ config }) => config.hasCategoryFilter)
-        .map(({ config }) => `${config.sectionId}-panel`),
-    [sections],
+      sectionsWithPackages
+        .map(({ config, packages }) => ({
+          config,
+          packages: packages.filter((pkg) =>
+            packageMatchesCategory(pkg.category, category),
+          ),
+        }))
+        .filter((section) => section.packages.length > 0),
+    [category, sectionsWithPackages],
   );
 
-  const showCategoryToggle = filterablePanelIds.length > 0;
+  const filterablePanelIds = useMemo(
+    () => visibleSections.map(({ config }) => `${config.sectionId}-panel`),
+    [visibleSections],
+  );
 
-  if (sections.length === 0) {
+  const showCategoryToggle = sectionsWithPackages.length > 0;
+
+  if (sectionsWithPackages.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-12 text-center text-sm text-muted-foreground sm:text-base">
         {packagesPageContent.emptySectionMessage}
@@ -76,17 +87,24 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
         </div>
       ) : null}
 
-      <div className="space-y-14 sm:space-y-16 lg:space-y-20">
-        {sections.map(({ config, packages }, index) => (
-          <PackagesListingSection
-            key={config.sectionId}
-            config={config}
-            packages={packages}
-            category={category}
-            className={index > 0 ? "border-t border-border/50 pt-14 sm:pt-16 lg:pt-20" : undefined}
-          />
-        ))}
-      </div>
+      {visibleSections.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-12 text-center text-sm text-muted-foreground sm:text-base">
+          {packagesPageContent.emptyCategoryMessage}
+        </p>
+      ) : (
+        <div className="space-y-11 sm:space-y-12 lg:space-y-14">
+          {visibleSections.map(({ config, packages }, index) => (
+            <PackagesListingSection
+              key={config.sectionId}
+              config={config}
+              packages={packages}
+              className={
+                index > 0 ? "border-t border-border/50 pt-11 sm:pt-12 lg:pt-14" : undefined
+              }
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }

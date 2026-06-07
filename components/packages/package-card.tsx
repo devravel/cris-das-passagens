@@ -67,15 +67,18 @@ function compactNarrowMobileAirlineBadgeClassName(enabled: boolean) {
   return enabled ? "max-[425px]:text-xs" : undefined;
 }
 
-function calculateDiscountPercent(oldPrice: number | null, currentPrice: number): number | null {
+function calculateDiscountPercent(
+  oldPrice: number | null,
+  currentPrice: number,
+): number | null {
   if (!oldPrice || oldPrice <= currentPrice) return null;
-  
+
   const discount = ((oldPrice - currentPrice) / oldPrice) * 100;
   const roundedDiscount = Math.round(discount / 5) * 5;
-  
+
   if (roundedDiscount < 5) return null;
   if (roundedDiscount > 40) return 40;
-  
+
   return roundedDiscount;
 }
 
@@ -98,10 +101,12 @@ type PackageCardProps = {
 function CardTypeLabel({
   type,
   compact = false,
+  dense = false,
   narrowMobileTypography = false,
 }: {
   type: PackageCardData["type"];
   compact?: boolean;
+  dense?: boolean;
   narrowMobileTypography?: boolean;
 }) {
   const Icon =
@@ -124,13 +129,17 @@ function CardTypeLabel({
               "mb-1 text-[10px] lg:text-[11px] xl:text-xs",
               compactNarrowMobileTypeClassName(narrowMobileTypography),
             )
-          : "mb-1.5 text-xs sm:text-sm",
+          : dense
+            ? "mb-1 text-xs sm:text-sm"
+            : "mb-1.5 text-xs sm:text-sm",
       )}
     >
       <Icon
         className={cn(
           "shrink-0",
-          compact ? cn("size-3", narrowMobileTypography && "max-[425px]:size-4") : "size-4",
+          compact
+            ? cn("size-3", narrowMobileTypography && "max-[425px]:size-4")
+            : "size-4",
         )}
         strokeWidth={1.75}
         aria-hidden
@@ -152,9 +161,9 @@ function DiscountBadge({
   narrowMobileTypography?: boolean;
 }) {
   const discount = calculateDiscountPercent(oldPrice, currentPrice);
-  
+
   if (!discount) return null;
-  
+
   return (
     <span
       className={cn(
@@ -187,7 +196,8 @@ function AirlineBadge({
       title={text}
       className={cn(
         compact ? compactAirlineBadgeClassName : airlineBadgeClassName,
-        compact && compactNarrowMobileAirlineBadgeClassName(narrowMobileTypography),
+        compact &&
+          compactNarrowMobileAirlineBadgeClassName(narrowMobileTypography),
       )}
     >
       {text}
@@ -213,7 +223,7 @@ function IncludedItemsList({
       className={cn(
         detailed
           ? tight
-            ? "mt-2.5 space-y-1.5 border-t border-border/50 pt-2.5"
+            ? "mt-2 space-y-1 border-t border-border/50 pt-2"
             : "mt-3 space-y-2 border-t border-border/50 pt-3"
           : "mt-2.5 space-y-1.5",
       )}
@@ -242,7 +252,9 @@ function IncludedItemsList({
             <span
               className={cn(
                 "min-w-0 leading-snug break-words",
-                highlighted ? "font-medium text-emerald-700" : "text-foreground/85",
+                highlighted
+                  ? "font-medium text-emerald-700"
+                  : "text-foreground/85",
               )}
             >
               {item}
@@ -272,7 +284,10 @@ function PriceScopeLabel({
       className={cn(
         "text-muted-foreground",
         compact
-          ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+          ? cn(
+              "text-[10px] lg:text-xs",
+              compactNarrowMobileTypeClassName(narrowMobileTypography),
+            )
           : "text-xs sm:text-sm",
       )}
     >
@@ -294,12 +309,16 @@ function PriceBlock({
 }) {
   const isListing = variant === "listing";
   const hideOldPrice = variant === "landing";
-  const showOldPrice = !hideOldPrice && data.oldPrice != null && data.oldPrice > data.price;
+  const showOldPrice =
+    !hideOldPrice && data.oldPrice != null && data.oldPrice > data.price;
 
   const labelClassName = cn(
     "text-muted-foreground",
     compact
-      ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+      ? cn(
+          "text-[10px] lg:text-xs",
+          compactNarrowMobileTypeClassName(narrowMobileTypography),
+        )
       : "text-xs sm:text-sm",
   );
 
@@ -316,7 +335,10 @@ function PriceBlock({
   const oldPriceClassName = cn(
     "text-muted-foreground line-through",
     compact
-      ? cn("text-[10px] lg:text-xs", compactNarrowMobileTypeClassName(narrowMobileTypography))
+      ? cn(
+          "text-[10px] lg:text-xs",
+          compactNarrowMobileTypeClassName(narrowMobileTypography),
+        )
       : "text-xs sm:text-sm",
   );
 
@@ -334,7 +356,8 @@ function PriceBlock({
     );
   }
 
-  const priceLabel = data.type === "HOTEL" ? "Diária a partir de" : "A partir de";
+  const priceLabel =
+    data.type === "HOTEL" ? "Diária a partir de" : "A partir de";
 
   return (
     <div className="space-y-0.5">
@@ -342,13 +365,17 @@ function PriceBlock({
       {isListing && showOldPrice ? (
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
-          <p className={oldPriceClassName}>{formatPackagePrice(data.oldPrice!)}</p>
+          <p className={oldPriceClassName}>
+            {formatPackagePrice(data.oldPrice!)}
+          </p>
         </div>
       ) : (
         <>
           <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
           {showOldPrice ? (
-            <p className={oldPriceClassName}>{formatPackagePrice(data.oldPrice!)}</p>
+            <p className={oldPriceClassName}>
+              {formatPackagePrice(data.oldPrice!)}
+            </p>
           ) : null}
         </>
       )}
@@ -382,11 +409,20 @@ function PriceFooter({
     compact
       ? "px-2 py-1"
       : isListing
-        ? "px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5"
+        ? "px-3.5 py-1 sm:px-4 sm:py-1.5 lg:px-5 lg:py-2"
         : isDetailed
           ? "px-4 py-2.5 sm:px-5 sm:py-3"
           : "px-3.5 py-2.5 sm:px-4 sm:py-3",
   );
+  const footerTextClassName = cn(
+    compact
+      ? cn(
+          "text-[10px] leading-snug lg:text-xs",
+          compactNarrowMobileFooterClassName(narrowMobileTypography),
+        )
+      : "text-xs sm:text-sm",
+  );
+  const feesSuffix = data.feesText ? <> | {data.feesText}</> : null;
 
   if (data.highlightInstallments && data.installmentText) {
     return (
@@ -402,28 +438,19 @@ function PriceFooter({
               : "text-[11px] sm:text-xs",
           )}
         >
-          Total por pessoa: {formatPackagePrice(data.price)}{" "}
-          <span className="font-bold text-foreground">| Taxas inclusas</span>
+          Total da cotação: {formatPackagePrice(data.price)}
+          {feesSuffix}
         </p>
       </div>
     );
   }
 
-  if (data.installmentText) {
+  if (data.installmentText || data.feesText) {
     return (
       <div className={footerClassName}>
-        <p
-          className={cn(
-            "text-foreground",
-            compact
-              ? cn(
-                  "text-[10px] leading-snug lg:text-xs",
-                  compactNarrowMobileFooterClassName(narrowMobileTypography),
-                )
-              : "text-xs sm:text-sm",
-          )}
-        >
+        <p className={cn("text-foreground", footerTextClassName)}>
           {data.installmentText}
+          {feesSuffix}
         </p>
       </div>
     );
@@ -431,17 +458,7 @@ function PriceFooter({
 
   return (
     <div className={footerClassName} aria-hidden>
-      <p
-        className={cn(
-          "text-transparent select-none",
-          compact
-            ? cn(
-                "text-[10px] leading-snug lg:text-xs",
-                compactNarrowMobileFooterClassName(narrowMobileTypography),
-              )
-            : "text-xs sm:text-sm",
-        )}
-      >
+      <p className={cn("text-transparent select-none", footerTextClassName)}>
         -
       </p>
     </div>
@@ -472,15 +489,15 @@ function PricingSection({
   const isListing = variant === "listing";
   const pricePadding = compact
     ? "px-2.5 py-1.5 lg:py-2"
-    : isListing
-      ? "px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5"
-      : isDetailed
-        ? "px-4 py-2.5 sm:px-5 sm:py-3"
-        : "px-3.5 py-2.5 sm:px-4 sm:py-3";
+      : isListing
+        ? "px-3.5 py-1 sm:px-4 sm:py-1.5 lg:px-5 lg:py-2"
+        : isDetailed
+          ? "px-4 py-2.5 sm:px-5 sm:py-3"
+          : "px-3.5 py-2.5 sm:px-4 sm:py-3";
   const actionPadding = compact
     ? "px-2.5 py-1.5"
     : isListing
-      ? "px-3.5 py-2 sm:px-4 sm:py-2.5 lg:px-5 lg:py-3"
+      ? "px-3.5 py-1.5 sm:px-4 sm:py-2 lg:px-5 lg:py-2.5"
       : isDetailed
         ? "px-4 py-3 sm:px-5 sm:py-3.5 lg:px-5"
         : "px-3.5 py-3 sm:px-4 sm:py-3.5";
@@ -513,13 +530,18 @@ function PricingSection({
               compact
                 ? cn(
                     compactActionButtonClassName,
-                    compactNarrowMobileActionButtonClassName(narrowMobileTypography),
+                    compactNarrowMobileActionButtonClassName(
+                      narrowMobileTypography,
+                    ),
                   )
                 : undefined
             }
             iconClassName={
               compact
-                ? cn("size-2.5 lg:size-3", narrowMobileTypography && "max-[425px]:size-3.5")
+                ? cn(
+                    "size-2.5 lg:size-3",
+                    narrowMobileTypography && "max-[425px]:size-3.5",
+                  )
                 : undefined
             }
           />
@@ -531,7 +553,9 @@ function PricingSection({
               compact
                 ? cn(
                     compactActionButtonClassName,
-                    compactNarrowMobileActionButtonClassName(narrowMobileTypography),
+                    compactNarrowMobileActionButtonClassName(
+                      narrowMobileTypography,
+                    ),
                   )
                 : undefined
             }
@@ -539,7 +563,10 @@ function PricingSection({
         </div>
       ) : whatsAppPackageTitle ? (
         <div
-          className={cn(actionPadding, showFooter && "border-b border-border/70")}
+          className={cn(
+            actionPadding,
+            showFooter && "border-b border-border/70",
+          )}
         >
           <PackageWhatsAppButton
             packageTitle={whatsAppPackageTitle}
@@ -547,13 +574,18 @@ function PricingSection({
               compact
                 ? cn(
                     compactActionButtonClassName,
-                    compactNarrowMobileActionButtonClassName(narrowMobileTypography),
+                    compactNarrowMobileActionButtonClassName(
+                      narrowMobileTypography,
+                    ),
                   )
                 : undefined
             }
             iconClassName={
               compact
-                ? cn("size-2.5 lg:size-3", narrowMobileTypography && "max-[425px]:size-3.5")
+                ? cn(
+                    "size-2.5 lg:size-3",
+                    narrowMobileTypography && "max-[425px]:size-3.5",
+                  )
                 : undefined
             }
           />
@@ -577,11 +609,13 @@ function PackageTravelDates({
   departureDate,
   returnDate,
   compact = false,
+  tight = false,
   narrowMobileTypography = false,
 }: {
   departureDate: string | null;
   returnDate: string | null;
   compact?: boolean;
+  tight?: boolean;
   narrowMobileTypography?: boolean;
 }) {
   const ida = formatPackageTravelDate(departureDate);
@@ -600,7 +634,9 @@ function PackageTravelDates({
               "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs",
               compactNarrowMobileTypeClassName(narrowMobileTypography),
             )
-          : "mt-3 text-xs sm:text-sm",
+          : tight
+            ? "mt-2 text-xs sm:text-sm"
+            : "mt-3 text-xs sm:text-sm",
       )}
     >
       {ida ? <p>Ida: {ida}</p> : null}
@@ -668,7 +704,10 @@ export function PackageCard({
     Boolean(data.airline?.trim());
   const showChecklistBlock = showChecklist && data.includedItems.length > 0;
   const cardLabel = isHotelPackage
-    ? data.hotelName?.trim() || data.destination || data.title || "Pacote turístico"
+    ? data.hotelName?.trim() ||
+      data.destination ||
+      data.title ||
+      "Pacote turístico"
     : data.destination || data.title || "Pacote turístico";
   const imageAlt = isHotelPackage
     ? [data.hotelName?.trim(), data.destination].filter(Boolean).join(" - ") ||
@@ -695,8 +734,10 @@ export function PackageCard({
               "relative w-full overflow-hidden bg-muted/30",
               isCompact && "aspect-[5/3]",
               isListing &&
-                "h-[10.5rem] sm:h-[10.75rem] md:h-[11rem] lg:h-[12.25rem]",
-              !isCompact && !isListing && "aspect-[4/3]",
+                "h-[8.75rem] sm:h-[9rem] md:h-[9.25rem] lg:h-[10rem]",
+              layout === "preview" &&
+                "h-[7rem] sm:h-[7.5rem] lg:h-[9.25rem] xl:h-[10rem]",
+              !isCompact && !isListing && layout !== "preview" && "aspect-[4/3]",
             )}
           >
             {resolvedImageSrc ? (
@@ -722,7 +763,11 @@ export function PackageCard({
             ) : (
               <div
                 className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground"
-                style={{ aspectRatio: PACKAGE_IMAGE_ASPECT_RATIO }}
+                style={
+                  layout === "preview"
+                    ? undefined
+                    : { aspectRatio: PACKAGE_IMAGE_ASPECT_RATIO }
+                }
               >
                 Imagem do pacote
               </div>
@@ -747,7 +792,9 @@ export function PackageCard({
             <div
               className={cn(
                 "absolute z-20 flex min-w-0 max-w-[calc(100%-0.75rem)] translate-y-1/2 justify-end sm:max-w-[calc(100%-1.25rem)]",
-                isCompact ? "right-1.5 bottom-0" : "right-2 bottom-0 sm:right-2.5",
+                isCompact
+                  ? "right-1.5 bottom-0"
+                  : "right-2 bottom-0 sm:right-2.5",
               )}
             >
               <AirlineBadge
@@ -765,7 +812,7 @@ export function PackageCard({
             isCompact
               ? "px-2.5 pt-2 pb-1.5"
               : isListing
-                ? "px-3.5 pt-2.5 pb-2.5 sm:px-4 sm:pt-3 sm:pb-3 lg:px-5 lg:pt-3.5 lg:pb-3.5"
+                ? "px-3.5 pt-2 pb-2 sm:px-4 sm:pt-2.5 sm:pb-2.5 lg:px-5 lg:pt-3 lg:pb-3"
                 : isDetailed
                   ? "px-4 pt-3.5 pb-3.5 sm:px-5 sm:pt-4 sm:pb-4"
                   : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
@@ -774,6 +821,7 @@ export function PackageCard({
           <CardTypeLabel
             type={data.type}
             compact={isCompact}
+            dense={isListing}
             narrowMobileTypography={narrowMobileTypography}
           />
 
@@ -822,6 +870,7 @@ export function PackageCard({
             departureDate={data.departureDate}
             returnDate={data.returnDate}
             compact={isCompact}
+            tight={isListing}
             narrowMobileTypography={narrowMobileTypography}
           />
 
@@ -840,8 +889,8 @@ export function PackageCard({
           {isDetailed && data.shortDescription ? (
             <p
               className={cn(
-                "mt-2 text-sm leading-relaxed text-foreground/80",
-                isListing ? "line-clamp-2" : "line-clamp-3",
+                "text-sm leading-relaxed text-foreground/80",
+                isListing ? "mt-1.5 line-clamp-2" : "mt-2 line-clamp-3",
               )}
             >
               {data.shortDescription}
@@ -857,7 +906,9 @@ export function PackageCard({
           ) : null}
 
           {isDetailed && data.type === "FLIGHT" && !showChecklistBlock ? (
-            <p className="mt-2 text-xs text-muted-foreground sm:text-sm">Ida e volta</p>
+            <p className="mt-2 text-xs text-muted-foreground sm:text-sm">
+              Ida e volta
+            </p>
           ) : null}
         </div>
 
@@ -891,6 +942,7 @@ export function toPackageCardDataFromPublicPackage(
     priceScope: pkg.priceScope,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    feesText: pkg.feesText,
     airline: pkg.airline,
     hotelName: pkg.hotelName,
     includedItems: pkg.includedItems,

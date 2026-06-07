@@ -6,7 +6,6 @@ import Image from "next/image";
 import { 
   CheckCircle2, 
   Circle, 
-  Home, 
   Loader2, 
   Package, 
   PencilLine, 
@@ -136,12 +135,6 @@ export function PackagesGrid({ packages }: PackagesGridProps) {
                         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                           <Circle className="size-3" aria-hidden />
                           Inativo
-                        </span>
-                      )}
-                      {pkg.showOnLandingPage && (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700">
-                          <Home className="size-3" aria-hidden />
-                          Landing
                         </span>
                       )}
                       {pkg.featured && (

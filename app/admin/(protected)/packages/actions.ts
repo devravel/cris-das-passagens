@@ -97,6 +97,7 @@ function normalizeInput(input: PackageFormValues) {
     priceScope: input.priceScope ?? null,
     installmentText: input.installmentText?.trim() || null,
     highlightInstallments: input.highlightInstallments,
+    feesText: input.feesText?.trim() || null,
     airline,
     hotelName,
     departureCity,
@@ -105,7 +106,6 @@ function normalizeInput(input: PackageFormValues) {
     includedItems: input.includedItems.map((item) => item.trim()).filter(Boolean),
     daysCount: input.daysCount ?? null,
     nightsCount: input.nightsCount ?? null,
-    showOnLandingPage: input.showOnLandingPage,
     active: input.active,
     featured: input.featured,
   };

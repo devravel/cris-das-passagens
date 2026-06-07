@@ -25,14 +25,6 @@ const participantNameSchema = z
   .max(120, "O nome deve ter no máximo 120 caracteres.")
   .transform(normalizeParticipantName);
 
-const participantPhoneSchema = z
-  .string()
-  .trim()
-  .min(8, "Informe um telefone válido.")
-  .max(20, "O telefone deve ter no máximo 20 caracteres.")
-  .transform(normalizeParticipantPhone)
-  .refine(isValidParticipantPhone, "Informe um telefone brasileiro válido.");
-
 const participantRegistrationPhoneSchema = z
   .string()
   .trim()

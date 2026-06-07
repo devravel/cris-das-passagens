@@ -59,6 +59,7 @@ export const contentLinks = {
   blog: "/blog",
   quote: "/contato",
   whatsapp: "https://wa.me/5551992519187",
+  instagram: "https://www.instagram.com/crisdaspassagens/",
   cadastur: "https://www.cadastur.turismo.gov.br",
 } as const;
 
@@ -86,6 +87,7 @@ export const content = {
     } satisfies ContentCta,
     featuredPackages: {
       title: "Nossos melhores pacotes",
+      emptyMessage: "Pacotes sendo adicionados em breve.",
     },
   },
 
@@ -330,7 +332,7 @@ export const content = {
       },
     ] satisfies FaqItem[],
     cta: {
-      label: "Quero Cotar AGORA!",
+      label: "Tirar mais dúvidas",
       href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
   },

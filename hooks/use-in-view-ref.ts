@@ -18,9 +18,9 @@ export function useInViewRef(
 ) {
   const isInViewRef = useRef(true);
   const getElementRef = useRef(getElement);
-  getElementRef.current = getElement;
 
   useEffect(() => {
+    getElementRef.current = getElement;
     const element = getElementRef.current();
 
     if (!element) {

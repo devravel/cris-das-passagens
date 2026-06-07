@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { DEFAULT_DEPARTURE_CITY } from "@/config/packages-showcase";
 import { PackageCardsCarousel } from "@/components/packages/package-cards-carousel";
 import type { PublicPackage } from "@/lib/package/queries";
@@ -8,6 +10,7 @@ type PackagesGridProps = {
   departureCity?: string;
   className?: string;
   emptyMessage?: string;
+  header?: ReactNode;
   id?: string;
   role?: "tabpanel";
   "aria-labelledby"?: string;
@@ -18,6 +21,7 @@ export function PackagesGrid({
   departureCity = DEFAULT_DEPARTURE_CITY,
   className,
   emptyMessage = "Nenhuma oferta disponível no momento.",
+  header,
   id,
   role,
   "aria-labelledby": ariaLabelledBy,
@@ -50,6 +54,7 @@ export function PackagesGrid({
         showChecklist
         showAirlineBadge
         anchorCards
+        header={header}
       />
     </div>
   );

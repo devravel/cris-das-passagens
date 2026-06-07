@@ -39,6 +39,11 @@ export const brandPrimaryPages: NavItem[] = [
 /** Páginas institucionais extras — reservado para itens secundários futuros. */
 export const secondaryNavItems: NavItem[] = [];
 
+/** Links institucionais exibidos apenas no rodapé (não entram na navbar). */
+export const footerInstitutionalLinks: NavItem[] = [
+  { label: "Política de Privacidade", href: "/politica-de-privacidade" },
+];
+
 /** Links da navbar — páginas principais primeiro, depois institucionais. */
 export const navigation: NavItem[] = [
   ...brandPrimaryPages,

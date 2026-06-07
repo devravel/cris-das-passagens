@@ -14,6 +14,7 @@ import { content, type ContentCta, type ServiceItem } from "@/config/content";
 import { reiDaCopaHomeHeroCta } from "@/config/rei-da-copa-campaign";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import type { PublicPackage } from "@/lib/package/queries";
+import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 export type TourismHeroProps = {
@@ -61,7 +62,17 @@ function HeroCtaLink({
           className,
         )}
       >
-        <a href={cta.href} target="_blank" rel="noopener noreferrer">
+        <a
+          href={cta.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() =>
+            trackMetaLeadFromHref(cta.href, {
+              source: "hero_quote",
+              content_name: cta.label,
+            })
+          }
+        >
           {cta.label}
           {variant === "primary" ? (
             <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
@@ -123,20 +134,11 @@ export function TourismHero({
       bordered
       className={cn(
         "overflow-hidden pb-12 pt-8 sm:pb-20 sm:pt-14 lg:pb-24 lg:pt-16",
-        !hasFeatured &&
-          "min-[769px]:flex min-[769px]:min-h-[calc(100dvh-4.5rem)] min-[769px]:flex-col min-[769px]:justify-center min-[769px]:py-0",
         className,
       )}
       aria-labelledby="hero-headline"
     >
-      <div
-        className={cn(
-          "grid items-start gap-8 sm:gap-10 lg:gap-14",
-          hasFeatured
-            ? "lg:grid-cols-2 xl:gap-16"
-            : "max-w-3xl min-[769px]:mx-auto",
-        )}
-      >
+      <div className="grid items-start gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">
         <div className="flex min-w-0 flex-col gap-6 sm:gap-7">
           <motion.h1
             id="hero-headline"
@@ -197,15 +199,13 @@ export function TourismHero({
           ) : null}
         </div>
 
-        {hasFeatured ? (
-          <div className="min-w-0 w-full sm:min-w-[280px] lg:min-w-[300px]">
-            <HeroFeaturedPackages
-              packages={featuredPackages}
-              departureCity={departureCity}
-              title={featuredTitle}
-            />
-          </div>
-        ) : null}
+        <div className="min-w-0 w-full sm:min-w-[280px] lg:min-w-[300px]">
+          <HeroFeaturedPackages
+            packages={featuredPackages}
+            departureCity={departureCity}
+            title={featuredTitle}
+          />
+        </div>
       </div>
     </Section>
   );

@@ -1,3 +1,4 @@
+import { ConsentRoot } from "@/components/consent/consent-manager";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Navbar } from "@/components/layout/navbar";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
@@ -40,12 +41,14 @@ export default function RootLayout({
         ) : null}
       </head>
       <body className="flex min-h-full flex-col overflow-x-clip font-sans">
-        <JsonLdScript data={[createOrganizationJsonLd(), createWebsiteJsonLd()]} />
-        <Navbar />
-        <main className="min-w-0 flex-1">{children}</main>
-        <SiteFooter />
-        <WhatsAppFab />
-        <Toaster />
+        <ConsentRoot>
+          <JsonLdScript data={[createOrganizationJsonLd(), createWebsiteJsonLd()]} />
+          <Navbar />
+          <main className="min-w-0 flex-1">{children}</main>
+          <SiteFooter />
+          <WhatsAppFab />
+          <Toaster />
+        </ConsentRoot>
       </body>
     </html>
   );

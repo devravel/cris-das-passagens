@@ -1,5 +1,8 @@
+import { Sparkles } from "lucide-react";
+
 import { CouponApplyForm } from "@/components/coupon/coupon-apply-form";
 import { PackageCardsContinuousCarousel } from "@/components/packages/package-cards-carousel-continuous";
+import { content } from "@/config/content";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -7,18 +10,71 @@ type HeroFeaturedPackagesProps = {
   packages: PublicPackage[];
   departureCity: string;
   title: string;
+  emptyMessage?: string;
   className?: string;
 };
+
+function HeroFeaturedPackagesHeader({
+  title,
+  showCouponForm,
+}: {
+  title: string;
+  showCouponForm: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex w-full min-w-0 flex-col gap-3 max-[425px]:gap-2",
+        "min-[426px]:max-lg:flex-row min-[426px]:max-lg:flex-wrap min-[426px]:max-lg:items-start min-[426px]:max-lg:justify-between sm:max-lg:items-center",
+        "min-[568px]:max-[768px]:flex-nowrap min-[568px]:max-[768px]:items-center min-[568px]:max-[768px]:gap-4",
+      )}
+    >
+      <h2 className="min-w-0 shrink-0 font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl min-[568px]:max-[768px]:min-w-0 min-[568px]:max-[768px]:flex-1 lg:text-[1.35rem]">
+        {title}
+      </h2>
+      {showCouponForm ? (
+        <CouponApplyForm
+          inputId="coupon-code-input-mobile"
+          className={cn(
+            "max-[425px]:w-full max-[425px]:max-w-none max-[425px]:flex-none lg:hidden",
+            "min-[568px]:max-[768px]:w-auto min-[568px]:max-[768px]:max-w-[min(100%,17.5rem)] min-[568px]:max-[768px]:shrink-0 min-[568px]:max-[768px]:flex-none",
+          )}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function HeroFeaturedPackagesEmpty({ message }: { message: string }) {
+  return (
+    <div
+      className="hero-featured-packages-empty relative flex min-h-[12.5rem] w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-border/70 bg-background/70 px-6 py-10 shadow-sm sm:min-h-[15rem] sm:px-8 sm:py-12"
+      role="status"
+      aria-live="polite"
+    >
+      <div
+        aria-hidden
+        className="hero-featured-packages-empty__glow pointer-events-none absolute inset-0 bg-linear-to-br from-brand-soft/35 via-transparent to-brand/10"
+      />
+      <p className="hero-featured-packages-empty__message relative max-w-sm text-center font-heading text-base font-semibold leading-snug text-foreground/85 sm:text-lg">
+        <Sparkles
+          className="hero-featured-packages-empty__icon mx-auto mb-3 size-5 text-brand sm:mb-3.5 sm:size-6"
+          aria-hidden
+        />
+        {message}
+      </p>
+    </div>
+  );
+}
 
 export function HeroFeaturedPackages({
   packages,
   departureCity,
   title,
+  emptyMessage = content.hero.featuredPackages.emptyMessage,
   className,
 }: HeroFeaturedPackagesProps) {
-  if (packages.length === 0) {
-    return null;
-  }
+  const hasPackages = packages.length > 0;
 
   return (
     <div
@@ -27,34 +83,21 @@ export function HeroFeaturedPackages({
         className,
       )}
     >
-      <div
-        className={cn(
-          "flex w-full min-w-0 flex-col gap-3 max-[425px]:gap-2",
-          "min-[426px]:max-lg:flex-row min-[426px]:max-lg:flex-wrap min-[426px]:max-lg:items-start min-[426px]:max-lg:justify-between sm:max-lg:items-center",
-          "min-[568px]:max-[768px]:flex-nowrap min-[568px]:max-[768px]:items-center min-[568px]:max-[768px]:gap-4",
-        )}
-      >
-        <h2 className="min-w-0 shrink-0 font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl min-[568px]:max-[768px]:min-w-0 min-[568px]:max-[768px]:flex-1 lg:text-[1.35rem]">
-          {title}
-        </h2>
-        <CouponApplyForm
-          inputId="coupon-code-input-mobile"
-          className={cn(
-            "max-[425px]:w-full max-[425px]:max-w-none max-[425px]:flex-none lg:hidden",
-            "min-[568px]:max-[768px]:w-auto min-[568px]:max-[768px]:max-w-[min(100%,17.5rem)] min-[568px]:max-[768px]:shrink-0 min-[568px]:max-[768px]:flex-none",
-          )}
-        />
-      </div>
+      <HeroFeaturedPackagesHeader title={title} showCouponForm={hasPackages} />
 
-      <PackageCardsContinuousCarousel
-        packages={packages}
-        departureCity={departureCity}
-        ariaLabel="Pacotes em destaque"
-        variant="landing"
-        showDots={packages.length > 1}
-        scrollHintAlwaysVisible
-        showNavButtons
-      />
+      {hasPackages ? (
+        <PackageCardsContinuousCarousel
+          packages={packages}
+          departureCity={departureCity}
+          ariaLabel="Pacotes em destaque"
+          variant="landing"
+          showDots={packages.length > 1}
+          scrollHintAlwaysVisible
+          showNavButtons
+        />
+      ) : (
+        <HeroFeaturedPackagesEmpty message={emptyMessage} />
+      )}
     </div>
   );
 }

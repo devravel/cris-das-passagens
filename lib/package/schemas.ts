@@ -50,6 +50,10 @@ const packageFormFieldsSchema = z.object({
   priceScope: z.enum(PACKAGE_PRICE_SCOPES).nullable(),
   installmentText: z.string().trim(),
   highlightInstallments: z.boolean(),
+  feesText: z
+    .string()
+    .trim()
+    .max(80, "Taxas deve ter no máximo 80 caracteres."),
   airline: z.string().trim(),
   hotelName: z.string().trim(),
   departureCity: z.string().trim(),
@@ -59,7 +63,6 @@ const packageFormFieldsSchema = z.object({
     .array(z.string())
     .transform((items) => items.map((item) => item.trim()).filter(Boolean))
     .pipe(z.array(includedItemSchema).max(12, "Adicione no máximo 12 itens.")),
-  showOnLandingPage: z.boolean(),
   active: z.boolean(),
   featured: z.boolean(),
 });
@@ -180,6 +183,7 @@ export type PackageCardData = {
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  feesText: string | null;
   airline: string | null;
   hotelName: string | null;
   includedItems: string[];
@@ -206,6 +210,7 @@ export function toPackageCardPreviewData(
     priceScope: values.priceScope ?? null,
     installmentText: values.installmentText.trim() || null,
     highlightInstallments: values.highlightInstallments,
+    feesText: values.feesText.trim() || null,
     airline: values.airline.trim() || null,
     hotelName: values.hotelName.trim() || null,
     includedItems: values.includedItems.map((item) => item.trim()).filter(Boolean),
@@ -227,13 +232,13 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   priceScope: null,
   installmentText: "",
   highlightInstallments: false,
+  feesText: "",
   airline: "",
   hotelName: "",
   departureCity: "São Paulo, SP",
   departureDate: "",
   returnDate: "",
   includedItems: [],
-  showOnLandingPage: true,
   active: true,
   featured: false,
 };

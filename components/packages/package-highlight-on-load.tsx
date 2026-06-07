@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { trackMetaViewContent } from "@/lib/meta-pixel";
 import { getPackageAnchorId } from "@/lib/package/routes";
 
 export function PackageHighlightOnLoad() {
@@ -36,6 +37,11 @@ export function PackageHighlightOnLoad() {
 
       return true;
     };
+
+    trackMetaViewContent({
+      content_name: highlightSlug,
+      content_ids: [highlightSlug],
+    });
 
     if (!highlightTarget()) {
       const retryTimer = window.setTimeout(highlightTarget, 350);

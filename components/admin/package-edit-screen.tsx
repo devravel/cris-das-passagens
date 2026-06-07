@@ -52,6 +52,7 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
             priceScope: pkg.priceScope,
             installmentText: pkg.installmentText ?? "",
             highlightInstallments: pkg.highlightInstallments,
+            feesText: pkg.feesText ?? "",
             airline: pkg.airline ?? "",
             hotelName: pkg.hotelName ?? "",
             departureCity:
@@ -62,7 +63,6 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
             departureDate: pkg.departureDate ?? "",
             returnDate: pkg.returnDate ?? "",
             includedItems: pkg.includedItems,
-            showOnLandingPage: pkg.showOnLandingPage,
             active: pkg.active,
             featured: pkg.featured,
           }}

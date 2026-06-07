@@ -1,7 +1,5 @@
 import { cache } from "react";
 
-import { normalizePromotionImageUrl } from "@/lib/promotion/image-url";
-
 export type PublicPromotion = {
   id: string;
   image: string;
@@ -13,7 +11,3 @@ export type PublicPromotion = {
 export const getActivePromotions = cache(async (): Promise<PublicPromotion[]> => {
   return [];
 });
-
-export function mapLegacyPromotionImage(url: string) {
-  return normalizePromotionImageUrl(url);
-}

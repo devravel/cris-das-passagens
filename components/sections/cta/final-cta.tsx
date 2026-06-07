@@ -19,6 +19,7 @@ import {
   type FinalCtaAction,
 } from "@/config/content";
 import { useMotionReady } from "@/hooks/use-motion-ready";
+import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -95,6 +96,12 @@ function ActionCard({
         target="_blank"
         rel="noopener noreferrer"
         className={cardClassName}
+        onClick={() =>
+          trackMetaLeadFromHref(action.href, {
+            source: "final_cta",
+            content_name: action.title,
+          })
+        }
         {...item(index)}
       >
         {body}
@@ -178,6 +185,12 @@ export function FinalCta({
               target="_blank"
               rel="noopener noreferrer"
               className="gap-2"
+              onClick={() =>
+                trackMetaLeadFromHref(primaryCta.href, {
+                  source: "final_cta",
+                  content_name: primaryCta.label,
+                })
+              }
             >
               {primaryCta.label}
               <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
