@@ -9,6 +9,7 @@ import { HomeHeroSkeleton } from "@/components/sections/hero/home-hero-skeleton"
 import { HomePackagesSections } from "@/components/sections/packages/home-packages-sections";
 import { HomePackagesSectionsSkeleton } from "@/components/sections/packages/home-packages-sections-skeleton";
 import { SupportSection } from "@/components/sections/about/about-support";
+import { TestimonialsModernLazy } from "@/components/sections/testimonials/testimonials-modern-lazy";
 import { content } from "@/config/content";
 import { LANDING_PACKAGE_CATEGORY_SECTIONS_ENABLED } from "@/config/packages-showcase";
 import { siteConfig } from "@/config/site";
@@ -19,14 +20,6 @@ const CadasturCompactSection = dynamic(
     import("@/components/sections/trust/cadastur-compact-section").then(
       (module) => module.CadasturCompactSection,
     ),
-);
-
-const TestimonialsModern = dynamic(
-  () =>
-    import("@/components/sections/testimonials/testimonials-modern").then(
-      (module) => module.TestimonialsModern,
-    ),
-  { ssr: false },
 );
 
 const PartnersSection = dynamic(
@@ -70,7 +63,7 @@ export default function HomePage() {
         </Suspense>
       ) : null}
       <CadasturCompactSection />
-      <TestimonialsModern />
+      <TestimonialsModernLazy />
       <SupportSection />
       <FaqModern />
       <BlogPreviewHomeSection />
