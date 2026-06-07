@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { ArrowRight, Mail, Phone } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { brandPageBreadcrumbs } from "@/config/navigation";
 import { Section } from "@/components/layout/section";
 import { bodyTextClassName } from "@/components/layout/section-header";
+import { Button } from "@/components/ui/button";
 import { content } from "@/config/content";
+import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
 import { createMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -89,19 +91,25 @@ export default function ContatoPage() {
               </a>
             </li>
 
-            <li className="inline-flex items-start gap-3 text-sm text-foreground">
-              <MapPin
-                className="mt-0.5 size-4 shrink-0 text-brand"
-                aria-hidden
-              />
-              <span>
-                <span className="block font-medium">Endereço</span>
-                <span className="text-muted-foreground">
-                  {contact.formattedAddress}
-                </span>
-              </span>
-            </li>
           </ul>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Button
+            asChild
+            size="lg"
+            className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
+          >
+            <a
+              href={getQuoteWhatsAppUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gap-2"
+            >
+              Faça uma cotação agora
+              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            </a>
+          </Button>
         </div>
 
         <p className={cn(bodyTextClassName, "mt-6 text-center text-sm")}>

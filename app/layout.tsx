@@ -1,4 +1,4 @@
-import { Footer } from "@/components/layout/footer";
+import { SiteFooter } from "@/components/layout/site-footer";
 import { Navbar } from "@/components/layout/navbar";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
@@ -43,7 +43,7 @@ export default function RootLayout({
         <JsonLdScript data={[createOrganizationJsonLd(), createWebsiteJsonLd()]} />
         <Navbar />
         <main className="min-w-0 flex-1">{children}</main>
-        <Footer />
+        <SiteFooter />
         <WhatsAppFab />
         <Toaster />
       </body>

@@ -28,12 +28,10 @@ export type TourismHeroProps = {
   className?: string;
 };
 
-/** Coluna esquerda estreita no grid lg — mantém CTAs lado a lado só nesta faixa. */
-const heroCtaRowClassName =
-  "min-[1024px]:max-[1144px]:!flex-nowrap min-[1024px]:max-[1144px]:gap-2";
+/** Coluna esquerda estreita no grid lg (~512px) — CTAs compactos e sem quebra em todo desktop. */
+const heroCtaRowClassName = "lg:!flex-nowrap lg:gap-2";
 
-const heroCtaCompactClassName =
-  "min-[1024px]:max-[1144px]:h-10 min-[1024px]:max-[1144px]:px-3 min-[1024px]:max-[1144px]:text-xs";
+const heroCtaCompactClassName = "lg:h-10 lg:px-3 lg:text-xs";
 
 function HeroCtaLink({
   cta,

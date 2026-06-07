@@ -1,10 +1,8 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { Button } from "@/components/ui/button";
+import { ContentCtaButton } from "@/components/ui/content-cta-button";
 import { content, type ContentCta, type ProcessStep } from "@/config/content";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -92,16 +90,7 @@ export function ProcessSteps({
 
       <ScrollReveal delay={0.2}>
         <div className="mt-10 flex justify-center sm:mt-12 lg:mt-14">
-        <Button
-          asChild
-          size="lg"
-          className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
-        >
-          <Link href={cta.href} className="gap-2">
-            {cta.label}
-            <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-          </Link>
-        </Button>
+          <ContentCtaButton cta={cta} />
         </div>
       </ScrollReveal>
     </Section>

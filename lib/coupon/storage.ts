@@ -1,22 +1,13 @@
 "use client";
 
-import {
-  COUPON_APPLY_LOCK_HOURS,
-  COUPON_REUSE_LOCK_HOURS,
-} from "@/config/coupon";
+import { COUPON_APPLY_LOCK_HOURS } from "@/config/coupon";
 
 const STORAGE_KEYS = {
   code: "couponCode",
   name: "couponName",
   discountLabel: "couponDiscountLabel",
   appliedAt: "couponAppliedAt",
-  usedRecords: "couponUsedRecords",
 } as const;
-
-type CouponUsedRecord = {
-  code: string;
-  usedAt: string;
-};
 
 export type StoredCoupon = {
   code: string;
@@ -37,37 +28,6 @@ function isWithinLockPeriod(timestamp: string, lockHours: number) {
   }
 
   return Date.now() - appliedTime < hoursToMs(lockHours);
-}
-
-function readUsedRecords(): CouponUsedRecord[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEYS.usedRecords);
-
-  if (!raw) {
-    return [];
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as CouponUsedRecord[];
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed.filter(
-      (record) =>
-        typeof record?.code === "string" && typeof record?.usedAt === "string",
-    );
-  } catch {
-    return [];
-  }
-}
-
-function writeUsedRecords(records: CouponUsedRecord[]) {
-  window.localStorage.setItem(STORAGE_KEYS.usedRecords, JSON.stringify(records));
 }
 
 export function getStoredCoupon(): StoredCoupon | null {
@@ -114,34 +74,5 @@ export function clearStoredCoupon() {
   window.localStorage.removeItem(STORAGE_KEYS.name);
   window.localStorage.removeItem(STORAGE_KEYS.discountLabel);
   window.localStorage.removeItem(STORAGE_KEYS.appliedAt);
-}
-
-export function hasRecentlyUsedCoupon(code: string) {
-  const normalizedCode = code.toUpperCase();
-  const records = readUsedRecords();
-
-  return records.some(
-    (record) =>
-      record.code.toUpperCase() === normalizedCode &&
-      isWithinLockPeriod(record.usedAt, COUPON_REUSE_LOCK_HOURS),
-  );
-}
-
-export function recordCouponUsage(code: string) {
-  const normalizedCode = code.toUpperCase();
-  const records = readUsedRecords().filter(
-    (record) =>
-      !(
-        record.code.toUpperCase() === normalizedCode &&
-        isWithinLockPeriod(record.usedAt, COUPON_REUSE_LOCK_HOURS)
-      ),
-  );
-
-  records.push({
-    code: normalizedCode,
-    usedAt: new Date().toISOString(),
-  });
-
-  writeUsedRecords(records);
-  clearStoredCoupon();
+  window.localStorage.removeItem("couponUsedRecords");
 }

@@ -11,6 +11,7 @@ import {
 } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { Button } from "@/components/ui/button";
+import { ContentCtaButton } from "@/components/ui/content-cta-button";
 import { content, type ContentCta } from "@/config/content";
 import {
   cardContentContainerClassName,
@@ -62,16 +63,7 @@ export function AboutSection({
           </div>
 
           <div className="mt-8 flex justify-center sm:mt-10">
-            <Button
-              asChild
-              size="lg"
-              className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
-            >
-              <Link href={cta.href} className="gap-2">
-                {cta.label}
-                <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-              </Link>
-            </Button>
+            <ContentCtaButton cta={cta} />
           </div>
         </Container>
       </ScrollReveal>

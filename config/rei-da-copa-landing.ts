@@ -67,7 +67,7 @@ export const reiDaCopaHowToSteps: ReiDaCopaHowToStep[] = [
 ];
 
 export const reiDaCopaParticipationConfirmationMessage =
-  "Você receberá uma mensagem de confirmação assim que tiver concluído os passos.";
+  "Você receberá uma mensagem de inscrição.";
 
 /** Formas de acumular coroas — arte principal (Quem será o Rei da Copa?). */
 export const reiDaCopaEngagementActions = [
@@ -113,8 +113,7 @@ export const reiDaCopaScoringReminder =
   "Quanto mais você participa, mais coroas você ganha!";
 
 export const reiDaCopaScoringCommentExample = {
-  heading: "Exemplo de comentário perfeito:",
-  match: "Brasil x Marrocos",
+  heading: "Exemplo de comentário válido:",
   comment: `Brasil vence 1x0 ${reiDaCopaInstagramHashtag}.`,
 } as const;
 

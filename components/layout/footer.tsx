@@ -26,6 +26,8 @@ export type FooterProps = {
   year?: number;
   navItems?: FooterNavItem[];
   socialLinks?: SocialLink[] | null;
+  /** Exibe endereço físico — apenas na página inicial (exigência Meta/Google Business). */
+  showAddress?: boolean;
   className?: string;
 };
 
@@ -50,6 +52,7 @@ export function Footer({
   year,
   navItems = defaultNavItems,
   socialLinks = buildDefaultSocialLinks(),
+  showAddress = false,
   className,
 }: FooterProps) {
   const copyrightYear = year ?? new Date().getFullYear();
@@ -151,14 +154,19 @@ export function Footer({
                       </a>
                     </li>
                   ) : null}
-                  {siteConfig.address ? (
+                  {showAddress && siteConfig.address ? (
                     <li className="inline-flex items-start gap-2 text-sm text-white/70">
                       <MapPin
                         className="mt-0.5 size-4 shrink-0"
                         strokeWidth={1.75}
                         aria-hidden
                       />
-                      <span>{siteConfig.address}</span>
+                      <span>
+                        {siteConfig.address}
+                        <span className="mt-1 block text-xs text-white/50">
+                          Atendimento exclusivamente online
+                        </span>
+                      </span>
                     </li>
                   ) : null}
                   <li>

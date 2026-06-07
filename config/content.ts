@@ -1,3 +1,5 @@
+import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
+
 export type ContentCta = {
   label: string;
   href: string;
@@ -76,7 +78,7 @@ export const content = {
     ] satisfies ServiceItem[],
     primaryCta: {
       label: "Faça uma cotação agora",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
     secondaryCta: {
       label: "Confira todos os Pacotes",
@@ -95,8 +97,9 @@ export const content = {
         id: "passagens",
         title: "Passagens Promocionais",
         description: "As melhores ofertas de passagens aéreas.",
-        href: contentLinks.quote,
+        href: getQuoteWhatsAppUrl(),
         ctaLabel: "Cotar agora",
+        external: true,
       },
       {
         id: "pacotes",
@@ -110,8 +113,9 @@ export const content = {
         id: "hospedagem",
         title: "Hospedagem",
         description: "Hotéis e estadias ideais em seu destino.",
-        href: contentLinks.quote,
+        href: getQuoteWhatsAppUrl(),
         ctaLabel: "Solicitar cotação",
+        external: true,
       },
       {
         id: "whatsapp",
@@ -147,7 +151,7 @@ export const content = {
       "Mais do que viagens, entregamos confiança, suporte e sonhos realizados.",
     cta: {
       label: "Quero Cotar AGORA!",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
   },
 
@@ -208,7 +212,7 @@ export const content = {
     ] satisfies ProcessStep[],
     cta: {
       label: "Quero Cotar AGORA!",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
   },
 
@@ -327,7 +331,7 @@ export const content = {
     ] satisfies FaqItem[],
     cta: {
       label: "Quero Cotar AGORA!",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
   },
 
@@ -374,11 +378,11 @@ export const content = {
   ctas: {
     quote: {
       label: "Quero Cotar AGORA!",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
     quoteAlt: {
       label: "Faça Uma Cotação AGORA",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
     whatsapp: {
       label: "Fale no WhatsApp",
@@ -394,7 +398,7 @@ export const content = {
     actions: [] satisfies FinalCtaAction[],
     primaryCta: {
       label: "Faça Uma Cotação AGORA",
-      href: contentLinks.quote,
+      href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
   },
 

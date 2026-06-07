@@ -20,7 +20,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 export type NavItem = {
   label: string;
@@ -129,9 +128,10 @@ function NavbarCtaButton({
   onNavigate?: () => void;
   compact?: boolean;
 }) {
-  const whatsappStyles = cn(
-    "rounded-lg font-semibold shadow-none",
-    whatsappSolidButtonClassName
+  const brandStyles = cn(
+    "rounded-lg bg-brand font-semibold text-brand-foreground shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 active:translate-y-0",
+    compact && "h-9 px-4 text-xs sm:text-sm",
+    !compact && "h-9 px-5 text-sm",
   );
 
   if (cta.external) {
@@ -139,12 +139,7 @@ function NavbarCtaButton({
       <Button
         asChild
         size={compact ? "icon-sm" : "default"}
-        className={cn(
-          "transition-colors duration-200",
-          whatsappStyles,
-          !compact && "h-9 px-5 text-sm",
-          className
-        )}
+        className={cn(brandStyles, className)}
       >
         <a
           href={cta.href}
@@ -167,12 +162,7 @@ function NavbarCtaButton({
     <Button
       asChild
       size={compact ? "sm" : "sm"}
-      className={cn(
-        "rounded-lg bg-brand font-semibold text-brand-foreground shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 active:translate-y-0",
-        compact && "h-9 px-4 text-xs sm:text-sm",
-        !compact && "h-9 px-5 text-sm",
-        className,
-      )}
+      className={cn(brandStyles, className)}
     >
       <Link href={cta.href} onClick={onNavigate}>
         {cta.label}

@@ -273,7 +273,7 @@ export function ParticipantRegistrationForm() {
               className="relative z-10 size-4 shrink-0"
               aria-hidden
             />
-            <span className="relative z-10">Participar da campanha</span>
+            <span className="relative z-10">PARTICIPAR</span>
           </>
         )}
       </Button>

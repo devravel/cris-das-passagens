@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore, useTransition } from "react";
-import { Loader2, Tag } from "lucide-react";
+import { Loader2, Tag, X } from "lucide-react";
 
 import {
   couponFieldDescription,
@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  clearStoredCoupon,
   getStoredCoupon,
   hasActiveStoredCoupon,
   saveStoredCoupon,
@@ -136,11 +137,18 @@ export function CouponApplyForm({
 
         const stored = getStoredCoupon();
         setAppliedCoupon(stored);
-        setCode("");
+        setCode(stored?.code ?? "");
       } catch {
         setErrorMessage("Cupom não encontrado ou inválido.");
       }
     });
+  }
+
+  function handleRemoveCoupon() {
+    clearStoredCoupon();
+    setAppliedCoupon(null);
+    setCode("");
+    setErrorMessage(null);
   }
 
   if (!isClient) {
@@ -223,7 +231,7 @@ export function CouponApplyForm({
             />
             <Input
               id={inputId}
-              value={code}
+              value={activeCoupon ? activeCoupon.code : code}
               onChange={(event) => setCode(event.target.value.toUpperCase())}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
@@ -256,9 +264,25 @@ export function CouponApplyForm({
 
         <CouponFieldFootnote className="hidden w-full text-left min-[426px]:max-[639px]:inline-flex" />
 
-        <p className={cn(couponMutedTextClassName, "block w-full text-left")}>
-          {couponDescriptionText}
-        </p>
+        {activeCoupon ? (
+          <div className="flex w-full items-start gap-2">
+            <p className={cn(couponMutedTextClassName, "min-w-0 flex-1 text-left")}>
+              {couponDescriptionText}
+            </p>
+            <button
+              type="button"
+              onClick={handleRemoveCoupon}
+              className="mt-0.5 shrink-0 rounded-sm p-0.5 text-muted-foreground/70 transition-colors hover:text-foreground"
+              aria-label="Remover cupom"
+            >
+              <X className="size-3.5" aria-hidden />
+            </button>
+          </div>
+        ) : (
+          <p className={cn(couponMutedTextClassName, "block w-full text-left")}>
+            {couponDescriptionText}
+          </p>
+        )}
       </div>
 
       {errorMessage ? (

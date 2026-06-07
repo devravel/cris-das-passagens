@@ -1,4 +1,5 @@
 import { content, contentLinks } from "@/config/content";
+import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
 
 export type NavItem = {
   label: string;
@@ -32,7 +33,7 @@ export const brandPrimaryPages: NavItem[] = [
   { label: "Pacotes", href: "/pacotes" },
   { label: "Blog", href: contentLinks.blog },
   { label: "Sobre", href: "/sobre" },
-  { label: "Contato", href: contentLinks.quote },
+  { label: "Contato", href: "/contato" },
 ];
 
 /** Páginas institucionais extras — reservado para itens secundários futuros. */
@@ -70,8 +71,8 @@ export const brandPageBreadcrumbs = {
 /** CTA da navbar — cotação (referência visual). */
 export const navbarCta = {
   label: content.hero.primaryCta.label,
-  href: contentLinks.quote,
-  external: false,
+  href: getQuoteWhatsAppUrl(),
+  external: true,
 } as const;
 
 export type NavbarCtaConfig = typeof navbarCta;

@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
@@ -10,7 +8,7 @@ import {
   bodyTextClassName,
   SectionHeader,
 } from "@/components/layout/section-header";
-import { Button } from "@/components/ui/button";
+import { ContentCtaButton } from "@/components/ui/content-cta-button";
 import { content } from "@/config/content";
 import { createMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -71,16 +69,7 @@ export default function SobrePage() {
         </div>
 
         <div className="mt-8 flex justify-center sm:mt-10">
-          <Button
-            asChild
-            size="lg"
-            className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0"
-          >
-            <Link href={cta.href} className="gap-2">
-              {cta.label}
-              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-            </Link>
-          </Button>
+          <ContentCtaButton cta={cta} />
         </div>
       </Container>
     </Section>

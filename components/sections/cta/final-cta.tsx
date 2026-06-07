@@ -167,16 +167,34 @@ export function FinalCta({
         )}
         {...item(hasActions ? 5 : 2)}
       >
-        <Button
-          asChild
-          size="lg"
-          className="h-11 w-full rounded-lg bg-brand-soft px-6 text-sm font-semibold text-brand-navy shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand-soft/90 hover:shadow-md active:translate-y-0 sm:w-auto"
-        >
-          <Link href={primaryCta.href} className="gap-2">
-            {primaryCta.label}
-            <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-          </Link>
-        </Button>
+        {primaryCta.href.startsWith("http") ? (
+          <Button
+            asChild
+            size="lg"
+            className="h-11 w-full rounded-lg bg-brand-soft px-6 text-sm font-semibold text-brand-navy shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand-soft/90 hover:shadow-md active:translate-y-0 sm:w-auto"
+          >
+            <a
+              href={primaryCta.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gap-2"
+            >
+              {primaryCta.label}
+              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            </a>
+          </Button>
+        ) : (
+          <Button
+            asChild
+            size="lg"
+            className="h-11 w-full rounded-lg bg-brand-soft px-6 text-sm font-semibold text-brand-navy shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand-soft/90 hover:shadow-md active:translate-y-0 sm:w-auto"
+          >
+            <Link href={primaryCta.href} className="gap-2">
+              {primaryCta.label}
+              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            </Link>
+          </Button>
+        )}
         {footnote ? (
           <p className="text-center text-sm text-white/60">{footnote}</p>
         ) : null}
