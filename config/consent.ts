@@ -4,10 +4,9 @@
  */
 export const consentCopy = {
   banner: {
-    text: "Utilizamos cookies e tecnologias semelhantes para melhorar sua experiência, personalizar conteúdo e analisar o tráfego do site. Você pode aceitar ou configurar suas preferências.",
+    text: "Utilizamos cookies e tecnologias semelhantes para melhorar sua experiência, personalizar conteúdo e analisar o tráfego do site. Você pode aceitar ou recusar.",
     accept: "Aceitar",
     reject: "Recusar",
-    configure: "Configurar preferências",
     ariaLabel: "Consentimento de cookies e privacidade",
   },
   modal: {
