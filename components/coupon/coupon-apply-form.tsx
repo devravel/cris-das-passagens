@@ -3,7 +3,12 @@
 import { useState, useSyncExternalStore, useTransition } from "react";
 import { Loader2, Tag } from "lucide-react";
 
-import { couponFieldDescription, couponFieldLabel } from "@/config/coupon";
+import {
+  couponFieldDescription,
+  couponFieldDescriptionShort,
+  couponFieldFootnote,
+  couponFieldLabel,
+} from "@/config/coupon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +24,43 @@ type CouponApplyFormProps = {
   inputId?: string;
   showDescription?: boolean;
 };
+
+const couponMutedTextClassName =
+  "text-[11px] leading-snug text-muted-foreground/80 sm:text-xs";
+
+const couponFootnoteClassName = cn(
+  "w-fit max-w-full text-[11px] font-semibold leading-snug text-brand sm:text-xs",
+);
+
+const couponFieldLabelClassName =
+  "text-left text-xs font-medium text-foreground sm:text-sm";
+
+function CouponFieldLabelText() {
+  return (
+    <>
+      <span
+        className={cn(
+          couponFieldLabelClassName,
+          "hidden min-[320px]:max-[347px]:flex min-[320px]:max-[347px]:flex-col",
+        )}
+      >
+        <span>Tem cupom?</span>
+        <span>Digite-o aqui.</span>
+      </span>
+      <span className={cn(couponFieldLabelClassName, "min-[320px]:max-[347px]:hidden")}>
+        {couponFieldLabel}
+      </span>
+    </>
+  );
+}
+
+export function CouponFieldFootnote({ className }: { className?: string }) {
+  return (
+    <span className={cn(couponFootnoteClassName, className)}>
+      {couponFieldFootnote}
+    </span>
+  );
+}
 
 function useIsClient() {
   return useSyncExternalStore(
@@ -53,7 +95,7 @@ export function CouponApplyForm({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const isClient = useIsClient();
-  const activeCoupon = isClient ? appliedCoupon ?? getStoredCoupon() : null;
+  const activeCoupon = isClient ? (appliedCoupon ?? getStoredCoupon()) : null;
 
   function handleApply() {
     setSuccessMessage(null);
@@ -115,11 +157,19 @@ export function CouponApplyForm({
         )}
         aria-hidden
       >
-        <span className="w-full text-left text-xs font-medium text-foreground sm:text-sm">
-          {couponFieldLabel}
-        </span>
+        <div className="flex w-full min-w-0 flex-col gap-1 max-[768px]:flex-row max-[768px]:flex-wrap max-[768px]:items-baseline max-[768px]:justify-between max-[768px]:gap-x-2 max-[425px]:flex-nowrap min-[768px]:flex-row min-[768px]:flex-wrap min-[768px]:items-baseline min-[768px]:justify-between min-[768px]:gap-x-2">
+          <span className="min-w-0">
+            <CouponFieldLabelText />
+          </span>
+          <CouponFieldFootnote className="inline-flex shrink-0 text-left min-[426px]:max-[639px]:hidden" />
+        </div>
         {showDescription ? (
-          <span className="w-full text-left text-[11px] leading-snug text-muted-foreground/80 sm:text-xs">
+          <span
+            className={cn(
+              couponMutedTextClassName,
+              "hidden w-full text-left max-[767px]:inline",
+            )}
+          >
             {couponFieldDescription}
           </span>
         ) : null}
@@ -127,6 +177,12 @@ export function CouponApplyForm({
           <div className="h-9 min-w-0 flex-1 rounded-xl border border-border/70 bg-background/80" />
           <div className="h-9 w-20 shrink-0 rounded-xl bg-brand/20" />
         </div>
+        <CouponFieldFootnote className="hidden w-full text-left min-[426px]:max-[639px]:inline-flex" />
+        <span
+          className={cn(couponMutedTextClassName, "block w-full text-left")}
+        >
+          {couponFieldDescriptionShort}
+        </span>
       </div>
     );
   }
@@ -136,17 +192,27 @@ export function CouponApplyForm({
     : null;
 
   return (
-    <div className={cn("flex min-w-0 flex-1 flex-col items-stretch gap-2 sm:max-w-md lg:max-w-lg", className)}>
+    <div
+      className={cn(
+        "flex min-w-0 flex-1 flex-col items-stretch gap-2 sm:max-w-md lg:max-w-lg",
+        className,
+      )}
+    >
       <div className="flex w-full min-w-0 flex-col gap-1.5">
-        <label
-          htmlFor={inputId}
-          className="w-full text-left text-xs font-medium text-foreground sm:text-sm"
-        >
-          {couponFieldLabel}
-        </label>
+        <div className="flex w-full min-w-0 flex-col gap-1 max-[768px]:flex-row max-[768px]:flex-wrap max-[768px]:items-baseline max-[768px]:justify-between max-[768px]:gap-x-2 max-[425px]:flex-nowrap min-[768px]:flex-row min-[768px]:flex-wrap min-[768px]:items-baseline min-[768px]:justify-between min-[768px]:gap-x-2">
+          <label htmlFor={inputId} className="min-w-0">
+            <CouponFieldLabelText />
+          </label>
+          <CouponFieldFootnote className="inline-flex shrink-0 text-left min-[426px]:max-[639px]:hidden" />
+        </div>
 
         {showDescription ? (
-          <p className="w-full text-left text-[11px] leading-snug text-muted-foreground/80 sm:text-xs">
+          <p
+            className={cn(
+              couponMutedTextClassName,
+              "hidden w-full text-left max-[767px]:block",
+            )}
+          >
             {couponFieldDescription}
           </p>
         ) : null}
@@ -189,11 +255,18 @@ export function CouponApplyForm({
             )}
           </Button>
         </div>
+
+        <CouponFieldFootnote className="hidden w-full text-left min-[426px]:max-[639px]:inline-flex" />
+
+        <p className={cn(couponMutedTextClassName, "block w-full text-left")}>
+          {couponFieldDescriptionShort}
+        </p>
       </div>
 
       {activeCoupon && !successMessage ? (
         <p className="w-full text-right text-[11px] leading-snug text-brand sm:text-xs">
-          Cupom {appliedLabel} ativo. Selecione um pacote para falar com o agente.
+          Cupom {appliedLabel} ativo. Selecione um pacote para falar com o
+          agente.
         </p>
       ) : null}
 

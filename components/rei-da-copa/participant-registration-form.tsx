@@ -133,7 +133,7 @@ export function ParticipantRegistrationForm() {
           id="name"
           type="text"
           autoComplete="name"
-          placeholder="Digite seu nome completo"
+          placeholder="Digite seu nome e sobrenome"
           className="h-10 rounded-xl px-3"
           aria-invalid={Boolean(form.formState.errors.name)}
           {...form.register("name")}
@@ -158,7 +158,7 @@ export function ParticipantRegistrationForm() {
               type="tel"
               inputMode="numeric"
               autoComplete="tel"
-              placeholder="(XX) XXXXX-XXXX"
+              placeholder="Digite seu WhatsApp"
               className="h-10 rounded-xl px-3"
               aria-invalid={Boolean(form.formState.errors.phone)}
               getInputRef={ref}
@@ -225,7 +225,8 @@ export function ParticipantRegistrationForm() {
         ) : hasValidInstagramHandle ? (
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs">
             <p className="text-muted-foreground">
-              Confira se o usuário está correto.
+              O usuário digitado deve ser um perfil real do Instagram, senão os
+              pontos não serão contabilizados.
             </p>
             <a
               href={`https://www.instagram.com/${instagramHandle}/`}
@@ -268,7 +269,10 @@ export function ParticipantRegistrationForm() {
             >
               <SoccerBallIcon className="size-6" />
             </span>
-            <SoccerBallIcon className="relative z-10 size-4 shrink-0" aria-hidden />
+            <SoccerBallIcon
+              className="relative z-10 size-4 shrink-0"
+              aria-hidden
+            />
             <span className="relative z-10">Participar da campanha</span>
           </>
         )}

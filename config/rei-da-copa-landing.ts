@@ -80,82 +80,121 @@ export const reiDaCopaEngagementActions = [
 /** Bloco "Formas de acumular coroas" na seção Como Participar. */
 export const reiDaCopaShowEngagementActions = false;
 
+export const reiDaCopaInstagramHashtag = "#reidacopa" as const;
+
 export type ReiDaCopaScoringRule = {
   action: string;
   points: string;
   note?: string;
 };
 
+const reiDaCopaScoringRuleNote = `Use a hashtag ${reiDaCopaInstagramHashtag} para validar seu comentário. Válido até o apito inicial do jogo.`;
+
 /** Sistema de coroas — arte detalhada. */
 export const reiDaCopaScoringRules: ReiDaCopaScoringRule[] = [
   {
     action: "Comente o placar",
     points: "05 coroas",
-    note: "Válido até o apito inicial do jogo.",
+    note: reiDaCopaScoringRuleNote,
   },
   {
     action: "Acertar o vencedor",
     points: "10 coroas",
-    note: "Válido até o apito inicial do jogo.",
+    note: reiDaCopaScoringRuleNote,
   },
   {
     action: "Acertar o placar exato",
     points: "20 coroas",
-    note: "Válido até o apito inicial do jogo.",
+    note: reiDaCopaScoringRuleNote,
   },
 ];
 
 export const reiDaCopaScoringReminder =
   "Quanto mais você participa, mais coroas você ganha!";
 
+export const reiDaCopaScoringCommentExample = {
+  heading: "Exemplo de comentário perfeito:",
+  match: "Brasil x Marrocos",
+  comment: `Brasil vence 1x0 ${reiDaCopaInstagramHashtag}.`,
+} as const;
+
+export type ReiDaCopaMissionNote =
+  | string
+  | {
+      textBeforeLink?: string;
+      linkLabel: string;
+      linkHref: string;
+      textAfterLink?: string;
+    };
+
 export type ReiDaCopaMission = {
   action: string;
   reward: string;
-  note?: string;
+  note?: ReiDaCopaMissionNote;
 };
 
 /** Missões — arte detalhada. */
 export const reiDaCopaMissions: ReiDaCopaMission[] = [
   {
-    action: "Compartilhar nos stories e marcar @crisdaspassagens",
+    action:
+      "Compartilhar BANNER OFICIAL nos stories e marcar @crisdaspassagens",
     reward: "40 coroas",
+    note: "Máximo uma pontuação por dia.",
   },
   {
-    action: "Comentar na oferta do dia",
-    reward: "20 coroas",
-    note: "Não cumulativa.",
-  },
-  {
-    action: "Responder enquete stories",
-    reward: "10 coroas",
-  },
-  {
-    action: "Passagem nacional",
+    action: "Palavra-chave",
     reward: "100 coroas",
+    note: {
+      textBeforeLink: "Encontre a palavra-chave.",
+      linkLabel: "Envie aqui",
+      linkHref: `#${REI_DA_COPA_SECTION_IDS.palavraChave}`,
+      textAfterLink: ". Uma por dia. Não cumulativa.",
+    },
+  },
+  {
+    action: "Comprar passagem nacional",
+    reward: "100 coroas",
+    note: "Informe o @ do Insta ou seu número do Rei da Copa no final da compra para participar.",
   },
   {
     action: "COMPRAR pacote nacional",
     reward: "200 coroas",
+    note: "Informe o @ do Insta ou seu número do Rei da Copa no final da compra para participar.",
   },
   {
     action: "COMPRAR passagem internacional",
     reward: "300 coroas",
+    note: "Informe o @ do Insta ou seu número do Rei da Copa no final da compra para participar.",
   },
   {
     action: "COMPRAR pacote internacional",
     reward: "400 coroas",
+    note: "Informe o @ do Insta ou seu número do Rei da Copa no final da compra para participar.",
   },
 ];
+
+export const reiDaCopaDebateRaizYoutubeUrl =
+  "https://www.youtube.com/@debateraiz" as const;
 
 export const reiDaCopaKeywordInfo = {
   description: "Palavra-chave divulgada diariamente no programa Debate Raiz.",
   reward: "100 coroas",
 } as const;
 
-export const reiDaCopaSectionIntros = {
+export type ReiDaCopaSectionIntro = ReiDaCopaMissionNote;
+
+export const reiDaCopaSectionIntros: {
+  ranking: ReiDaCopaSectionIntro;
+  palavraChave: ReiDaCopaSectionIntro;
+} = {
   ranking: "Acompanhe o ranking atualizado.",
-  palavraChave: "Divulgada diariamente no programa Debate Raiz.",
-} as const;
+  palavraChave: {
+    textBeforeLink: "Divulgada diariamente no programa",
+    linkLabel: "Debate Raiz",
+    linkHref: reiDaCopaDebateRaizYoutubeUrl,
+    textAfterLink: ".",
+  },
+};
 
 /** Banner "Prêmios toda semana!" na seção Premiação. */
 export const reiDaCopaShowWeeklyPrizeBanner = false;
@@ -163,7 +202,7 @@ export const reiDaCopaShowWeeklyPrizeBanner = false;
 export const reiDaCopaDefaultPrizes = {
   weekly: "Prêmios toda semana!",
   first: "PIX de R$ 1.000",
-  second: "Mala de viagem",
+  second: "Mala de viagem ou valor equivalente em PIX.",
   third: "Voucher de desconto",
   tiebreaker:
     "Em caso de empate será realizado um sorteio simples de desempate.",
@@ -178,6 +217,17 @@ export function getReiDaCopaInstagramUrl(handle: string) {
   return `https://www.instagram.com/${handle.replace(/^@/, "")}/`;
 }
 
+/** Observações exibidas abaixo do lembrete em Sistema de coroas. */
+export const reiDaCopaScoringFootnotes: readonly ReiDaCopaMissionNote[] = [
+  {
+    textBeforeLink: "* Confira o jogo válido no",
+    linkLabel: reiDaCopaCampaignDefaults.instagram,
+    linkHref: getReiDaCopaInstagramUrl(reiDaCopaCampaignDefaults.instagram),
+    textAfterLink: ".",
+  },
+  "* Confira se o jogo que está concorrendo na promoção.",
+];
+
 /** Texto complementar exibido quando não há regulamento customizado no admin. */
 export const reiDaCopaDefaultRegulation = `Período da promoção
 Válido entre os dias 07/06/26 até 19/07/26.
@@ -186,6 +236,17 @@ Desempate
 Em caso de empate será realizado um sorteio simples de desempate.`;
 
 export const reiDaCopaSupplementaryInfo = {
+  registration: {
+    heading: "Inscrição",
+    text: "Preencha o formulário de inscrição com seu telefone e @ do Instagram corretos, para confirmar participação.",
+  },
+  dailyKeyword: {
+    heading: "Palavra-chave",
+    items: [
+      "Palavra-chave só será contabilizada se enviada no site até as 23:59 do dia vigente.",
+      "Não cumulativa.",
+    ],
+  },
   period: {
     heading: "Período da campanha",
     text: "Válido entre os dias 07/06/2026 até 19/07/2026.",

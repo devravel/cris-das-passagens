@@ -11,7 +11,14 @@ import {
   type PointerEvent,
 } from "react";
 
+import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
+import {
+  advanceAutoplayScrollOffset,
+  isCoarsePointerDevice,
+  readAutoplayScrollOffset,
+  syncScrollerToAutoplayOffset,
+} from "@/lib/carousel-autoplay-scroll";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +46,7 @@ type PackageCardsCarouselAutoplayProps = {
   cardClassName?: string;
   /** Exibe dots de navegação abaixo do carrossel (padrão: true). */
   showDots?: boolean;
-  /** Exibe "Deslize para ver mais ofertas" em todos os breakpoints (padrão: só mobile). */
+  /** Exibe o hint do carrossel em todos os breakpoints (padrão: só quando há overflow). */
   scrollHintAlwaysVisible?: boolean;
 };
 
@@ -195,6 +202,8 @@ export function PackageCardsCarouselAutoplay({
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef<number | null>(null);
   const programmaticUntilRef = useRef(0);
+  const pauseForHoverFocusRef = useRef(true);
+  const virtualScrollLeftRef = useRef(0);
 
   const isDragging = useRef(false);
   const dragStartX = useRef(0);
@@ -204,10 +213,10 @@ export function PackageCardsCarouselAutoplay({
 
   const applyPaused = useCallback(() => {
     const paused =
-      isHoverRef.current ||
-      isFocusRef.current ||
       isInteractingRef.current ||
-      (typeof document !== "undefined" && document.hidden);
+      (typeof document !== "undefined" && document.hidden) ||
+      (pauseForHoverFocusRef.current &&
+        (isHoverRef.current || isFocusRef.current));
 
     isPausedRef.current = paused;
     setIsPaused((current) => (current === paused ? current : paused));
@@ -238,7 +247,12 @@ export function PackageCardsCarouselAutoplay({
       return;
     }
 
-    const offsetInLoop = ((track.scrollLeft % loop) + loop) % loop;
+    const scrollLeft = readAutoplayScrollOffset(
+      track,
+      contentRef.current,
+      virtualScrollLeftRef.current,
+    );
+    const offsetInLoop = ((scrollLeft % loop) + loop) % loop;
     const nextIndex = Math.max(
       0,
       Math.min(pages - 1, Math.floor(offsetInLoop / viewport)),
@@ -328,8 +342,13 @@ export function PackageCardsCarouselAutoplay({
     }
 
     const clampedIndex = Math.max(0, Math.min(index, pages - 1));
-    const offsetInLoop = ((track.scrollLeft % loop) + loop) % loop;
-    const cycleBase = track.scrollLeft - offsetInLoop;
+    const scrollLeft = readAutoplayScrollOffset(
+      track,
+      contentRef.current,
+      virtualScrollLeftRef.current,
+    );
+    const offsetInLoop = ((scrollLeft % loop) + loop) % loop;
+    const cycleBase = scrollLeft - offsetInLoop;
     const maxOffset = Math.max(0, oneCopyWidth - viewport);
     const targetOffset = Math.min(clampedIndex * viewport, maxOffset);
 
@@ -357,6 +376,10 @@ export function PackageCardsCarouselAutoplay({
     return () => {
       media.removeEventListener("change", update);
     };
+  }, []);
+
+  useLayoutEffect(() => {
+    pauseForHoverFocusRef.current = !isCoarsePointerDevice();
   }, []);
 
   // Mede o layout no mount e sempre que o conteúdo/cópias mudarem.
@@ -388,8 +411,9 @@ export function PackageCardsCarouselAutoplay({
   }, [measureLayout]);
 
   // Loop de animação: fluxo horizontal constante via scrollLeft (sem re-render).
+  // isPausedRef controla pausa dentro do tick — o RAF permanece ativo para retomar sem remount.
   useEffect(() => {
-    if (reduceMotion || isPaused || packages.length === 0) {
+    if (reduceMotion || packages.length === 0) {
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -402,9 +426,14 @@ export function PackageCardsCarouselAutoplay({
     const tick = (timestamp: number) => {
       const track = trackRef.current;
 
-      if (!track || isPausedRef.current || document.hidden) {
+      if (!track) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      if (isPausedRef.current || document.hidden) {
         lastFrameTimeRef.current = null;
-        rafRef.current = null;
+        rafRef.current = requestAnimationFrame(tick);
         return;
       }
 
@@ -423,13 +452,13 @@ export function PackageCardsCarouselAutoplay({
       lastFrameTimeRef.current = timestamp;
 
       if (timestamp >= programmaticUntilRef.current) {
-        let next = track.scrollLeft + AUTOPLAY_SPEED_PX_PER_MS * deltaMs;
-
-        while (next >= loop) {
-          next -= loop;
-        }
-
-        track.scrollLeft = next;
+        virtualScrollLeftRef.current = advanceAutoplayScrollOffset(
+          track,
+          contentRef.current,
+          virtualScrollLeftRef.current,
+          AUTOPLAY_SPEED_PX_PER_MS * deltaMs,
+          loop,
+        );
       }
 
       syncActivePageFromScroll();
@@ -446,7 +475,7 @@ export function PackageCardsCarouselAutoplay({
 
       lastFrameTimeRef.current = null;
     };
-  }, [isPaused, reduceMotion, packages.length, syncActivePageFromScroll]);
+  }, [reduceMotion, packages.length, syncActivePageFromScroll]);
 
   // Pausa quando a aba fica oculta.
   useEffect(() => {
@@ -466,10 +495,26 @@ export function PackageCardsCarouselAutoplay({
   }, [applyPaused]);
 
   function handleTouchStart() {
+    const track = trackRef.current;
+
+    if (track) {
+      syncScrollerToAutoplayOffset(
+        track,
+        contentRef.current,
+        virtualScrollLeftRef.current,
+      );
+    }
+
     startInteraction();
   }
 
   function handleTouchEnd() {
+    const track = trackRef.current;
+
+    if (track) {
+      virtualScrollLeftRef.current = track.scrollLeft;
+    }
+
     syncActivePageFromScroll();
     endInteraction();
   }
@@ -648,16 +693,13 @@ export function PackageCardsCarouselAutoplay({
       ) : null}
 
       {copies > 1 ? (
-        <p
+        <PackageCarouselScrollHint
           className={cn(
-            "text-center text-muted-foreground lg:hidden",
             scrollHintAlwaysVisible
               ? "mt-[0.525rem] text-[0.7725rem] sm:mt-[0.65625rem] md:mt-[0.7875rem]"
-              : "mt-2 text-xs sm:hidden",
+              : "mt-2 text-xs",
           )}
-        >
-          Deslize para ver mais ofertas
-        </p>
+        />
       ) : null}
     </div>
   );

@@ -5,7 +5,6 @@ import {
   Crown,
   Gift,
   KeyRound,
-  Medal,
   ScrollText,
   Trophy,
 } from "lucide-react";
@@ -30,12 +29,19 @@ import {
   reiDaCopaShowEngagementActions,
   reiDaCopaHeroTagline,
   reiDaCopaHowToSteps,
+  reiDaCopaInstagramHashtag,
   reiDaCopaParticipationConfirmationMessage,
   reiDaCopaKeywordInfo,
   reiDaCopaMissions,
+  reiDaCopaScoringCommentExample,
+  reiDaCopaScoringFootnotes,
   reiDaCopaScoringReminder,
   reiDaCopaScoringRules,
   reiDaCopaSectionIntros,
+} from "@/config/rei-da-copa-landing";
+import type {
+  ReiDaCopaMissionNote,
+  ReiDaCopaSectionIntro,
 } from "@/config/rei-da-copa-landing";
 import type {
   ReiDaCopaPublicRankingEntry,
@@ -54,8 +60,10 @@ const campaignProseClassName =
 const tiebreakerTextClassName =
   "rei-da-copa-prose mx-auto max-w-3xl text-pretty text-center break-normal hyphens-none";
 
+const campaignAccentClassName = "font-semibold text-[#14532d]";
+
 const campaignLinkClassName =
-  "font-semibold text-[#14532d] underline-offset-2 transition-colors hover:text-[#166534] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  `${campaignAccentClassName} underline-offset-2 transition-colors hover:text-[#166534] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`;
 
 function CampaignSection({
   id,
@@ -88,17 +96,37 @@ function CampaignSectionHeader({
   title,
   subtitle,
   centerSubtitle = false,
+  variant = "default",
+  footer,
 }: {
   id: string;
   eyebrow: string;
   title: string;
-  subtitle?: string;
+  subtitle?: ReiDaCopaSectionIntro;
   centerSubtitle?: boolean;
+  variant?: "default" | "inverted" | "warm";
+  footer?: ReactNode;
 }) {
+  const isInverted = variant === "inverted";
+  const isWarm = variant === "warm";
+
   return (
     <header className="mb-8 text-center sm:mb-10 lg:mb-12">
-      <p className="rei-da-copa-section-eyebrow">{eyebrow}</p>
-      <h2 id={id} className="rei-da-copa-section-heading mt-3">
+      <p
+        className={cn(
+          "rei-da-copa-section-eyebrow",
+          isInverted && "rei-da-copa-section-eyebrow--inverted",
+        )}
+      >
+        {eyebrow}
+      </p>
+      <h2
+        id={id}
+        className={cn(
+          "rei-da-copa-section-heading mt-3",
+          isInverted && "rei-da-copa-section-heading--inverted",
+        )}
+      >
         {title}
       </h2>
       {subtitle ? (
@@ -107,11 +135,14 @@ function CampaignSectionHeader({
             centerSubtitle
               ? "rei-da-copa-prose mx-auto mt-4 text-center sm:mt-5"
               : cn(campaignProseClassName, "mx-auto mt-4 sm:mt-5"),
+            isInverted && "rei-da-copa-prose--inverted",
+            isWarm && "rei-da-copa-prose--warm",
           )}
         >
-          {subtitle}
+          <CampaignLinkedText content={subtitle} />
         </p>
       ) : null}
+      {footer}
     </header>
   );
 }
@@ -135,6 +166,47 @@ function ContentPanel({
   );
 }
 
+function ScoringRuleNote({ note }: { note: string }) {
+  const parts = note.split(reiDaCopaInstagramHashtag);
+
+  if (parts.length === 1) {
+    return <>{note}</>;
+  }
+
+  return (
+    <>
+      {parts.map((part, index) => (
+        <span key={`${index}-${part.slice(0, 12)}`}>
+          {part}
+          {index < parts.length - 1 ? (
+            <span className="rei-da-copa-hashtag font-semibold">
+              {reiDaCopaInstagramHashtag}
+            </span>
+          ) : null}
+        </span>
+      ))}
+    </>
+  );
+}
+
+function ScoringCommentExample() {
+  return (
+    <div className="rei-da-copa-info-card rei-da-copa-info-card--muted mt-6 rounded-2xl p-5 sm:p-6">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground sm:text-sm">
+        {reiDaCopaScoringCommentExample.heading}
+      </p>
+      <div className="mt-4 rounded-xl border border-[#14532d]/12 bg-white/80 px-4 py-3 sm:px-5 sm:py-4">
+        <p className="rei-da-copa-prose text-sm font-semibold text-foreground sm:text-base">
+          {reiDaCopaScoringCommentExample.match}
+        </p>
+        <p className="rei-da-copa-prose mt-1.5 text-sm sm:text-base">
+          <ScoringRuleNote note={reiDaCopaScoringCommentExample.comment} />
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function ScoringCard({
   action,
   points,
@@ -145,7 +217,7 @@ function ScoringCard({
   note?: string;
 }) {
   return (
-    <li className="rei-da-copa-interactive-card relative min-w-0 rounded-2xl p-5 sm:p-7">
+    <li className="rei-da-copa-interactive-card rei-da-copa-scoring-card relative min-w-0 rounded-2xl p-5 sm:p-7">
       <p className="rei-da-copa-point-display rei-da-copa-interactive-card__value">
         {points}
       </p>
@@ -159,7 +231,7 @@ function ScoringCard({
             "rei-da-copa-interactive-card__body mt-3 text-sm sm:text-base",
           )}
         >
-          {note}
+          <ScoringRuleNote note={note} />
         </p>
       ) : null}
     </li>
@@ -222,6 +294,35 @@ function CampaignBulletItem({ children }: { children: ReactNode }) {
   );
 }
 
+function CampaignLinkedText({ content }: { content: ReiDaCopaMissionNote }) {
+  if (typeof content === "string") {
+    return <>{content}</>;
+  }
+
+  const isExternalLink = content.linkHref.startsWith("http");
+
+  return (
+    <>
+      {content.textBeforeLink}
+      {content.textBeforeLink ? " " : null}
+      <a
+        href={content.linkHref}
+        className={campaignLinkClassName}
+        {...(isExternalLink
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
+      >
+        {content.linkLabel}
+      </a>
+      {content.textAfterLink}
+    </>
+  );
+}
+
+function MissionNote({ note }: { note: ReiDaCopaMissionNote }) {
+  return <CampaignLinkedText content={note} />;
+}
+
 function MissionCard({
   action,
   reward,
@@ -229,7 +330,7 @@ function MissionCard({
 }: {
   action: string;
   reward: string;
-  note?: string;
+  note?: ReiDaCopaMissionNote;
 }) {
   return (
     <li className="rei-da-copa-info-card min-w-0 rounded-2xl p-5 sm:p-6">
@@ -239,7 +340,7 @@ function MissionCard({
       </p>
       {note ? (
         <p className={cn(campaignProseClassName, "mt-2 text-sm sm:text-base")}>
-          {note}
+          <MissionNote note={note} />
         </p>
       ) : null}
     </li>
@@ -506,69 +607,63 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
               <CampaignSection
                 id={REI_DA_COPA_SECTION_IDS.palavraChave}
                 ariaLabelledBy="palavra-chave-heading"
+                className="rei-da-copa-section-band rei-da-copa-keyword-band"
               >
-                <header className="mb-8 text-center sm:mb-10 lg:mb-12">
-                  <p className="rei-da-copa-section-eyebrow">Palavra-chave</p>
-                  <h2
+                <div className="rei-da-copa-section-band__content rei-da-copa-container">
+                  <CampaignSectionHeader
                     id="palavra-chave-heading"
-                    className="rei-da-copa-section-heading mt-3"
-                  >
-                    Ponto extra
-                  </h2>
-                  <p className="rei-da-copa-prose mx-auto mt-4 text-center sm:mt-5">
-                    {reiDaCopaSectionIntros.palavraChave}
-                  </p>
-                  <p className="rei-da-copa-prose mx-auto mt-1.5 text-center sm:mt-2">
-                    Recompensa de{" "}
-                    <span className="font-semibold text-[#14532d]">
-                      {reiDaCopaKeywordInfo.reward}
-                    </span>
-                    .
-                  </p>
-                </header>
+                    eyebrow="Palavra-chave"
+                    title="Ponto extra"
+                    subtitle={reiDaCopaSectionIntros.palavraChave}
+                    centerSubtitle
+                    variant="warm"
+                    footer={
+                      <p className="rei-da-copa-prose rei-da-copa-prose--warm mx-auto mt-1.5 text-center sm:mt-2">
+                        Recompensa de{" "}
+                        <span className={campaignAccentClassName}>
+                          {reiDaCopaKeywordInfo.reward}
+                        </span>
+                        .
+                      </p>
+                    }
+                  />
 
-                <ContentPanel>
-                  <CardHeader className="px-0 pt-0">
-                    <CardTitle className="rei-da-copa-card-heading flex min-w-0 flex-wrap items-center gap-2">
-                      <KeyRound
-                        className="size-5 shrink-0 sm:size-6"
-                        aria-hidden
-                      />
-                      Palavra-chave do dia
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-0 pt-3 pb-0">
-                    <DailyKeywordForm />
-                  </CardContent>
-                </ContentPanel>
+                  <div className="rei-da-copa-keyword-panel">
+                    <CardHeader className="px-0 pt-0">
+                      <CardTitle className="rei-da-copa-card-heading flex min-w-0 flex-wrap items-center gap-2">
+                        <KeyRound
+                          className="size-5 shrink-0 sm:size-6"
+                          aria-hidden
+                        />
+                        Palavra-chave do dia
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-0 pt-3 pb-0">
+                      <DailyKeywordForm />
+                    </CardContent>
+                  </div>
+                </div>
               </CampaignSection>
 
               <CampaignSection
                 id={REI_DA_COPA_SECTION_IDS.ranking}
                 ariaLabelledBy="ranking-heading"
+                className="rei-da-copa-section-band rei-da-copa-ranking-band"
               >
-                <CampaignSectionHeader
-                  id="ranking-heading"
-                  eyebrow="Ranking"
-                  title="Classificação"
-                  subtitle={reiDaCopaSectionIntros.ranking}
-                  centerSubtitle
-                />
+                <div className="rei-da-copa-section-band__content rei-da-copa-container">
+                  <CampaignSectionHeader
+                    id="ranking-heading"
+                    eyebrow="Ranking"
+                    title="Classificação"
+                    subtitle={reiDaCopaSectionIntros.ranking}
+                    centerSubtitle
+                    variant="inverted"
+                  />
 
-                <ContentPanel>
-                  <CardHeader className="px-0 pt-0">
-                    <CardTitle className="rei-da-copa-card-heading flex min-w-0 flex-wrap items-center gap-2">
-                      <Medal
-                        className="size-5 shrink-0 sm:size-6"
-                        aria-hidden
-                      />
-                      Ranking Rei da Copa
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-0 pb-0">
+                  <div className="rei-da-copa-ranking-panel">
                     <PublicRanking entries={ranking} />
-                  </CardContent>
-                </ContentPanel>
+                  </div>
+                </div>
               </CampaignSection>
 
               <CampaignSection
@@ -584,7 +679,7 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                 <div className="space-y-8">
                   <ContentPanel className="space-y-8">
                     <div>
-                      <h3 className="rei-da-copa-card-heading">
+                      <h3 className="rei-da-copa-card-heading text-xl sm:text-2xl lg:text-3xl">
                         Sistema de coroas
                       </h3>
                       <p
@@ -595,15 +690,32 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                       >
                         {reiDaCopaScoringReminder}
                       </p>
+                      <div className="mt-2 space-y-1">
+                        {reiDaCopaScoringFootnotes.map((footnote) => (
+                          <p
+                            key={
+                              typeof footnote === "string"
+                                ? footnote
+                                : footnote.linkLabel
+                            }
+                            className="text-sm text-muted-foreground"
+                          >
+                            <CampaignLinkedText content={footnote} />
+                          </p>
+                        ))}
+                      </div>
                       <ul className="mt-6 grid grid-cols-1 gap-4 pb-1 lg:grid-cols-3 lg:gap-5">
                         {reiDaCopaScoringRules.map((rule) => (
                           <ScoringCard key={rule.action} {...rule} />
                         ))}
                       </ul>
+                      <ScoringCommentExample />
                     </div>
 
                     <div>
-                      <h3 className="rei-da-copa-card-heading">Missões</h3>
+                      <h3 className="rei-da-copa-card-heading text-xl sm:text-2xl lg:text-3xl">
+                        Missões
+                      </h3>
                       <ul className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                         {reiDaCopaMissions.map((mission) => (
                           <MissionCard key={mission.action} {...mission} />
@@ -612,7 +724,31 @@ export function ReiDaCopaLanding({ ranking, settings }: ReiDaCopaLandingProps) {
                     </div>
 
                     {!hasCustomRegulation ? (
-                      <div className="space-y-8">
+                      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-x-10">
+                        <div>
+                          <h3 className="rei-da-copa-card-heading">
+                            {reiDaCopaSupplementaryInfo.registration.heading}
+                          </h3>
+                          <ul className="mt-4 space-y-3">
+                            <CampaignBulletItem>
+                              {reiDaCopaSupplementaryInfo.registration.text}
+                            </CampaignBulletItem>
+                          </ul>
+                        </div>
+                        <div>
+                          <h3 className="rei-da-copa-card-heading">
+                            {reiDaCopaSupplementaryInfo.dailyKeyword.heading}
+                          </h3>
+                          <ul className="mt-4 space-y-3">
+                            {reiDaCopaSupplementaryInfo.dailyKeyword.items.map(
+                              (item) => (
+                                <CampaignBulletItem key={item}>
+                                  {item}
+                                </CampaignBulletItem>
+                              ),
+                            )}
+                          </ul>
+                        </div>
                         <div>
                           <h3 className="rei-da-copa-card-heading">
                             {reiDaCopaSupplementaryInfo.period.heading}

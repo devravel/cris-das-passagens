@@ -5,18 +5,13 @@ export function buildPackageWhatsAppMessage(
   packageTitle: string,
   coupon?: Pick<PublicCouponPayload, "name" | "discountLabel"> | null,
 ): string {
+  const baseMessage = `Olá, venho do site e tenho interesse no pacote: ${packageTitle}.`;
+
   if (!coupon) {
-    return `Olá, vim do site e tenho interesse no pacote: ${packageTitle}`;
+    return baseMessage;
   }
 
-  return [
-    "Olá, vim do site e tenho interesse no pacote:",
-    "",
-    packageTitle,
-    "",
-    "Cupom de desconto aplicado:",
-    `${coupon.name} (${coupon.discountLabel})`,
-  ].join("\n");
+  return `${baseMessage} CUPOM DE DESCONTO APLICADO: ${coupon.name} (${coupon.discountLabel}).`;
 }
 
 export function getPackageWhatsAppUrl(

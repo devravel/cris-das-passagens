@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { CarouselDots } from "@/components/ui/carousel-dots";
 import type { PublicPackage } from "@/lib/package/queries";
@@ -352,9 +353,7 @@ export function PackageCardsCarousel({
       ) : null}
 
       {hasOverflow ? (
-        <p className="mt-2 text-center text-xs text-muted-foreground sm:hidden">
-          Deslize para ver mais ofertas
-        </p>
+        <PackageCarouselScrollHint className="mt-2 text-xs" />
       ) : null}
     </div>
   );

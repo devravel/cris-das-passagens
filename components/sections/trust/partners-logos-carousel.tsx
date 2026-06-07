@@ -17,7 +17,7 @@ import {
   type PartnerLogoEntry,
 } from "@/components/sections/trust/partners-logo-shared";
 import {
-  applyAutoplayScrollOffset,
+  advanceAutoplayScrollOffset,
   isCoarsePointerDevice,
   readAutoplayScrollOffset,
   syncScrollerToAutoplayOffset,
@@ -371,14 +371,13 @@ export function PartnersLogosCarousel({
       lastFrameTimeRef.current = timestamp;
 
       if (timestamp >= programmaticUntilRef.current) {
-        let next = track.scrollLeft + AUTOPLAY_SPEED_PX_PER_MS * deltaMs;
-
-        while (next >= loop) {
-          next -= loop;
-        }
-
-        virtualScrollLeftRef.current = next;
-        applyAutoplayScrollOffset(track, contentRef.current, next);
+        virtualScrollLeftRef.current = advanceAutoplayScrollOffset(
+          track,
+          contentRef.current,
+          virtualScrollLeftRef.current,
+          AUTOPLAY_SPEED_PX_PER_MS * deltaMs,
+          loop,
+        );
       }
 
       syncActivePageFromScroll();

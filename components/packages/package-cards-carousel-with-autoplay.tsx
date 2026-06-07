@@ -15,7 +15,7 @@ type PackageCardsCarouselWithAutoplayProps = {
   cardClassName?: string;
   /** Exibe dots de navegação abaixo do carrossel mobile (padrão: true). */
   showDots?: boolean;
-  /** Exibe "Deslize para ver mais ofertas" em todos os breakpoints mobile (padrão: só mobile). */
+  /** Exibe o hint do carrossel em todos os breakpoints mobile (padrão: só quando há overflow). */
   scrollHintAlwaysVisible?: boolean;
 };
 

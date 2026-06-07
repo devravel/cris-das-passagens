@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import { BlogImage } from "@/components/blog/blog-image";
 import { cardShadowClassName } from "@/lib/card-styles";
+import { isCoarsePointerDevice } from "@/lib/carousel-autoplay-scroll";
 import type { PublicPromotion } from "@/lib/promotion/queries";
 import { cn } from "@/lib/utils";
 
@@ -203,6 +204,7 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const pauseForHoverFocusRef = useRef(!isCoarsePointerDevice());
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -362,11 +364,26 @@ export function PromotionsSlideshow({ promotions }: PromotionsSlideshowProps) {
         role="region"
         aria-roledescription="carousel"
         aria-label="Promoções em destaque"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onFocusCapture={() => setIsPaused(true)}
+        onMouseEnter={() => {
+          if (pauseForHoverFocusRef.current) {
+            setIsPaused(true);
+          }
+        }}
+        onMouseLeave={() => {
+          if (pauseForHoverFocusRef.current) {
+            setIsPaused(false);
+          }
+        }}
+        onFocusCapture={() => {
+          if (pauseForHoverFocusRef.current) {
+            setIsPaused(true);
+          }
+        }}
         onBlurCapture={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          if (
+            pauseForHoverFocusRef.current &&
+            !event.currentTarget.contains(event.relatedTarget as Node | null)
+          ) {
             setIsPaused(false);
           }
         }}

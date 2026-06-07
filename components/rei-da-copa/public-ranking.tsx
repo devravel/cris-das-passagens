@@ -37,7 +37,7 @@ function positionBadgeClassName(position: number) {
 export function PublicRanking({ entries }: PublicRankingProps) {
   if (entries.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/70 bg-card/80 p-6 text-center shadow-sm">
+      <div className="rei-da-copa-ranking-empty rounded-2xl p-6 text-center">
         <p className="text-sm text-muted-foreground">
           O ranking será publicado em breve. Inscreva-se e acompanhe as atualizações.
         </p>
@@ -47,9 +47,9 @@ export function PublicRanking({ entries }: PublicRankingProps) {
 
   return (
     <>
-      <div className="hidden min-w-0 overflow-x-auto rounded-2xl border border-border/70 bg-card/90 shadow-sm lg:block">
+      <div className="rei-da-copa-ranking-table hidden min-w-0 overflow-x-auto lg:block">
         <table className="w-full min-w-[32rem] text-left text-sm">
-          <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+          <thead className="text-xs uppercase tracking-wide">
             <tr>
               <th scope="col" className="px-4 py-3 font-medium">
                 #
@@ -67,7 +67,10 @@ export function PublicRanking({ entries }: PublicRankingProps) {
           </thead>
           <tbody>
             {entries.map((entry) => (
-              <tr key={`${entry.position}-${entry.name}`} className="border-t border-border/70">
+              <tr
+                key={`${entry.position}-${entry.name}`}
+                className="border-t border-[#14532d]/8 transition-colors hover:bg-[#14532d]/3"
+              >
                 <td className="px-4 py-3">
                   <span
                     className={cn(
@@ -92,7 +95,7 @@ export function PublicRanking({ entries }: PublicRankingProps) {
       <ul className="space-y-3 lg:hidden" role="list">
         {entries.map((entry) => (
           <li key={`${entry.position}-${entry.name}`}>
-            <Card className="rounded-2xl border-border/70 bg-card/90 shadow-sm">
+            <Card className="rei-da-copa-ranking-card rounded-2xl shadow-sm">
               <CardContent className="py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 space-y-1">

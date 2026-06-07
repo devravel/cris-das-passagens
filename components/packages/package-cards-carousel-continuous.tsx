@@ -11,10 +11,11 @@ import {
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { CarouselDots } from "@/components/ui/carousel-dots";
 import {
-  applyAutoplayScrollOffset,
+  advanceAutoplayScrollOffset,
   syncScrollerToAutoplayOffset,
 } from "@/lib/carousel-autoplay-scroll";
 import type { PublicPackage } from "@/lib/package/queries";
@@ -30,7 +31,7 @@ type PackageCardsContinuousCarouselProps = {
   cardClassName?: string;
   /** Exibe dots de navegação abaixo do carrossel (padrão: true). */
   showDots?: boolean;
-  /** Exibe "Deslize para ver mais ofertas" em todos os breakpoints (padrão: só mobile). */
+  /** Exibe o hint do carrossel em todos os breakpoints (padrão: só quando há overflow). */
   scrollHintAlwaysVisible?: boolean;
   /** Botões anterior/próximo em desktop (>= md). */
   showNavButtons?: boolean;
@@ -484,14 +485,13 @@ export function PackageCardsContinuousCarousel({
       const deltaMs = Math.min(timestamp - lastFrameTimeRef.current, 48);
       lastFrameTimeRef.current = timestamp;
 
-      let next = container.scrollLeft + MOBILE_AUTOPLAY_SPEED_PX_PER_MS * deltaMs;
-
-      while (next >= loop) {
-        next -= loop;
-      }
-
-      virtualScrollLeftRef.current = next;
-      applyAutoplayScrollOffset(container, contentRef.current, next);
+      virtualScrollLeftRef.current = advanceAutoplayScrollOffset(
+        container,
+        contentRef.current,
+        virtualScrollLeftRef.current,
+        MOBILE_AUTOPLAY_SPEED_PX_PER_MS * deltaMs,
+        loop,
+      );
       rafRef.current = requestAnimationFrame(tick);
     };
 
@@ -650,7 +650,7 @@ export function PackageCardsContinuousCarousel({
         className={cn(
           "min-w-0",
           useInfiniteTrack || hasOverflow
-            ? "touch-pan-x overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
+            ? "overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
             : "overflow-hidden",
           useInfiniteTrack && "cursor-grab active:cursor-grabbing",
         )}
@@ -759,16 +759,13 @@ export function PackageCardsContinuousCarousel({
       ) : null}
 
       {hasOverflow || scrollHintAlwaysVisible ? (
-        <p
+        <PackageCarouselScrollHint
           className={cn(
-            "text-center text-muted-foreground",
             scrollHintAlwaysVisible
               ? "mt-[0.525rem] text-[0.7725rem] sm:mt-[0.65625rem] md:mt-[0.7875rem]"
-              : "mt-2 text-xs sm:hidden",
+              : "mt-2 text-xs",
           )}
-        >
-          Deslize para ver mais ofertas
-        </p>
+        />
       ) : null}
     </div>
   );
