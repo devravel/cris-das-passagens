@@ -17,6 +17,14 @@ export const HOME_BLOG_SECTION_ID = "blog-preview";
 /** ID da seção de avaliações/depoimentos na landing page. */
 export const HOME_TESTIMONIALS_SECTION_ID = "depoimentos";
 
+/** Link âncora exclusivo da navbar — não entra no footer nem no sitemap. */
+export const navbarAnchorNavItems: NavItem[] = [
+  {
+    label: "Avaliações",
+    href: `/#${HOME_TESTIMONIALS_SECTION_ID}`,
+  },
+];
+
 /** Destinos — oculto no site; reativar em navigation quando a galeria for publicada. */
 export const destinationsNavItem: NavItem = {
   label: "Destinos",
@@ -44,9 +52,11 @@ export const footerInstitutionalLinks: NavItem[] = [
   { label: "Política de Privacidade", href: "/politica-de-privacidade" },
 ];
 
-/** Links da navbar — páginas principais primeiro, depois institucionais. */
+/** Links da navbar — páginas principais, âncoras exclusivas e institucionais. */
 export const navigation: NavItem[] = [
-  ...brandPrimaryPages,
+  ...brandPrimaryPages.slice(0, -1),
+  ...navbarAnchorNavItems,
+  brandPrimaryPages[brandPrimaryPages.length - 1],
   ...secondaryNavItems,
 ];
 

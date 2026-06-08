@@ -42,24 +42,68 @@ export type NavbarProps = {
 
 const HOME_HREF = "/";
 
+function parseHashHref(href: string) {
+  const hashIndex = href.indexOf("#");
+
+  if (hashIndex === -1) {
+    return { path: href, hash: undefined as string | undefined };
+  }
+
+  return {
+    path: href.slice(0, hashIndex) || HOME_HREF,
+    hash: href.slice(hashIndex + 1),
+  };
+}
+
+function scrollToHashSection(hash: string) {
+  const section = document.getElementById(hash);
+
+  if (!section) {
+    return;
+  }
+
+  const header = document.querySelector("header");
+  const offset = (header?.getBoundingClientRect().height ?? 0) + 8;
+  const top =
+    section.getBoundingClientRect().top + window.scrollY - offset;
+
+  window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  window.history.replaceState(null, "", `#${hash}`);
+}
+
 function routeIsActive(pathname: string, href: string) {
-  if (href === HOME_HREF) return pathname === HOME_HREF;
-  return pathname === href || pathname.startsWith(`${href}/`);
+  const { path, hash } = parseHashHref(href);
+
+  if (hash) {
+    return false;
+  }
+
+  if (path === HOME_HREF) return pathname === HOME_HREF;
+  return pathname === path || pathname.startsWith(`${path}/`);
 }
 
 function scrollToPageTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 }
 
-/** Logo e Início: na home, rola ao topo; em outras rotas, o Link navega (scroll padrão do Next). */
-function handleHomeLinkClick(
+/** Logo, Início e âncoras na home: rola suavemente; em outras rotas, o Link navega. */
+function handleNavLinkClick(
   event: React.MouseEvent<HTMLAnchorElement>,
   pathname: string,
   href: string,
   onNavigate?: () => void,
 ) {
   onNavigate?.();
-  if (href !== HOME_HREF || pathname !== HOME_HREF) return;
+
+  const { path, hash } = parseHashHref(href);
+
+  if (hash && path === pathname) {
+    event.preventDefault();
+    scrollToHashSection(hash);
+    return;
+  }
+
+  if (path !== HOME_HREF || pathname !== HOME_HREF) return;
   event.preventDefault();
   scrollToPageTop();
 }
@@ -81,7 +125,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      onClick={(event) => handleHomeLinkClick(event, pathname, href, onNavigate)}
+      onClick={(event) => handleNavLinkClick(event, pathname, href, onNavigate)}
       className={cn(
         "group relative inline-flex items-center py-1 text-[0.9375rem] font-medium tracking-tight transition-colors duration-200",
         active
@@ -184,7 +228,7 @@ function MobileNavLinks({
           <Link
             href={item.href}
             onClick={(event) =>
-              handleHomeLinkClick(event, pathname, item.href, onNavigate)
+              handleNavLinkClick(event, pathname, item.href, onNavigate)
             }
             className={cn(
               "block rounded-lg px-4 py-3.5 text-base font-medium tracking-tight transition-colors duration-200",
@@ -252,7 +296,7 @@ export function Navbar({
       <Container className="flex h-16 items-center justify-between gap-4 sm:h-18">
         <Link
           href={logoHref}
-          onClick={(event) => handleHomeLinkClick(event, pathname, logoHref)}
+          onClick={(event) => handleNavLinkClick(event, pathname, logoHref)}
           className="group flex shrink-0 items-center rounded-md outline-none transition-opacity duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           <Image
