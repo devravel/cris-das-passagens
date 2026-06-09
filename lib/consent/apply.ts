@@ -1,3 +1,4 @@
+import { setGoogleAnalyticsConsent } from "@/lib/google-analytics/consent";
 import { setMetaPixelConsent } from "@/lib/meta-pixel/consent";
 import {
   ACTIVE_CONSENT_PROVIDERS,
@@ -27,7 +28,10 @@ export function applyConsentPreferences(preferences: ConsentPreferences): void {
       case "meta-pixel":
         setMetaPixelConsent(allowed);
         break;
-      // Futuro: google-analytics, google-tag-manager, microsoft-clarity, tiktok-pixel
+      case "google-analytics":
+        setGoogleAnalyticsConsent(allowed);
+        break;
+      // Futuro: google-tag-manager, microsoft-clarity, hotjar, tiktok-pixel
       default:
         break;
     }

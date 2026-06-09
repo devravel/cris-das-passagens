@@ -2,13 +2,14 @@
 
 import { Plus, Trash2 } from "lucide-react";
 
+import { IncludedItemAutocompleteInput } from "@/components/admin/included-item-autocomplete-input";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type PackageIncludedItemsFieldProps = {
   value: string[];
   onChange: (items: string[]) => void;
+  suggestions?: string[];
   error?: string;
   className?: string;
 };
@@ -16,6 +17,7 @@ type PackageIncludedItemsFieldProps = {
 export function PackageIncludedItemsField({
   value,
   onChange,
+  suggestions = [],
   error,
   className,
 }: PackageIncludedItemsFieldProps) {
@@ -48,9 +50,10 @@ export function PackageIncludedItemsField({
         <ul className="space-y-2">
           {value.map((item, index) => (
             <li key={`included-item-${index}`} className="flex items-start gap-2">
-              <Input
+              <IncludedItemAutocompleteInput
                 value={item}
-                onChange={(event) => updateItem(index, event.target.value)}
+                onChange={(nextValue) => updateItem(index, nextValue)}
+                suggestions={suggestions}
                 placeholder="Ex.: Aéreo ida e volta"
                 className="h-10 flex-1 rounded-xl"
                 aria-label={`Item incluso ${index + 1}`}

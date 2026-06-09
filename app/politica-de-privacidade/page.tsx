@@ -15,7 +15,7 @@ const LAST_UPDATED = "7 de junho de 2026";
 export const metadata: Metadata = createMetadata({
   title: "Política de Privacidade",
   description:
-    "Saiba como a Cris das Passagens coleta, usa e protege seus dados pessoais. Informações sobre cookies, Meta Pixel, WhatsApp, campanha Rei da Copa e seus direitos na LGPD.",
+    "Saiba como a Cris das Passagens coleta, usa e protege seus dados pessoais. Informações sobre cookies, Google Analytics, Meta Pixel, WhatsApp, campanha Rei da Copa e seus direitos na LGPD.",
   path: "/politica-de-privacidade",
   keywords: [
     "política de privacidade",
@@ -24,6 +24,7 @@ export const metadata: Metadata = createMetadata({
     "Cris das Passagens",
     "cookies",
     "Meta Pixel",
+    "Google Analytics",
   ],
 });
 
@@ -258,8 +259,12 @@ export default function PoliticaDePrivacidadePage() {
                 administrativo;
               </>,
               <>
-                <strong>Marketing e métricas</strong> — medir visitas e conversões via
-                Meta Pixel (quando configurado), conforme seção 6.
+                <strong>Analytics</strong> — medir visitas e desempenho do site via
+                Google Analytics 4 (quando configurado), conforme seção 6;
+              </>,
+              <>
+                <strong>Marketing e métricas</strong> — medir conversões via Meta Pixel
+                (quando configurado), conforme seção 6.
               </>,
             ]}
           />
@@ -270,8 +275,8 @@ export default function PoliticaDePrivacidadePage() {
             items={[
               <>
                 <strong>Consentimento</strong> — cadastro voluntário na campanha Rei da
-                Copa; cookies de marketing e analytics (Meta Pixel e futuras
-                ferramentas), mediante escolha no banner ou preferências de cookies;
+                Copa; cookies de marketing (Meta Pixel) e analytics (Google Analytics 4,
+                widget Elfsight), mediante escolha no banner ou preferências de cookies;
               </>,
               <>
                 <strong>Execução de procedimentos preliminares a contrato / legítimo
@@ -404,7 +409,56 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            6.4 Widget de avaliações (Elfsight)
+            6.4 Google Analytics 4
+          </h3>
+          <PolicyParagraph>
+            Quando a variável de ambiente{" "}
+            <code className="text-sm">NEXT_PUBLIC_GA_MEASUREMENT_ID</code> está
+            configurada, carregamos o script oficial do Google Analytics 4 (gtag.js) em
+            páginas públicas — <strong>exceto</strong> na área administrativa (
+            <code className="text-sm">/admin</code>).
+          </PolicyParagraph>
+          <PolicyParagraph>
+            O Google Analytics coleta dados de navegação de forma{" "}
+            <strong>agregada</strong>, como páginas visitadas, tempo aproximado no site,
+            origem do tráfego, tipo de dispositivo e navegador. Utilizamos essas
+            informações para entender o desempenho do site e melhorar a experiência dos
+            visitantes.
+          </PolicyParagraph>
+          <PolicyParagraph>
+            Eventos enviados ao Google Analytics incluem:
+          </PolicyParagraph>
+          <PolicyList
+            items={[
+              <>
+                <strong>page_view</strong> — a cada navegação entre páginas do site;
+              </>,
+            ]}
+          />
+          <PolicyParagraph>
+            Não enviamos nome, e-mail ou telefone nos parâmetros desses eventos. O
+            Google pode, contudo, coletar automaticamente dados como endereço IP
+            (possivelmente truncado), identificadores de dispositivo, cookies próprios
+            e URL das páginas visitadas, conforme a{" "}
+            <a
+              href="https://policies.google.com/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-navy underline-offset-2 hover:underline"
+            >
+              Política de Privacidade do Google
+            </a>
+            .
+          </PolicyParagraph>
+          <PolicyParagraph>
+            O Google Analytics só é carregado após você{" "}
+            <strong>aceitar cookies de analytics</strong> no banner de consentimento ou
+            nas preferências de cookies (link no rodapé). Antes dessa escolha, nenhum
+            script do Google Analytics é executado e nenhum evento é enviado.
+          </PolicyParagraph>
+
+          <h3 className="font-heading text-lg font-semibold text-foreground">
+            6.5 Widget de avaliações (Elfsight)
           </h3>
           <PolicyParagraph>
             Na página inicial, podemos exibir avaliações do Google por meio do
@@ -414,16 +468,16 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            6.5 Banner e preferências de cookies
+            6.6 Banner e preferências de cookies
           </h3>
           <PolicyParagraph>
             Na primeira visita, exibimos um banner solicitando sua escolha sobre
             cookies opcionais. As categorias disponíveis são:{" "}
             <strong>necessários</strong> (sempre ativos),{" "}
-            <strong>analytics</strong> (widget Elfsight de avaliações do Google e,
-            no futuro, ferramentas de métricas) e <strong>marketing</strong> (Meta
-            Pixel). O link &quot;Preferências de cookies&quot; no rodapé permite
-            revisar ou alterar sua escolha a qualquer momento.
+            <strong>analytics</strong> (Google Analytics 4 e widget Elfsight de
+            avaliações do Google) e <strong>marketing</strong> (Meta Pixel). O link
+            &quot;Preferências de cookies&quot; no rodapé permite revisar ou alterar
+            sua escolha a qualquer momento.
           </PolicyParagraph>
         </PolicySection>
 
@@ -434,6 +488,11 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
           <PolicyList
             items={[
+              <>
+                <strong>Google (Google Analytics 4)</strong> — dados de navegação
+                agregados e eventos de pageview no navegador, quando o analytics está
+                ativo;
+              </>,
               <>
                 <strong>Meta Platforms (Meta Pixel)</strong> — dados de navegação e
                 eventos de conversão no navegador, quando o pixel está ativo;

@@ -65,6 +65,10 @@ function normalizeAirlineAndHotel(
     return { airline: null, hotelName: trimmedHotel };
   }
 
+  if (type === "CIRCUIT") {
+    return { airline: null, hotelName: null };
+  }
+
   return { airline: null, hotelName: null };
 }
 
@@ -101,8 +105,18 @@ function normalizeInput(input: PackageFormValues) {
     airline,
     hotelName,
     departureCity,
-    departureDate: parseOptionalPackageDateInput(input.departureDate),
-    returnDate: parseOptionalPackageDateInput(input.returnDate),
+    departureDate:
+      input.type === "CIRCUIT"
+        ? null
+        : parseOptionalPackageDateInput(input.departureDate),
+    returnDate:
+      input.type === "CIRCUIT"
+        ? null
+        : parseOptionalPackageDateInput(input.returnDate),
+    circuitStartDay:
+      input.type === "CIRCUIT" ? input.circuitStartDay.trim() || null : null,
+    circuitDuration:
+      input.type === "CIRCUIT" ? input.circuitDuration.trim() || null : null,
     includedItems: input.includedItems.map((item) => item.trim()).filter(Boolean),
     daysCount: input.daysCount ?? null,
     nightsCount: input.nightsCount ?? null,

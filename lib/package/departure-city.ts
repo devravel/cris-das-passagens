@@ -10,7 +10,7 @@ export const DEFAULT_PACKAGE_DEPARTURE_CITY = PACKAGE_DEPARTURE_CITY_PRESETS.SAO
 export type DepartureCityPresetId = keyof typeof PACKAGE_DEPARTURE_CITY_PRESETS | "OTHER";
 
 export function packageTypeShowsDepartureCity(type: PackageTypeValue): boolean {
-  return type !== "HOTEL" && type !== "TICKET";
+  return type !== "HOTEL" && type !== "TICKET" && type !== "CIRCUIT";
 }
 
 export function resolveDepartureCityPreset(value: string): DepartureCityPresetId {

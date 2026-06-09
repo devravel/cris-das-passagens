@@ -10,6 +10,7 @@ export const CONSENT_PROVIDER_CATEGORIES: Record<ConsentProviderId, ConsentCateg
   "google-analytics": "analytics",
   "google-tag-manager": "analytics",
   "microsoft-clarity": "analytics",
+  "hotjar": "analytics",
   "tiktok-pixel": "marketing",
 };
 
@@ -17,13 +18,14 @@ export const CONSENT_PROVIDER_CATEGORIES: Record<ConsentProviderId, ConsentCateg
 export const ACTIVE_CONSENT_PROVIDERS: ConsentProviderId[] = [
   "meta-pixel",
   "elfsight-reviews",
+  "google-analytics",
 ];
 
 /** Provedores reservados para integração futura — não carregar até implementar. */
 export const PLANNED_CONSENT_PROVIDERS: ConsentProviderId[] = [
-  "google-analytics",
   "google-tag-manager",
   "microsoft-clarity",
+  "hotjar",
   "tiktok-pixel",
 ];
 

@@ -46,6 +46,36 @@ export function enhanceBlogContentHtml(html: string): string {
 
         return `<figure${attributes} class="blog-figure">`;
       },
+    )
+    .replace(
+      /<a\b([^>]*?)>/gi,
+      (_match, attributes: string) => {
+        const hrefMatch = attributes.match(/href\s*=\s*"([^"]*)"/i);
+        const href = hrefMatch?.[1] ?? "";
+        const isExternal =
+          href.startsWith("http://") ||
+          href.startsWith("https://") ||
+          href.startsWith("mailto:") ||
+          href.startsWith("tel:");
+
+        let nextAttributes = attributes;
+
+        if (isExternal && !/target\s*=/.test(nextAttributes)) {
+          nextAttributes = `${nextAttributes} target="_blank"`;
+        }
+
+        if (isExternal && !/rel\s*=/.test(nextAttributes)) {
+          nextAttributes = `${nextAttributes} rel="noopener noreferrer"`;
+        }
+
+        if (/class\s*=/.test(nextAttributes)) {
+          return `<a${nextAttributes.replace(/class\s*=\s*"([^"]*)"/i, (_classMatch, classes: string) => {
+            return `class="${classes} blog-content-link"`;
+          })}>`;
+        }
+
+        return `<a${nextAttributes} class="blog-content-link">`;
+      },
     );
 }
 

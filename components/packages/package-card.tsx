@@ -1,4 +1,4 @@
-import { Anchor, BedDouble, Check, Luggage, Plane, Ticket } from "lucide-react";
+import { Anchor, BedDouble, Check, Luggage, Plane, Route, Ticket } from "lucide-react";
 
 import { StorageImage } from "@/components/ui/storage-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
@@ -118,7 +118,9 @@ function CardTypeLabel({
           ? Ticket
           : type === "CRUISE"
             ? Anchor
-            : Luggage;
+            : type === "CIRCUIT"
+              ? Route
+              : Luggage;
 
   return (
     <span
@@ -693,7 +695,8 @@ export function PackageCard({
   const isDetailed = isListing || variant === "preview";
   const isCompact = size === "compact" && isLanding;
   const isHotelPackage = data.type === "HOTEL";
-  const showOrigin = data.type !== "HOTEL" && data.type !== "TICKET";
+  const showOrigin =
+    data.type !== "HOTEL" && data.type !== "TICKET" && data.type !== "CIRCUIT";
   const showDestinationAsSecondary =
     isHotelPackage && Boolean(data.destination?.trim());
   const showCruiseShipName =

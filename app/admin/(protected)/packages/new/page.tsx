@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { PackageCreateScreen } from "@/components/admin/package-create-screen";
+import { getPackageIncludedItemSuggestions } from "@/lib/package/queries";
 
 export const metadata: Metadata = {
   title: "Novo Pacote | Admin",
@@ -23,5 +24,7 @@ export default async function NewPackagePage({ searchParams }: NewPackagePagePro
     redirect("/admin/packages");
   }
 
-  return <PackageCreateScreen />;
+  const includedItemSuggestions = await getPackageIncludedItemSuggestions();
+
+  return <PackageCreateScreen includedItemSuggestions={includedItemSuggestions} />;
 }

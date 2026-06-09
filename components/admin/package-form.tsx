@@ -46,6 +46,7 @@ import {
   resolveDepartureCityPreset,
   type DepartureCityPresetId,
 } from "@/lib/package/departure-city";
+import { CIRCUIT_START_DAY_OPTIONS } from "@/lib/package/circuit";
 import { resolveStorageImageSrc } from "@/lib/storage/media-url";
 import { cn } from "@/lib/utils";
 
@@ -56,6 +57,7 @@ type PackageFormProps = {
   mode: "create" | "edit";
   packageId?: string;
   initialValues?: PackageFormInput;
+  includedItemSuggestions?: string[];
   onSuccess?: () => void;
 };
 
@@ -63,6 +65,7 @@ export function PackageForm({
   mode,
   packageId,
   initialValues,
+  includedItemSuggestions = [],
   onSuccess,
 }: PackageFormProps) {
   const [isPending, startTransition] = useTransition();
@@ -92,6 +95,7 @@ export function PackageForm({
     "PACKAGE_COMPLETE") as PackageTypeValue;
   const imageValue = watchedValues.image ?? "";
   const showCategory = PACKAGE_TYPES_WITH_CATEGORY.has(typeValue);
+  const isCircuit = typeValue === "CIRCUIT";
   const showAirlineFieldAfterDestination =
     typeValue === "FLIGHT" || typeValue === "PACKAGE_COMPLETE";
   const showHotelField = typeValue === "HOTEL";
@@ -164,6 +168,15 @@ export function PackageForm({
         shouldDirty: true,
         shouldValidate: true,
       });
+    }
+
+    if (typeValue === "CIRCUIT") {
+      form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
+      form.setValue("departureDate", "", { shouldDirty: true, shouldValidate: true });
+      form.setValue("returnDate", "", { shouldDirty: true, shouldValidate: true });
+    } else {
+      form.setValue("circuitStartDay", "", { shouldDirty: true, shouldValidate: true });
+      form.setValue("circuitDuration", "", { shouldDirty: true, shouldValidate: true });
     }
   }, [form, showAirlineFieldAfterDestination, showHotelField, typeValue]);
 
@@ -321,12 +334,12 @@ export function PackageForm({
                   htmlFor="destination"
                   className="text-sm font-medium text-foreground"
                 >
-                  Destino
+                  {isCircuit ? "Título" : "Destino"}
                 </label>
                 <Input
                   id="destination"
                   className="h-10 rounded-xl"
-                  placeholder="Ex.: Rio de Janeiro - RJ"
+                  placeholder={isCircuit ? "Roma Antiga" : "Ex.: Rio de Janeiro - RJ"}
                   {...form.register("destination")}
                 />
                 {form.formState.errors.destination ? (
@@ -446,49 +459,105 @@ export function PackageForm({
             </div>
           ) : null}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="departureDate"
-                className="text-sm font-medium text-foreground"
-              >
-                Ida{" "}
-                <span className="text-muted-foreground">(opcional)</span>
-              </label>
-              <Input
-                id="departureDate"
-                type="date"
-                className="h-10 rounded-xl"
-                {...form.register("departureDate")}
-              />
-              {form.formState.errors.departureDate ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.departureDate.message}
-                </p>
-              ) : null}
-            </div>
+          {isCircuit ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="circuitStartDay"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Início
+                </label>
+                <select
+                  id="circuitStartDay"
+                  className={selectClassName}
+                  value={watchedValues.circuitStartDay ?? ""}
+                  onChange={(event) =>
+                    form.setValue("circuitStartDay", event.target.value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                >
+                  <option value="">Selecione</option>
+                  {CIRCUIT_START_DAY_OPTIONS.map((day) => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+                {form.formState.errors.circuitStartDay ? (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.circuitStartDay.message}
+                  </p>
+                ) : null}
+              </div>
 
-            <div className="space-y-1.5">
-              <label
-                htmlFor="returnDate"
-                className="text-sm font-medium text-foreground"
-              >
-                Volta{" "}
-                <span className="text-muted-foreground">(opcional)</span>
-              </label>
-              <Input
-                id="returnDate"
-                type="date"
-                className="h-10 rounded-xl"
-                {...form.register("returnDate")}
-              />
-              {form.formState.errors.returnDate ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.returnDate.message}
-                </p>
-              ) : null}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="circuitDuration"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Duração
+                </label>
+                <Input
+                  id="circuitDuration"
+                  className="h-10 rounded-xl"
+                  placeholder="Ex.: 7 dias"
+                  {...form.register("circuitDuration")}
+                />
+                {form.formState.errors.circuitDuration ? (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.circuitDuration.message}
+                  </p>
+                ) : null}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="departureDate"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Ida{" "}
+                  <span className="text-muted-foreground">(opcional)</span>
+                </label>
+                <Input
+                  id="departureDate"
+                  type="date"
+                  className="h-10 rounded-xl"
+                  {...form.register("departureDate")}
+                />
+                {form.formState.errors.departureDate ? (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.departureDate.message}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="returnDate"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Volta{" "}
+                  <span className="text-muted-foreground">(opcional)</span>
+                </label>
+                <Input
+                  id="returnDate"
+                  type="date"
+                  className="h-10 rounded-xl"
+                  {...form.register("returnDate")}
+                />
+                {form.formState.errors.returnDate ? (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.returnDate.message}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <label
@@ -666,6 +735,7 @@ export function PackageForm({
                 shouldValidate: true,
               })
             }
+            suggestions={includedItemSuggestions}
             error={form.formState.errors.includedItems?.message}
           />
 

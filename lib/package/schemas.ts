@@ -10,6 +10,7 @@ import {
   type PackagePriceScopeValue,
 } from "@/lib/package/constants";
 import { packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
+import { isCircuitStartDay } from "@/lib/package/circuit";
 import { isValidPackageDateInput } from "@/lib/package/dates";
 
 const priceSchema = z.number().min(0, "O preço deve ser maior ou igual a zero.");
@@ -59,6 +60,8 @@ const packageFormFieldsSchema = z.object({
   departureCity: z.string().trim(),
   departureDate: z.string().trim(),
   returnDate: z.string().trim(),
+  circuitStartDay: z.string().trim(),
+  circuitDuration: z.string().trim(),
   includedItems: z
     .array(z.string())
     .transform((items) => items.map((item) => item.trim()).filter(Boolean))
@@ -108,6 +111,36 @@ function validatePackageRules(
     });
   }
 
+  if (type === "CIRCUIT") {
+    if (!data.circuitStartDay.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["circuitStartDay"],
+        message: "Selecione o dia de início.",
+      });
+    } else if (!isCircuitStartDay(data.circuitStartDay)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["circuitStartDay"],
+        message: "Selecione um dia de início válido.",
+      });
+    }
+
+    if (!data.circuitDuration.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["circuitDuration"],
+        message: "Informe a duração.",
+      });
+    } else if (data.circuitDuration.trim().length > 40) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["circuitDuration"],
+        message: "A duração deve ter no máximo 40 caracteres.",
+      });
+    }
+  }
+
   if (packageTypeShowsDepartureCity(type) && !data.departureCity.trim()) {
     ctx.addIssue({
       code: "custom",
@@ -140,32 +173,34 @@ function validatePackageRules(
     });
   }
 
-  if (!isValidPackageDateInput(data.departureDate)) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["departureDate"],
-      message: "Informe uma data de ida válida.",
-    });
-  }
+  if (type !== "CIRCUIT") {
+    if (!isValidPackageDateInput(data.departureDate)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["departureDate"],
+        message: "Informe uma data de ida válida.",
+      });
+    }
 
-  if (!isValidPackageDateInput(data.returnDate)) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["returnDate"],
-      message: "Informe uma data de volta válida.",
-    });
-  }
+    if (!isValidPackageDateInput(data.returnDate)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["returnDate"],
+        message: "Informe uma data de volta válida.",
+      });
+    }
 
-  if (
-    data.departureDate.trim() &&
-    data.returnDate.trim() &&
-    data.returnDate < data.departureDate
-  ) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["returnDate"],
-      message: "A data de volta deve ser igual ou posterior à data de ida.",
-    });
+    if (
+      data.departureDate.trim() &&
+      data.returnDate.trim() &&
+      data.returnDate < data.departureDate
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["returnDate"],
+        message: "A data de volta deve ser igual ou posterior à data de ida.",
+      });
+    }
   }
 }
 
@@ -238,6 +273,8 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   departureCity: "São Paulo, SP",
   departureDate: "",
   returnDate: "",
+  circuitStartDay: "",
+  circuitDuration: "",
   includedItems: [],
   active: true,
   featured: false,

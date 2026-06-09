@@ -9,6 +9,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import type { PackageCategoryValue, PackagePriceScopeValue, PackageTypeValue } from "@/lib/package/constants";
 import { packageDateToIsoString } from "@/lib/package/dates";
+import { buildIncludedItemSuggestions } from "@/lib/package/included-item-suggestions";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 
 export type PublicPackage = {
@@ -32,6 +33,8 @@ export type PublicPackage = {
   departureCity: string | null;
   departureDate: string | null;
   returnDate: string | null;
+  circuitStartDay: string | null;
+  circuitDuration: string | null;
   daysCount: number | null;
   nightsCount: number | null;
   featured: boolean;
@@ -74,6 +77,8 @@ const publicPackageSelect = {
   departureCity: true,
   departureDate: true,
   returnDate: true,
+  circuitStartDay: true,
+  circuitDuration: true,
   daysCount: true,
   nightsCount: true,
   featured: true,
@@ -117,6 +122,8 @@ function mapPublicPackage(
     departureCity: string | null;
     departureDate: Date | null;
     returnDate: Date | null;
+    circuitStartDay: string | null;
+    circuitDuration: string | null;
     daysCount: number | null;
     nightsCount: number | null;
     featured: boolean;
@@ -143,6 +150,8 @@ function mapPublicPackage(
     departureCity: pkg.departureCity,
     departureDate: packageDateToIsoString(pkg.departureDate),
     returnDate: packageDateToIsoString(pkg.returnDate),
+    circuitStartDay: pkg.circuitStartDay,
+    circuitDuration: pkg.circuitDuration,
     daysCount: pkg.daysCount,
     nightsCount: pkg.nightsCount,
     featured: pkg.featured,
@@ -285,6 +294,8 @@ export type AdminPackageListItem = {
   departureCity: string | null;
   departureDate: string | null;
   returnDate: string | null;
+  circuitStartDay: string | null;
+  circuitDuration: string | null;
   daysCount: number | null;
   nightsCount: number | null;
   active: boolean;
@@ -314,6 +325,8 @@ const adminPackageSelect = {
   departureCity: true,
   departureDate: true,
   returnDate: true,
+  circuitStartDay: true,
+  circuitDuration: true,
   daysCount: true,
   nightsCount: true,
   active: true,
@@ -344,6 +357,8 @@ function mapAdminPackage(
     departureCity: string | null;
     departureDate: Date | null;
     returnDate: Date | null;
+    circuitStartDay: string | null;
+    circuitDuration: string | null;
     daysCount: number | null;
     nightsCount: number | null;
     active: boolean;
@@ -373,6 +388,8 @@ function mapAdminPackage(
     departureCity: pkg.departureCity,
     departureDate: packageDateToIsoString(pkg.departureDate),
     returnDate: packageDateToIsoString(pkg.returnDate),
+    circuitStartDay: pkg.circuitStartDay,
+    circuitDuration: pkg.circuitDuration,
     daysCount: pkg.daysCount,
     nightsCount: pkg.nightsCount,
     active: pkg.active,
@@ -409,3 +426,17 @@ export async function getAdminPackageById(id: string): Promise<AdminPackageDetai
 
   return mapAdminPackage(pkg);
 }
+
+export const getPackageIncludedItemSuggestions = cache(async (): Promise<string[]> => {
+  try {
+    const packages = await prisma.package.findMany({
+      select: { includedItems: true },
+    });
+
+    return buildIncludedItemSuggestions(
+      packages.map((pkg) => pkg.includedItems ?? []),
+    );
+  } catch {
+    return [];
+  }
+});

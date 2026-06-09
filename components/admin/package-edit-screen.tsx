@@ -10,9 +10,13 @@ import type { AdminPackageDetail } from "@/lib/package/queries";
 
 type PackageEditScreenProps = {
   pkg: AdminPackageDetail;
+  includedItemSuggestions: string[];
 };
 
-export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
+export function PackageEditScreen({
+  pkg,
+  includedItemSuggestions,
+}: PackageEditScreenProps) {
   const router = useRouter();
 
   return (
@@ -40,6 +44,7 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
         <PackageForm
           mode="edit"
           packageId={pkg.id}
+          includedItemSuggestions={includedItemSuggestions}
           initialValues={{
             slug: pkg.slug,
             shortDescription: pkg.shortDescription ?? "",
@@ -62,6 +67,8 @@ export function PackageEditScreen({ pkg }: PackageEditScreenProps) {
                 : ""),
             departureDate: pkg.departureDate ?? "",
             returnDate: pkg.returnDate ?? "",
+            circuitStartDay: pkg.circuitStartDay ?? "",
+            circuitDuration: pkg.circuitDuration ?? "",
             includedItems: pkg.includedItems,
             active: pkg.active,
             featured: pkg.featured,

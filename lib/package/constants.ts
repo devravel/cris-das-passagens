@@ -4,6 +4,7 @@ export const PACKAGE_TYPES = [
   "HOTEL",
   "TICKET",
   "CRUISE",
+  "CIRCUIT",
 ] as const;
 
 export const PACKAGE_CATEGORIES = ["NATIONAL", "INTERNATIONAL"] as const;
@@ -20,6 +21,7 @@ export const PACKAGE_TYPE_LABELS: Record<PackageTypeValue, string> = {
   HOTEL: "Hospedagem",
   TICKET: "Ingresso",
   CRUISE: "Cruzeiro",
+  CIRCUIT: "Circuito",
 };
 
 export const PACKAGE_TYPE_CARD_LABELS: Record<PackageTypeValue, string> = {
@@ -28,6 +30,7 @@ export const PACKAGE_TYPE_CARD_LABELS: Record<PackageTypeValue, string> = {
   HOTEL: "Hospedagem",
   TICKET: "Ingresso",
   CRUISE: "Cruzeiro",
+  CIRCUIT: "Circuito",
 };
 
 export const PACKAGE_CATEGORY_LABELS: Record<PackageCategoryValue, string> = {

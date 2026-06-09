@@ -20,6 +20,7 @@ export type ConsentProviderId =
   | "google-analytics"
   | "google-tag-manager"
   | "microsoft-clarity"
+  | "hotjar"
   | "tiktok-pixel";
 
 export type StoredConsent = {

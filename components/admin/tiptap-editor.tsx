@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
 import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
@@ -10,15 +12,26 @@ import {
   Heading3,
   ImagePlus,
   Italic,
+  Link2,
   List,
   ListOrdered,
   Loader2,
   Quote,
+  Unlink,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { uploadBlogContentImageAction } from "@/app/admin/(protected)/blogs/actions";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type TiptapEditorProps = {
@@ -76,12 +89,53 @@ function buildImageHtml(url: string, alt: string, caption?: string) {
   return `<img src="${safeUrl}" alt="${safeAlt}" loading="lazy" decoding="async" class="blog-content-image" />`;
 }
 
+function normalizeLinkUrl(url: string) {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (/^(https?:\/\/|mailto:|tel:|#|\/)/i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
+function isInternalLink(url: string) {
+  return url.startsWith("/") || url.startsWith("#");
+}
+
+function buildLinkHtml(text: string, url: string) {
+  const safeText = escapeHtml(text);
+  const safeUrl = escapeHtml(url);
+  const externalAttrs = isInternalLink(url)
+    ? ""
+    : ' target="_blank" rel="noopener noreferrer"';
+
+  return `<a href="${safeUrl}" class="blog-content-link"${externalAttrs}>${safeText}</a>`;
+}
+
+const editorContentClassName = [
+  "min-h-56 rounded-b-xl px-4 py-3 text-sm leading-7 text-foreground focus:outline-none",
+  "[&_h2]:mt-6 [&_h2]:text-xl [&_h2]:font-semibold",
+  "[&_h3]:mt-5 [&_h3]:text-lg [&_h3]:font-semibold",
+  "[&_p]:mt-3",
+  "[&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-6",
+  "[&_ol]:mt-3 [&_ol]:list-decimal [&_ol]:pl-6",
+  "[&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-brand/40 [&_blockquote]:pl-3 [&_blockquote]:italic",
+  "[&_a]:font-medium [&_a]:text-brand [&_a]:underline-offset-4 hover:[&_a]:underline",
+  "[&_img]:my-6 [&_img]:max-w-full [&_img]:rounded-xl",
+  "[&_figure]:my-6 [&_figure_img]:my-0",
+  "[&_figcaption]:mt-2 [&_figcaption]:text-center [&_figcaption]:text-xs [&_figcaption]:text-muted-foreground",
+].join(" ");
+
 export function TiptapEditor({
   value,
   onChange,
   placeholder = "Escreva o conteúdo do post...",
 }: TiptapEditorProps) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [linkText, setLinkText] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [isEditingLink, setIsEditingLink] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const editorRef = useRef<ReturnType<typeof useEditor>>(null);
   const onChangeRef = useRef(onChange);
@@ -122,6 +176,14 @@ export function TiptapEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit,
+      Link.configure({
+        openOnClick: false,
+        autolink: false,
+        linkOnPaste: false,
+        HTMLAttributes: {
+          class: "blog-content-link",
+        },
+      }),
       Image.configure({
         HTMLAttributes: {
           class: "blog-content-image",
@@ -133,8 +195,7 @@ export function TiptapEditor({
     content: value,
     editorProps: {
       attributes: {
-        class:
-          "min-h-56 rounded-b-xl px-4 py-3 text-sm leading-7 text-foreground focus:outline-none [&_h2]:mt-6 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-5 [&_h3]:text-lg [&_h3]:font-semibold [&_p]:mt-3 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-brand/40 [&_blockquote]:pl-3 [&_blockquote]:italic [&_img]:my-6 [&_img]:max-w-full [&_img]:rounded-xl [&_figure]:my-6 [&_figure_img]:my-0 [&_figcaption]:mt-2 [&_figcaption]:text-center [&_figcaption]:text-xs [&_figcaption]:text-muted-foreground",
+        class: editorContentClassName,
       },
       handleDrop: (_view, event, _slice, moved) => {
         if (moved) {
@@ -201,8 +262,87 @@ export function TiptapEditor({
     fileInputRef.current?.click();
   }
 
+  function openLinkDialog() {
+    const editorInstance = editorRef.current;
+    if (!editorInstance) return;
+
+    let nextText = "";
+    let nextUrl = "";
+    let editing = false;
+
+    if (editorInstance.isActive("link")) {
+      editorInstance.chain().focus().extendMarkRange("link").run();
+      const { from, to } = editorInstance.state.selection;
+      nextText = editorInstance.state.doc.textBetween(from, to);
+      nextUrl = editorInstance.getAttributes("link").href ?? "";
+      editing = true;
+    } else {
+      const { from, to, empty } = editorInstance.state.selection;
+      if (!empty) {
+        nextText = editorInstance.state.doc.textBetween(from, to);
+      }
+    }
+
+    setLinkText(nextText);
+    setLinkUrl(nextUrl);
+    setIsEditingLink(editing);
+    setIsLinkDialogOpen(true);
+  }
+
+  function closeLinkDialog() {
+    setIsLinkDialogOpen(false);
+    setLinkText("");
+    setLinkUrl("");
+    setIsEditingLink(false);
+  }
+
+  function applyLink() {
+    const editorInstance = editorRef.current;
+    if (!editorInstance) return;
+
+    const text = linkText.trim();
+    const url = normalizeLinkUrl(linkUrl);
+
+    if (!text) {
+      toast.error("Informe o texto que aparecerá no post.");
+      return;
+    }
+
+    if (!url) {
+      toast.error("Informe o endereço do link.");
+      return;
+    }
+
+    const { empty } = editorInstance.state.selection;
+
+    if (!empty || editorInstance.isActive("link")) {
+      editorInstance.chain().focus().deleteSelection().run();
+    }
+
+    editorInstance
+      .chain()
+      .focus()
+      .insertContent(buildLinkHtml(text, url))
+      .run();
+
+    closeLinkDialog();
+    toast.success(isEditingLink ? "Link atualizado." : "Link adicionado.");
+  }
+
+  function removeLink() {
+    const editorInstance = editorRef.current;
+    if (!editorInstance) return;
+
+    editorInstance.chain().focus().extendMarkRange("link").unsetLink().run();
+    closeLinkDialog();
+    toast.success("Link removido.");
+  }
+
   return (
-    <div className="rounded-xl border border-border/70 bg-card shadow-sm">
+    <div
+      data-blog-editor="tiptap"
+      className="rounded-xl border border-border/70 bg-card shadow-sm"
+    >
       <input
         ref={fileInputRef}
         type="file"
@@ -266,6 +406,21 @@ export function TiptapEditor({
         >
           <Quote className="size-4" aria-hidden />
         </ToolbarButton>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            "h-8 rounded-lg border-border/70 bg-background/70 px-2.5",
+            editor.isActive("link") && "border-brand/40 bg-brand/10 text-brand",
+          )}
+          onClick={openLinkDialog}
+          aria-label="Inserir link"
+          title="Inserir link"
+        >
+          <Link2 className="size-4" aria-hidden />
+          Link
+        </Button>
         <ToolbarButton
           label="Inserir imagem"
           onClick={handleSelectImage}
@@ -279,12 +434,118 @@ export function TiptapEditor({
         </ToolbarButton>
       </div>
 
+      <BubbleMenu
+        editor={editor}
+        className="flex items-center gap-1 rounded-lg border border-border/70 bg-card p-1 shadow-md"
+        shouldShow={({ editor: currentEditor }) => {
+          const { empty } = currentEditor.state.selection;
+          return !empty;
+        }}
+      >
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 rounded-lg border-border/70 bg-background px-2.5"
+          onClick={openLinkDialog}
+        >
+          <Link2 className="size-4" aria-hidden />
+          Adicionar link
+        </Button>
+      </BubbleMenu>
+
       <EditorContent editor={editor} />
       {editor.isEmpty ? (
         <p className="pointer-events-none -mt-44 px-4 py-3 text-sm text-muted-foreground/70">
           {placeholder}
         </p>
       ) : null}
+
+      <Dialog
+        open={isLinkDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeLinkDialog();
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{isEditingLink ? "Editar link" : "Inserir link"}</DialogTitle>
+            <DialogDescription>
+              Defina o texto que aparecerá no post e o endereço de destino. Links externos abrem em
+              nova aba.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label htmlFor="blog-link-text" className="text-sm font-medium text-foreground">
+                Texto do link
+              </label>
+              <Input
+                id="blog-link-text"
+                className="h-10 rounded-xl"
+                placeholder='Ex.: Clique aqui'
+                value={linkText}
+                onChange={(event) => setLinkText(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    applyLink();
+                  }
+                }}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="blog-link-url" className="text-sm font-medium text-foreground">
+                Endereço (URL)
+              </label>
+              <Input
+                id="blog-link-url"
+                className="h-10 rounded-xl"
+                placeholder="Ex.: https://crisdaspassagens.com.br/pacotes"
+                value={linkUrl}
+                onChange={(event) => setLinkUrl(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    applyLink();
+                  }
+                }}
+              />
+              <p className="text-xs text-muted-foreground">
+                Use https:// para links externos ou /caminho para páginas do site.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:justify-between">
+            {isEditingLink ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                onClick={removeLink}
+              >
+                <Unlink className="size-4" aria-hidden />
+                Remover link
+              </Button>
+            ) : (
+              <span />
+            )}
+            <div className="flex flex-col-reverse gap-2 sm:flex-row">
+              <Button type="button" variant="outline" className="rounded-xl" onClick={closeLinkDialog}>
+                Cancelar
+              </Button>
+              <Button type="button" className="rounded-xl" onClick={applyLink}>
+                {isEditingLink ? "Salvar link" : "Adicionar link"}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
