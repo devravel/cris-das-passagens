@@ -8,14 +8,19 @@ export type PackagesPageSectionConfig = {
 
 export const packagesPageSections: PackagesPageSectionConfig[] = [
   {
+    type: "PACKAGE_COMPLETE",
+    sectionId: "pacotes-completos",
+    title: "Pacotes completos",
+  },
+  {
     type: "FLIGHT",
     sectionId: "passagens-aereas",
     title: "Passagens aéreas",
   },
   {
-    type: "PACKAGE_COMPLETE",
-    sectionId: "pacotes-completos",
-    title: "Pacotes completos",
+    type: "CIRCUIT",
+    sectionId: "circuitos",
+    title: "Circuitos",
   },
   {
     type: "HOTEL",
@@ -36,8 +41,8 @@ export const packagesPageSections: PackagesPageSectionConfig[] = [
 
 export const packagesPageContent = {
   title: "Pacotes turísticos",
-  subtitle:
-    "Passagens aéreas, pacotes completos, hospedagem, ingressos e cruzeiros.",
-  emptyCategoryMessage: "Nenhuma oferta disponível nesta categoria no momento.",
+  description:
+    "Pacotes completos, passagens aéreas, circuitos, hospedagem, ingressos e cruzeiros nacionais e internacionais.",
+  emptyCategoryMessage: "Ofertas dessa categoria sendo adicionadas em breve!",
   emptySectionMessage: "Novas ofertas serão publicadas em breve.",
 } as const;

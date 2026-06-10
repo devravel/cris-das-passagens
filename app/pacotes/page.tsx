@@ -14,11 +14,12 @@ import { scrollRevealDefaults } from "@/lib/motion";
 
 export const metadata: Metadata = createMetadata({
   title: "Pacotes Turísticos",
-  description: packagesPageContent.subtitle,
+  description: packagesPageContent.description,
   path: "/pacotes",
   keywords: [
     "pacotes turísticos",
     "passagens aéreas",
+    "circuitos",
     "hospedagem",
     "ingressos",
     "cruzeiros",
@@ -43,17 +44,14 @@ export default async function PacotesPage() {
       <PageBreadcrumb items={brandPageBreadcrumbs.pacotes} />
 
       <ScrollReveal y={scrollRevealDefaults.y}>
-        <header className="mx-auto mb-10 max-w-3xl space-y-3 text-center sm:mb-12 lg:mb-14">
-        <h1
-          id="pacotes-page-heading"
-          className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-[2.5rem] md:leading-tight"
-        >
-          {packagesPageContent.title}
-        </h1>
-        <p className="text-sm leading-relaxed text-muted-foreground sm:text-base md:text-lg">
-          {packagesPageContent.subtitle}
-        </p>
-      </header>
+        <header className="mx-auto mb-6 max-w-3xl text-center sm:mb-7 lg:mb-8">
+          <h1
+            id="pacotes-page-heading"
+            className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-[2.5rem] md:leading-tight"
+          >
+            {packagesPageContent.title}
+          </h1>
+        </header>
       </ScrollReveal>
 
       <Suspense fallback={null}>

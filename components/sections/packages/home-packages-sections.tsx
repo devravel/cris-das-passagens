@@ -24,6 +24,8 @@ function getPackagesForType(homepagePackages: HomepagePackages, type: PackageTyp
       return homepagePackages.tickets;
     case "CRUISE":
       return homepagePackages.cruises;
+    case "CIRCUIT":
+      return homepagePackages.circuits;
     default:
       return [];
   }

@@ -46,6 +46,7 @@ export type HomepagePackages = {
   hotels: PublicPackage[];
   tickets: PublicPackage[];
   cruises: PublicPackage[];
+  circuits: PublicPackage[];
 };
 
 export type PackagesPageData = {
@@ -54,6 +55,7 @@ export type PackagesPageData = {
   hotels: PublicPackage[];
   tickets: PublicPackage[];
   cruises: PublicPackage[];
+  circuits: PublicPackage[];
 };
 
 const publicPackageSelect = {
@@ -165,6 +167,7 @@ function splitPackagesByType(packages: PublicPackage[]): HomepagePackages {
     hotels: packages.filter((pkg) => pkg.type === "HOTEL"),
     tickets: packages.filter((pkg) => pkg.type === "TICKET"),
     cruises: packages.filter((pkg) => pkg.type === "CRUISE"),
+    circuits: packages.filter((pkg) => pkg.type === "CIRCUIT"),
   };
 }
 
@@ -221,6 +224,7 @@ async function fetchPackagesPageDataFromDb(): Promise<PackagesPageData> {
     hotels: mapped.filter((pkg) => pkg.type === "HOTEL"),
     tickets: mapped.filter((pkg) => pkg.type === "TICKET"),
     cruises: mapped.filter((pkg) => pkg.type === "CRUISE"),
+    circuits: mapped.filter((pkg) => pkg.type === "CIRCUIT"),
   };
 }
 
@@ -236,6 +240,7 @@ const emptyHomepagePackages: HomepagePackages = {
   hotels: [],
   tickets: [],
   cruises: [],
+  circuits: [],
 };
 
 const emptyPackagesPageData: PackagesPageData = {
@@ -244,6 +249,7 @@ const emptyPackagesPageData: PackagesPageData = {
   hotels: [],
   tickets: [],
   cruises: [],
+  circuits: [],
 };
 
 export const getFeaturedPackages = cache(async (): Promise<PublicPackage[]> => {
