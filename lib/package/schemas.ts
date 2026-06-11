@@ -225,6 +225,8 @@ export type PackageCardData = {
   featured: boolean;
   departureDate: string | null;
   returnDate: string | null;
+  circuitStartDay: string | null;
+  circuitDuration: string | null;
 };
 
 export type PackageCardPreviewData = PackageCardData;
@@ -252,6 +254,8 @@ export function toPackageCardPreviewData(
     featured: values.featured,
     departureDate: values.departureDate.trim() || null,
     returnDate: values.returnDate.trim() || null,
+    circuitStartDay: values.circuitStartDay.trim() || null,
+    circuitDuration: values.circuitDuration.trim() || null,
   };
 }
 

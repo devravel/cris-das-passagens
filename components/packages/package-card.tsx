@@ -607,6 +607,28 @@ function PricingSection({
   );
 }
 
+function packageCardMetaClassName({
+  compact = false,
+  tight = false,
+  narrowMobileTypography = false,
+}: {
+  compact?: boolean;
+  tight?: boolean;
+  narrowMobileTypography?: boolean;
+}) {
+  return cn(
+    "text-muted-foreground",
+    compact
+      ? cn(
+          "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs",
+          compactNarrowMobileTypeClassName(narrowMobileTypography),
+        )
+      : tight
+        ? "mt-2 text-xs sm:text-sm"
+        : "mt-3 text-xs sm:text-sm",
+  );
+}
+
 function PackageTravelDates({
   departureDate,
   returnDate,
@@ -630,19 +652,55 @@ function PackageTravelDates({
   return (
     <div
       className={cn(
-        "space-y-0.5 text-muted-foreground",
-        compact
-          ? cn(
-              "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs",
-              compactNarrowMobileTypeClassName(narrowMobileTypography),
-            )
-          : tight
-            ? "mt-2 text-xs sm:text-sm"
-            : "mt-3 text-xs sm:text-sm",
+        "space-y-0.5",
+        packageCardMetaClassName({ compact, tight, narrowMobileTypography }),
       )}
     >
       {ida ? <p>Ida: {ida}</p> : null}
       {volta ? <p>Volta: {volta}</p> : null}
+    </div>
+  );
+}
+
+function PackageCircuitInfo({
+  circuitStartDay,
+  circuitDuration,
+  compact = false,
+  tight = false,
+  narrowMobileTypography = false,
+}: {
+  circuitStartDay: string | null;
+  circuitDuration: string | null;
+  compact?: boolean;
+  tight?: boolean;
+  narrowMobileTypography?: boolean;
+}) {
+  const inicio = circuitStartDay?.trim() || null;
+  const duracao = circuitDuration?.trim() || null;
+
+  if (!inicio && !duracao) {
+    return null;
+  }
+
+  const parts: string[] = [];
+
+  if (inicio) {
+    parts.push(`Início: ${inicio}`);
+  }
+
+  if (duracao) {
+    parts.push(`Duração: ${duracao}`);
+  }
+
+  return (
+    <div
+      className={packageCardMetaClassName({
+        compact,
+        tight,
+        narrowMobileTypography,
+      })}
+    >
+      <p>{parts.join(" | ")}</p>
     </div>
   );
 }
@@ -869,13 +927,23 @@ export function PackageCard({
             </p>
           ) : null}
 
-          <PackageTravelDates
-            departureDate={data.departureDate}
-            returnDate={data.returnDate}
-            compact={isCompact}
-            tight={isListing}
-            narrowMobileTypography={narrowMobileTypography}
-          />
+          {data.type === "CIRCUIT" ? (
+            <PackageCircuitInfo
+              circuitStartDay={data.circuitStartDay}
+              circuitDuration={data.circuitDuration}
+              compact={isCompact}
+              tight={isListing}
+              narrowMobileTypography={narrowMobileTypography}
+            />
+          ) : (
+            <PackageTravelDates
+              departureDate={data.departureDate}
+              returnDate={data.returnDate}
+              compact={isCompact}
+              tight={isListing}
+              narrowMobileTypography={narrowMobileTypography}
+            />
+          )}
 
           {showDestinationAsSecondary ? (
             <p className="mt-1.5 line-clamp-1 text-xs font-medium tracking-wide text-muted-foreground uppercase sm:text-sm">
@@ -952,5 +1020,7 @@ export function toPackageCardDataFromPublicPackage(
     featured: pkg.featured,
     departureDate: pkg.departureDate,
     returnDate: pkg.returnDate,
+    circuitStartDay: pkg.circuitStartDay,
+    circuitDuration: pkg.circuitDuration,
   };
 }

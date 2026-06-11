@@ -1,13 +1,21 @@
 "use client";
 
-import Script from "next/script";
+import dynamic from "next/dynamic";
 
 import { useConsent } from "@/components/consent/consent-context";
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
-import { TestimonialsStaticFallback } from "@/components/sections/testimonials/testimonials-static-fallback";
+import { TestimonialsElfsightHost } from "@/components/sections/testimonials/testimonials-elfsight-host";
 import { content } from "@/config/content";
 import { HOME_TESTIMONIALS_SECTION_ID } from "@/config/navigation";
+
+const GoogleReviewsFallback = dynamic(
+  () =>
+    import("@/components/sections/testimonials/google-reviews/google-reviews-fallback").then(
+      (module) => module.GoogleReviewsFallback,
+    ),
+  { ssr: false },
+);
 
 export type TestimonialsModernProps = {
   sectionId?: string;
@@ -42,18 +50,11 @@ export function TestimonialsModern({
         subtitleClassName="mt-4"
         className="mb-12 sm:mb-14 lg:mb-16"
       />
+
       {analyticsEnabled ? (
-        <>
-          <Script src="https://elfsightcdn.com/platform.js" strategy="afterInteractive" />
-          <div className="w-full">
-            <div
-              className="elfsight-app-3fd6553a-00c3-4848-823e-0f569bbdebff"
-              data-elfsight-app-lazy
-            />
-          </div>
-        </>
+        <TestimonialsElfsightHost />
       ) : (
-        <TestimonialsStaticFallback items={content.testimonials.items} />
+        <GoogleReviewsFallback />
       )}
     </Section>
   );

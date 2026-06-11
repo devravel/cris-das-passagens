@@ -20,11 +20,6 @@ type PackagesPageContentProps = {
 const SCROLL_SPY_BUFFER_PX = 12;
 const PROGRAMMATIC_SCROLL_LOCK_MS = 900;
 
-const typeNavItems: PackageTypeNavItem[] = packagesPageSections.map((config) => ({
-  label: config.title,
-  sectionId: config.sectionId,
-}));
-
 function getPackagesForType(data: PackagesPageData, type: PackageTypeValue): PublicPackage[] {
   switch (type) {
     case "FLIGHT":
@@ -63,19 +58,23 @@ function getSectionDocumentTop(section: HTMLElement) {
   return section.getBoundingClientRect().top + window.scrollY;
 }
 
-function resolveActiveSectionId(): string {
-  const scrollMarker = window.scrollY + getPacotesScrollOffset();
-  let activeId = packagesPageSections[0]!.sectionId;
+function resolveActiveSectionId(sectionIds: string[]): string | null {
+  if (sectionIds.length === 0) {
+    return null;
+  }
 
-  for (const section of packagesPageSections) {
-    const element = document.getElementById(section.sectionId);
+  const scrollMarker = window.scrollY + getPacotesScrollOffset();
+  let activeId = sectionIds[0]!;
+
+  for (const sectionId of sectionIds) {
+    const element = document.getElementById(sectionId);
 
     if (!element) {
       continue;
     }
 
     if (getSectionDocumentTop(element) <= scrollMarker + 1) {
-      activeId = section.sectionId;
+      activeId = sectionId;
     }
   }
 
@@ -98,25 +97,89 @@ function scrollToPackagesSection(sectionId: string) {
   window.history.replaceState(null, "", `#${sectionId}`);
 }
 
+function sectionHasCategory(
+  packages: PublicPackage[],
+  filter: PackageCategoryValue,
+): boolean {
+  return packages.some((pkg) => packageMatchesCategory(pkg.category, filter));
+}
+
+function resolveCategoryForSection(
+  packages: PublicPackage[],
+  preferred: PackageCategoryValue,
+): PackageCategoryValue | null {
+  if (sectionHasCategory(packages, preferred)) {
+    return preferred;
+  }
+
+  if (sectionHasCategory(packages, "NATIONAL")) {
+    return "NATIONAL";
+  }
+
+  if (sectionHasCategory(packages, "INTERNATIONAL")) {
+    return "INTERNATIONAL";
+  }
+
+  return null;
+}
+
+function getSectionConfig(sectionId: string) {
+  return packagesPageSections.find((section) => section.sectionId === sectionId);
+}
+
 export function PackagesPageContent({ data }: PackagesPageContentProps) {
   const [category, setCategory] = useState<PackageCategoryValue>("NATIONAL");
-  const [activeSectionId, setActiveSectionId] = useState(packagesPageSections[0]!.sectionId);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const programmaticScrollUntilRef = useRef(0);
+  const pendingScrollSectionIdRef = useRef<string | null>(null);
+  const hasHandledInitialHashRef = useRef(false);
 
-  const sections = useMemo(
+  const sectionsWithPackages = useMemo(
     () =>
-      packagesPageSections.map((config) => ({
-        config,
-        packages: getPackagesForType(data, config.type).filter((pkg) =>
-          packageMatchesCategory(pkg.category, category),
-        ),
+      packagesPageSections
+        .map((config) => ({
+          config,
+          packages: getPackagesForType(data, config.type),
+        }))
+        .filter((section) => section.packages.length > 0),
+    [data],
+  );
+
+  const visibleSections = useMemo(
+    () =>
+      sectionsWithPackages
+        .map(({ config, packages }) => ({
+          config,
+          packages: packages.filter((pkg) =>
+            packageMatchesCategory(pkg.category, category),
+          ),
+        }))
+        .filter((section) => section.packages.length > 0),
+    [category, sectionsWithPackages],
+  );
+
+  const typeNavItems = useMemo<PackageTypeNavItem[]>(
+    () =>
+      sectionsWithPackages.map(({ config }) => ({
+        label: config.title,
+        sectionId: config.sectionId,
       })),
-    [category, data],
+    [sectionsWithPackages],
+  );
+
+  const navSectionIds = useMemo(
+    () => typeNavItems.map((item) => item.sectionId),
+    [typeNavItems],
+  );
+
+  const visibleSectionIds = useMemo(
+    () => visibleSections.map(({ config }) => config.sectionId),
+    [visibleSections],
   );
 
   const panelIds = useMemo(
-    () => sections.map(({ config }) => `${config.sectionId}-panel`).join(" "),
-    [sections],
+    () => visibleSections.map(({ config }) => `${config.sectionId}-panel`).join(" "),
+    [visibleSections],
   );
 
   const lockProgrammaticScroll = useCallback(() => {
@@ -128,20 +191,129 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
       return;
     }
 
-    const nextActiveId = resolveActiveSectionId();
+    const nextActiveId = resolveActiveSectionId(visibleSectionIds);
+
+    if (!nextActiveId) {
+      return;
+    }
+
     setActiveSectionId((current) => (current === nextActiveId ? current : nextActiveId));
-  }, []);
+  }, [visibleSectionIds]);
 
   const handleNavigate = useCallback(
     (sectionId: string) => {
+      const config = getSectionConfig(sectionId);
+
+      if (!config) {
+        return;
+      }
+
+      const packages = getPackagesForType(data, config.type);
+      const targetCategory = resolveCategoryForSection(packages, category);
+
+      if (!targetCategory) {
+        return;
+      }
+
       lockProgrammaticScroll();
       setActiveSectionId(sectionId);
+
+      if (targetCategory !== category) {
+        pendingScrollSectionIdRef.current = sectionId;
+        setCategory(targetCategory);
+        return;
+      }
+
       scrollToPackagesSection(sectionId);
     },
-    [lockProgrammaticScroll],
+    [category, data, lockProgrammaticScroll],
   );
 
   useEffect(() => {
+    setActiveSectionId((current) => {
+      if (visibleSectionIds.length > 0) {
+        if (current && visibleSectionIds.includes(current)) {
+          return current;
+        }
+
+        return visibleSectionIds[0]!;
+      }
+
+      if (current && navSectionIds.includes(current)) {
+        return current;
+      }
+
+      return navSectionIds[0] ?? null;
+    });
+  }, [navSectionIds, visibleSectionIds]);
+
+  useEffect(() => {
+    const pendingSectionId = pendingScrollSectionIdRef.current;
+
+    if (!pendingSectionId) {
+      return;
+    }
+
+    const section = document.getElementById(pendingSectionId);
+
+    if (!section) {
+      return;
+    }
+
+    pendingScrollSectionIdRef.current = null;
+    lockProgrammaticScroll();
+
+    window.requestAnimationFrame(() => {
+      scrollToPackagesSection(pendingSectionId);
+      setActiveSectionId(pendingSectionId);
+    });
+  }, [category, visibleSections, lockProgrammaticScroll]);
+
+  useEffect(() => {
+    if (hasHandledInitialHashRef.current || navSectionIds.length === 0) {
+      return;
+    }
+
+    hasHandledInitialHashRef.current = true;
+
+    const hash = window.location.hash.replace("#", "");
+
+    if (!isPackagesSectionId(hash) || !navSectionIds.includes(hash)) {
+      return;
+    }
+
+    const config = getSectionConfig(hash);
+
+    if (!config) {
+      return;
+    }
+
+    const packages = getPackagesForType(data, config.type);
+    const targetCategory = resolveCategoryForSection(packages, category);
+
+    if (!targetCategory) {
+      return;
+    }
+
+    setActiveSectionId(hash);
+
+    if (targetCategory !== category) {
+      pendingScrollSectionIdRef.current = hash;
+      setCategory(targetCategory);
+      return;
+    }
+
+    lockProgrammaticScroll();
+    window.requestAnimationFrame(() => {
+      scrollToPackagesSection(hash);
+    });
+  }, [category, data, lockProgrammaticScroll, navSectionIds]);
+
+  useEffect(() => {
+    if (visibleSectionIds.length === 0) {
+      return;
+    }
+
     let frameId = 0;
 
     const handleScroll = () => {
@@ -149,17 +321,7 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
       frameId = window.requestAnimationFrame(updateActiveSection);
     };
 
-    const hash = window.location.hash.replace("#", "");
-
-    if (isPackagesSectionId(hash)) {
-      lockProgrammaticScroll();
-      window.requestAnimationFrame(() => {
-        scrollToPackagesSection(hash);
-        setActiveSectionId(hash);
-      });
-    } else {
-      updateActiveSection();
-    }
+    updateActiveSection();
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
@@ -169,7 +331,17 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
-  }, [lockProgrammaticScroll, updateActiveSection, category]);
+  }, [updateActiveSection, visibleSectionIds]);
+
+  if (sectionsWithPackages.length === 0) {
+    return (
+      <p className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-12 text-center text-sm text-muted-foreground sm:text-base">
+        {packagesPageContent.emptySectionMessage}
+      </p>
+    );
+  }
+
+  const showTypeNav = typeNavItems.length > 0;
 
   return (
     <>
@@ -185,27 +357,34 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
           />
         </div>
 
-        <PackageTypeNav
-          items={typeNavItems}
-          activeSectionId={activeSectionId}
-          onNavigate={handleNavigate}
-          labelledBy="pacotes-page-heading"
-        />
+        {showTypeNav && activeSectionId ? (
+          <PackageTypeNav
+            items={typeNavItems}
+            activeSectionId={activeSectionId}
+            onNavigate={handleNavigate}
+            labelledBy="pacotes-page-heading"
+          />
+        ) : null}
       </div>
 
-      <div className="space-y-11 sm:space-y-12 lg:space-y-14">
-        {sections.map(({ config, packages }, index) => (
-          <PackagesListingSection
-            key={config.sectionId}
-            config={config}
-            packages={packages}
-            emptyMessage={packagesPageContent.emptyCategoryMessage}
-            className={
-              index > 0 ? "border-t border-border/50 pt-11 sm:pt-12 lg:pt-14" : undefined
-            }
-          />
-        ))}
-      </div>
+      {visibleSections.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-12 text-center text-sm text-muted-foreground sm:text-base">
+          {packagesPageContent.emptyCategoryMessage}
+        </p>
+      ) : (
+        <div className="space-y-11 sm:space-y-12 lg:space-y-14">
+          {visibleSections.map(({ config, packages }, index) => (
+            <PackagesListingSection
+              key={config.sectionId}
+              config={config}
+              packages={packages}
+              className={
+                index > 0 ? "border-t border-border/50 pt-11 sm:pt-12 lg:pt-14" : undefined
+              }
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
