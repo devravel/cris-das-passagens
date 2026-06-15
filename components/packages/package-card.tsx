@@ -1,4 +1,12 @@
-import { Anchor, BedDouble, Check, Luggage, Plane, Route, Ticket } from "lucide-react";
+import {
+  Anchor,
+  BedDouble,
+  Check,
+  Luggage,
+  Plane,
+  Route,
+  Ticket,
+} from "lucide-react";
 
 import { StorageImage } from "@/components/ui/storage-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
@@ -493,11 +501,11 @@ function PricingSection({
   const isListing = variant === "listing";
   const pricePadding = compact
     ? "px-2.5 py-1.5 lg:py-2"
-      : isListing
-        ? "px-3.5 py-1 sm:px-4 sm:py-1.5 lg:px-5 lg:py-2"
-        : isDetailed
-          ? "px-4 py-2.5 sm:px-5 sm:py-3"
-          : "px-3.5 py-2.5 sm:px-4 sm:py-3";
+    : isListing
+      ? "px-3.5 py-1 sm:px-4 sm:py-1.5 lg:px-5 lg:py-2"
+      : isDetailed
+        ? "px-4 py-2.5 sm:px-5 sm:py-3"
+        : "px-3.5 py-2.5 sm:px-4 sm:py-3";
   const actionPadding = compact
     ? "px-2.5 py-1.5"
     : isListing
@@ -802,7 +810,10 @@ export function PackageCard({
                 "h-[8.75rem] sm:h-[9rem] md:h-[9.25rem] lg:h-[10rem]",
               layout === "preview" &&
                 "h-[7rem] sm:h-[7.5rem] lg:h-[9.25rem] xl:h-[10rem]",
-              !isCompact && !isListing && layout !== "preview" && "aspect-[4/3]",
+              !isCompact &&
+                !isListing &&
+                layout !== "preview" &&
+                "aspect-[4/3]",
             )}
           >
             {resolvedImageSrc ? (
@@ -977,8 +988,8 @@ export function PackageCard({
               type="button"
               onClick={onDescriptionClick}
               className={cn(
-                "mt-1.5 inline-flex max-w-full self-start text-left text-[10px] font-semibold tracking-[0.12em] text-brand uppercase transition-colors hover:text-brand/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:text-[11px]",
-                isListing ? "mt-1" : "mt-1.5",
+                "cursor-pointer mt-3 mb-2 inline-flex max-w-full self-start text-left text-[10px] font-bold tracking-[0.12em] text-brand uppercase underline underline-offset-4 transition-colors hover:text-brand/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:text-[11px]",
+                isListing ? "mt-3 mb-2" : "mt-4 mb-3",
               )}
               aria-label={`Ver descrição completa de ${cardLabel}`}
             >
