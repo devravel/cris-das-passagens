@@ -48,6 +48,7 @@ export function PackageEditScreen({
           initialValues={{
             slug: pkg.slug,
             shortDescription: pkg.shortDescription ?? "",
+            fullDescription: pkg.fullDescription ?? "",
             destination: pkg.destination,
             image: pkg.image,
             type: pkg.type,

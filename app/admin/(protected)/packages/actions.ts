@@ -92,6 +92,7 @@ function normalizeInput(input: PackageFormValues) {
     title: input.title.trim(),
     slug: input.slug.trim(),
     shortDescription: input.shortDescription.trim() || null,
+    fullDescription: input.fullDescription.trim() || null,
     destination: input.destination.trim(),
     image: normalizePackageImageUrl(input.image.trim()),
     type: input.type,

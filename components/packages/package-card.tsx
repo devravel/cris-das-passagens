@@ -95,6 +95,8 @@ type PackageCardProps = {
   packageSlug?: string;
   whatsAppPackageTitle?: string;
   narrowMobileTypography?: boolean;
+  showDescriptionCta?: boolean;
+  onDescriptionClick?: () => void;
   className?: string;
 };
 
@@ -745,6 +747,8 @@ export function PackageCard({
   packageSlug,
   whatsAppPackageTitle,
   narrowMobileTypography = false,
+  showDescriptionCta = false,
+  onDescriptionClick,
   className,
 }: PackageCardProps) {
   const resolvedImageSrc = imageSrc || data.image;
@@ -968,6 +972,20 @@ export function PackageCard({
             </p>
           ) : null}
 
+          {showDescriptionCta && onDescriptionClick ? (
+            <button
+              type="button"
+              onClick={onDescriptionClick}
+              className={cn(
+                "mt-1.5 inline-flex max-w-full self-start text-left text-[10px] font-semibold tracking-[0.12em] text-brand uppercase transition-colors hover:text-brand/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:text-[11px]",
+                isListing ? "mt-1" : "mt-1.5",
+              )}
+              aria-label={`Ver descrição completa de ${cardLabel}`}
+            >
+              DESCRIÇÃO AQUI
+            </button>
+          ) : null}
+
           {showChecklistBlock ? (
             <IncludedItemsList
               items={data.includedItems}
@@ -1005,6 +1023,7 @@ export function toPackageCardDataFromPublicPackage(
   return {
     title: pkg.title,
     shortDescription: pkg.shortDescription,
+    fullDescription: pkg.fullDescription,
     destination: pkg.destination,
     image: pkg.image,
     type: pkg.type,

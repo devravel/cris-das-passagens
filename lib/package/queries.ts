@@ -17,6 +17,7 @@ export type PublicPackage = {
   slug: string;
   title: string;
   shortDescription: string | null;
+  fullDescription: string | null;
   destination: string;
   image: string;
   type: PackageTypeValue;
@@ -63,6 +64,7 @@ const publicPackageSelect = {
   slug: true,
   title: true,
   shortDescription: true,
+  fullDescription: true,
   destination: true,
   image: true,
   type: true,
@@ -108,6 +110,7 @@ function mapPublicPackage(
     slug: string;
     title: string;
     shortDescription: string | null;
+    fullDescription: string | null;
     destination: string;
     image: string;
     type: string;
@@ -136,6 +139,7 @@ function mapPublicPackage(
     slug: pkg.slug,
     title: pkg.title,
     shortDescription: pkg.shortDescription,
+    fullDescription: pkg.fullDescription,
     destination: pkg.destination,
     image: normalizePackageImageUrl(pkg.image),
     type: pkg.type as PackageTypeValue,
@@ -284,6 +288,7 @@ export type AdminPackageListItem = {
   title: string;
   slug: string;
   shortDescription: string | null;
+  fullDescription: string | null;
   destination: string;
   image: string;
   type: PackageTypeValue;
@@ -315,6 +320,7 @@ const adminPackageSelect = {
   title: true,
   slug: true,
   shortDescription: true,
+  fullDescription: true,
   destination: true,
   image: true,
   type: true,
@@ -347,6 +353,7 @@ function mapAdminPackage(
     title: string;
     slug: string;
     shortDescription: string | null;
+    fullDescription: string | null;
     destination: string;
     image: string;
     type: string;
@@ -378,6 +385,7 @@ function mapAdminPackage(
     title: pkg.title,
     slug: pkg.slug,
     shortDescription: pkg.shortDescription,
+    fullDescription: pkg.fullDescription,
     destination: pkg.destination,
     image: normalizePackageImageUrl(pkg.image),
     type: pkg.type as PackageTypeValue,

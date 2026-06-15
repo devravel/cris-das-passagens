@@ -54,6 +54,7 @@ export function PackagesGrid({
         showChecklist
         showAirlineBadge
         anchorCards
+        enableDescriptionModal
         header={header}
       />
     </div>

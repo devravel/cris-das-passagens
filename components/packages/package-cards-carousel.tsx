@@ -26,6 +26,7 @@ type PackageCardsCarouselProps = {
   showAirlineBadge?: boolean;
   anchorCards?: boolean;
   cardClassName?: string;
+  enableDescriptionModal?: boolean;
   /** Conteúdo alinhado à coluna dos cards (ex.: título da seção em /pacotes). */
   header?: ReactNode;
 };
@@ -166,6 +167,7 @@ export function PackageCardsCarousel({
   showAirlineBadge = false,
   anchorCards = false,
   cardClassName,
+  enableDescriptionModal = false,
   header,
 }: PackageCardsCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -354,6 +356,7 @@ export function PackageCardsCarousel({
                   priority={index < 4}
                   showChecklist={showChecklist}
                   showAirlineBadge={showAirlineBadge}
+                  enableDescriptionModal={enableDescriptionModal}
                   className={cn("h-full min-w-0", cardClassName)}
                 />
               </div>

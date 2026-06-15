@@ -48,3 +48,10 @@ export const PACKAGE_TYPES_WITH_CATEGORY = new Set<PackageTypeValue>(PACKAGE_TYP
 
 export const RECOMMENDED_PACKAGE_IMAGE_SIZE = "1200×900px";
 export const PACKAGE_IMAGE_ASPECT_RATIO = "4 / 3";
+
+/** Limite da descrição curta no card (2 linhas com line-clamp-2). */
+export const PACKAGE_SHORT_DESCRIPTION_MAX = 280;
+export const PACKAGE_SHORT_DESCRIPTION_MIN = 10;
+/** Mínimo da descrição completa = limite máximo da descrição curta. */
+export const PACKAGE_FULL_DESCRIPTION_MIN = PACKAGE_SHORT_DESCRIPTION_MAX;
+export const PACKAGE_FULL_DESCRIPTION_MAX = 10_000;

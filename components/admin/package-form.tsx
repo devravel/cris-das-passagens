@@ -24,8 +24,11 @@ import { normalizeSlug } from "@/lib/blog/utils";
 import {
   PACKAGE_CATEGORIES,
   PACKAGE_CATEGORY_LABELS,
+  PACKAGE_FULL_DESCRIPTION_MAX,
+  PACKAGE_FULL_DESCRIPTION_MIN,
   PACKAGE_PRICE_SCOPE_LABELS,
   PACKAGE_PRICE_SCOPES,
+  PACKAGE_SHORT_DESCRIPTION_MAX,
   PACKAGE_TYPE_LABELS,
   PACKAGE_TYPES,
   PACKAGE_TYPES_WITH_CATEGORY,
@@ -91,6 +94,8 @@ export function PackageForm({
   const watchedValues = useWatch({
     control: form.control,
   }) as Partial<PackageFormValues>;
+  const shortDescriptionLength = watchedValues.shortDescription?.length ?? 0;
+  const fullDescriptionLength = watchedValues.fullDescription?.length ?? 0;
   const typeValue = (watchedValues.type ??
     "PACKAGE_COMPLETE") as PackageTypeValue;
   const imageValue = watchedValues.image ?? "";
@@ -571,13 +576,70 @@ export function PackageForm({
               id="shortDescription"
               className="min-h-24 rounded-xl"
               placeholder="Resumo premium exibido no card do pacote."
+              maxLength={PACKAGE_SHORT_DESCRIPTION_MAX}
               {...form.register("shortDescription")}
             />
-            {form.formState.errors.shortDescription ? (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.shortDescription.message}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {form.formState.errors.shortDescription ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.shortDescription.message}
+                </p>
+              ) : (
+                <span className="text-xs text-muted-foreground">
+                  Máximo de {PACKAGE_SHORT_DESCRIPTION_MAX} caracteres.
+                </span>
+              )}
+              <p
+                className={cn(
+                  "text-xs tabular-nums text-muted-foreground",
+                  shortDescriptionLength > PACKAGE_SHORT_DESCRIPTION_MAX &&
+                    "text-destructive",
+                )}
+                aria-live="polite"
+              >
+                {shortDescriptionLength}/{PACKAGE_SHORT_DESCRIPTION_MAX}
               </p>
-            ) : null}
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label
+              htmlFor="fullDescription"
+              className="text-sm font-medium text-foreground"
+            >
+              Descrição completa{" "}
+              <span className="text-muted-foreground">(opcional)</span>
+            </label>
+            <Textarea
+              id="fullDescription"
+              className="min-h-36 rounded-xl"
+              placeholder="Texto detalhado exibido no modal em /pacotes."
+              maxLength={PACKAGE_FULL_DESCRIPTION_MAX}
+              {...form.register("fullDescription")}
+            />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {form.formState.errors.fullDescription ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.fullDescription.message}
+                </p>
+              ) : (
+                <span className="text-xs text-muted-foreground">
+                  Mínimo de {PACKAGE_FULL_DESCRIPTION_MIN} caracteres, se
+                  preenchida.
+                </span>
+              )}
+              <p
+                className={cn(
+                  "text-xs tabular-nums text-muted-foreground",
+                  fullDescriptionLength > 0 &&
+                    fullDescriptionLength < PACKAGE_FULL_DESCRIPTION_MIN &&
+                    "text-destructive",
+                )}
+                aria-live="polite"
+              >
+                {fullDescriptionLength}/{PACKAGE_FULL_DESCRIPTION_MAX}
+              </p>
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">

@@ -84,6 +84,7 @@ model Package {
   title                 String
   slug                  String           @unique
   shortDescription      String?          @db.Text
+  fullDescription       String?          @db.Text
   destination           String
   image                 String
   type                  PackageType

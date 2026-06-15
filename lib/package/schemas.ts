@@ -3,7 +3,11 @@ import { z } from "zod";
 import { isValidBlogImageUrl } from "@/lib/blog/image-url";
 import {
   PACKAGE_CATEGORIES,
+  PACKAGE_FULL_DESCRIPTION_MAX,
+  PACKAGE_FULL_DESCRIPTION_MIN,
   PACKAGE_PRICE_SCOPES,
+  PACKAGE_SHORT_DESCRIPTION_MAX,
+  PACKAGE_SHORT_DESCRIPTION_MIN,
   PACKAGE_TYPES,
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
@@ -33,7 +37,17 @@ const packageFormFieldsSchema = z.object({
   shortDescription: z
     .string()
     .trim()
-    .max(280, "Descrição curta deve ter no máximo 280 caracteres."),
+    .max(
+      PACKAGE_SHORT_DESCRIPTION_MAX,
+      `Descrição curta deve ter no máximo ${PACKAGE_SHORT_DESCRIPTION_MAX} caracteres.`,
+    ),
+  fullDescription: z
+    .string()
+    .trim()
+    .max(
+      PACKAGE_FULL_DESCRIPTION_MAX,
+      `Descrição completa deve ter no máximo ${PACKAGE_FULL_DESCRIPTION_MAX} caracteres.`,
+    ),
   destination: z
     .string()
     .trim()
@@ -87,11 +101,22 @@ function validatePackageRules(
 ) {
   const type = data.type as PackageTypeValue;
 
-  if (data.shortDescription.length > 0 && data.shortDescription.length < 10) {
+  if (data.shortDescription.length > 0 && data.shortDescription.length < PACKAGE_SHORT_DESCRIPTION_MIN) {
     ctx.addIssue({
       code: "custom",
       path: ["shortDescription"],
-      message: "Informe uma descrição curta com pelo menos 10 caracteres.",
+      message: `Informe uma descrição curta com pelo menos ${PACKAGE_SHORT_DESCRIPTION_MIN} caracteres.`,
+    });
+  }
+
+  if (
+    data.fullDescription.length > 0 &&
+    data.fullDescription.length < PACKAGE_FULL_DESCRIPTION_MIN
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["fullDescription"],
+      message: `Informe uma descrição completa com pelo menos ${PACKAGE_FULL_DESCRIPTION_MIN} caracteres.`,
     });
   }
 
@@ -210,6 +235,7 @@ export type PackageFormValues = z.output<typeof packageFormSchema>;
 export type PackageCardData = {
   title: string;
   shortDescription: string | null;
+  fullDescription?: string | null;
   destination: string;
   image: string;
   type: PackageTypeValue;
@@ -239,6 +265,7 @@ export function toPackageCardPreviewData(
   return {
     title: destination,
     shortDescription: values.shortDescription.trim() || null,
+    fullDescription: values.fullDescription.trim() || null,
     destination,
     image: values.image.trim(),
     type: values.type,
@@ -262,6 +289,7 @@ export function toPackageCardPreviewData(
 export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   slug: "",
   shortDescription: "",
+  fullDescription: "",
   destination: "",
   image: "",
   type: "PACKAGE_COMPLETE",
