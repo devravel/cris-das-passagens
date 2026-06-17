@@ -7,7 +7,12 @@ import { getActionErrorMessage } from "@/lib/admin/action-error";
 import type { ActionResult } from "@/lib/admin/action-result";
 import { requireReiDaCopaAdmin } from "@/lib/rei-da-copa/guards";
 import { reiDaCopaKeywordSubmissionsService } from "@/lib/rei-da-copa/keyword-submissions.service";
-import { reiDaCopaKeywordsService } from "@/lib/rei-da-copa/keywords.service";
+import {
+  KEYWORD_EXISTS_INACTIVE_MESSAGE,
+  KEYWORD_NOT_FOUND_MESSAGE,
+  KEYWORD_ALREADY_ACTIVE_MESSAGE,
+  reiDaCopaKeywordsService,
+} from "@/lib/rei-da-copa/keywords.service";
 import { reiDaCopaParticipantsService } from "@/lib/rei-da-copa/participants.service";
 import { REI_DA_COPA_PERMISSIONS } from "@/lib/rei-da-copa/permissions";
 import { reiDaCopaRankingService } from "@/lib/rei-da-copa/ranking.service";
@@ -37,6 +42,22 @@ function revalidateReiDaCopaPaths() {
 
 function toFieldErrors(error: z.ZodError) {
   return error.flatten().fieldErrors;
+}
+
+function getKeywordActionErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error) {
+    const message = error.message;
+
+    if (
+      message === KEYWORD_ALREADY_ACTIVE_MESSAGE ||
+      message === KEYWORD_EXISTS_INACTIVE_MESSAGE ||
+      message === KEYWORD_NOT_FOUND_MESSAGE
+    ) {
+      return message;
+    }
+  }
+
+  return getActionErrorMessage(error, fallback);
 }
 
 export async function listReiDaCopaParticipantsAction(
@@ -188,7 +209,38 @@ export async function createReiDaCopaOfficialKeywordAction(
   } catch (error) {
     return {
       ok: false,
-      message: getActionErrorMessage(error, "Não foi possível cadastrar a palavra-chave agora."),
+      message: getKeywordActionErrorMessage(error, "Não foi possível cadastrar a palavra-chave agora."),
+    };
+  }
+}
+
+export async function activateReiDaCopaOfficialKeywordAction(
+  id: string,
+): Promise<ActionResult<Awaited<ReturnType<typeof reiDaCopaKeywordsService.activateKeyword>>>> {
+  try {
+    await requireReiDaCopaAdmin(REI_DA_COPA_PERMISSIONS.keywords.validate);
+
+    const parsedId = keywordIdSchema.safeParse(id);
+
+    if (!parsedId.success) {
+      return {
+        ok: false,
+        message: "Palavra-chave inválida.",
+      };
+    }
+
+    const data = await reiDaCopaKeywordsService.activateKeyword(parsedId.data);
+    revalidateReiDaCopaPaths();
+
+    return {
+      ok: true,
+      message: "Palavra-chave ativada com sucesso.",
+      data,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: getKeywordActionErrorMessage(error, "Não foi possível ativar a palavra-chave agora."),
     };
   }
 }
@@ -219,7 +271,37 @@ export async function deactivateReiDaCopaOfficialKeywordAction(
   } catch (error) {
     return {
       ok: false,
-      message: getActionErrorMessage(error, "Não foi possível desativar a palavra-chave agora."),
+      message: getKeywordActionErrorMessage(error, "Não foi possível desativar a palavra-chave agora."),
+    };
+  }
+}
+
+export async function deleteReiDaCopaOfficialKeywordAction(
+  id: string,
+): Promise<ActionResult> {
+  try {
+    await requireReiDaCopaAdmin(REI_DA_COPA_PERMISSIONS.keywords.validate);
+
+    const parsedId = keywordIdSchema.safeParse(id);
+
+    if (!parsedId.success) {
+      return {
+        ok: false,
+        message: "Palavra-chave inválida.",
+      };
+    }
+
+    await reiDaCopaKeywordsService.deleteKeyword(parsedId.data);
+    revalidateReiDaCopaPaths();
+
+    return {
+      ok: true,
+      message: "Palavra-chave excluída com sucesso.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: getKeywordActionErrorMessage(error, "Não foi possível excluir a palavra-chave agora."),
     };
   }
 }
