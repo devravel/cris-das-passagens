@@ -833,7 +833,7 @@ export function PackageCard({
                           ? "(max-width: 640px) 85vw, (max-width: 1024px) 33vw, 220px"
                           : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px"
                 }
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 containerClassName="absolute inset-0"
               />
             ) : (

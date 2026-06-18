@@ -1,13 +1,11 @@
 import { z } from "zod";
 
+import { normalizeRichTextValue } from "@/lib/blog/content";
+
 import { isValidBlogImageUrl } from "@/lib/blog/image-url";
 import {
   PACKAGE_CATEGORIES,
-  PACKAGE_FULL_DESCRIPTION_MAX,
-  PACKAGE_FULL_DESCRIPTION_MIN,
   PACKAGE_PRICE_SCOPES,
-  PACKAGE_SHORT_DESCRIPTION_MAX,
-  PACKAGE_SHORT_DESCRIPTION_MIN,
   PACKAGE_TYPES,
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
@@ -34,20 +32,8 @@ const packageFormFieldsSchema = z.object({
     .min(3, "Informe um slug com pelo menos 3 caracteres.")
     .max(120, "Slug deve ter no máximo 120 caracteres.")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use apenas letras minúsculas, números e hífens."),
-  shortDescription: z
-    .string()
-    .trim()
-    .max(
-      PACKAGE_SHORT_DESCRIPTION_MAX,
-      `Descrição curta deve ter no máximo ${PACKAGE_SHORT_DESCRIPTION_MAX} caracteres.`,
-    ),
-  fullDescription: z
-    .string()
-    .trim()
-    .max(
-      PACKAGE_FULL_DESCRIPTION_MAX,
-      `Descrição completa deve ter no máximo ${PACKAGE_FULL_DESCRIPTION_MAX} caracteres.`,
-    ),
+  shortDescription: z.string().trim(),
+  fullDescription: z.string().trim(),
   destination: z
     .string()
     .trim()
@@ -100,25 +86,6 @@ function validatePackageRules(
   ctx: z.RefinementCtx,
 ) {
   const type = data.type as PackageTypeValue;
-
-  if (data.shortDescription.length > 0 && data.shortDescription.length < PACKAGE_SHORT_DESCRIPTION_MIN) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["shortDescription"],
-      message: `Informe uma descrição curta com pelo menos ${PACKAGE_SHORT_DESCRIPTION_MIN} caracteres.`,
-    });
-  }
-
-  if (
-    data.fullDescription.length > 0 &&
-    data.fullDescription.length < PACKAGE_FULL_DESCRIPTION_MIN
-  ) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["fullDescription"],
-      message: `Informe uma descrição completa com pelo menos ${PACKAGE_FULL_DESCRIPTION_MIN} caracteres.`,
-    });
-  }
 
   if (PACKAGE_TYPES_WITH_CATEGORY.has(type) && !data.category) {
     ctx.addIssue({
@@ -265,7 +232,7 @@ export function toPackageCardPreviewData(
   return {
     title: destination,
     shortDescription: values.shortDescription.trim() || null,
-    fullDescription: values.fullDescription.trim() || null,
+    fullDescription: normalizeRichTextValue(values.fullDescription),
     destination,
     image: values.image.trim(),
     type: values.type,

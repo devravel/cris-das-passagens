@@ -5,6 +5,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { PUBLIC_PACKAGE_CACHE_TAGS } from "@/lib/package/cache-tags";
 import { z } from "zod";
 
+import { normalizeRichTextValue } from "@/lib/blog/content";
 import { getActionErrorMessage } from "@/lib/admin/action-error";
 import type { ActionResult } from "@/lib/admin/action-result";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
@@ -92,7 +93,7 @@ function normalizeInput(input: PackageFormValues) {
     title: input.title.trim(),
     slug: input.slug.trim(),
     shortDescription: input.shortDescription.trim() || null,
-    fullDescription: input.fullDescription.trim() || null,
+    fullDescription: normalizeRichTextValue(input.fullDescription),
     destination: input.destination.trim(),
     image: normalizePackageImageUrl(input.image.trim()),
     type: input.type,

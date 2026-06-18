@@ -1,3 +1,33 @@
+export function isRichTextHtml(value: string): boolean {
+  return /<\/?[a-z][\s\S]*>/i.test(value.trim());
+}
+
+export function isRichTextEmpty(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return true;
+  }
+
+  const textContent = trimmed
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<\/p>/gi, " ")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\u00a0/g, " ")
+    .trim();
+
+  return textContent.length === 0;
+}
+
+export function normalizeRichTextValue(value: string): string | null {
+  const trimmed = value.trim();
+  if (isRichTextEmpty(trimmed)) {
+    return null;
+  }
+
+  return trimmed;
+}
+
 export function enhanceBlogContentHtml(html: string): string {
   if (!html.trim()) {
     return html;

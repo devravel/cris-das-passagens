@@ -8,6 +8,7 @@ import {
 } from "@/components/packages/package-card";
 import { PackageDescriptionModal } from "@/components/packages/package-description-modal";
 import type { PublicPackage } from "@/lib/package/queries";
+import { isRichTextEmpty } from "@/lib/blog/content";
 import { DEFAULT_DEPARTURE_CITY } from "@/config/packages-showcase";
 import { cn } from "@/lib/utils";
 
@@ -44,9 +45,9 @@ export function PublicPackageCard({
   const whatsAppPackageTitle = pkg.title || pkg.destination;
   const resolvedDepartureCity =
     pkg.departureCity?.trim() || departureCity || DEFAULT_DEPARTURE_CITY;
-  const fullDescription = pkg.fullDescription?.trim() || null;
+  const fullDescription = pkg.fullDescription?.trim() ?? "";
   const showDescriptionCta =
-    enableDescriptionModal && Boolean(fullDescription);
+    enableDescriptionModal && !isRichTextEmpty(fullDescription);
   const cardLabel =
     pkg.type === "HOTEL"
       ? pkg.hotelName?.trim() || pkg.destination || pkg.title || "Pacote turístico"
@@ -80,7 +81,7 @@ export function PublicPackageCard({
         />
       </div>
 
-      {showDescriptionCta && fullDescription ? (
+      {showDescriptionCta ? (
         <PackageDescriptionModal
           open={descriptionModalOpen}
           onOpenChange={setDescriptionModalOpen}
