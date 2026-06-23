@@ -786,6 +786,16 @@ export function PackageCard({
     ? [data.hotelName?.trim(), data.destination].filter(Boolean).join(" - ") ||
       "Pacote de hospedagem"
     : data.destination || data.title || "Pacote turístico";
+  const imageSizes =
+    layout === "grid"
+      ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 288px"
+      : layout === "preview"
+        ? "(max-width: 768px) 100vw, 420px"
+        : isListing
+          ? "(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 32vw"
+          : isCompact
+            ? "(max-width: 640px) 85vw, (max-width: 1024px) 33vw, 220px"
+            : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px";
 
   return (
     <article
@@ -817,25 +827,27 @@ export function PackageCard({
             )}
           >
             {resolvedImageSrc ? (
-              <StorageImage
-                src={resolvedImageSrc}
-                alt={imageAlt}
-                fill
-                priority={priority}
-                sizes={
-                  layout === "grid"
-                    ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 288px"
-                    : layout === "preview"
-                      ? "(max-width: 768px) 100vw, 420px"
-                      : isListing
-                        ? "(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 32vw"
-                        : isCompact
-                          ? "(max-width: 640px) 85vw, (max-width: 1024px) 33vw, 220px"
-                          : "(max-width: 640px) 240px, (max-width: 1024px) 260px, 288px"
-                }
-                className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                containerClassName="absolute inset-0"
-              />
+              <>
+                <StorageImage
+                  src={resolvedImageSrc}
+                  alt=""
+                  fill
+                  sizes={imageSizes}
+                  aria-hidden
+                  className="scale-110 object-cover blur-2xl brightness-[0.92] saturate-[1.12]"
+                  containerClassName="absolute inset-0"
+                />
+                <StorageImage
+                  src={resolvedImageSrc}
+                  alt={imageAlt}
+                  fill
+                  priority={priority}
+                  sizes={imageSizes}
+                  style={{ objectFit: "contain" }}
+                  className="z-[1] object-center transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  containerClassName="absolute inset-0 z-[1]"
+                />
+              </>
             ) : (
               <div
                 className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground"

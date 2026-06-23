@@ -168,6 +168,25 @@ function computeCarouselLayout(
   return { cardWidth, gap, cardsPerView };
 }
 
+/** Garante alinhamento à esquerda no estado inicial (≤425px) antes/durante falha do autoplay. */
+function ensureLandingNarrowInitialScrollAlignment(
+  container: HTMLElement,
+  content: HTMLElement | null,
+  viewportWidth: number,
+  variant: "landing" | "listing",
+  virtualScrollLeft: number,
+) {
+  if (
+    variant !== "landing" ||
+    viewportWidth > LANDING_HERO_PEEK_MOBILE_MAX_VIEWPORT ||
+    virtualScrollLeft > 0.5
+  ) {
+    return;
+  }
+
+  syncScrollerToAutoplayOffset(container, content, 0);
+}
+
 /**
  * Estimativa quando o container ainda não tem largura (ex.: coluna 50% da hero no primeiro paint).
  * Evita cards com `invisible` até o ResizeObserver rodar.
@@ -397,6 +416,14 @@ export function PackageCardsContinuousCarousel({
     }
 
     measureRetriesRef.current = 0;
+
+    ensureLandingNarrowInitialScrollAlignment(
+      container,
+      content,
+      viewportWidth,
+      variant,
+      virtualScrollLeftRef.current,
+    );
   }, [variant, packages.length, updateScrollState]);
 
   useLayoutEffect(() => {
@@ -406,6 +433,23 @@ export function PackageCardsContinuousCarousel({
   useLayoutEffect(() => {
     measureLayout();
   }, [packages.length, copies, reduceMotion, isMobileAutoplay, measureLayout]);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+
+    if (!container || !layout || !isMobileAutoplay) {
+      return;
+    }
+
+    ensureLandingNarrowInitialScrollAlignment(
+      container,
+      content,
+      window.innerWidth,
+      variant,
+      virtualScrollLeftRef.current,
+    );
+  }, [copies, layout, variant, isMobileAutoplay]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -657,6 +701,7 @@ export function PackageCardsContinuousCarousel({
           useInfiniteTrack || hasOverflow
             ? "overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden"
             : "overflow-hidden",
+          variant === "landing" && "max-[425px]:[overflow-anchor:none]",
           useInfiniteTrack && "cursor-grab active:cursor-grabbing",
         )}
         role="region"
