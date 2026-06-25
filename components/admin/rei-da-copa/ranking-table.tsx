@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Loader2, PencilLine, Plus, Trash2 } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import {
@@ -23,13 +23,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { RANKING_POINT_INCREMENTS } from "@/lib/rei-da-copa/schemas";
 import type {
+  AdminReiDaCopaParticipantRow,
   AdminReiDaCopaRankingRow,
-  AdminReiDaCopaUnrankedParticipant,
 } from "@/lib/rei-da-copa/types";
 
 type RankingTableProps = {
   entries: AdminReiDaCopaRankingRow[];
-  unrankedParticipants: AdminReiDaCopaUnrankedParticipant[];
+  participants: AdminReiDaCopaParticipantRow[];
 };
 
 type EditState = {
@@ -39,7 +39,7 @@ type EditState = {
   points: string;
 };
 
-export function RankingTable({ entries, unrankedParticipants }: RankingTableProps) {
+export function RankingTable({ entries, participants }: RankingTableProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [editState, setEditState] = useState<EditState | null>(null);
@@ -47,6 +47,16 @@ export function RankingTable({ entries, unrankedParticipants }: RankingTableProp
   const [selectedParticipantId, setSelectedParticipantId] = useState("");
   const [newPosition, setNewPosition] = useState("1");
   const [newPoints, setNewPoints] = useState("0");
+
+  const rankedParticipantIds = useMemo(
+    () => new Set(entries.map((entry) => entry.participantId)),
+    [entries],
+  );
+
+  const availableParticipants = useMemo(
+    () => participants.filter((participant) => !rankedParticipantIds.has(participant.id)),
+    [participants, rankedParticipantIds],
+  );
 
   function handleAddPoints(participantId: string, amount: number) {
     startTransition(async () => {
@@ -99,6 +109,11 @@ export function RankingTable({ entries, unrankedParticipants }: RankingTableProp
       return;
     }
 
+    if (rankedParticipantIds.has(selectedParticipantId)) {
+      toast.error("Este participante já está no ranking. Use Editar na tabela abaixo.");
+      return;
+    }
+
     startTransition(async () => {
       const result = await upsertReiDaCopaRankingEntryAction({
         participantId: selectedParticipantId,
@@ -140,55 +155,73 @@ export function RankingTable({ entries, unrankedParticipants }: RankingTableProp
 
   return (
     <>
-      {unrankedParticipants.length > 0 ? (
+      {participants.length > 0 ? (
         <div className="rounded-2xl border border-border/70 bg-card/80 p-4 shadow-sm">
-          <p className="mb-3 text-sm font-medium text-foreground">Adicionar ao ranking</p>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="min-w-[220px] flex-1">
-              <label className="mb-1.5 block text-xs text-muted-foreground">Participante</label>
-              <select
-                value={selectedParticipantId}
-                onChange={(event) => setSelectedParticipantId(event.target.value)}
-                className="h-10 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                <option value="">Selecione...</option>
-                {unrankedParticipants.map((participant) => (
-                  <option key={participant.id} value={participant.id}>
-                    #{participant.registrationNumber} — {participant.name} ({participant.instagram})
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="w-28">
-              <label className="mb-1.5 block text-xs text-muted-foreground">Posição</label>
-              <Input
-                type="number"
-                min={1}
-                value={newPosition}
-                onChange={(event) => setNewPosition(event.target.value)}
-                className="h-10 rounded-xl"
-              />
-            </div>
-            <div className="w-28">
-              <label className="mb-1.5 block text-xs text-muted-foreground">Pontos</label>
-              <Input
-                type="number"
-                min={0}
-                value={newPoints}
-                onChange={(event) => setNewPoints(event.target.value)}
-                className="h-10 rounded-xl"
-              />
-            </div>
-            <Button
-              type="button"
-              className="rounded-xl"
-              onClick={handleAddParticipant}
-              disabled={isPending}
-            >
-              <Plus className="size-4" aria-hidden />
-              Adicionar
-            </Button>
+          <div className="mb-3 space-y-1">
+            <p className="text-sm font-medium text-foreground">Adicionar ao ranking</p>
+            <p className="text-xs text-muted-foreground">
+              {participants.length} inscrições · {entries.length} no ranking ·{" "}
+              {availableParticipants.length} disponíveis para adicionar
+            </p>
           </div>
+          {availableParticipants.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Todos os participantes inscritos já estão no ranking.
+            </p>
+          ) : (
+            <div className="flex flex-wrap items-end gap-3">
+              <div className="min-w-[220px] flex-1">
+                <label className="mb-1.5 block text-xs text-muted-foreground">Participante</label>
+                <select
+                  value={selectedParticipantId}
+                  onChange={(event) => setSelectedParticipantId(event.target.value)}
+                  className="h-10 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  <option value="">Selecione...</option>
+                  {participants.map((participant) => {
+                    const isRanked = rankedParticipantIds.has(participant.id);
+
+                    return (
+                      <option key={participant.id} value={participant.id} disabled={isRanked}>
+                        #{participant.registrationNumber} — {participant.name} (
+                        {participant.instagram})
+                        {isRanked ? " — já no ranking" : ""}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className="w-28">
+                <label className="mb-1.5 block text-xs text-muted-foreground">Posição</label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={newPosition}
+                  onChange={(event) => setNewPosition(event.target.value)}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              <div className="w-28">
+                <label className="mb-1.5 block text-xs text-muted-foreground">Pontos</label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={newPoints}
+                  onChange={(event) => setNewPoints(event.target.value)}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              <Button
+                type="button"
+                className="rounded-xl"
+                onClick={handleAddParticipant}
+                disabled={isPending}
+              >
+                <Plus className="size-4" aria-hidden />
+                Adicionar
+              </Button>
+            </div>
+          )}
         </div>
       ) : null}
 

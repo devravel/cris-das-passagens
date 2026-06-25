@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  getAdminReiDaCopaParticipants,
   getAdminReiDaCopaRanking,
-  getAdminReiDaCopaUnrankedParticipants,
 } from "@/lib/rei-da-copa/admin-queries";
 
 export const metadata: Metadata = {
@@ -24,9 +24,9 @@ export const metadata: Metadata = {
 };
 
 export default async function ReiDaCopaRankingPage() {
-  const [entries, unrankedParticipants] = await Promise.all([
+  const [entries, participants] = await Promise.all([
     getAdminReiDaCopaRanking(),
-    getAdminReiDaCopaUnrankedParticipants(),
+    getAdminReiDaCopaParticipants(),
   ]);
 
   const leader = entries[0];
@@ -84,7 +84,7 @@ export default async function ReiDaCopaRankingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <RankingTable entries={entries} unrankedParticipants={unrankedParticipants} />
+          <RankingTable entries={entries} participants={participants} />
         </CardContent>
       </Card>
     </section>
