@@ -37,6 +37,11 @@ export const siteConfig = {
     googleBusinessProfile: contentLinks.googleBusinessProfile,
     facebook: "",
   },
+
+  developer: {
+    name: "Ravel Sylvestre",
+    href: "https://www.linkedin.com/in/ravel-sylvestre",
+  },
 } as const;
 
 export type SiteConfig = typeof siteConfig;

@@ -50,7 +50,7 @@ export function WhatsAppFab({
           <div
             className={cn(
               "absolute bottom-full right-full -mb-[2px] -mr-[2px] w-max max-w-[min(16rem,calc(100vw-5rem))]",
-              "rounded-md bg-background/95 px-3 py-2 pr-7 text-xs font-medium leading-snug text-foreground shadow-[0_2px_12px_rgba(0,0,0,0.12)] ring-1 ring-border/60 backdrop-blur-sm",
+              "rounded-md bg-background/95 px-4 py-3 pr-8 text-sm tracking-wide leading-snug text-foreground shadow-[0_2px_12px_rgba(0,0,0,0.12)] ring-1 ring-border/60 backdrop-blur-sm",
             )}
           >
             <button

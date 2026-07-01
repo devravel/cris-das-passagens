@@ -7,7 +7,7 @@ export const consentCopy = {
     text: "Utilizamos cookies e tecnologias semelhantes para melhorar sua experiência, personalizar conteúdo e analisar o tráfego do site. Você pode aceitar ou recusar.",
     accept: "Aceitar",
     reject: "Recusar",
-    ariaLabel: "Consentimento de cookies e privacidade",
+    ariaLabel: "Cookies e privacidade",
   },
   modal: {
     title: "Preferências de cookies",

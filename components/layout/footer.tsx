@@ -113,6 +113,51 @@ export function Footer({
                   {tagline}
                 </p>
               ) : null}
+              {siteConfig.addressDetails.cnpj ? (
+                <p className="text-xs text-white/60">
+                  <small className="text-[0.8125rem] leading-relaxed">
+                    CNPJ {siteConfig.addressDetails.cnpj}
+                  </small>
+                </p>
+              ) : null}
+              <div className="space-y-3 pt-2 text-xs text-white/60">
+                <nav aria-label="Institucional">
+                  <ul className="flex flex-wrap gap-x-4 gap-y-2" role="list">
+                    {footerInstitutionalLinks.map((item) => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className="text-[0.8125rem] font-medium text-white/70 transition-colors duration-200 hover:text-white focus-visible:rounded-md focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                    <li>
+                      <CookiePreferencesLink />
+                    </li>
+                  </ul>
+                </nav>
+                <p>
+                  <small className="text-[0.8125rem] leading-relaxed">
+                    © <span className="tabular-nums">{copyrightYear}</span>{" "}
+                    {siteName}. Todos os direitos reservados.
+                  </small>
+                </p>
+                <p>
+                  <small className="text-[0.8125rem] leading-relaxed">
+                    Desenvolvido por:{" "}
+                    <a
+                      href={siteConfig.developer.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-white/70 transition-colors duration-200 hover:text-white focus-visible:rounded-md focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                    >
+                      {siteConfig.developer.name}
+                    </a>
+                  </small>
+                </p>
+              </div>
               {socialLinks && socialLinks.length > 0 ? (
                 <ul className="flex flex-wrap gap-3 pt-1" role="list">
                   {socialLinks.map(({ label, href }) => (
@@ -254,51 +299,6 @@ export function Footer({
                   ) : null}
                 </ul>
               </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 border-t border-white/10 pt-8 text-xs text-white/60">
-            {footerInstitutionalLinks.length > 0 ? (
-              <nav aria-label="Institucional">
-                <ul className="flex flex-wrap gap-x-4 gap-y-2" role="list">
-                  {footerInstitutionalLinks.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className="text-[0.8125rem] font-medium text-white/70 transition-colors duration-200 hover:text-white focus-visible:rounded-md focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <CookiePreferencesLink />
-                  </li>
-                </ul>
-              </nav>
-            ) : (
-              <nav aria-label="Institucional">
-                <ul className="flex flex-wrap gap-x-4 gap-y-2" role="list">
-                  <li>
-                    <CookiePreferencesLink />
-                  </li>
-                </ul>
-              </nav>
-            )}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <p>
-                <small className="text-[0.8125rem] leading-relaxed">
-                  © <span className="tabular-nums">{copyrightYear}</span>{" "}
-                  {siteName}. Todos os direitos reservados.
-                </small>
-              </p>
-              {siteConfig.addressDetails.cnpj ? (
-                <p>
-                  <small className="text-[0.8125rem] leading-relaxed">
-                    CNPJ {siteConfig.addressDetails.cnpj}
-                  </small>
-                </p>
-              ) : null}
             </div>
           </div>
         </div>
