@@ -30,7 +30,7 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${fontSans.variable} h-full antialiased`}
     >
-      <link rel="icon" href="/favicon.ico" sizes="any" />
+      <link rel="icon" href="/icon.png" type="image/png" sizes="96x96" />
       <link rel="preconnect" href="https://images.unsplash.com" />
       <link rel="dns-prefetch" href="https://images.unsplash.com" />
       {supabaseOrigin ? (

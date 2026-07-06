@@ -29,6 +29,15 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400,
   },
+  async redirects() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination: "/icon.png",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
