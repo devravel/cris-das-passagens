@@ -265,14 +265,15 @@ Acesse [http://localhost:3000](http://localhost:3000). Painel admin: [http://loc
 1. Conectar repositório GitHub à [Vercel](https://vercel.com/)
 2. Configurar **todas** as variáveis obrigatórias de `.env.example` no painel da Vercel
 3. Definir `NEXT_PUBLIC_SITE_URL` com o domínio final (ex.: `https://crisdaspassagens.com.br`)
-4. Usar connection string do **pooler** Supabase em `DATABASE_URL`
-5. Executar migrações: `npm run db:migrate` (ou incluir no pipeline de deploy)
-6. Criar buckets no Supabase Storage com leitura pública
-7. Criar usuário admin: `npm run admin:create`
-8. Configurar `NEXT_PUBLIC_META_PIXEL_ID` se desejar rastreamento
-9. Configurar `RESEND_API_KEY` para notificações da campanha Rei da Copa
-10. Validar SEO: `/sitemap.xml`, `/robots.txt`, [Rich Results Test](https://search.google.com/test/rich-results)
-11. Verificar Política de Privacidade em `/politica-de-privacidade`
+4. Em **Vercel → Domains**, definir `crisdaspassagens.com.br` como domínio **primário** (não redirecionar o apex para `www`). O Safari e outros navegadores buscam `/favicon.ico` no domínio exibido; se o apex responder só com redirect 308, o ícone padrão da Vercel aparece nas sugestões e favoritos.
+5. Usar connection string do **pooler** Supabase em `DATABASE_URL`
+6. Executar migrações: `npm run db:migrate` (ou incluir no pipeline de deploy)
+7. Criar buckets no Supabase Storage com leitura pública
+8. Criar usuário admin: `npm run admin:create`
+9. Configurar `NEXT_PUBLIC_META_PIXEL_ID` se desejar rastreamento
+10. Configurar `RESEND_API_KEY` para notificações da campanha Rei da Copa
+11. Validar SEO: `/sitemap.xml`, `/robots.txt`, [Rich Results Test](https://search.google.com/test/rich-results)
+12. Verificar Política de Privacidade em `/politica-de-privacidade`
 
 ### Build local
 
