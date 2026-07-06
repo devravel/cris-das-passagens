@@ -9,12 +9,14 @@ import { cn } from "@/lib/utils";
 type PackagesListingSectionProps = {
   config: PackagesPageSectionConfig;
   packages: PublicPackage[];
+  highlightedSlug?: string | null;
   className?: string;
 };
 
 export function PackagesListingSection({
   config,
   packages,
+  highlightedSlug = null,
   className,
 }: PackagesListingSectionProps) {
   const headingId = `${config.sectionId}-heading`;
@@ -36,6 +38,7 @@ export function PackagesListingSection({
           role="tabpanel"
           aria-labelledby={headingId}
           packages={packages}
+          highlightedSlug={highlightedSlug}
           header={
             <h2
               id={headingId}

@@ -17,6 +17,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { deletePackageAction } from "@/app/admin/(protected)/packages/actions";
+import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -166,6 +167,7 @@ export function PackagesGrid({ packages }: PackagesGridProps) {
 
               {/* Actions */}
               <div className="flex shrink-0 gap-2 sm:flex-col sm:items-end">
+                <PackageShareActions title={pkg.title} slug={pkg.slug} compact />
                 <Button
                   asChild
                   size="sm"

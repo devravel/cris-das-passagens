@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { trackMetaViewContent } from "@/lib/meta-pixel";
@@ -9,6 +9,7 @@ import { getPackageAnchorId } from "@/lib/package/routes";
 export function PackageHighlightOnLoad() {
   const searchParams = useSearchParams();
   const highlightSlug = searchParams.get("destaque");
+  const trackedSlugRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!highlightSlug) {
@@ -24,7 +25,11 @@ export function PackageHighlightOnLoad() {
         return false;
       }
 
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
       target.dataset.highlighted = "true";
 
       if (target instanceof HTMLElement) {
@@ -38,10 +43,13 @@ export function PackageHighlightOnLoad() {
       return true;
     };
 
-    trackMetaViewContent({
-      content_name: highlightSlug,
-      content_ids: [highlightSlug],
-    });
+    if (trackedSlugRef.current !== highlightSlug) {
+      trackedSlugRef.current = highlightSlug;
+      trackMetaViewContent({
+        content_name: highlightSlug,
+        content_ids: [highlightSlug],
+      });
+    }
 
     if (!highlightTarget()) {
       const retryTimer = window.setTimeout(highlightTarget, 350);

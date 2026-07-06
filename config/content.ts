@@ -46,6 +46,11 @@ export type FinalCtaAction = {
   external?: boolean;
 };
 
+export type WhatsAppGroupLink = {
+  label: string;
+  href: string;
+};
+
 export type TestimonialItem = {
   quote: string;
   author: string;
@@ -370,11 +375,19 @@ export const content = {
   blogPost: {
     vipCta: {
       eyebrow: "Grupo VIP",
-      headline: "Entre agora no grupo VIP de dicas",
+      headline: "Entre nos grupos VIP de dicas",
       description:
         "Receba promoções exclusivas, alertas de passagens e dicas práticas para viajar melhor — direto no WhatsApp.",
-      buttonLabel: "Entrar no grupo VIP",
-      href: contentLinks.whatsapp,
+      groups: [
+        {
+          label: "Entrar no grupo Geral",
+          href: "https://chat.whatsapp.com/LOsp9wWG8849McRrUFwYZV?mode=gi_t",
+        },
+        {
+          label: "Entrar no grupo Rio Grande do Sul",
+          href: "https://chat.whatsapp.com/LQlBDVytbMQ1wSBzjXbPAQ?mode=gi_t",
+        },
+      ] satisfies WhatsAppGroupLink[],
     },
   },
 

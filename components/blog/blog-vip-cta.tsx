@@ -29,16 +29,21 @@ export function BlogVipCta({ className }: BlogVipCtaProps) {
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
         {vipCta.description}
       </p>
-      <Button
-        asChild
-        size="lg"
-        className="mt-5 h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md"
-      >
-        <Link href={vipCta.href} target="_blank" rel="noopener noreferrer" className="gap-2">
-          {vipCta.buttonLabel}
-          <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-        </Link>
-      </Button>
+      <div className="mt-5 flex flex-wrap gap-3">
+        {vipCta.groups.map((group) => (
+          <Button
+            key={group.href}
+            asChild
+            size="lg"
+            className="h-11 rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md"
+          >
+            <Link href={group.href} target="_blank" rel="noopener noreferrer" className="gap-2">
+              {group.label}
+              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            </Link>
+          </Button>
+        ))}
+      </div>
     </aside>
   );
 }

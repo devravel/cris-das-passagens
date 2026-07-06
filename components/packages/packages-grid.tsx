@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 type PackagesGridProps = {
   packages: PublicPackage[];
   departureCity?: string;
+  highlightedSlug?: string | null;
   className?: string;
   emptyMessage?: string;
   header?: ReactNode;
@@ -19,6 +20,7 @@ type PackagesGridProps = {
 export function PackagesGrid({
   packages,
   departureCity = DEFAULT_DEPARTURE_CITY,
+  highlightedSlug = null,
   className,
   emptyMessage = "Nenhuma oferta disponível no momento.",
   header,
@@ -55,6 +57,7 @@ export function PackagesGrid({
         showAirlineBadge
         anchorCards
         enableDescriptionModal
+        highlightedSlug={highlightedSlug}
         header={header}
       />
     </div>

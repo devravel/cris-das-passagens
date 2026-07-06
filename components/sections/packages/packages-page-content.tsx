@@ -10,6 +10,11 @@ import {
 import { PackagesListingSection } from "@/components/sections/packages/packages-listing-section";
 import { packagesPageContent, packagesPageSections } from "@/config/packages-page";
 import { packageMatchesCategory } from "@/lib/package/category";
+import {
+  findPackageBySlug,
+  getSectionIdForPackageType,
+  resolveHighlightCategory,
+} from "@/lib/package/highlight";
 import type { PackageCategoryValue, PackageTypeValue } from "@/lib/package/constants";
 import type { PackagesPageData, PublicPackage } from "@/lib/package/queries";
 
@@ -128,11 +133,18 @@ function getSectionConfig(sectionId: string) {
 }
 
 export function PackagesPageContent({ data }: PackagesPageContentProps) {
+  const [highlightSlug, setHighlightSlug] = useState<string | null>(null);
   const [category, setCategory] = useState<PackageCategoryValue>("NATIONAL");
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const programmaticScrollUntilRef = useRef(0);
   const pendingScrollSectionIdRef = useRef<string | null>(null);
   const hasHandledInitialHashRef = useRef(false);
+  const hasHandledInitialHighlightRef = useRef(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setHighlightSlug(params.get("destaque"));
+  }, []);
 
   const sectionsWithPackages = useMemo(
     () =>
@@ -310,6 +322,41 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
   }, [category, data, lockProgrammaticScroll, navSectionIds]);
 
   useEffect(() => {
+    if (hasHandledInitialHighlightRef.current || !highlightSlug) {
+      return;
+    }
+
+    const highlightedPackage = findPackageBySlug(data, highlightSlug);
+
+    if (!highlightedPackage) {
+      return;
+    }
+
+    const sectionId = getSectionIdForPackageType(highlightedPackage.type);
+
+    if (!sectionId || !navSectionIds.includes(sectionId)) {
+      return;
+    }
+
+    hasHandledInitialHighlightRef.current = true;
+
+    const targetCategory = resolveHighlightCategory(highlightedPackage.category);
+
+    setActiveSectionId(sectionId);
+
+    if (targetCategory !== category) {
+      pendingScrollSectionIdRef.current = sectionId;
+      setCategory(targetCategory);
+      return;
+    }
+
+    lockProgrammaticScroll();
+    window.requestAnimationFrame(() => {
+      scrollToPackagesSection(sectionId);
+    });
+  }, [category, data, highlightSlug, lockProgrammaticScroll, navSectionIds]);
+
+  useEffect(() => {
     if (visibleSectionIds.length === 0) {
       return;
     }
@@ -378,6 +425,7 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
               key={config.sectionId}
               config={config}
               packages={packages}
+              highlightedSlug={highlightSlug}
               className={
                 index > 0 ? "border-t border-border/50 pt-11 sm:pt-12 lg:pt-14" : undefined
               }

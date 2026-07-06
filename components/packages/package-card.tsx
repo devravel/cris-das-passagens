@@ -10,6 +10,7 @@ import {
 
 import { StorageImage } from "@/components/ui/storage-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
+import { PackageCardShareButton } from "@/components/packages/package-card-share-button";
 import { PackageWhatsAppButton } from "@/components/packages/package-whatsapp-button";
 import {
   PACKAGE_IMAGE_ASPECT_RATIO,
@@ -105,6 +106,7 @@ type PackageCardProps = {
   narrowMobileTypography?: boolean;
   showDescriptionCta?: boolean;
   onDescriptionClick?: () => void;
+  showShareButton?: boolean;
   className?: string;
 };
 
@@ -485,6 +487,7 @@ function PricingSection({
   packageTitle,
   compact = false,
   narrowMobileTypography = false,
+  showShareButton = false,
 }: {
   data: PackageCardData;
   variant: PackageCardVariant;
@@ -493,12 +496,15 @@ function PricingSection({
   packageTitle?: string;
   compact?: boolean;
   narrowMobileTypography?: boolean;
+  showShareButton?: boolean;
 }) {
   const isLanding = variant === "landing";
   const isDetailed = variant === "listing" || variant === "preview";
   const showFooter = true;
   const showLandingSaibaMais = isLanding && packageSlug && whatsAppPackageTitle;
   const isListing = variant === "listing";
+  const showListingShare =
+    isListing && showShareButton && Boolean(packageSlug) && Boolean(packageTitle);
   const pricePadding = compact
     ? "px-2.5 py-1.5 lg:py-2"
     : isListing
@@ -578,6 +584,7 @@ function PricingSection({
           className={cn(
             actionPadding,
             showFooter && "border-b border-border/70",
+            showListingShare && "flex flex-col gap-1.5 sm:gap-2",
           )}
         >
           <PackageWhatsAppButton
@@ -601,6 +608,18 @@ function PricingSection({
                 : undefined
             }
           />
+          {showListingShare ? (
+            <PackageCardShareButton title={packageTitle!} slug={packageSlug!} />
+          ) : null}
+        </div>
+      ) : showListingShare ? (
+        <div
+          className={cn(
+            actionPadding,
+            showFooter && "border-b border-border/70",
+          )}
+        >
+          <PackageCardShareButton title={packageTitle!} slug={packageSlug!} />
         </div>
       ) : null}
 
@@ -757,6 +776,7 @@ export function PackageCard({
   narrowMobileTypography = false,
   showDescriptionCta = false,
   onDescriptionClick,
+  showShareButton = false,
   className,
 }: PackageCardProps) {
   const resolvedImageSrc = imageSrc || data.image;
@@ -1033,6 +1053,7 @@ export function PackageCard({
             packageTitle={cardLabel}
             compact={isCompact}
             narrowMobileTypography={narrowMobileTypography}
+            showShareButton={showShareButton}
           />
         </div>
       </div>

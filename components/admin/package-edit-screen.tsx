@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { PackageForm } from "@/components/admin/package-form";
+import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_PACKAGE_DEPARTURE_CITY, packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
 import type { AdminPackageDetail } from "@/lib/package/queries";
@@ -38,6 +39,17 @@ export function PackageEditScreen({
           <ArrowLeft className="size-4" aria-hidden />
           Voltar
         </Button>
+      </div>
+
+      <div className="rounded-2xl border border-border/70 bg-card/90 p-4 shadow-sm sm:p-6">
+        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">
+          Link para compartilhar
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Copie este link para usar nas artes do Instagram. Quem abrir será levado ao pacote em
+          /pacotes.
+        </p>
+        <PackageShareActions title={pkg.title} slug={pkg.slug} className="mt-4" />
       </div>
 
       <div className="rounded-2xl border border-border/70 bg-card/90 p-4 shadow-sm sm:p-6">
