@@ -30,16 +30,15 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${fontSans.variable} h-full antialiased`}
     >
-      <head>
-        <link rel="preconnect" href="https://images.unsplash.com" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        {supabaseOrigin ? (
-          <>
-            <link rel="preconnect" href={supabaseOrigin} />
-            <link rel="dns-prefetch" href={supabaseOrigin} />
-          </>
-        ) : null}
-      </head>
+      <link rel="icon" href="/favicon.ico" sizes="any" />
+      <link rel="preconnect" href="https://images.unsplash.com" />
+      <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      {supabaseOrigin ? (
+        <>
+          <link rel="preconnect" href={supabaseOrigin} />
+          <link rel="dns-prefetch" href={supabaseOrigin} />
+        </>
+      ) : null}
       <body className="flex min-h-full flex-col overflow-x-clip font-sans">
         <ConsentRoot>
           <JsonLdScript data={[createOrganizationJsonLd(), createWebsiteJsonLd()]} />
