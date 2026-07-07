@@ -6,7 +6,7 @@ import { indexableRobots, noIndexRobots } from "@/lib/seo/robots";
 import { absoluteUrl, buildCanonicalUrl, getSiteUrl } from "@/lib/seo/site-url";
 
 const defaultDescription = content.meta.tagline;
-const defaultOgImagePath = "/opengraph-image";
+const defaultOgImagePath = "/og-default-logo.jpg";
 
 type OgImageInput =
   | string

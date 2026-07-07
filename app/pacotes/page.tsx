@@ -8,26 +8,80 @@ import { PackageHighlightOnLoad } from "@/components/packages/package-highlight-
 import { PackagesPageContent } from "@/components/sections/packages/packages-page-content";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { packagesPageContent } from "@/config/packages-page";
+import { findPackageBySlug } from "@/lib/package/highlight";
+import { getPackageHighlightPath } from "@/lib/package/routes";
 import { getPackagesPageData } from "@/lib/package/queries";
 import { createMetadata } from "@/lib/seo";
+import { resolvePublicOgImageUrl } from "@/lib/seo/og-image-url";
 import { scrollRevealDefaults } from "@/lib/motion";
 
-export const metadata: Metadata = createMetadata({
-  title: "Pacotes Turísticos",
-  description: packagesPageContent.description,
-  path: "/pacotes",
-  keywords: [
-    "pacotes turísticos",
-    "passagens aéreas",
-    "circuitos",
-    "hospedagem",
-    "ingressos",
-    "cruzeiros",
-    "viagens nacionais",
-    "viagens internacionais",
-    "Cris das Passagens",
-  ],
-});
+const packagesPageKeywords = [
+  "pacotes turísticos",
+  "passagens aéreas",
+  "circuitos",
+  "hospedagem",
+  "ingressos",
+  "cruzeiros",
+  "viagens nacionais",
+  "viagens internacionais",
+  "Cris das Passagens",
+] as const;
+
+type PacotesPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function getHighlightSlug(
+  searchParams: Record<string, string | string[] | undefined>,
+): string | null {
+  const value = searchParams.destaque;
+
+  if (typeof value === "string" && value.trim()) {
+    return value.trim();
+  }
+
+  return null;
+}
+
+export async function generateMetadata({
+  searchParams,
+}: PacotesPageProps): Promise<Metadata> {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const highlightSlug = getHighlightSlug(resolvedSearchParams);
+
+  if (highlightSlug) {
+    const data = await getPackagesPageData();
+    const highlightedPackage = findPackageBySlug(data, highlightSlug);
+
+    if (highlightedPackage) {
+      const description =
+        highlightedPackage.shortDescription?.trim() ||
+        highlightedPackage.destination;
+
+      return createMetadata({
+        title: highlightedPackage.title,
+        description,
+        path: getPackageHighlightPath(highlightedPackage.slug),
+        ogImage: {
+          url: resolvePublicOgImageUrl(highlightedPackage.image),
+          alt: highlightedPackage.title,
+        },
+        keywords: [
+          highlightedPackage.title,
+          highlightedPackage.destination,
+          ...packagesPageKeywords,
+        ],
+      });
+    }
+  }
+
+  return createMetadata({
+    title: "Pacotes Turísticos",
+    description: packagesPageContent.description,
+    path: "/pacotes",
+    keywords: [...packagesPageKeywords],
+  });
+}
 
 export const revalidate = 3600;
 

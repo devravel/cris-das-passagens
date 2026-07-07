@@ -16,7 +16,10 @@ import {
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { deletePackageAction } from "@/app/admin/(protected)/packages/actions";
+import {
+  deletePackageAction,
+  setPackageActiveAction,
+} from "@/app/admin/(protected)/packages/actions";
 import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +51,23 @@ export function PackagesGrid({ packages }: PackagesGridProps) {
       month: "2-digit",
       year: "numeric",
     }).format(new Date(value));
+  }
+
+  function handleToggleActive(id: string, isActive: boolean) {
+    setPendingId(id);
+    startTransition(async () => {
+      const result = await setPackageActiveAction(id, !isActive);
+
+      if (!result.ok) {
+        toast.error(result.message);
+        setPendingId(null);
+        return;
+      }
+
+      toast.success(result.message);
+      setPendingId(null);
+      router.refresh();
+    });
   }
 
   function handleDelete() {
@@ -166,8 +186,25 @@ export function PackagesGrid({ packages }: PackagesGridProps) {
               </div>
 
               {/* Actions */}
-              <div className="flex shrink-0 gap-2 sm:flex-col sm:items-end">
+              <div className="flex shrink-0 flex-wrap gap-2 sm:flex-col sm:items-end">
                 <PackageShareActions title={pkg.title} slug={pkg.slug} compact />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 rounded-lg sm:flex-initial sm:w-28"
+                  disabled={isRowPending}
+                  onClick={() => handleToggleActive(pkg.id, pkg.active)}
+                >
+                  {isRowPending ? (
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                  ) : pkg.active ? (
+                    <Circle className="size-3.5 sm:mr-1.5" aria-hidden />
+                  ) : (
+                    <CheckCircle2 className="size-3.5 sm:mr-1.5" aria-hidden />
+                  )}
+                  <span className="hidden sm:inline">{pkg.active ? "Desativar" : "Ativar"}</span>
+                </Button>
                 <Button
                   asChild
                   size="sm"
