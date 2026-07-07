@@ -8,7 +8,7 @@ import {
   Ticket,
 } from "lucide-react";
 
-import { StorageImage } from "@/components/ui/storage-image";
+import { PackageCardIntrinsicImage } from "@/components/packages/package-card-intrinsic-image";
 import { LandingSaibaMaisAction } from "@/components/packages/landing-package-card-actions";
 import { PackageCardShareButton } from "@/components/packages/package-card-share-button";
 import { PackageWhatsAppButton } from "@/components/packages/package-whatsapp-button";
@@ -832,43 +832,42 @@ export function PackageCard({
     >
       <div className="flex h-full flex-col">
         <div className="relative">
-          <div
-            className={cn(
-              "relative w-full overflow-hidden bg-muted/30",
-              isCompact && "aspect-[5/3]",
-              isListing &&
-                "h-[8.75rem] sm:h-[9rem] md:h-[9.25rem] lg:h-[10rem]",
-              layout === "preview" &&
-                "h-[7rem] sm:h-[7.5rem] lg:h-[9.25rem] xl:h-[10rem]",
-              !isCompact &&
-                !isListing &&
-                layout !== "preview" &&
-                "aspect-[4/3]",
-            )}
-          >
-            {resolvedImageSrc ? (
-              <>
-                <StorageImage
-                  src={resolvedImageSrc}
-                  alt=""
-                  fill
-                  sizes={imageSizes}
-                  aria-hidden
-                  className="scale-110 object-cover blur-2xl brightness-[0.92] saturate-[1.12]"
-                  containerClassName="absolute inset-0"
+          {resolvedImageSrc ? (
+            <PackageCardIntrinsicImage
+              src={resolvedImageSrc}
+              alt={imageAlt}
+              sizes={imageSizes}
+              priority={priority}
+            >
+              <div
+                className={cn(
+                  "absolute z-10 flex min-w-0 max-w-[calc(100%-0.75rem)] items-center justify-start sm:max-w-[calc(100%-1.25rem)]",
+                  isCompact ? "top-1.5 left-0" : "top-2 left-0 sm:top-2.5",
+                )}
+              >
+                <DiscountBadge
+                  oldPrice={data.oldPrice}
+                  currentPrice={data.price}
+                  compact={isCompact}
+                  narrowMobileTypography={narrowMobileTypography}
                 />
-                <StorageImage
-                  src={resolvedImageSrc}
-                  alt={imageAlt}
-                  fill
-                  priority={priority}
-                  sizes={imageSizes}
-                  style={{ objectFit: "contain" }}
-                  className="z-[1] object-center transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                  containerClassName="absolute inset-0 z-[1]"
-                />
-              </>
-            ) : (
+              </div>
+            </PackageCardIntrinsicImage>
+          ) : (
+            <div
+              className={cn(
+                "relative w-full overflow-hidden bg-muted/30",
+                isCompact && "aspect-[5/3]",
+                isListing &&
+                  "h-[8.75rem] sm:h-[9rem] md:h-[9.25rem] lg:h-[10rem]",
+                layout === "preview" &&
+                  "h-[7rem] sm:h-[7.5rem] lg:h-[9.25rem] xl:h-[10rem]",
+                !isCompact &&
+                  !isListing &&
+                  layout !== "preview" &&
+                  "aspect-[4/3]",
+              )}
+            >
               <div
                 className="flex h-full items-center justify-center px-6 text-center text-sm text-muted-foreground"
                 style={
@@ -879,22 +878,22 @@ export function PackageCard({
               >
                 Imagem do pacote
               </div>
-            )}
 
-            <div
-              className={cn(
-                "absolute z-10 flex min-w-0 max-w-[calc(100%-0.75rem)] items-center justify-start sm:max-w-[calc(100%-1.25rem)]",
-                isCompact ? "top-1.5 left-0" : "top-2 left-0 sm:top-2.5",
-              )}
-            >
-              <DiscountBadge
-                oldPrice={data.oldPrice}
-                currentPrice={data.price}
-                compact={isCompact}
-                narrowMobileTypography={narrowMobileTypography}
-              />
+              <div
+                className={cn(
+                  "absolute z-10 flex min-w-0 max-w-[calc(100%-0.75rem)] items-center justify-start sm:max-w-[calc(100%-1.25rem)]",
+                  isCompact ? "top-1.5 left-0" : "top-2 left-0 sm:top-2.5",
+                )}
+              >
+                <DiscountBadge
+                  oldPrice={data.oldPrice}
+                  currentPrice={data.price}
+                  compact={isCompact}
+                  narrowMobileTypography={narrowMobileTypography}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {showAirlineBadgeOnCard ? (
             <div
