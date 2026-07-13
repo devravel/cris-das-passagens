@@ -271,7 +271,7 @@ export function GoogleReviewsCarousel({
 
         <div
           ref={trackRef}
-          className="col-start-2 row-start-1 min-w-0 overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="col-start-2 row-start-1 min-w-0 touch-pan-x snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="region"
           aria-label="Carrossel de avaliações do Google"
           onPointerDown={handlePointerDown}
@@ -279,14 +279,15 @@ export function GoogleReviewsCarousel({
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
         >
-          <div className="flex w-max min-w-full touch-pan-y py-0.5">
-            {reviews.map((review) => (
+          <div className="flex w-max min-w-full py-0.5">
+            {reviews.map((review, index) => (
               <div
                 key={review.id}
-                className="shrink-0"
+                className="shrink-0 snap-start"
                 style={{
                   width: cardWidth > 0 ? cardWidth : "100%",
-                  marginRight: cardGap,
+                  marginRight:
+                    index < reviews.length - 1 ? cardGap : undefined,
                 }}
               >
                 <GoogleReviewCard review={review} onOpen={onOpenReview} />

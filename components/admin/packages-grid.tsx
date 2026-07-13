@@ -180,7 +180,9 @@ export function PackagesGrid({ packages }: PackagesGridProps) {
                     <span aria-hidden>•</span>
                     <span className="font-semibold text-foreground">{formatPackagePrice(pkg.price)}</span>
                     <span aria-hidden>•</span>
-                    <span>{formatDate(pkg.createdAt)}</span>
+                    <span>
+                      Adicionado em <time dateTime={pkg.createdAt}>{formatDate(pkg.createdAt)}</time>
+                    </span>
                   </div>
                 </div>
               </div>

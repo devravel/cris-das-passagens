@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarPlus } from "lucide-react";
 
 import { PackageForm } from "@/components/admin/package-form";
 import { PackageShareActions } from "@/components/packages/package-share-actions";
@@ -19,6 +19,13 @@ export function PackageEditScreen({
   includedItemSuggestions,
 }: PackageEditScreenProps) {
   const router = useRouter();
+  const addedAt = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(pkg.createdAt));
 
   return (
     <section className="space-y-5">
@@ -29,6 +36,13 @@ export function PackageEditScreen({
           </h1>
           <p className="text-sm text-muted-foreground">
             Atualize informações, imagem e status com preview em tempo real.
+          </p>
+          <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CalendarPlus className="size-3.5" aria-hidden />
+            Adicionado em{" "}
+            <time dateTime={pkg.createdAt} className="font-medium text-foreground">
+              {addedAt}
+            </time>
           </p>
         </div>
         <Button
