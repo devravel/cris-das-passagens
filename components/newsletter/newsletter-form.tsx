@@ -26,13 +26,9 @@ type SubscriptionResponse = {
   };
 };
 
-type SuccessState = {
-  registrationNumber: number;
-};
-
 export function NewsletterForm() {
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState<SuccessState | null>(null);
+  const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<NewsletterSubscriptionInput>({
@@ -75,7 +71,7 @@ export function NewsletterForm() {
           return;
         }
 
-        setSuccess({ registrationNumber: result.data.registrationNumber });
+        setSuccess(true);
         form.reset(EMPTY_NEWSLETTER_SUBSCRIPTION_VALUES);
       } catch {
         setSubmitError(
@@ -101,12 +97,6 @@ export function NewsletterForm() {
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           {newsletterSectionContent.successDescription}
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Seu número de inscrição é{" "}
-          <span className="font-semibold text-foreground">
-            #{success.registrationNumber}
-          </span>
         </p>
       </div>
     );

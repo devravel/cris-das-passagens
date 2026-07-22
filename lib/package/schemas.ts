@@ -13,7 +13,14 @@ import {
 } from "@/lib/package/constants";
 import { packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
 import { isCircuitStartDay } from "@/lib/package/circuit";
-import { isValidPackageDateInput } from "@/lib/package/dates";
+import {
+  isValidDatetimeLocalInput,
+  isValidPackageDateInput,
+  parseOptionalDatetimeLocalInput,
+} from "@/lib/package/dates";
+
+export const PACKAGE_ACTIVATION_MODES = ["now", "scheduled"] as const;
+export type PackageActivationMode = (typeof PACKAGE_ACTIVATION_MODES)[number];
 
 const priceSchema = z.number().min(0, "O preço deve ser maior ou igual a zero.");
 
@@ -68,6 +75,10 @@ const packageFormFieldsSchema = z.object({
     .pipe(z.array(includedItemSchema).max(12, "Adicione no máximo 12 itens.")),
   active: z.boolean(),
   featured: z.boolean(),
+  defineDuration: z.boolean(),
+  activationMode: z.enum(PACKAGE_ACTIVATION_MODES),
+  activatesAt: z.string().trim(),
+  deactivatesAt: z.string().trim(),
 });
 
 export const packageFormSchema = packageFormFieldsSchema
@@ -194,6 +205,62 @@ function validatePackageRules(
       });
     }
   }
+
+  if (!data.defineDuration) {
+    return;
+  }
+
+  if (!data.deactivatesAt.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["deactivatesAt"],
+      message: "Informe a data e hora de desativação.",
+    });
+  } else if (!isValidDatetimeLocalInput(data.deactivatesAt)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["deactivatesAt"],
+      message: "Informe uma data e hora de desativação válidas.",
+    });
+  }
+
+  const deactivatesAt = parseOptionalDatetimeLocalInput(data.deactivatesAt);
+
+  if (data.activationMode === "scheduled") {
+    if (!data.activatesAt.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["activatesAt"],
+        message: "Informe a data e hora de ativação.",
+      });
+    } else if (!isValidDatetimeLocalInput(data.activatesAt)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["activatesAt"],
+        message: "Informe uma data e hora de ativação válidas.",
+      });
+    } else {
+      const activatesAt = parseOptionalDatetimeLocalInput(data.activatesAt);
+
+      if (activatesAt && deactivatesAt && deactivatesAt <= activatesAt) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["deactivatesAt"],
+          message: "A desativação deve ser posterior à ativação.",
+        });
+      }
+    }
+
+    return;
+  }
+
+  if (deactivatesAt && deactivatesAt <= new Date()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["deactivatesAt"],
+      message: "A desativação deve ser no futuro.",
+    });
+  }
 }
 
 export type PackageFormInput = z.infer<typeof packageFormFieldsSchema>;
@@ -277,4 +344,8 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   includedItems: [],
   active: true,
   featured: false,
+  defineDuration: false,
+  activationMode: "now",
+  activatesAt: "",
+  deactivatesAt: "",
 };

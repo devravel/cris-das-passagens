@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, CalendarPlus } from "lucide-react";
 
 import { PackageForm } from "@/components/admin/package-form";
+import { packageDurationInitialValues } from "@/components/admin/package-duration-fields";
 import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_PACKAGE_DEPARTURE_CITY, packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
@@ -99,6 +100,7 @@ export function PackageEditScreen({
             includedItems: pkg.includedItems,
             active: pkg.active,
             featured: pkg.featured,
+            ...packageDurationInitialValues(pkg),
           }}
           onSuccess={() => {
             router.push("/admin/packages");

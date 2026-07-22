@@ -77,3 +77,49 @@ export function isValidPackageDateInput(value: string): boolean {
 
   return ISO_DATE_PATTERN.test(trimmed) && parseOptionalPackageDateInput(trimmed) !== null;
 }
+
+/** Valor de `<input type="datetime-local" />` a partir de ISO/Date. */
+export function toDatetimeLocalValue(value: string | Date | null | undefined): string {
+  if (!value) {
+    return "";
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const offset = date.getTimezoneOffset();
+  const local = new Date(date.getTime() - offset * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
+/** Valor de `<input type="datetime-local" />` → Date local. */
+export function parseOptionalDatetimeLocalInput(
+  value: string | undefined,
+): Date | null {
+  const trimmed = value?.trim() ?? "";
+
+  if (!trimmed) {
+    return null;
+  }
+
+  const date = new Date(trimmed);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
+}
+
+export function isValidDatetimeLocalInput(value: string): boolean {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return true;
+  }
+
+  return parseOptionalDatetimeLocalInput(trimmed) !== null;
+}

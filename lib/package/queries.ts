@@ -11,6 +11,10 @@ import type { PackageCategoryValue, PackagePriceScopeValue, PackageTypeValue } f
 import { packageDateToIsoString } from "@/lib/package/dates";
 import { buildIncludedItemSuggestions } from "@/lib/package/included-item-suggestions";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
+import {
+  publicPackageScheduleWhere,
+  syncExpiredPackageSchedules,
+} from "@/lib/package/schedule";
 
 export type PublicPackage = {
   id: string;
@@ -176,9 +180,11 @@ function splitPackagesByType(packages: PublicPackage[]): HomepagePackages {
 }
 
 async function fetchFeaturedPackagesFromDb(): Promise<PublicPackage[]> {
+  await syncExpiredPackageSchedules();
+
   const packages = await prisma.package.findMany({
     where: {
-      active: true,
+      ...publicPackageScheduleWhere(),
       featured: true,
     },
     orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
@@ -191,13 +197,15 @@ async function fetchFeaturedPackagesFromDb(): Promise<PublicPackage[]> {
 const getCachedFeaturedPackages = unstable_cache(
   fetchFeaturedPackagesFromDb,
   ["featured-packages"],
-  { tags: [FEATURED_PACKAGES_CACHE_TAG] },
+  { tags: [FEATURED_PACKAGES_CACHE_TAG], revalidate: 60 },
 );
 
 async function fetchHomepagePackagesFromDb(): Promise<HomepagePackages> {
+  await syncExpiredPackageSchedules();
+
   const packages = await prisma.package.findMany({
     where: {
-      active: true,
+      ...publicPackageScheduleWhere(),
       featured: true,
     },
     orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
@@ -210,12 +218,14 @@ async function fetchHomepagePackagesFromDb(): Promise<HomepagePackages> {
 const getCachedHomepagePackages = unstable_cache(
   fetchHomepagePackagesFromDb,
   ["homepage-packages"],
-  { tags: [HOMEPAGE_PACKAGES_CACHE_TAG] },
+  { tags: [HOMEPAGE_PACKAGES_CACHE_TAG], revalidate: 60 },
 );
 
 async function fetchPackagesPageDataFromDb(): Promise<PackagesPageData> {
+  await syncExpiredPackageSchedules();
+
   const packages = await prisma.package.findMany({
-    where: { active: true },
+    where: publicPackageScheduleWhere(),
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
     select: publicPackageSelect,
   });
@@ -235,7 +245,7 @@ async function fetchPackagesPageDataFromDb(): Promise<PackagesPageData> {
 const getCachedPackagesPageData = unstable_cache(
   fetchPackagesPageDataFromDb,
   ["packages-page"],
-  { tags: [PACKAGES_PAGE_CACHE_TAG] },
+  { tags: [PACKAGES_PAGE_CACHE_TAG], revalidate: 60 },
 );
 
 const emptyHomepagePackages: HomepagePackages = {
@@ -311,6 +321,8 @@ export type AdminPackageListItem = {
   nightsCount: number | null;
   active: boolean;
   featured: boolean;
+  activatesAt: string | null;
+  deactivatesAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -343,6 +355,8 @@ const adminPackageSelect = {
   nightsCount: true,
   active: true,
   featured: true,
+  activatesAt: true,
+  deactivatesAt: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -376,6 +390,8 @@ function mapAdminPackage(
     nightsCount: number | null;
     active: boolean;
     featured: boolean;
+    activatesAt: Date | null;
+    deactivatesAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
   },
@@ -408,6 +424,8 @@ function mapAdminPackage(
     nightsCount: pkg.nightsCount,
     active: pkg.active,
     featured: pkg.featured,
+    activatesAt: pkg.activatesAt?.toISOString() ?? null,
+    deactivatesAt: pkg.deactivatesAt?.toISOString() ?? null,
     createdAt: pkg.createdAt.toISOString(),
     updatedAt: pkg.updatedAt.toISOString(),
   };
@@ -415,6 +433,8 @@ function mapAdminPackage(
 
 export const getAdminPackages = cache(async (): Promise<AdminPackageListItem[]> => {
   try {
+    await syncExpiredPackageSchedules();
+
     const packages = await prisma.package.findMany({
       orderBy: { createdAt: "desc" },
       select: adminPackageSelect,
@@ -429,6 +449,8 @@ export const getAdminPackages = cache(async (): Promise<AdminPackageListItem[]> 
 export type AdminPackageDetail = AdminPackageListItem;
 
 export async function getAdminPackageById(id: string): Promise<AdminPackageDetail | null> {
+  await syncExpiredPackageSchedules();
+
   const pkg = await prisma.package.findUnique({
     where: { id },
     select: adminPackageSelect,

@@ -107,12 +107,16 @@ model Package {
   nightsCount           Int?
   active                Boolean          @default(true)
   featured              Boolean          @default(false)
+  activatesAt           DateTime?
+  deactivatesAt         DateTime?
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
 
   @@index([active, createdAt])
   @@index([featured, active, createdAt])
   @@index([type, active])
+  @@index([activatesAt])
+  @@index([deactivatesAt])
 }
 
 model AdminUser {

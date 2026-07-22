@@ -11,6 +11,7 @@ import {
   updatePackageAction,
 } from "@/app/admin/(protected)/packages/actions";
 import { PackageCardPreview } from "@/components/admin/package-card-preview";
+import { PackageDurationFields } from "@/components/admin/package-duration-fields";
 import { PackageImageField } from "@/components/admin/package-image-field";
 import { PackageIncludedItemsField } from "@/components/admin/package-included-items-field";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
@@ -36,6 +37,7 @@ import {
   EMPTY_PACKAGE_FORM_VALUES,
   packageFormSchema,
   toPackageCardPreviewData,
+  type PackageActivationMode,
   type PackageFormInput,
   type PackageFormValues,
 } from "@/lib/package/schemas";
@@ -784,51 +786,112 @@ export function PackageForm({
             />
           </div>
 
-          <div className="flex flex-wrap gap-4 rounded-xl border border-border/70 bg-muted/25 p-3">
-            <label
-              htmlFor="active"
-              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
-            >
-              <input
-                id="active"
-                type="checkbox"
-                className={cn(
-                  "size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                )}
-                checked={Boolean(watchedValues.active)}
-                onChange={(event) =>
-                  form.setValue("active", event.target.checked, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
-              Pacote ativo
-            </label>
+          <div className="space-y-3">
+            <div className="flex flex-wrap gap-4 rounded-xl border border-border/70 bg-muted/25 p-3">
+              <label
+                htmlFor="active"
+                className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
+              >
+                <input
+                  id="active"
+                  type="checkbox"
+                  className={cn(
+                    "size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  )}
+                  checked={Boolean(watchedValues.active)}
+                  onChange={(event) =>
+                    form.setValue("active", event.target.checked, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+                Pacote ativo
+              </label>
 
-            <label
-              htmlFor="featured"
-              className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
-            >
-              <input
-                id="featured"
-                type="checkbox"
-                className={cn(
-                  "size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                )}
-                checked={Boolean(watchedValues.featured)}
-                onChange={(event) =>
-                  form.setValue("featured", event.target.checked, {
+              <label
+                htmlFor="featured"
+                className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground"
+              >
+                <input
+                  id="featured"
+                  type="checkbox"
+                  className={cn(
+                    "size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  )}
+                  checked={Boolean(watchedValues.featured)}
+                  onChange={(event) =>
+                    form.setValue("featured", event.target.checked, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+                Destaque
+              </label>
+              <p className="w-full text-xs text-muted-foreground">
+                Todos os pacotes ativos em destaque aparecem no carrossel da homepage (deslize ou use as setas).
+              </p>
+            </div>
+
+            <PackageDurationFields
+              defineDuration={Boolean(watchedValues.defineDuration)}
+              activationMode={
+                (watchedValues.activationMode ?? "now") as PackageActivationMode
+              }
+              activatesAt={watchedValues.activatesAt ?? ""}
+              deactivatesAt={watchedValues.deactivatesAt ?? ""}
+              errors={{
+                activatesAt: form.formState.errors.activatesAt,
+                deactivatesAt: form.formState.errors.deactivatesAt,
+              }}
+              onDefineDurationChange={(value) => {
+                form.setValue("defineDuration", value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+
+                if (!value) {
+                  form.setValue("activationMode", "now", {
                     shouldDirty: true,
                     shouldValidate: true,
-                  })
+                  });
+                  form.setValue("activatesAt", "", {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                  form.setValue("deactivatesAt", "", {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
                 }
-              />
-              Destaque
-            </label>
-            <p className="w-full text-xs text-muted-foreground">
-              Todos os pacotes ativos em destaque aparecem no carrossel da homepage (deslize ou use as setas).
-            </p>
+              }}
+              onActivationModeChange={(value) => {
+                form.setValue("activationMode", value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+
+                if (value === "now") {
+                  form.setValue("activatesAt", "", {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                }
+              }}
+              onActivatesAtChange={(value) =>
+                form.setValue("activatesAt", value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              onDeactivatesAtChange={(value) =>
+                form.setValue("deactivatesAt", value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+            />
           </div>
         </div>
 

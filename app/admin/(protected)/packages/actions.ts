@@ -10,7 +10,7 @@ import { getActionErrorMessage } from "@/lib/admin/action-error";
 import type { ActionResult } from "@/lib/admin/action-result";
 import { getCurrentAdminSession } from "@/lib/auth/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { parseOptionalPackageDateInput } from "@/lib/package/dates";
+import { parseOptionalDatetimeLocalInput, parseOptionalPackageDateInput } from "@/lib/package/dates";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 import { packageFormSchema, type PackageFormValues } from "@/lib/package/schemas";
 import type { PackageTypeValue } from "@/lib/package/constants";
@@ -81,6 +81,29 @@ function normalizeDepartureCity(type: PackageTypeValue, departureCity: string | 
   return departureCity?.trim() || DEFAULT_PACKAGE_DEPARTURE_CITY;
 }
 
+function normalizeSchedule(input: PackageFormValues) {
+  if (!input.defineDuration) {
+    return {
+      activatesAt: null,
+      deactivatesAt: null,
+    };
+  }
+
+  const deactivatesAt = parseOptionalDatetimeLocalInput(input.deactivatesAt);
+
+  if (input.activationMode === "scheduled") {
+    return {
+      activatesAt: parseOptionalDatetimeLocalInput(input.activatesAt),
+      deactivatesAt,
+    };
+  }
+
+  return {
+    activatesAt: null,
+    deactivatesAt,
+  };
+}
+
 function normalizeInput(input: PackageFormValues) {
   const { airline, hotelName } = normalizeAirlineAndHotel(
     input.type,
@@ -88,6 +111,7 @@ function normalizeInput(input: PackageFormValues) {
     input.hotelName,
   );
   const departureCity = normalizeDepartureCity(input.type, input.departureCity);
+  const schedule = normalizeSchedule(input);
 
   return {
     title: input.title.trim(),
@@ -124,6 +148,8 @@ function normalizeInput(input: PackageFormValues) {
     nightsCount: input.nightsCount ?? null,
     active: input.active,
     featured: input.featured,
+    activatesAt: schedule.activatesAt,
+    deactivatesAt: schedule.deactivatesAt,
   };
 }
 
