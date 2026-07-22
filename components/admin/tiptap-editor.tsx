@@ -454,12 +454,14 @@ export function TiptapEditor({
         </Button>
       </BubbleMenu>
 
-      <EditorContent editor={editor} />
-      {editor.isEmpty ? (
-        <p className="pointer-events-none -mt-44 px-4 py-3 text-sm text-muted-foreground/70">
-          {placeholder}
-        </p>
-      ) : null}
+      <div className="relative">
+        <EditorContent editor={editor} />
+        {editor.isEmpty ? (
+          <p className="pointer-events-none absolute inset-x-0 top-0 px-4 py-3 text-sm text-muted-foreground/70">
+            {placeholder}
+          </p>
+        ) : null}
+      </div>
 
       <Dialog
         open={isLinkDialogOpen}
