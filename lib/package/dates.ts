@@ -1,4 +1,12 @@
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const DATETIME_LOCAL_PATTERN =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/;
+
+/** Horário de referência para agendamento de pacotes (formulário admin). */
+export const PACKAGE_SCHEDULE_TIME_ZONE = "America/Sao_Paulo";
+
+/** Offset fixo de Brasília (sem horário de verão desde 2019). */
+const PACKAGE_SCHEDULE_UTC_OFFSET = "-03:00";
 
 /** Converte Date do Prisma (@db.Date) para `YYYY-MM-DD` (formulário e API pública). */
 export function packageDateToIsoString(
@@ -78,7 +86,7 @@ export function isValidPackageDateInput(value: string): boolean {
   return ISO_DATE_PATTERN.test(trimmed) && parseOptionalPackageDateInput(trimmed) !== null;
 }
 
-/** Valor de `<input type="datetime-local" />` a partir de ISO/Date. */
+/** Valor de `<input type="datetime-local" />` a partir de ISO/Date (horário de SP). */
 export function toDatetimeLocalValue(value: string | Date | null | undefined): string {
   if (!value) {
     return "";
@@ -90,12 +98,37 @@ export function toDatetimeLocalValue(value: string | Date | null | undefined): s
     return "";
   }
 
-  const offset = date.getTimezoneOffset();
-  const local = new Date(date.getTime() - offset * 60_000);
-  return local.toISOString().slice(0, 16);
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: PACKAGE_SCHEDULE_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const parts = formatter.formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  const year = get("year");
+  const month = get("month");
+  const day = get("day");
+  const hour = get("hour");
+  const minute = get("minute");
+
+  if (!year || !month || !day || !hour || !minute) {
+    return "";
+  }
+
+  return `${year}-${month}-${day}T${hour}:${minute}`;
 }
 
-/** Valor de `<input type="datetime-local" />` → Date local. */
+/**
+ * Valor de `<input type="datetime-local" />` → instante absoluto.
+ * Sempre interpreta a data/hora como horário de Brasília, inclusive no servidor (Vercel/UTC).
+ */
 export function parseOptionalDatetimeLocalInput(
   value: string | undefined,
 ): Date | null {
@@ -105,13 +138,37 @@ export function parseOptionalDatetimeLocalInput(
     return null;
   }
 
-  const date = new Date(trimmed);
+  const match = DATETIME_LOCAL_PATTERN.exec(trimmed);
+
+  if (!match) {
+    const date = new Date(trimmed);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  const [, year, month, day, hour, minute, second = "00"] = match;
+  const isoWithOffset = `${year}-${month}-${day}T${hour}:${minute}:${second.padStart(2, "0")}${PACKAGE_SCHEDULE_UTC_OFFSET}`;
+  const date = new Date(isoWithOffset);
 
   if (Number.isNaN(date.getTime())) {
     return null;
   }
 
   return date;
+}
+
+/** Margem para evitar rejeição quando o admin leva alguns segundos para salvar. */
+export function isScheduleDatetimeInFuture(
+  value: string,
+  graceMs = 30_000,
+  now = new Date(),
+): boolean {
+  const parsed = parseOptionalDatetimeLocalInput(value);
+
+  if (!parsed) {
+    return false;
+  }
+
+  return parsed.getTime() > now.getTime() + graceMs;
 }
 
 export function isValidDatetimeLocalInput(value: string): boolean {

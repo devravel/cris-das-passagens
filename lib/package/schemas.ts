@@ -14,6 +14,7 @@ import {
 import { packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
 import { isCircuitStartDay } from "@/lib/package/circuit";
 import {
+  isScheduleDatetimeInFuture,
   isValidDatetimeLocalInput,
   isValidPackageDateInput,
   parseOptionalDatetimeLocalInput,
@@ -254,7 +255,7 @@ function validatePackageRules(
     return;
   }
 
-  if (deactivatesAt && deactivatesAt <= new Date()) {
+  if (deactivatesAt && !isScheduleDatetimeInFuture(data.deactivatesAt)) {
     ctx.addIssue({
       code: "custom",
       path: ["deactivatesAt"],
