@@ -78,6 +78,7 @@ type ValidateResponse =
         code: string;
         name: string;
         discountLabel: string;
+        discountType: "PERCENTAGE" | "FIXED" | "CUSTOM";
       };
     }
   | {
@@ -133,6 +134,7 @@ export function CouponApplyForm({
           code: result.coupon.code,
           name: result.coupon.name,
           discountLabel: result.coupon.discountLabel,
+          discountType: result.coupon.discountType,
         });
 
         const stored = getStoredCoupon();
@@ -194,7 +196,9 @@ export function CouponApplyForm({
     ? `${activeCoupon.name} (${activeCoupon.discountLabel})`
     : null;
   const couponDescriptionText = activeCoupon
-    ? `🎉 Cupom ${appliedLabel} aplicado! Este benefício será considerado pelo agente durante o atendimento. Selecione um pacote agora mesmo.`
+    ? activeCoupon.discountType === "CUSTOM"
+      ? `Cupom ${activeCoupon.name} aplicado! ${activeCoupon.discountLabel}`
+      : `🎉 Cupom ${appliedLabel} aplicado! Este benefício será considerado pelo agente durante o atendimento. Selecione um pacote agora mesmo.`
     : couponFieldDescriptionShort;
 
   return (

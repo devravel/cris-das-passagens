@@ -16,6 +16,7 @@ export type AdminCouponListItem = {
   name: string;
   discountType: CouponDiscountTypeValue;
   discountValue: number;
+  customPrize: string | null;
   discountLabel: string;
   isActive: boolean;
   maxUses: number | null;
@@ -32,6 +33,7 @@ function mapAdminCoupon(coupon: {
   name: string;
   discountType: CouponDiscountTypeValue;
   discountValue: { toNumber?: () => number } | number;
+  customPrize: string | null;
   isActive: boolean;
   maxUses: number | null;
   currentUses: number;
@@ -48,7 +50,12 @@ function mapAdminCoupon(coupon: {
     name: coupon.name,
     discountType: coupon.discountType,
     discountValue,
-    discountLabel: formatCouponDiscountValue(coupon.discountType, discountValue),
+    customPrize: coupon.customPrize,
+    discountLabel: formatCouponDiscountValue(
+      coupon.discountType,
+      discountValue,
+      coupon.customPrize,
+    ),
     isActive: coupon.isActive,
     maxUses: coupon.maxUses,
     currentUses: coupon.currentUses,

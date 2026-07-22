@@ -200,9 +200,24 @@ model ReiDaCopaSettings {
   @@map("rei_da_copa_settings")
 }
 
+model NewsletterSubscriber {
+  id                 String   @id @default(cuid())
+  registrationNumber Int      @unique @default(autoincrement())
+  name               String
+  email              String   @unique
+  phone              String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([name])
+  @@index([createdAt])
+  @@map("newsletter_subscribers")
+}
+
 enum CouponDiscountType {
   PERCENTAGE
   FIXED
+  CUSTOM
 }
 
 model Coupon {
@@ -211,6 +226,7 @@ model Coupon {
   name          String
   discountType  CouponDiscountType
   discountValue Decimal            @db.Decimal(10, 2)
+  customPrize   String?            @db.Text
   isActive      Boolean            @default(true)
   maxUses       Int?
   currentUses   Int                @default(0)

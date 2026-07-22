@@ -6,6 +6,7 @@ import {
   ChevronDown,
   FileText,
   LayoutDashboard,
+  Mail,
   Menu,
   Package,
   CircleUser,
@@ -36,6 +37,7 @@ const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
   "file-text": FileText,
   package: Package,
   "ticket-percent": TicketPercent,
+  mail: Mail,
   trophy: Trophy,
 };
 

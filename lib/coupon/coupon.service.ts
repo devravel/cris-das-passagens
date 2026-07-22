@@ -1,13 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { formatCouponDiscountValue } from "@/lib/coupon/format";
-import type { PublicCouponPayload } from "@/lib/coupon/schemas";
+import type {
+  CouponDiscountTypeValue,
+  PublicCouponPayload,
+} from "@/lib/coupon/schemas";
 
 type CouponRecord = {
   id: string;
   code: string;
   name: string;
-  discountType: "PERCENTAGE" | "FIXED";
+  discountType: CouponDiscountTypeValue;
   discountValue: { toNumber?: () => number } | number;
+  customPrize: string | null;
   isActive: boolean;
   maxUses: number | null;
   currentUses: number;
@@ -30,7 +34,12 @@ function toPublicCoupon(coupon: CouponRecord): PublicCouponPayload {
     name: coupon.name,
     discountType: coupon.discountType,
     discountValue,
-    discountLabel: formatCouponDiscountValue(coupon.discountType, discountValue),
+    discountLabel: formatCouponDiscountValue(
+      coupon.discountType,
+      discountValue,
+      coupon.customPrize,
+    ),
+    customPrize: coupon.customPrize,
   };
 }
 

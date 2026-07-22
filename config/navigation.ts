@@ -1,4 +1,5 @@
 import { content, contentLinks } from "@/config/content";
+import { REI_DA_COPA_CAMPAIGN_ENABLED } from "@/config/rei-da-copa-campaign";
 import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
 
 export type NavItem = {
@@ -17,6 +18,9 @@ export const HOME_BLOG_SECTION_ID = "blog-preview";
 /** ID da seção de avaliações/depoimentos na landing page. */
 export const HOME_TESTIMONIALS_SECTION_ID = "depoimentos";
 
+/** ID da seção de newsletter na landing page. */
+export const HOME_NEWSLETTER_SECTION_ID = "newsletter";
+
 /** Link âncora exclusivo da navbar — não entra no footer nem no sitemap. */
 export const navbarAnchorNavItems: NavItem[] = [
   {
@@ -31,13 +35,19 @@ export const destinationsNavItem: NavItem = {
   href: "/destinos",
 };
 
+/** Campanha Rei da Copa — mantido no código; só entra na navegação quando habilitado. */
+export const reiDaCopaNavItem: NavItem = {
+  label: "REI DA COPA",
+  href: "/rei-da-copa",
+};
+
 /**
  * Páginas principais da marca — usadas no footer e como base da navegação global.
  * Ordem intencional: reforça hierarquia para o Google (Home → seções de conversão).
  */
 export const brandPrimaryPages: NavItem[] = [
   { label: "Início", href: "/" },
-  { label: "REI DA COPA", href: "/rei-da-copa" },
+  ...(REI_DA_COPA_CAMPAIGN_ENABLED ? [reiDaCopaNavItem] : []),
   { label: "Pacotes", href: "/pacotes" },
   { label: "Blog", href: contentLinks.blog },
   { label: "Sobre", href: "/sobre" },

@@ -55,6 +55,7 @@ export function CouponEditScreen({ coupon }: CouponEditScreenProps) {
             code: coupon.code,
             discountType: coupon.discountType,
             discountValue: coupon.discountValue,
+            customPrize: coupon.customPrize ?? "",
             maxUses: coupon.maxUses,
             expiresAt: toDatetimeLocalValue(coupon.expiresAt),
             description: coupon.description ?? "",

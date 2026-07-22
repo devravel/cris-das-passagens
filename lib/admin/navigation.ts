@@ -1,3 +1,4 @@
+/** Mantido no código para reativação futura da campanha no painel. */
 export const reiDaCopaNavigationItems = [
   {
     title: "Inscrições",
@@ -12,6 +13,34 @@ export const reiDaCopaNavigationItems = [
     href: "/admin/rei-da-copa/palavra-chave",
   },
 ] as const;
+
+export type AdminNavigationChild = {
+  title: string;
+  href: string;
+};
+
+export type AdminNavigationIcon =
+  | "layout-dashboard"
+  | "file-text"
+  | "package"
+  | "ticket-percent"
+  | "mail"
+  | "trophy";
+
+export type AdminNavigationItem = {
+  title: string;
+  href: string;
+  icon: AdminNavigationIcon;
+  children?: readonly AdminNavigationChild[];
+};
+
+/** Item de navegação Rei da Copa — oculto visualmente; rotas e dados permanecem. */
+export const reiDaCopaAdminNavItem = {
+  title: "Rei da Copa",
+  href: "/admin/rei-da-copa/inscricoes",
+  icon: "trophy",
+  children: reiDaCopaNavigationItems,
+} as const satisfies AdminNavigationItem;
 
 export const adminNavigationItems = [
   {
@@ -35,13 +64,8 @@ export const adminNavigationItems = [
     icon: "ticket-percent",
   },
   {
-    title: "Rei da Copa",
-    href: "/admin/rei-da-copa/inscricoes",
-    icon: "trophy",
-    children: reiDaCopaNavigationItems,
+    title: "Newsletter",
+    href: "/admin/newsletter",
+    icon: "mail",
   },
-] as const;
-
-export type AdminNavigationIcon = (typeof adminNavigationItems)[number]["icon"];
-export type AdminNavigationChild = (typeof reiDaCopaNavigationItems)[number];
-export type AdminNavigationItem = (typeof adminNavigationItems)[number];
+] as const satisfies readonly AdminNavigationItem[];

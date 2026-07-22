@@ -15,7 +15,7 @@ const LAST_UPDATED = "7 de junho de 2026";
 export const metadata: Metadata = createMetadata({
   title: "Política de Privacidade",
   description:
-    "Saiba como a Cris das Passagens coleta, usa e protege seus dados pessoais. Informações sobre cookies, Google Analytics, Meta Pixel, WhatsApp, campanha Rei da Copa e seus direitos na LGPD.",
+    "Saiba como a Cris das Passagens coleta, usa e protege seus dados pessoais. Informações sobre cookies, Google Analytics, Meta Pixel, WhatsApp, newsletter e seus direitos na LGPD.",
   path: "/politica-de-privacidade",
   keywords: [
     "política de privacidade",
@@ -146,7 +146,34 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            2.2 Campanha Rei da Copa
+            2.2 Newsletter
+          </h3>
+          <PolicyParagraph>
+            No formulário de inscrição da newsletter na página inicial, coletamos e
+            armazenamos em nosso banco de dados:
+          </PolicyParagraph>
+          <PolicyList
+            items={[
+              <>
+                <strong>Nome completo</strong> — para identificação do inscrito;
+              </>,
+              <>
+                <strong>E-mail</strong> — para envio de ofertas e novidades;
+              </>,
+              <>
+                <strong>Telefone celular</strong> (formato brasileiro) — para
+                contato e qualificação de leads.
+              </>,
+            ]}
+          />
+          <PolicyParagraph>
+            Esses dados são usados para comunicações comerciais e de conteúdo da
+            Cris das Passagens, e ficam disponíveis à equipe no painel
+            administrativo (Newsletter).
+          </PolicyParagraph>
+
+          <h3 className="font-heading text-lg font-semibold text-foreground">
+            2.3 Campanha Rei da Copa
           </h3>
           <PolicyParagraph>
             Na campanha promocional Rei da Copa, coletamos e armazenamos em nosso
@@ -557,6 +584,11 @@ export default function PoliticaDePrivacidadePage() {
             A página de contato e os botões de cotação redirecionam ao WhatsApp.
           </PolicyParagraph>
           <PolicyParagraph>
+            <strong>Newsletter:</strong> formulário com nome, e-mail e telefone;
+            dados validados e armazenados em PostgreSQL; limite de 3 tentativas por
+            IP a cada 30 minutos; aviso interno por e-mail a cada nova inscrição.
+          </PolicyParagraph>
+          <PolicyParagraph>
             <strong>Campanha Rei da Copa — inscrição:</strong> formulário com nome,
             telefone e Instagram; dados validados e armazenados em PostgreSQL; limite de
             3 tentativas por IP a cada 30 minutos.
@@ -576,7 +608,7 @@ export default function PoliticaDePrivacidadePage() {
           <PolicyParagraph>
             A campanha promocional Rei da Copa possui regulamento próprio, configurável
             pela equipe no painel administrativo. Além dos dados de cadastro (seção
-            2.2), tratamos:
+            2.3), tratamos:
           </PolicyParagraph>
           <PolicyList
             items={[

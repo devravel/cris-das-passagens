@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { getCouponDiscountTypeLabel } from "@/lib/coupon/format";
 import {
   COUPON_DISCOUNT_TYPES,
   EMPTY_COUPON_FORM_VALUES,
@@ -20,6 +21,7 @@ import {
   type CouponFormInput,
   type CouponFormValues,
 } from "@/lib/coupon/schemas";
+
 const selectClassName =
   "h-10 w-full rounded-xl border border-input bg-background px-3 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
@@ -81,6 +83,7 @@ export function CouponForm({
   }
 
   const discountType = form.watch("discountType");
+  const isCustomType = discountType === "CUSTOM";
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -126,30 +129,52 @@ export function CouponForm({
           >
             {COUPON_DISCOUNT_TYPES.map((type) => (
               <option key={type} value={type}>
-                {type === "PERCENTAGE" ? "Percentual (%)" : "Valor fixo (R$)"}
+                {getCouponDiscountTypeLabel(type)}
               </option>
             ))}
           </select>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="coupon-value" className="text-sm font-medium text-foreground">
-            Valor
-          </label>
-          <Input
-            id="coupon-value"
-            type="number"
-            min={0}
-            step={discountType === "PERCENTAGE" ? 1 : 0.01}
-            {...form.register("discountValue", { valueAsNumber: true })}
-            className="rounded-xl"
-          />
-          {form.formState.errors.discountValue ? (
-            <p className="text-xs text-destructive">
-              {form.formState.errors.discountValue.message}
+        {isCustomType ? (
+          <div className="space-y-2 md:col-span-2">
+            <label htmlFor="coupon-custom-prize" className="text-sm font-medium text-foreground">
+              Prêmio personalizado
+            </label>
+            <Input
+              id="coupon-custom-prize"
+              {...form.register("customPrize")}
+              placeholder='Ex.: Vai concorrer a um pix premiado!'
+              className="rounded-xl"
+            />
+            <p className="text-xs text-muted-foreground">
+              Essa mensagem será exibida ao usuário quando o cupom for aplicado.
             </p>
-          ) : null}
-        </div>
+            {form.formState.errors.customPrize ? (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.customPrize.message}
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <label htmlFor="coupon-value" className="text-sm font-medium text-foreground">
+              Valor
+            </label>
+            <Input
+              id="coupon-value"
+              type="number"
+              min={0}
+              step={discountType === "PERCENTAGE" ? 1 : 0.01}
+              {...form.register("discountValue", { valueAsNumber: true })}
+              className="rounded-xl"
+            />
+            {form.formState.errors.discountValue ? (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.discountValue.message}
+              </p>
+            ) : null}
+          </div>
+        )}
 
         <div className="space-y-2">
           <label htmlFor="coupon-max-uses" className="text-sm font-medium text-foreground">

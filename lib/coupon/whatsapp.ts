@@ -9,9 +9,14 @@ export function getQuoteWhatsAppUrl(): string {
   return `${contentLinks.whatsapp}?text=${message}`;
 }
 
+type WhatsAppCoupon = Pick<
+  PublicCouponPayload,
+  "name" | "discountLabel" | "discountType"
+>;
+
 export function buildPackageWhatsAppMessage(
   packageTitle: string,
-  coupon?: Pick<PublicCouponPayload, "name" | "discountLabel"> | null,
+  coupon?: WhatsAppCoupon | null,
 ): string {
   const baseMessage = `Olá, venho do site e tenho interesse no pacote: ${packageTitle}.`;
 
@@ -19,12 +24,16 @@ export function buildPackageWhatsAppMessage(
     return baseMessage;
   }
 
+  if (coupon.discountType === "CUSTOM") {
+    return `${baseMessage} CUPOM APLICADO: ${coupon.name} — ${coupon.discountLabel}.`;
+  }
+
   return `${baseMessage} CUPOM DE DESCONTO APLICADO: ${coupon.name} (${coupon.discountLabel}).`;
 }
 
 export function getPackageWhatsAppUrl(
   packageTitle: string,
-  coupon?: Pick<PublicCouponPayload, "name" | "discountLabel"> | null,
+  coupon?: WhatsAppCoupon | null,
 ): string {
   const message = encodeURIComponent(buildPackageWhatsAppMessage(packageTitle, coupon));
   return `${contentLinks.whatsapp}?text=${message}`;

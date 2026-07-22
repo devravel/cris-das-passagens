@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { ReiDaCopaLanding } from "@/components/rei-da-copa/rei-da-copa-landing";
 import { brandPageBreadcrumbs } from "@/config/navigation";
+import { REI_DA_COPA_CAMPAIGN_ENABLED } from "@/config/rei-da-copa-campaign";
 import {
   getReiDaCopaPublicRanking,
   getReiDaCopaPublicSettings,
@@ -27,6 +29,10 @@ export const metadata: Metadata = createMetadata({
 export const revalidate = 60;
 
 export default async function ReiDaCopaPage() {
+  if (!REI_DA_COPA_CAMPAIGN_ENABLED) {
+    notFound();
+  }
+
   const [ranking, settings] = await Promise.all([
     getReiDaCopaPublicRanking(),
     getReiDaCopaPublicSettings(),

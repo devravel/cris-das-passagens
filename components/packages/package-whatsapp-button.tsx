@@ -38,6 +38,7 @@ export function PackageWhatsAppButton({
           ? {
               name: storedCoupon.name,
               discountLabel: storedCoupon.discountLabel,
+              discountType: storedCoupon.discountType,
             }
           : null,
       ),

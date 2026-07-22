@@ -34,6 +34,13 @@ const FinalCta = dynamic(
     import("@/components/sections/cta/final-cta").then((module) => module.FinalCta),
 );
 
+const NewsletterSection = dynamic(
+  () =>
+    import("@/components/newsletter/newsletter-section").then(
+      (module) => module.NewsletterSection,
+    ),
+);
+
 export const metadata: Metadata = createMetadata({
   title: siteConfig.name,
   absoluteTitle: true,
@@ -72,6 +79,7 @@ export default function HomePage() {
       {content.finalCta.enabled ? (
         <FinalCta className="pt-0 pb-12 sm:pb-14 lg:pb-16" spacing="compact" />
       ) : null}
+      <NewsletterSection />
     </>
   );
 }

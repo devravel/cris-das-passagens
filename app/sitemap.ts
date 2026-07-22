@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { REI_DA_COPA_CAMPAIGN_ENABLED } from "@/config/rei-da-copa-campaign";
 import { prisma } from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/seo/site-url";
 
@@ -33,12 +34,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/rei-da-copa`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
+    ...(REI_DA_COPA_CAMPAIGN_ENABLED
+      ? [
+          {
+            url: `${baseUrl}/rei-da-copa`,
+            lastModified: now,
+            changeFrequency: "weekly" as const,
+            priority: 0.9,
+          },
+        ]
+      : []),
     {
       url: `${baseUrl}/blog`,
       lastModified: latestBlogUpdate,

@@ -312,7 +312,9 @@ export function Navbar({
         <div className="flex min-w-0 items-center gap-2 sm:gap-5 md:gap-6 lg:gap-8">
           <DesktopNavLinks items={items} />
 
-          {cta ? <NavbarCtaButton cta={cta} /> : null}
+          {cta ? (
+            <NavbarCtaButton cta={cta} className="hidden md:inline-flex" />
+          ) : null}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
@@ -336,7 +338,7 @@ export function Navbar({
               </SheetHeader>
               <MobileNavLinks items={items} onNavigate={closeMobile} />
               {cta ? (
-                <div className="border-t border-border/50 p-4">
+                <div className="hidden border-t border-border/50 p-4 md:block">
                   <NavbarCtaButton
                     cta={cta}
                     fullWidth
