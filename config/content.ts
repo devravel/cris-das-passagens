@@ -84,7 +84,7 @@ export const content = {
       { label: "Seguros" },
     ] satisfies ServiceItem[],
     primaryCta: {
-      label: "Faça uma cotação agora",
+      label: "Faça uma cotação",
       href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
     secondaryCta: {

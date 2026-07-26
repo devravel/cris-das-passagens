@@ -67,7 +67,7 @@ export function FaqModern({
               return (
                 <AccordionItem key={value} value={value}>
                   <AccordionHeader>
-                    <AccordionTrigger className="gap-4 text-left [&>svg:last-child]:mt-1">
+                    <AccordionTrigger className="gap-4 text-left tracking-[0.02em] [&>svg:last-child]:mt-1">
                       {item.question}
                     </AccordionTrigger>
                   </AccordionHeader>

@@ -13,6 +13,9 @@ import { newsletterSectionContent } from "@/config/newsletter";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
 
+/** Azul escuro amostrado da logo (`cris-das-passagens-logo-nav.png`). */
+const LOGO_BLUE_DARK = "#345aa6";
+
 export type NewsletterSectionProps = {
   sectionId?: string;
   className?: string;
@@ -30,16 +33,17 @@ export function NewsletterSection({
   return (
     <Section
       id={sectionId}
-      background="soft"
+      background="default"
       spacing="compact"
       bordered
-      className={className}
+      className={cn("border-white/10 text-white", className)}
+      style={{ backgroundColor: LOGO_BLUE_DARK }}
       aria-labelledby={headingId}
     >
       <Container size="narrow" padding="none">
         <div className="mx-auto max-w-xl text-center">
           <motion.p
-            className="text-xs font-semibold uppercase tracking-[0.14em] text-brand"
+            className="text-xs font-semibold uppercase tracking-[0.14em] text-white/80"
             {...headingEntrance}
           >
             {newsletterSectionContent.eyebrow}
@@ -47,14 +51,14 @@ export function NewsletterSection({
 
           <motion.h2
             id={headingId}
-            className={cn(sectionHeadingClassName, "mt-3")}
+            className={cn(sectionHeadingClassName, "mt-3 text-white")}
             {...headingEntrance}
           >
             {newsletterSectionContent.title}
           </motion.h2>
 
           <motion.p
-            className={cn(sectionSubtitleClassName, "mt-4")}
+            className={cn(sectionSubtitleClassName, "mt-4 text-white/85")}
             {...bodyEntrance}
           >
             {newsletterSectionContent.subtitle}
@@ -62,7 +66,7 @@ export function NewsletterSection({
         </div>
 
         <motion.div
-          className="mx-auto mt-8 max-w-md sm:mt-10"
+          className="mx-auto mt-8 max-w-md rounded-2xl bg-background p-5 text-foreground shadow-sm ring-1 ring-border/50 sm:mt-10 sm:p-6"
           {...formEntrance}
         >
           <NewsletterForm />

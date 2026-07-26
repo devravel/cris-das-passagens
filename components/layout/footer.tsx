@@ -113,13 +113,6 @@ export function Footer({
                   {tagline}
                 </p>
               ) : null}
-              {siteConfig.addressDetails.cnpj ? (
-                <p className="text-xs text-white/60">
-                  <small className="text-[0.8125rem] leading-relaxed">
-                    CNPJ {siteConfig.addressDetails.cnpj}
-                  </small>
-                </p>
-              ) : null}
               <div className="space-y-3 pt-2 text-xs text-white/60">
                 <nav aria-label="Institucional">
                   <ul className="flex flex-wrap gap-x-4 gap-y-2" role="list">
@@ -144,9 +137,16 @@ export function Footer({
                     {siteName}. Todos os direitos reservados.
                   </small>
                 </p>
+                {siteConfig.addressDetails.cnpj ? (
+                  <p>
+                    <small className="text-[0.8125rem] leading-relaxed">
+                      CNPJ {siteConfig.addressDetails.cnpj}
+                    </small>
+                  </p>
+                ) : null}
                 <p>
                   <small className="text-[0.8125rem] leading-relaxed">
-                    Desenvolvido por:{" "}
+                    Desenvolvido e gerenciado por:{" "}
                     <a
                       href={siteConfig.developer.href}
                       target="_blank"

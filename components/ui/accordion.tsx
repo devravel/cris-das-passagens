@@ -79,20 +79,20 @@ function AccordionContent({
     <AccordionPrimitive.Content
       data-slot="accordion-content"
       className={cn(
-        "grid overflow-hidden text-sm transition-[grid-template-rows] duration-300 ease-out",
-        "data-[state=closed]:grid-rows-[0fr] data-[state=open]:grid-rows-[1fr]"
+        "overflow-hidden text-sm",
+        "data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
+        "duration-300",
+        "motion-reduce:animate-none",
       )}
       {...props}
     >
-      <div className="min-h-0">
-        <div
-          className={cn(
-            "pb-4 text-muted-foreground leading-relaxed sm:pb-5 sm:text-[0.9375rem]",
-            className
-          )}
-        >
-          {children}
-        </div>
+      <div
+        className={cn(
+          "pb-4 text-muted-foreground leading-relaxed sm:pb-5 sm:text-[0.9375rem]",
+          className,
+        )}
+      >
+        {children}
       </div>
     </AccordionPrimitive.Content>
   );

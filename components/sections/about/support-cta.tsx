@@ -20,7 +20,7 @@ export function SupportCta({
 }: SupportCtaProps) {
   const isExternal = cta.href.startsWith("http");
   const buttonClassName =
-    "h-11 rounded-lg px-6 text-sm shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md active:translate-y-0";
+    "h-12 rounded-lg px-8 text-base font-semibold shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md active:translate-y-0 sm:h-14 sm:px-10 sm:text-lg";
 
   if (isExternal) {
     return (
@@ -42,7 +42,7 @@ export function SupportCta({
           }
         >
           {cta.label}
-          <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+          <ArrowRight className="size-5" strokeWidth={1.75} aria-hidden />
         </a>
       </Button>
     );
@@ -56,7 +56,7 @@ export function SupportCta({
     >
       <Link href={cta.href} className="gap-2">
         {cta.label}
-        <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+        <ArrowRight className="size-5" strokeWidth={1.75} aria-hidden />
       </Link>
     </Button>
   );

@@ -29,10 +29,10 @@ export type TourismHeroProps = {
   className?: string;
 };
 
-/** Coluna esquerda estreita no grid lg (~512px) — CTAs compactos e sem quebra em todo desktop. */
-const heroCtaRowClassName = "lg:!flex-nowrap lg:gap-2";
+/** Coluna esquerda no grid lg — CTAs em linha sem quebra no desktop. */
+const heroCtaRowClassName = "lg:!flex-nowrap lg:gap-3";
 
-const heroCtaCompactClassName = "lg:h-10 lg:px-3 lg:text-xs";
+const heroCtaDesktopClassName = "lg:h-12 lg:px-6 lg:text-base xl:h-14 xl:px-7";
 
 function HeroCtaLink({
   cta,
@@ -58,7 +58,7 @@ function HeroCtaLink({
         variant={variant === "primary" ? "default" : "outline"}
         className={cn(
           variant === "primary" ? primaryClasses : secondaryClasses,
-          heroCtaCompactClassName,
+          heroCtaDesktopClassName,
           className,
         )}
       >
@@ -75,7 +75,7 @@ function HeroCtaLink({
         >
           {cta.label}
           {variant === "primary" ? (
-            <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
+            <ArrowRight className="size-4 lg:size-5" strokeWidth={1.75} aria-hidden />
           ) : null}
         </a>
       </Button>
@@ -89,7 +89,7 @@ function HeroCtaLink({
       variant={variant === "primary" ? "default" : "outline"}
       className={cn(
         variant === "primary" ? primaryClasses : secondaryClasses,
-        heroCtaCompactClassName,
+        heroCtaDesktopClassName,
         className,
       )}
     >
@@ -100,7 +100,7 @@ function HeroCtaLink({
         {cta.label}
         {variant === "primary" ? (
           <ArrowRight
-            className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5"
+            className="size-4 transition-transform duration-200 group-hover/button:translate-x-0.5 lg:size-5"
             strokeWidth={1.75}
             aria-hidden
           />
@@ -152,7 +152,7 @@ export function TourismHero({
             className={cn(
               "max-w-2xl",
               bodyTextClassName,
-              "min-[321px]:max-[410px]:!text-center min-[321px]:max-[410px]:[hyphens:none]",
+              "!text-center [hyphens:none] sm:!text-left sm:[hyphens:auto]",
             )}
             {...subheadlineEntrance}
           >

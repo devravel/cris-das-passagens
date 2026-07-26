@@ -292,6 +292,27 @@
     }
   }
 
+  @keyframes accordion-answer-fade {
+    from {
+      opacity: 0;
+      transform: translateY(0.35rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  [data-slot="accordion-content"][data-state="open"] > div {
+    animation: accordion-answer-fade 300ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot="accordion-content"][data-state="open"] > div {
+      animation: none;
+    }
+  }
+
   @keyframes rei-da-copa-ball-sweep {
     0% {
       left: -12%;

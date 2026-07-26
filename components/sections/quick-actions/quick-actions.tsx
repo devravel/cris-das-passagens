@@ -74,7 +74,7 @@ function QuickActionCard({ item }: { item: QuickActionItem }) {
       <h3 className="font-heading text-base font-semibold tracking-tight text-foreground">
         {item.title}
       </h3>
-      <p className={cn("mt-2 flex-1", bodyTextClassName, "md:text-lg")}>
+      <p className={cn("mt-2 flex-1", bodyTextClassName)}>
         {item.description}
       </p>
       <span className={ctaClassName}>

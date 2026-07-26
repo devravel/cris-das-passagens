@@ -6,9 +6,13 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
+import { sectionHeadingClassName } from "@/components/layout/section-header";
 import { content } from "@/config/content";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
+
+/** Azul claro (ciano) amostrado da logo (`cris-das-passagens-logo-nav.png`). */
+const LOGO_BLUE_LIGHT = "#08bfff";
 
 export type CadasturCompactSectionProps = {
   sectionId?: string;
@@ -25,10 +29,11 @@ export function CadasturCompactSection({
   return (
     <Section
       id={sectionId}
-      background="soft"
+      background="default"
       spacing="compact"
       bordered
-      className={className}
+      className={cn("border-white/10 text-white", className)}
+      style={{ backgroundColor: LOGO_BLUE_LIGHT }}
       aria-labelledby={headingId}
     >
       <motion.div
@@ -37,14 +42,14 @@ export function CadasturCompactSection({
       >
         <h2
           id={headingId}
-          className="font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl"
+          className={cn(sectionHeadingClassName, "text-white")}
         >
           {content.cadastur.title}
         </h2>
 
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:gap-10">
           <div className="flex items-center gap-5 sm:gap-6">
-            <div className="size-24 shrink-0 overflow-hidden rounded-xl border border-border/80 bg-background shadow-sm sm:size-28">
+            <div className="size-24 shrink-0 overflow-hidden rounded-xl border border-white/25 bg-background shadow-sm sm:size-28">
               <Image
                 src={content.cadastur.qrCode}
                 alt={content.cadastur.qrCodeAlt}
@@ -54,7 +59,7 @@ export function CadasturCompactSection({
               />
             </div>
 
-            <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background p-3 shadow-sm sm:size-24">
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-background p-3 shadow-sm sm:size-24">
               <Image
                 src={content.cadastur.logo}
                 alt={content.cadastur.logoAlt}
@@ -66,7 +71,7 @@ export function CadasturCompactSection({
           </div>
 
           <div className="max-w-md space-y-3">
-            <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className="text-base leading-relaxed text-white/85 sm:text-lg">
               {content.cadastur.shortText}
             </p>
             <Link
@@ -74,12 +79,12 @@ export function CadasturCompactSection({
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                "group inline-flex items-center justify-center gap-1 text-sm font-medium text-brand underline-offset-4 transition-colors duration-200 hover:text-brand/90 hover:underline sm:justify-start",
+                "group inline-flex items-center justify-center gap-1 text-sm font-medium text-white underline-offset-4 transition-colors duration-200 hover:text-white/90 hover:underline sm:justify-start",
               )}
             >
               {content.cadastur.verifyUrlLabel}
               <ArrowUpRight
-                className="size-3.5 opacity-60 transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px"
+                className="size-3.5 opacity-70 transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px"
                 strokeWidth={1.75}
                 aria-hidden
               />

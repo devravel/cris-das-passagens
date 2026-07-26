@@ -127,7 +127,7 @@ function NavLink({
       href={href}
       onClick={(event) => handleNavLinkClick(event, pathname, href, onNavigate)}
       className={cn(
-        "group relative inline-flex items-center py-1 text-[0.9375rem] font-medium tracking-tight transition-colors duration-200",
+        "group relative inline-flex items-center py-1.5 text-base font-medium tracking-tight transition-colors duration-200",
         active
           ? "text-foreground"
           : "text-foreground/75 hover:text-foreground",
@@ -150,7 +150,7 @@ function NavLink({
 function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
     <nav
-      className="hidden items-center gap-6 xl:gap-8 lg:flex"
+      className="hidden items-center gap-7 xl:gap-9 lg:flex"
       aria-label="Navegação principal"
     >
       {items.map((item) => (
@@ -162,7 +162,7 @@ function DesktopNavLinks({ items }: { items: NavItem[] }) {
   );
 }
 
-function NavbarCtaButton({
+export function NavbarCtaButton({
   cta,
   className,
   onNavigate,
@@ -176,8 +176,8 @@ function NavbarCtaButton({
   const brandStyles = cn(
     "rounded-lg bg-brand font-semibold text-brand-foreground shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 active:translate-y-0",
     fullWidth
-      ? "h-9 w-full px-5 text-sm"
-      : "h-auto min-h-8 min-w-0 max-w-[9.75rem] shrink px-2.5 py-1.5 text-[0.6875rem] leading-tight whitespace-normal text-center sm:max-w-none sm:h-9 sm:py-0 sm:px-4 sm:text-xs sm:whitespace-nowrap md:px-5 md:text-sm",
+      ? "h-10 w-full px-5 text-sm"
+      : "h-auto min-h-9 min-w-0 max-w-[10.5rem] shrink px-3 py-2 text-[0.75rem] leading-tight whitespace-normal text-center sm:max-w-none sm:h-10 sm:py-0 sm:px-5 sm:text-sm sm:whitespace-nowrap md:px-6 md:text-[0.9375rem]",
   );
 
   if (cta.external) {
@@ -286,14 +286,14 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b transition-[box-shadow,background-color,border-color] duration-300",
+        "sticky top-0 z-50 w-full border-b transition-[box-shadow,background-color,border-color,backdrop-filter] duration-300",
         scrolled
-          ? "border-border/60 bg-background shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+          ? "border-border/50 bg-background/70 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-md supports-backdrop-filter:bg-background/55"
           : "border-transparent bg-background",
         className
       )}
     >
-      <Container className="flex h-16 items-center justify-between gap-4 sm:h-18">
+      <Container className="flex min-h-18 items-center justify-between gap-4 py-2.5 sm:min-h-20 sm:py-3">
         <Link
           href={logoHref}
           onClick={(event) => handleNavLinkClick(event, pathname, logoHref)}
@@ -304,12 +304,12 @@ export function Navbar({
             alt={siteConfig.name}
             width={817}
             height={388}
-            className="h-9 w-auto sm:h-10 md:h-11"
+            className="h-10 w-auto sm:h-11 md:h-12"
             priority
           />
         </Link>
 
-        <div className="flex min-w-0 items-center gap-2 sm:gap-5 md:gap-6 lg:gap-8">
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-5 md:gap-6 lg:gap-9">
           <DesktopNavLinks items={items} />
 
           {cta ? (
@@ -321,10 +321,10 @@ export function Navbar({
               <Button
                 variant="ghost"
                 size="icon-lg"
-                className="size-10 shrink-0 rounded-lg bg-muted/65 text-foreground ring-1 ring-border/45 transition-[transform,background-color,box-shadow] duration-200 hover:bg-muted/90 hover:shadow-sm active:scale-[0.98] sm:size-11 lg:hidden"
+                className="size-11 shrink-0 rounded-lg bg-muted/65 text-foreground ring-1 ring-border/45 transition-[transform,background-color,box-shadow] duration-200 hover:bg-muted/90 hover:shadow-sm active:scale-[0.98] sm:size-12 lg:hidden"
                 aria-label="Abrir menu de navegação"
               >
-                <Menu className="size-5 sm:size-[1.35rem]" strokeWidth={2} />
+                <Menu className="size-5 sm:size-6" strokeWidth={2} />
               </Button>
             </SheetTrigger>
             <SheetContent
