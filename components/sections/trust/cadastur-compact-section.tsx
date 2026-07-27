@@ -11,8 +11,8 @@ import { content } from "@/config/content";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
 
-/** Azul claro (ciano) amostrado da logo (`cris-das-passagens-logo-nav.png`). */
-const LOGO_BLUE_LIGHT = "#08bfff";
+/** Azul escuro amostrado da logo (`cris-das-passagens-logo-nav.png`). */
+const LOGO_BLUE_DARK = "#345aa6";
 
 export type CadasturCompactSectionProps = {
   sectionId?: string;
@@ -33,7 +33,7 @@ export function CadasturCompactSection({
       spacing="compact"
       bordered
       className={cn("border-white/10 text-white", className)}
-      style={{ backgroundColor: LOGO_BLUE_LIGHT }}
+      style={{ backgroundColor: LOGO_BLUE_DARK }}
       aria-labelledby={headingId}
     >
       <motion.div

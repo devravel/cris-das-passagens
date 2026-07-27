@@ -29,7 +29,7 @@ type PublicPackageCardProps = {
   layout?: "carousel" | "grid";
   variant?: "landing" | "listing";
   size?: "default" | "compact";
-  /** Tipografia compacta um pouco maior em viewports <= 425px (hero em destaque). */
+  /** Tipografia maior só nos pacotes em destaque da home. */
   narrowMobileTypography?: boolean;
   showChecklist?: boolean;
   showAirlineBadge?: boolean;

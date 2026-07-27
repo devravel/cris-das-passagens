@@ -46,7 +46,7 @@ export function LandingSaibaMaisAction({
           buttonClassName,
         )}
       >
-        Saiba mais
+        Mais detalhes
       </Link>
     </div>
   );

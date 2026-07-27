@@ -108,8 +108,11 @@ export function NewsletterForm({ className }: { className?: string }) {
       className={cn("space-y-5", className)}
       noValidate
     >
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium text-foreground" htmlFor="newsletter-name">
+      <div className="space-y-1.5 text-left">
+        <label
+          className="block text-base font-medium text-foreground"
+          htmlFor="newsletter-name"
+        >
           Nome completo
         </label>
         <Input
@@ -117,20 +120,20 @@ export function NewsletterForm({ className }: { className?: string }) {
           type="text"
           autoComplete="name"
           placeholder="Digite seu nome e sobrenome"
-          className="h-11 rounded-xl px-3"
+          className="h-11 rounded-xl px-3 text-left"
           aria-invalid={Boolean(form.formState.errors.name)}
           {...form.register("name")}
         />
         {form.formState.errors.name ? (
-          <p className="text-xs text-destructive">
+          <p className="text-center text-xs text-destructive">
             {form.formState.errors.name.message}
           </p>
         ) : null}
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1.5 text-left">
         <label
-          className="text-sm font-medium text-foreground"
+          className="block text-base font-medium text-foreground"
           htmlFor="newsletter-email"
         >
           E-mail
@@ -141,20 +144,20 @@ export function NewsletterForm({ className }: { className?: string }) {
           autoComplete="email"
           inputMode="email"
           placeholder="seuemail@exemplo.com"
-          className="h-11 rounded-xl px-3"
+          className="h-11 rounded-xl px-3 text-left"
           aria-invalid={Boolean(form.formState.errors.email)}
           {...form.register("email")}
         />
         {form.formState.errors.email ? (
-          <p className="text-xs text-destructive">
+          <p className="text-center text-xs text-destructive">
             {form.formState.errors.email.message}
           </p>
         ) : null}
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1.5 text-left">
         <label
-          className="text-sm font-medium text-foreground"
+          className="block text-base font-medium text-foreground"
           htmlFor="newsletter-phone"
         >
           WhatsApp
@@ -169,7 +172,7 @@ export function NewsletterForm({ className }: { className?: string }) {
               inputMode="numeric"
               autoComplete="tel"
               placeholder="Digite seu WhatsApp"
-              className="h-11 rounded-xl px-3"
+              className="h-11 rounded-xl px-3 text-left"
               aria-invalid={Boolean(form.formState.errors.phone)}
               getInputRef={ref}
               value={value}
@@ -179,7 +182,7 @@ export function NewsletterForm({ className }: { className?: string }) {
           )}
         />
         {form.formState.errors.phone ? (
-          <p className="text-xs text-destructive">
+          <p className="text-center text-xs text-destructive">
             {form.formState.errors.phone.message}
           </p>
         ) : null}
@@ -188,33 +191,35 @@ export function NewsletterForm({ className }: { className?: string }) {
       <div
         aria-live="polite"
         className={cn(
-          "min-h-5 text-sm text-destructive transition-opacity",
+          "min-h-5 text-center text-sm text-destructive transition-opacity",
           submitError ? "opacity-100" : "opacity-0",
         )}
       >
         {submitError ?? " "}
       </div>
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={isPending}
-        className="h-11 w-full rounded-lg bg-brand px-6 text-sm font-semibold text-brand-foreground shadow-sm transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0 sm:w-auto"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-            {newsletterSectionContent.submittingLabel}
-          </>
-        ) : (
-          <>
-            <Mail className="size-4 shrink-0" aria-hidden />
-            {newsletterSectionContent.submitLabel}
-          </>
-        )}
-      </Button>
+      <div className="flex justify-center">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isPending}
+          className="h-11 w-full rounded-lg bg-brand px-6 text-sm font-semibold text-brand-foreground shadow-sm transition-[transform,box-shadow,background-color] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0 sm:w-auto"
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+              {newsletterSectionContent.submittingLabel}
+            </>
+          ) : (
+            <>
+              <Mail className="size-4 shrink-0" aria-hidden />
+              {newsletterSectionContent.submitLabel}
+            </>
+          )}
+        </Button>
+      </div>
 
-      <p className="text-xs leading-relaxed text-muted-foreground">
+      <p className="text-center text-xs leading-relaxed text-muted-foreground">
         {newsletterSectionContent.privacyNote}{" "}
         <Link
           href="/politica-de-privacidade"

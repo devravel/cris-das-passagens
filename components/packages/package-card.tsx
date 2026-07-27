@@ -46,35 +46,40 @@ const compactActionButtonClassName = cn(
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
 );
 
-function compactNarrowMobileActionButtonClassName(enabled: boolean) {
+/** Tipografia/ações maiores — só nos pacotes em destaque da home (`narrowMobileTypography`). */
+function featuredTypeClassName(enabled: boolean) {
+  return enabled ? "text-xs lg:text-sm" : undefined;
+}
+
+function featuredTitleClassName(enabled: boolean) {
+  return enabled ? "text-sm leading-snug lg:text-base xl:text-[1.0625rem]" : undefined;
+}
+
+function featuredPriceClassName(enabled: boolean) {
+  // Um pouco abaixo do compact padrão para não dominar o card.
+  return enabled ? "text-sm lg:text-base xl:text-lg" : undefined;
+}
+
+function featuredFooterClassName(enabled: boolean) {
+  return enabled ? "text-xs leading-snug lg:text-sm" : undefined;
+}
+
+function featuredBadgeClassName(enabled: boolean) {
+  return enabled ? "text-[10px] lg:text-[11px] xl:text-xs" : undefined;
+}
+
+function featuredAirlineBadgeClassName(enabled: boolean) {
+  return enabled ? "text-[11px] min-[360px]:text-xs sm:text-sm" : undefined;
+}
+
+function featuredActionButtonClassName(enabled: boolean) {
   return enabled
-    ? // Hero em destaque: legível de 0–639px (em ≤425px já era maior; 426–639 ficava em 8px).
-      "max-sm:h-8 max-sm:min-h-8 max-sm:gap-1 max-sm:px-2 max-sm:text-[11px] max-sm:leading-tight"
+    ? "h-8 min-h-8 gap-1 px-2 text-xs leading-tight lg:h-8 lg:px-2 lg:text-xs xl:text-xs"
     : undefined;
 }
 
-function compactNarrowMobileTypeClassName(enabled: boolean) {
-  return enabled ? "max-[425px]:text-xs" : undefined;
-}
-
-function compactNarrowMobileTitleClassName(enabled: boolean) {
-  return enabled ? "max-[425px]:text-base" : undefined;
-}
-
-function compactNarrowMobilePriceClassName(enabled: boolean) {
-  return enabled ? "max-[425px]:text-xl" : undefined;
-}
-
-function compactNarrowMobileFooterClassName(enabled: boolean) {
-  return enabled ? "max-[425px]:text-xs" : undefined;
-}
-
-function compactNarrowMobileBadgeClassName(enabled: boolean) {
-  return enabled ? "max-[425px]:text-[11px]" : undefined;
-}
-
-function compactNarrowMobileAirlineBadgeClassName(enabled: boolean) {
-  return enabled ? "max-[425px]:text-xs" : undefined;
+function featuredActionIconClassName(enabled: boolean) {
+  return enabled ? "size-3.5" : undefined;
 }
 
 function calculateDiscountPercent(
@@ -104,6 +109,7 @@ type PackageCardProps = {
   showAirlineBadge?: boolean;
   packageSlug?: string;
   whatsAppPackageTitle?: string;
+  /** Tipografia maior só nos pacotes em destaque da home. */
   narrowMobileTypography?: boolean;
   showDescriptionCta?: boolean;
   onDescriptionClick?: () => void;
@@ -142,7 +148,7 @@ function CardTypeLabel({
         compact
           ? cn(
               "mb-1 text-[10px] lg:text-[11px] xl:text-xs",
-              compactNarrowMobileTypeClassName(narrowMobileTypography),
+              featuredTypeClassName(narrowMobileTypography),
             )
           : dense
             ? "mb-1 text-xs sm:text-sm"
@@ -153,7 +159,10 @@ function CardTypeLabel({
         className={cn(
           "shrink-0",
           compact
-            ? cn("size-3", narrowMobileTypography && "max-[425px]:size-4")
+            ? cn(
+                "size-3",
+                narrowMobileTypography && "size-3.5 max-[425px]:size-4",
+              )
             : "size-4",
         )}
         strokeWidth={1.75}
@@ -183,7 +192,7 @@ function DiscountBadge({
     <span
       className={cn(
         compact ? compactBadgeClassName : packageBadgeClassName,
-        compact && compactNarrowMobileBadgeClassName(narrowMobileTypography),
+        compact && featuredBadgeClassName(narrowMobileTypography),
       )}
     >
       Até {discount}% de desconto!
@@ -211,8 +220,7 @@ function AirlineBadge({
       title={text}
       className={cn(
         compact ? compactAirlineBadgeClassName : airlineBadgeClassName,
-        compact &&
-          compactNarrowMobileAirlineBadgeClassName(narrowMobileTypography),
+        compact && featuredAirlineBadgeClassName(narrowMobileTypography),
       )}
     >
       {text}
@@ -301,7 +309,7 @@ function PriceScopeLabel({
         compact
           ? cn(
               "text-[10px] lg:text-xs",
-              compactNarrowMobileTypeClassName(narrowMobileTypography),
+              featuredTypeClassName(narrowMobileTypography),
             )
           : "text-xs sm:text-sm",
       )}
@@ -332,7 +340,7 @@ function PriceBlock({
     compact
       ? cn(
           "text-[10px] lg:text-xs",
-          compactNarrowMobileTypeClassName(narrowMobileTypography),
+          featuredTypeClassName(narrowMobileTypography),
         )
       : "text-xs sm:text-sm",
   );
@@ -342,7 +350,7 @@ function PriceBlock({
     compact
       ? cn(
           "text-base lg:text-lg xl:text-xl",
-          compactNarrowMobilePriceClassName(narrowMobileTypography),
+          featuredPriceClassName(narrowMobileTypography),
         )
       : "text-[1.35rem] sm:text-2xl",
   );
@@ -352,7 +360,7 @@ function PriceBlock({
     compact
       ? cn(
           "text-[10px] lg:text-xs",
-          compactNarrowMobileTypeClassName(narrowMobileTypography),
+          featuredTypeClassName(narrowMobileTypography),
         )
       : "text-xs sm:text-sm",
   );
@@ -433,7 +441,7 @@ function PriceFooter({
     compact
       ? cn(
           "text-[10px] leading-snug lg:text-xs",
-          compactNarrowMobileFooterClassName(narrowMobileTypography),
+          featuredFooterClassName(narrowMobileTypography),
         )
       : "text-xs sm:text-sm",
   );
@@ -448,7 +456,7 @@ function PriceFooter({
             compact
               ? cn(
                   "text-[9px] leading-snug lg:text-[10px] xl:text-xs",
-                  compactNarrowMobileFooterClassName(narrowMobileTypography),
+                  featuredFooterClassName(narrowMobileTypography),
                 )
               : "text-[11px] sm:text-xs",
           )}
@@ -549,9 +557,7 @@ function PricingSection({
               compact
                 ? cn(
                     compactActionButtonClassName,
-                    compactNarrowMobileActionButtonClassName(
-                      narrowMobileTypography,
-                    ),
+                    featuredActionButtonClassName(narrowMobileTypography),
                   )
                 : undefined
             }
@@ -559,7 +565,7 @@ function PricingSection({
               compact
                 ? cn(
                     "size-2.5 lg:size-3",
-                    narrowMobileTypography && "max-sm:size-3.5",
+                    featuredActionIconClassName(narrowMobileTypography),
                   )
                 : undefined
             }
@@ -572,9 +578,7 @@ function PricingSection({
               compact
                 ? cn(
                     compactActionButtonClassName,
-                    compactNarrowMobileActionButtonClassName(
-                      narrowMobileTypography,
-                    ),
+                    featuredActionButtonClassName(narrowMobileTypography),
                   )
                 : undefined
             }
@@ -594,9 +598,7 @@ function PricingSection({
               compact
                 ? cn(
                     compactActionButtonClassName,
-                    compactNarrowMobileActionButtonClassName(
-                      narrowMobileTypography,
-                    ),
+                    featuredActionButtonClassName(narrowMobileTypography),
                   )
                 : undefined
             }
@@ -604,7 +606,7 @@ function PricingSection({
               compact
                 ? cn(
                     "size-2.5 lg:size-3",
-                    narrowMobileTypography && "max-sm:size-3.5",
+                    featuredActionIconClassName(narrowMobileTypography),
                   )
                 : undefined
             }
@@ -651,7 +653,7 @@ function packageCardMetaClassName({
     compact
       ? cn(
           "mt-2.5 text-[10px] leading-snug lg:mt-3 lg:text-xs",
-          compactNarrowMobileTypeClassName(narrowMobileTypography),
+          featuredTypeClassName(narrowMobileTypography),
         )
       : tight
         ? "mt-2 text-xs sm:text-sm"
@@ -712,25 +714,15 @@ function PackageCircuitInfo({
     return null;
   }
 
-  const parts: string[] = [];
-
-  if (inicio) {
-    parts.push(`Início: ${inicio}`);
-  }
-
-  if (duracao) {
-    parts.push(`Duração: ${duracao}`);
-  }
-
   return (
     <div
-      className={packageCardMetaClassName({
-        compact,
-        tight,
-        narrowMobileTypography,
-      })}
+      className={cn(
+        "space-y-0.5",
+        packageCardMetaClassName({ compact, tight, narrowMobileTypography }),
+      )}
     >
-      <p>{parts.join(" | ")}</p>
+      {inicio ? <p>Início: {inicio}</p> : null}
+      {duracao ? <p>Duração: {duracao}</p> : null}
     </div>
   );
 }
@@ -940,7 +932,7 @@ export function PackageCard({
                 isCompact
                   ? cn(
                       "text-xs leading-snug lg:text-sm xl:text-[0.9375rem]",
-                      compactNarrowMobileTitleClassName(narrowMobileTypography),
+                      featuredTitleClassName(narrowMobileTypography),
                     )
                   : "text-[0.95rem] sm:text-base",
               )}
@@ -962,7 +954,7 @@ export function PackageCard({
                 isCompact
                   ? cn(
                       "mt-0.5 text-[10px] leading-snug lg:text-xs",
-                      compactNarrowMobileTypeClassName(narrowMobileTypography),
+                      featuredTypeClassName(narrowMobileTypography),
                     )
                   : "mt-1 text-xs sm:text-sm",
               )}

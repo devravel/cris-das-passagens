@@ -49,7 +49,7 @@ export function PackageWhatsAppCta({
         className,
       )}
     >
-      <span className="text-center uppercase">Fale com o Agente</span>
+      <span className="text-center uppercase">Reserve agora</span>
       <WhatsAppIcon className={cn("size-4 shrink-0", iconClassName)} />
     </a>
   );

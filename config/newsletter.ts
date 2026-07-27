@@ -3,7 +3,7 @@ import { HOME_NEWSLETTER_SECTION_ID } from "@/config/navigation";
 export const newsletterSectionContent = {
   id: HOME_NEWSLETTER_SECTION_ID,
   eyebrow: "Newsletter",
-  title: "Insceva-se Já em nossa Newsletter",
+  title: "Inscreva-se Já em nossa Newsletter",
   subtitle: "Receba em primeira mão novidades, promoções e dicas.",
   submitLabel: "Quero me inscrever",
   submittingLabel: "Enviando inscrição...",
