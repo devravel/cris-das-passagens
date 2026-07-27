@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 
-import { Container } from "@/components/layout/container";
 import {
   sectionHeadingClassName,
   sectionSubtitleClassName,
@@ -40,8 +39,8 @@ export function NewsletterSection({
       style={{ backgroundColor: LOGO_BLUE_DARK }}
       aria-labelledby={headingId}
     >
-      <Container size="narrow" padding="none">
-        <div className="mx-auto max-w-xl text-center">
+      <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-10 xl:gap-14">
+        <div className="mx-auto max-w-xl text-center lg:mx-0 lg:max-w-none lg:text-left">
           <motion.p
             className="text-xs font-semibold uppercase tracking-[0.14em] text-white/80"
             {...headingEntrance}
@@ -51,14 +50,20 @@ export function NewsletterSection({
 
           <motion.h2
             id={headingId}
-            className={cn(sectionHeadingClassName, "mt-3 text-white")}
+            className={cn(
+              sectionHeadingClassName,
+              "mt-3 text-white lg:text-left",
+            )}
             {...headingEntrance}
           >
             {newsletterSectionContent.title}
           </motion.h2>
 
           <motion.p
-            className={cn(sectionSubtitleClassName, "mt-4 text-white/85")}
+            className={cn(
+              sectionSubtitleClassName,
+              "mt-3 text-white/85 lg:mt-4 lg:text-left",
+            )}
             {...bodyEntrance}
           >
             {newsletterSectionContent.subtitle}
@@ -66,12 +71,12 @@ export function NewsletterSection({
         </div>
 
         <motion.div
-          className="mx-auto mt-8 max-w-md rounded-2xl bg-background p-5 text-foreground shadow-sm ring-1 ring-border/50 sm:mt-10 sm:p-6"
+          className="mx-auto w-full max-w-md rounded-2xl bg-background p-5 text-foreground shadow-sm ring-1 ring-border/50 sm:p-6 lg:mx-0 lg:max-w-none"
           {...formEntrance}
         >
-          <NewsletterForm />
+          <NewsletterForm className="space-y-3.5 sm:space-y-4" />
         </motion.div>
-      </Container>
+      </div>
     </Section>
   );
 }

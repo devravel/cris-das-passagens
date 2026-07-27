@@ -26,7 +26,7 @@ type SubscriptionResponse = {
   };
 };
 
-export function NewsletterForm() {
+export function NewsletterForm({ className }: { className?: string }) {
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -105,7 +105,7 @@ export function NewsletterForm() {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-5"
+      className={cn("space-y-5", className)}
       noValidate
     >
       <div className="space-y-1.5">
