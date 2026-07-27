@@ -181,7 +181,7 @@ export function TourismHero({
             {...ctaEntrance}
           >
             {primaryCta.href === reiDaCopaHomeHeroCta.href ? (
-              <ReiDaCopaHeroCta className={heroCtaCompactClassName} />
+              <ReiDaCopaHeroCta className={heroCtaDesktopClassName} />
             ) : (
               <HeroCtaLink cta={primaryCta} variant="primary" />
             )}
