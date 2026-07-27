@@ -1,7 +1,9 @@
 import { Sparkles } from "lucide-react";
 
 import { CouponApplyForm } from "@/components/coupon/coupon-apply-form";
-import { PackageCardsContinuousCarousel } from "@/components/packages/package-cards-carousel-continuous";
+import { InfiniteDragMarquee } from "@/components/infinite-drag-marquee";
+import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
+import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { content } from "@/config/content";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
@@ -86,15 +88,34 @@ export function HeroFeaturedPackages({
       <HeroFeaturedPackagesHeader title={title} showCouponForm={hasPackages} />
 
       {hasPackages ? (
-        <PackageCardsContinuousCarousel
-          packages={packages}
-          departureCity={departureCity}
-          ariaLabel="Pacotes em destaque"
-          variant="landing"
-          showDots={packages.length > 1}
-          scrollHintAlwaysVisible
-          showNavButtons
-        />
+        <div className="relative min-w-0">
+          <InfiniteDragMarquee
+            speed={28}
+            gapClassName="gap-3 pr-3 sm:gap-3.5 sm:pr-3.5"
+            ariaLabel="Pacotes em destaque"
+            className="py-1"
+          >
+            {packages.map((pkg, index) => (
+              <div
+                key={pkg.id}
+                className="flex w-[min(220px,78vw)] items-stretch sm:w-[200px] lg:w-[190px]"
+              >
+                <PublicPackageCard
+                  pkg={pkg}
+                  departureCity={departureCity}
+                  layout="carousel"
+                  variant="landing"
+                  size="compact"
+                  narrowMobileTypography
+                  priority={index < 4}
+                  className="h-full min-w-0"
+                />
+              </div>
+            ))}
+          </InfiniteDragMarquee>
+
+          <PackageCarouselScrollHint className="mt-[0.525rem] text-center text-[0.7725rem] sm:mt-[0.65625rem] md:mt-[0.7875rem]" />
+        </div>
       ) : (
         <HeroFeaturedPackagesEmpty message={emptyMessage} />
       )}

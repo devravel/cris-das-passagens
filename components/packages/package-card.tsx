@@ -48,7 +48,8 @@ const compactActionButtonClassName = cn(
 
 function compactNarrowMobileActionButtonClassName(enabled: boolean) {
   return enabled
-    ? "max-[425px]:h-8 max-[425px]:min-h-8 max-[425px]:px-2 max-[425px]:text-[11px]"
+    ? // Hero em destaque: legível de 0–639px (em ≤425px já era maior; 426–639 ficava em 8px).
+      "max-sm:h-8 max-sm:min-h-8 max-sm:gap-1 max-sm:px-2 max-sm:text-[11px] max-sm:leading-tight"
     : undefined;
 }
 
@@ -558,7 +559,7 @@ function PricingSection({
               compact
                 ? cn(
                     "size-2.5 lg:size-3",
-                    narrowMobileTypography && "max-[425px]:size-3.5",
+                    narrowMobileTypography && "max-sm:size-3.5",
                   )
                 : undefined
             }
@@ -603,7 +604,7 @@ function PricingSection({
               compact
                 ? cn(
                     "size-2.5 lg:size-3",
-                    narrowMobileTypography && "max-[425px]:size-3.5",
+                    narrowMobileTypography && "max-sm:size-3.5",
                   )
                 : undefined
             }

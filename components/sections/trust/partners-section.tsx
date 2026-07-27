@@ -5,8 +5,7 @@ import { motion } from "framer-motion";
 import { Container } from "@/components/layout/container";
 import { sectionHeadingClassName } from "@/components/layout/section-header";
 import { Section } from "@/components/layout/section";
-import { PartnersLogosCarousel } from "@/components/sections/trust/partners-logos-carousel";
-import { PartnersLogosDesktop } from "@/components/sections/trust/partners-logos-desktop";
+import { PartnersLogosMarquee } from "@/components/sections/trust/partners-logos-marquee";
 import { content } from "@/config/content";
 import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
@@ -46,8 +45,7 @@ export function PartnersSection({
           </h2>
         </motion.div>
 
-        <PartnersLogosCarousel logos={logos} />
-        <PartnersLogosDesktop logos={logos} />
+        <PartnersLogosMarquee logos={logos} />
       </Container>
     </Section>
   );

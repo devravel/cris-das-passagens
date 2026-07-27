@@ -21,8 +21,8 @@ export type CarouselDotsProps = {
 
 /**
  * Componente reutilizável para dots de navegação de carrossel.
- * Baseado no modelo da seção "Nossos Parceiros".
  */
+
 export function CarouselDots({
   pageCount,
   activeIndex,

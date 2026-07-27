@@ -103,6 +103,52 @@
   animation: package-card-highlight 3.2s ease-out forwards;
 }
 
+/* Infinite drag marquee — layout crítico via Tailwind no JSX; CSS só reforça */
+.infinite-drag-marquee.is-dragging {
+  cursor: grabbing;
+}
+
+.infinite-drag-marquee-group > * {
+  flex-shrink: 0;
+}
+
+/* Partners — CSS marquee (sem scroll horizontal; só transform) */
+.partners-marquee-viewport {
+  width: 100%;
+  overflow: hidden;
+}
+
+.partners-marquee-track {
+  display: flex;
+  width: max-content;
+  animation-name: partners-marquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--partners-marquee-duration, 12s);
+}
+
+@keyframes partners-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partners-marquee-track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .partners-marquee-group:last-child {
+    display: none;
+  }
+}
+
 @keyframes package-card-highlight {
   0%,
   18% {
