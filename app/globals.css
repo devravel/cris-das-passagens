@@ -149,6 +149,30 @@
   }
 }
 
+@keyframes cookie-banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cookie-banner-enter {
+  animation: cookie-banner-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes package-card-highlight {
   0%,
   18% {
