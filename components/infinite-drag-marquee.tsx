@@ -20,6 +20,25 @@ type InfiniteDragMarqueeProps = {
 
 const DRAG_CLICK_SUPPRESS_PX = 6;
 
+const INTERACTIVE_SELECTOR = [
+  "a",
+  "button",
+  "input",
+  "textarea",
+  "select",
+  "label",
+  "summary",
+  '[role="button"]',
+  '[role="link"]',
+  '[role="menuitem"]',
+  '[role="tab"]',
+  '[contenteditable="true"]',
+].join(",");
+
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest(INTERACTIVE_SELECTOR));
+}
+
 export function InfiniteDragMarquee({
   children,
   speed = 28,
@@ -33,6 +52,8 @@ export function InfiniteDragMarquee({
   const offsetRef = useRef(0);
   const halfRef = useRef(0);
   const draggingRef = useRef(false);
+  const hoveredRef = useRef(false);
+  const contactRef = useRef(false);
   const movedRef = useRef(false);
   const reducedMotionRef = useRef(false);
   const pointerIdRef = useRef<number | null>(null);
@@ -40,6 +61,7 @@ export function InfiniteDragMarquee({
   const startOffsetRef = useRef(0);
   const lastTsRef = useRef(0);
   const rafRef = useRef(0);
+  const releaseListenersRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -66,12 +88,15 @@ export function InfiniteDragMarquee({
       track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
     };
 
+    const isPaused = () =>
+      hoveredRef.current || contactRef.current || draggingRef.current;
+
     const tick = (ts: number) => {
       if (!lastTsRef.current) lastTsRef.current = ts;
       const dt = (ts - lastTsRef.current) / 1000;
       lastTsRef.current = ts;
 
-      if (!draggingRef.current && halfRef.current > 0) {
+      if (!isPaused() && halfRef.current > 0) {
         offsetRef.current += speed * dt;
         wrap();
         apply();
@@ -118,20 +143,73 @@ export function InfiniteDragMarquee({
       ro.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       imgs.forEach((img) => img.removeEventListener("load", onImgLoad));
+      releaseListenersRef.current?.();
     };
   }, [speed]);
+
+  const endPointerContact = (
+    e: { pointerId: number },
+    root: HTMLDivElement,
+  ) => {
+    if (e.pointerId !== pointerIdRef.current) return;
+
+    releaseListenersRef.current?.();
+
+    const didDrag = draggingRef.current && movedRef.current;
+
+    pointerIdRef.current = null;
+    draggingRef.current = false;
+    contactRef.current = false;
+    lastTsRef.current = 0;
+    root.classList.remove("is-dragging");
+
+    if (didDrag) {
+      const suppressClick = (event: Event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      };
+
+      root.addEventListener("click", suppressClick, {
+        capture: true,
+        once: true,
+      });
+    }
+  };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (reducedMotionRef.current) return;
     if (pointerIdRef.current !== null) return;
+
+    const root = e.currentTarget;
     pointerIdRef.current = e.pointerId;
-    draggingRef.current = true;
+    contactRef.current = true;
     movedRef.current = false;
+    lastTsRef.current = 0;
+
+    if (isInteractiveTarget(e.target)) {
+      draggingRef.current = false;
+
+      const onWindowPointerUp = (event: PointerEvent) => {
+        endPointerContact(event, root);
+      };
+
+      releaseListenersRef.current?.();
+      releaseListenersRef.current = () => {
+        window.removeEventListener("pointerup", onWindowPointerUp);
+        window.removeEventListener("pointercancel", onWindowPointerUp);
+        releaseListenersRef.current = null;
+      };
+
+      window.addEventListener("pointerup", onWindowPointerUp);
+      window.addEventListener("pointercancel", onWindowPointerUp);
+      return;
+    }
+
+    draggingRef.current = true;
     startXRef.current = e.clientX;
     startOffsetRef.current = offsetRef.current;
-    lastTsRef.current = 0;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    e.currentTarget.classList.add("is-dragging");
+    root.setPointerCapture(e.pointerId);
+    root.classList.add("is-dragging");
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -156,26 +234,18 @@ export function InfiniteDragMarquee({
   };
 
   const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (e.pointerId !== pointerIdRef.current) return;
-    pointerIdRef.current = null;
-    draggingRef.current = false;
+    endPointerContact(e, e.currentTarget);
+  };
+
+  const onPointerEnter = () => {
+    if (reducedMotionRef.current) return;
+    hoveredRef.current = true;
     lastTsRef.current = 0;
-    e.currentTarget.classList.remove("is-dragging");
+  };
 
-    if (movedRef.current) {
-      const root = rootRef.current;
-      if (!root) return;
-
-      const suppressClick = (event: Event) => {
-        event.preventDefault();
-        event.stopPropagation();
-      };
-
-      root.addEventListener("click", suppressClick, {
-        capture: true,
-        once: true,
-      });
-    }
+  const onPointerLeave = () => {
+    hoveredRef.current = false;
+    lastTsRef.current = 0;
   };
 
   return (
@@ -192,6 +262,8 @@ export function InfiniteDragMarquee({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
     >
       <div
         ref={trackRef}
@@ -211,6 +283,7 @@ export function InfiniteDragMarquee({
             gapClassName,
           )}
           aria-hidden
+          inert
         >
           {children}
         </div>
