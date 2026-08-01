@@ -667,12 +667,16 @@ function PackageTravelDates({
   compact = false,
   tight = false,
   narrowMobileTypography = false,
+  startLabel = "Ida",
+  endLabel = "Volta",
 }: {
   departureDate: string | null;
   returnDate: string | null;
   compact?: boolean;
   tight?: boolean;
   narrowMobileTypography?: boolean;
+  startLabel?: string;
+  endLabel?: string;
 }) {
   const ida = formatPackageTravelDate(departureDate);
   const volta = formatPackageTravelDate(returnDate);
@@ -688,8 +692,16 @@ function PackageTravelDates({
         packageCardMetaClassName({ compact, tight, narrowMobileTypography }),
       )}
     >
-      {ida ? <p>Ida: {ida}</p> : null}
-      {volta ? <p>Volta: {volta}</p> : null}
+      {ida ? (
+        <p>
+          {startLabel}: {ida}
+        </p>
+      ) : null}
+      {volta ? (
+        <p>
+          {endLabel}: {volta}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -721,7 +733,7 @@ function PackageCircuitInfo({
         packageCardMetaClassName({ compact, tight, narrowMobileTypography }),
       )}
     >
-      {inicio ? <p>Início: {inicio}</p> : null}
+      {inicio ? <p>Dia de início: {inicio}</p> : null}
       {duracao ? <p>Duração: {duracao}</p> : null}
     </div>
   );
@@ -967,13 +979,24 @@ export function PackageCard({
           ) : null}
 
           {data.type === "CIRCUIT" ? (
-            <PackageCircuitInfo
-              circuitStartDay={data.circuitStartDay}
-              circuitDuration={data.circuitDuration}
-              compact={isCompact}
-              tight={isListing}
-              narrowMobileTypography={narrowMobileTypography}
-            />
+            <>
+              <PackageCircuitInfo
+                circuitStartDay={data.circuitStartDay}
+                circuitDuration={data.circuitDuration}
+                compact={isCompact}
+                tight={isListing}
+                narrowMobileTypography={narrowMobileTypography}
+              />
+              <PackageTravelDates
+                departureDate={data.departureDate}
+                returnDate={data.returnDate}
+                compact={isCompact}
+                tight={isListing}
+                narrowMobileTypography={narrowMobileTypography}
+                startLabel="Data início"
+                endLabel="Data fim"
+              />
+            </>
           ) : (
             <PackageTravelDates
               departureDate={data.departureDate}

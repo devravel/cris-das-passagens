@@ -116,13 +116,14 @@ function validatePackageRules(
   }
 
   if (type === "CIRCUIT") {
-    if (!data.circuitStartDay.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["circuitStartDay"],
-        message: "Selecione o dia de início.",
-      });
-    } else if (!isCircuitStartDay(data.circuitStartDay)) {
+    const hasCircuitStartDay = Boolean(data.circuitStartDay.trim());
+    const hasCircuitDuration = Boolean(data.circuitDuration.trim());
+    const hasDepartureDate = Boolean(data.departureDate.trim());
+    const hasReturnDate = Boolean(data.returnDate.trim());
+    const hasCircuitInfo = hasCircuitStartDay || hasCircuitDuration;
+    const hasTravelDates = hasDepartureDate || hasReturnDate;
+
+    if (hasCircuitStartDay && !isCircuitStartDay(data.circuitStartDay)) {
       ctx.addIssue({
         code: "custom",
         path: ["circuitStartDay"],
@@ -130,17 +131,35 @@ function validatePackageRules(
       });
     }
 
-    if (!data.circuitDuration.trim()) {
+    if (hasCircuitDuration && data.circuitDuration.trim().length > 40) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["circuitDuration"],
+        message: "A duração deve ter no máximo 40 caracteres.",
+      });
+    }
+
+    if (hasCircuitStartDay && !hasCircuitDuration) {
       ctx.addIssue({
         code: "custom",
         path: ["circuitDuration"],
         message: "Informe a duração.",
       });
-    } else if (data.circuitDuration.trim().length > 40) {
+    }
+
+    if (hasCircuitDuration && !hasCircuitStartDay) {
       ctx.addIssue({
         code: "custom",
-        path: ["circuitDuration"],
-        message: "A duração deve ter no máximo 40 caracteres.",
+        path: ["circuitStartDay"],
+        message: "Selecione o dia de início.",
+      });
+    }
+
+    if (!hasCircuitInfo && !hasTravelDates) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["circuitStartDay"],
+        message: "Informe o dia/duração do circuito e/ou as datas de início e fim.",
       });
     }
   }
@@ -177,34 +196,41 @@ function validatePackageRules(
     });
   }
 
-  if (type !== "CIRCUIT") {
-    if (!isValidPackageDateInput(data.departureDate)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["departureDate"],
-        message: "Informe uma data de ida válida.",
-      });
-    }
+  if (!isValidPackageDateInput(data.departureDate)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["departureDate"],
+      message:
+        type === "CIRCUIT"
+          ? "Informe uma data de início válida."
+          : "Informe uma data de ida válida.",
+    });
+  }
 
-    if (!isValidPackageDateInput(data.returnDate)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["returnDate"],
-        message: "Informe uma data de volta válida.",
-      });
-    }
+  if (!isValidPackageDateInput(data.returnDate)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["returnDate"],
+      message:
+        type === "CIRCUIT"
+          ? "Informe uma data de fim válida."
+          : "Informe uma data de volta válida.",
+    });
+  }
 
-    if (
-      data.departureDate.trim() &&
-      data.returnDate.trim() &&
-      data.returnDate < data.departureDate
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["returnDate"],
-        message: "A data de volta deve ser igual ou posterior à data de ida.",
-      });
-    }
+  if (
+    data.departureDate.trim() &&
+    data.returnDate.trim() &&
+    data.returnDate < data.departureDate
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["returnDate"],
+      message:
+        type === "CIRCUIT"
+          ? "A data de fim deve ser igual ou posterior à data de início."
+          : "A data de volta deve ser igual ou posterior à data de ida.",
+    });
   }
 
   if (!data.defineDuration) {

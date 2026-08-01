@@ -131,14 +131,8 @@ function normalizeInput(input: PackageFormValues) {
     airline,
     hotelName,
     departureCity,
-    departureDate:
-      input.type === "CIRCUIT"
-        ? null
-        : parseOptionalPackageDateInput(input.departureDate),
-    returnDate:
-      input.type === "CIRCUIT"
-        ? null
-        : parseOptionalPackageDateInput(input.returnDate),
+    departureDate: parseOptionalPackageDateInput(input.departureDate),
+    returnDate: parseOptionalPackageDateInput(input.returnDate),
     circuitStartDay:
       input.type === "CIRCUIT" ? input.circuitStartDay.trim() || null : null,
     circuitDuration:

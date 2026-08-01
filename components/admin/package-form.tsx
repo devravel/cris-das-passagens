@@ -176,8 +176,6 @@ export function PackageForm({
 
     if (typeValue === "CIRCUIT") {
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
-      form.setValue("departureDate", "", { shouldDirty: true, shouldValidate: true });
-      form.setValue("returnDate", "", { shouldDirty: true, shouldValidate: true });
     } else {
       form.setValue("circuitStartDay", "", { shouldDirty: true, shouldValidate: true });
       form.setValue("circuitDuration", "", { shouldDirty: true, shouldValidate: true });
@@ -470,7 +468,8 @@ export function PackageForm({
                   htmlFor="circuitStartDay"
                   className="text-sm font-medium text-foreground"
                 >
-                  Início
+                  Dia de início{" "}
+                  <span className="text-muted-foreground">(opcional)</span>
                 </label>
                 <select
                   id="circuitStartDay"
@@ -502,7 +501,8 @@ export function PackageForm({
                   htmlFor="circuitDuration"
                   className="text-sm font-medium text-foreground"
                 >
-                  Duração
+                  Duração{" "}
+                  <span className="text-muted-foreground">(opcional)</span>
                 </label>
                 <Input
                   id="circuitDuration"
@@ -517,51 +517,51 @@ export function PackageForm({
                 ) : null}
               </div>
             </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="departureDate"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Ida{" "}
-                  <span className="text-muted-foreground">(opcional)</span>
-                </label>
-                <Input
-                  id="departureDate"
-                  type="date"
-                  className="h-10 rounded-xl"
-                  {...form.register("departureDate")}
-                />
-                {form.formState.errors.departureDate ? (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.departureDate.message}
-                  </p>
-                ) : null}
-              </div>
+          ) : null}
 
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="returnDate"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Volta{" "}
-                  <span className="text-muted-foreground">(opcional)</span>
-                </label>
-                <Input
-                  id="returnDate"
-                  type="date"
-                  className="h-10 rounded-xl"
-                  {...form.register("returnDate")}
-                />
-                {form.formState.errors.returnDate ? (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.returnDate.message}
-                  </p>
-                ) : null}
-              </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="departureDate"
+                className="text-sm font-medium text-foreground"
+              >
+                {isCircuit ? "Data de início" : "Ida"}{" "}
+                <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="departureDate"
+                type="date"
+                className="h-10 rounded-xl"
+                {...form.register("departureDate")}
+              />
+              {form.formState.errors.departureDate ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.departureDate.message}
+                </p>
+              ) : null}
             </div>
-          )}
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="returnDate"
+                className="text-sm font-medium text-foreground"
+              >
+                {isCircuit ? "Data de fim" : "Volta"}{" "}
+                <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="returnDate"
+                type="date"
+                className="h-10 rounded-xl"
+                {...form.register("returnDate")}
+              />
+              {form.formState.errors.returnDate ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.returnDate.message}
+                </p>
+              ) : null}
+            </div>
+          </div>
 
           <div className="space-y-1.5">
             <label
