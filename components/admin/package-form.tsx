@@ -14,6 +14,7 @@ import { PackageCardPreview } from "@/components/admin/package-card-preview";
 import { PackageDurationFields } from "@/components/admin/package-duration-fields";
 import { PackageImageField } from "@/components/admin/package-image-field";
 import { PackageIncludedItemsField } from "@/components/admin/package-included-items-field";
+import { PackagePaymentFields } from "@/components/admin/package-payment-fields";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,10 @@ import {
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
 } from "@/lib/package/constants";
+import type {
+  PackageInstallmentKindValue,
+  PackagePaymentMethodValue,
+} from "@/lib/package/payment";
 import {
   EMPTY_PACKAGE_FORM_VALUES,
   packageFormSchema,
@@ -606,7 +611,7 @@ export function PackageForm({
             ) : null}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label
                 htmlFor="price"
@@ -654,27 +659,71 @@ export function PackageForm({
                 </p>
               ) : null}
             </div>
-
-            <div className="space-y-1.5 sm:col-span-1">
-              <label
-                htmlFor="installmentText"
-                className="text-sm font-medium text-foreground"
-              >
-                Parcelamento
-              </label>
-              <Input
-                id="installmentText"
-                className="h-10 rounded-xl"
-                placeholder="Ex.: 12x R$ 129"
-                {...form.register("installmentText")}
-              />
-              {form.formState.errors.installmentText ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.installmentText.message}
-                </p>
-              ) : null}
-            </div>
           </div>
+
+          <PackagePaymentFields
+            price={watchedValues.price ?? 0}
+            installmentKind={
+              (watchedValues.installmentKind ??
+                "NONE") as PackageInstallmentKindValue
+            }
+            installmentCount={watchedValues.installmentCount ?? null}
+            installmentAmount={watchedValues.installmentAmount ?? null}
+            downPaymentAmount={watchedValues.downPaymentAmount ?? null}
+            installmentText={watchedValues.installmentText ?? ""}
+            paymentMethods={
+              (watchedValues.paymentMethods ??
+                []) as PackagePaymentMethodValue[]
+            }
+            errors={{
+              installmentKind: form.formState.errors.installmentKind?.message,
+              installmentCount: form.formState.errors.installmentCount?.message,
+              installmentAmount:
+                form.formState.errors.installmentAmount?.message,
+              downPaymentAmount:
+                form.formState.errors.downPaymentAmount?.message,
+              installmentText: form.formState.errors.installmentText?.message,
+              paymentMethods: form.formState.errors.paymentMethods?.message,
+            }}
+            onChange={(patch) => {
+              if (patch.installmentKind !== undefined) {
+                form.setValue("installmentKind", patch.installmentKind, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+              if (patch.installmentCount !== undefined) {
+                form.setValue("installmentCount", patch.installmentCount, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+              if (patch.installmentAmount !== undefined) {
+                form.setValue("installmentAmount", patch.installmentAmount, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+              if (patch.downPaymentAmount !== undefined) {
+                form.setValue("downPaymentAmount", patch.downPaymentAmount, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+              if (patch.installmentText !== undefined) {
+                form.setValue("installmentText", patch.installmentText, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+              if (patch.paymentMethods !== undefined) {
+                form.setValue("paymentMethods", patch.paymentMethods, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                });
+              }
+            }}
+          />
 
           <div className="space-y-1.5">
             <label

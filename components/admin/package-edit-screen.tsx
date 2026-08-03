@@ -8,6 +8,7 @@ import { packageDurationInitialValues } from "@/components/admin/package-duratio
 import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_PACKAGE_DEPARTURE_CITY, packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
+import { inferInstallmentFieldsFromText } from "@/lib/package/payment";
 import type { AdminPackageDetail } from "@/lib/package/queries";
 
 type PackageEditScreenProps = {
@@ -27,6 +28,11 @@ export function PackageEditScreen({
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(pkg.createdAt));
+
+  const legacyInstallment =
+    pkg.installmentKind === "CUSTOM"
+      ? inferInstallmentFieldsFromText(pkg.installmentText)
+      : null;
 
   return (
     <section className="space-y-5">
@@ -83,8 +89,22 @@ export function PackageEditScreen({
             price: pkg.price,
             oldPrice: pkg.oldPrice,
             priceScope: pkg.priceScope,
-            installmentText: pkg.installmentText ?? "",
+            installmentKind:
+              legacyInstallment?.installmentKind ?? pkg.installmentKind,
+            installmentCount:
+              pkg.installmentCount ?? legacyInstallment?.installmentCount ?? 12,
+            installmentAmount:
+              pkg.installmentAmount ??
+              legacyInstallment?.installmentAmount ??
+              null,
+            downPaymentAmount:
+              pkg.downPaymentAmount ??
+              legacyInstallment?.downPaymentAmount ??
+              null,
+            installmentText:
+              legacyInstallment?.installmentText ?? pkg.installmentText ?? "",
             highlightInstallments: pkg.highlightInstallments,
+            paymentMethods: pkg.paymentMethods,
             feesText: pkg.feesText ?? "",
             airline: pkg.airline ?? "",
             hotelName: pkg.hotelName ?? "",

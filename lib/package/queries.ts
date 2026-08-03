@@ -12,6 +12,11 @@ import { packageDateToIsoString } from "@/lib/package/dates";
 import { buildIncludedItemSuggestions } from "@/lib/package/included-item-suggestions";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 import {
+  normalizePaymentMethods,
+  type PackageInstallmentKindValue,
+  type PackagePaymentMethodValue,
+} from "@/lib/package/payment";
+import {
   publicPackageScheduleWhere,
   syncExpiredPackageSchedules,
 } from "@/lib/package/schedule";
@@ -31,6 +36,7 @@ export type PublicPackage = {
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
   airline: string | null;
   hotelName: string | null;
@@ -78,6 +84,7 @@ const publicPackageSelect = {
   priceScope: true,
   installmentText: true,
   highlightInstallments: true,
+  paymentMethods: true,
   feesText: true,
   airline: true,
   hotelName: true,
@@ -124,6 +131,7 @@ function mapPublicPackage(
     priceScope: string | null;
     installmentText: string | null;
     highlightInstallments: boolean;
+    paymentMethods: string[];
     feesText: string | null;
     airline: string | null;
     hotelName: string | null;
@@ -153,6 +161,7 @@ function mapPublicPackage(
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    paymentMethods: normalizePaymentMethods(pkg.paymentMethods),
     feesText: pkg.feesText,
     airline: pkg.airline,
     hotelName: pkg.hotelName,
@@ -306,8 +315,13 @@ export type AdminPackageListItem = {
   price: number;
   oldPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
+  installmentKind: PackageInstallmentKindValue;
+  installmentCount: number | null;
+  installmentAmount: number | null;
+  downPaymentAmount: number | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
   airline: string | null;
   hotelName: string | null;
@@ -340,8 +354,13 @@ const adminPackageSelect = {
   price: true,
   oldPrice: true,
   priceScope: true,
+  installmentKind: true,
+  installmentCount: true,
+  installmentAmount: true,
+  downPaymentAmount: true,
   installmentText: true,
   highlightInstallments: true,
+  paymentMethods: true,
   feesText: true,
   airline: true,
   hotelName: true,
@@ -375,8 +394,13 @@ function mapAdminPackage(
     price: { toNumber?: () => number } | number;
     oldPrice: { toNumber?: () => number } | number | null;
     priceScope: string | null;
+    installmentKind: string;
+    installmentCount: number | null;
+    installmentAmount: { toNumber?: () => number } | number | null;
+    downPaymentAmount: { toNumber?: () => number } | number | null;
     installmentText: string | null;
     highlightInstallments: boolean;
+    paymentMethods: string[];
     feesText: string | null;
     airline: string | null;
     hotelName: string | null;
@@ -409,8 +433,13 @@ function mapAdminPackage(
     price: decimalToNumber(pkg.price) ?? 0,
     oldPrice: decimalToNumber(pkg.oldPrice),
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
+    installmentKind: pkg.installmentKind as PackageInstallmentKindValue,
+    installmentCount: pkg.installmentCount,
+    installmentAmount: decimalToNumber(pkg.installmentAmount),
+    downPaymentAmount: decimalToNumber(pkg.downPaymentAmount),
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    paymentMethods: normalizePaymentMethods(pkg.paymentMethods),
     feesText: pkg.feesText,
     airline: pkg.airline,
     hotelName: pkg.hotelName,

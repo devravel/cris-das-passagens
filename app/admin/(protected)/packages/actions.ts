@@ -125,8 +125,23 @@ function normalizeInput(input: PackageFormValues) {
     price: input.price,
     oldPrice: input.oldPrice ?? null,
     priceScope: input.priceScope ?? null,
+    installmentKind: input.installmentKind,
+    installmentCount:
+      input.installmentKind === "INSTALLMENTS" ||
+      input.installmentKind === "DOWN_PAYMENT"
+        ? input.installmentCount
+        : null,
+    installmentAmount:
+      input.installmentKind === "INSTALLMENTS" ||
+      input.installmentKind === "DOWN_PAYMENT" ||
+      input.installmentKind === "PIX_CASH"
+        ? input.installmentAmount
+        : null,
+    downPaymentAmount:
+      input.installmentKind === "DOWN_PAYMENT" ? input.downPaymentAmount : null,
     installmentText: input.installmentText?.trim() || null,
     highlightInstallments: input.highlightInstallments,
+    paymentMethods: input.paymentMethods,
     feesText: input.feesText?.trim() || null,
     airline,
     hotelName,

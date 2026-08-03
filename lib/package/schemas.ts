@@ -19,6 +19,14 @@ import {
   isValidPackageDateInput,
   parseOptionalDatetimeLocalInput,
 } from "@/lib/package/dates";
+import {
+  PACKAGE_INSTALLMENT_KINDS,
+  PACKAGE_PAYMENT_METHODS,
+  buildInstallmentText,
+  normalizePaymentMethods,
+  type PackageInstallmentKindValue,
+  type PackagePaymentMethodValue,
+} from "@/lib/package/payment";
 
 export const PACKAGE_ACTIVATION_MODES = ["now", "scheduled"] as const;
 export type PackageActivationMode = (typeof PACKAGE_ACTIVATION_MODES)[number];
@@ -57,8 +65,13 @@ const packageFormFieldsSchema = z.object({
   price: priceSchema,
   oldPrice: optionalPriceSchema,
   priceScope: z.enum(PACKAGE_PRICE_SCOPES).nullable(),
+  installmentKind: z.enum(PACKAGE_INSTALLMENT_KINDS),
+  installmentCount: z.number().int().min(1).max(48).nullable(),
+  installmentAmount: optionalPriceSchema,
+  downPaymentAmount: optionalPriceSchema,
   installmentText: z.string().trim(),
   highlightInstallments: z.boolean(),
+  paymentMethods: z.array(z.enum(PACKAGE_PAYMENT_METHODS)),
   feesText: z
     .string()
     .trim()
@@ -86,12 +99,26 @@ export const packageFormSchema = packageFormFieldsSchema
   .superRefine((data, ctx) => {
     validatePackageRules(data, ctx);
   })
-  .transform((data) => ({
-    ...data,
-    title: data.destination.trim(),
-    daysCount: null,
-    nightsCount: null,
-  }));
+  .transform((data) => {
+    const paymentMethods = normalizePaymentMethods(data.paymentMethods);
+    const installmentText = buildInstallmentText({
+      installmentKind: data.installmentKind,
+      installmentCount: data.installmentCount,
+      installmentAmount: data.installmentAmount,
+      downPaymentAmount: data.downPaymentAmount,
+      installmentText: data.installmentText,
+      price: data.price,
+    });
+
+    return {
+      ...data,
+      paymentMethods,
+      installmentText,
+      title: data.destination.trim(),
+      daysCount: null,
+      nightsCount: null,
+    };
+  });
 
 function validatePackageRules(
   data: z.infer<typeof packageFormFieldsSchema>,
@@ -188,10 +215,21 @@ function validatePackageRules(
     });
   }
 
-  if (data.highlightInstallments && !data.installmentText.trim()) {
+  validateInstallmentRules(data, ctx);
+
+  const resolvedInstallmentText = buildInstallmentText({
+    installmentKind: data.installmentKind,
+    installmentCount: data.installmentCount,
+    installmentAmount: data.installmentAmount,
+    downPaymentAmount: data.downPaymentAmount,
+    installmentText: data.installmentText,
+    price: data.price,
+  });
+
+  if (data.highlightInstallments && !resolvedInstallmentText.trim()) {
     ctx.addIssue({
       code: "custom",
-      path: ["installmentText"],
+      path: ["installmentKind"],
       message: "Informe o parcelamento para destacá-lo no card.",
     });
   }
@@ -290,6 +328,56 @@ function validatePackageRules(
   }
 }
 
+function validateInstallmentRules(
+  data: z.infer<typeof packageFormFieldsSchema>,
+  ctx: z.RefinementCtx,
+) {
+  if (data.installmentKind === "INSTALLMENTS") {
+    if (data.installmentCount == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["installmentCount"],
+        message: "Selecione a quantidade de parcelas.",
+      });
+    }
+
+    if (data.installmentAmount == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["installmentAmount"],
+        message: "Informe o valor da parcela.",
+      });
+    }
+  }
+
+  if (data.installmentKind === "DOWN_PAYMENT") {
+    if (data.downPaymentAmount == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["downPaymentAmount"],
+        message: "Informe o valor da entrada.",
+      });
+    }
+
+    if (data.installmentCount == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["installmentCount"],
+        message: "Selecione a quantidade de parcelas.",
+      });
+    }
+
+    if (data.installmentAmount == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["installmentAmount"],
+        message: "Informe o valor da parcela.",
+      });
+    }
+  }
+
+}
+
 export type PackageFormInput = z.infer<typeof packageFormFieldsSchema>;
 export type PackageFormValues = z.output<typeof packageFormSchema>;
 
@@ -305,6 +393,7 @@ export type PackageCardData = {
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
   airline: string | null;
   hotelName: string | null;
@@ -323,6 +412,15 @@ export function toPackageCardPreviewData(
 ): PackageCardPreviewData {
   const destination = values.destination.trim();
 
+  const installmentText = buildInstallmentText({
+    installmentKind: values.installmentKind,
+    installmentCount: values.installmentCount,
+    installmentAmount: values.installmentAmount,
+    downPaymentAmount: values.downPaymentAmount,
+    installmentText: values.installmentText,
+    price: values.price,
+  });
+
   return {
     title: destination,
     shortDescription: values.shortDescription.trim() || null,
@@ -333,8 +431,9 @@ export function toPackageCardPreviewData(
     price: values.price,
     oldPrice: values.oldPrice ?? null,
     priceScope: values.priceScope ?? null,
-    installmentText: values.installmentText.trim() || null,
+    installmentText: installmentText || null,
     highlightInstallments: values.highlightInstallments,
+    paymentMethods: normalizePaymentMethods(values.paymentMethods),
     feesText: values.feesText.trim() || null,
     airline: values.airline.trim() || null,
     hotelName: values.hotelName.trim() || null,
@@ -358,8 +457,13 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   price: 0,
   oldPrice: null,
   priceScope: null,
+  installmentKind: "NONE" as PackageInstallmentKindValue,
+  installmentCount: 12,
+  installmentAmount: null,
+  downPaymentAmount: null,
   installmentText: "",
   highlightInstallments: false,
+  paymentMethods: [] as PackagePaymentMethodValue[],
   feesText: "",
   airline: "",
   hotelName: "",

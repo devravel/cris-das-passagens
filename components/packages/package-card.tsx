@@ -20,6 +20,7 @@ import {
 import { isHighlightedChecklistItem } from "@/lib/package/checklist";
 import { formatPackageTravelDate } from "@/lib/package/dates";
 import { formatPackagePrice } from "@/lib/package/format";
+import { formatPaymentMethodsText } from "@/lib/package/payment";
 import type { PackageCardData } from "@/lib/package/schemas";
 import { cardShadowClassName } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
@@ -445,7 +446,14 @@ function PriceFooter({
         )
       : "text-xs sm:text-sm",
   );
-  const feesSuffix = data.feesText ? <> | {data.feesText}</> : null;
+  const paymentMethodsText = formatPaymentMethodsText(data.paymentMethods);
+  const footerParts = [
+    data.highlightInstallments && data.installmentText
+      ? `Total da cotação: ${formatPackagePrice(data.price)}`
+      : data.installmentText,
+    paymentMethodsText,
+    data.feesText,
+  ].filter((part): part is string => Boolean(part && part.trim()));
 
   if (data.highlightInstallments && data.installmentText) {
     return (
@@ -461,19 +469,17 @@ function PriceFooter({
               : "text-[11px] sm:text-xs",
           )}
         >
-          Total da cotação: {formatPackagePrice(data.price)}
-          {feesSuffix}
+          {footerParts.join(" | ")}
         </p>
       </div>
     );
   }
 
-  if (data.installmentText || data.feesText) {
+  if (footerParts.length > 0) {
     return (
       <div className={footerClassName}>
         <p className={cn("text-foreground", footerTextClassName)}>
-          {data.installmentText}
-          {feesSuffix}
+          {footerParts.join(" | ")}
         </p>
       </div>
     );
@@ -1091,6 +1097,7 @@ export function toPackageCardDataFromPublicPackage(
     priceScope: pkg.priceScope,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    paymentMethods: pkg.paymentMethods,
     feesText: pkg.feesText,
     airline: pkg.airline,
     hotelName: pkg.hotelName,

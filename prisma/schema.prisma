@@ -79,6 +79,14 @@ enum PackagePriceScope {
   FAMILY
 }
 
+enum PackageInstallmentKind {
+  NONE
+  INSTALLMENTS
+  DOWN_PAYMENT
+  PIX_CASH
+  CUSTOM
+}
+
 model Package {
   id                    String           @id @default(cuid())
   title                 String
@@ -92,8 +100,13 @@ model Package {
   price                 Decimal          @db.Decimal(10, 2)
   oldPrice              Decimal?         @db.Decimal(10, 2)
   priceScope            PackagePriceScope?
+  installmentKind       PackageInstallmentKind @default(CUSTOM)
+  installmentCount      Int?
+  installmentAmount     Decimal?         @db.Decimal(10, 2)
+  downPaymentAmount     Decimal?         @db.Decimal(10, 2)
   installmentText       String?
   highlightInstallments Boolean          @default(false)
+  paymentMethods        String[]         @default([])
   feesText              String?
   airline               String?
   hotelName             String?
