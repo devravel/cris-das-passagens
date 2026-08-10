@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type SyntheticEvent,
+} from "react";
 
 import { StorageImage } from "@/components/ui/storage-image";
 import { computeIntrinsicImageAreaHeight } from "@/lib/package/intrinsic-image-height";
@@ -65,6 +71,16 @@ export function PackageCardIntrinsicImage({
         )
     : undefined;
 
+  function handleForegroundLoad(event: SyntheticEvent<HTMLImageElement>) {
+    const image = event.currentTarget;
+    if (image.naturalWidth > 0 && image.naturalHeight > 0) {
+      setNaturalSize({
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+      });
+    }
+  }
+
   return (
     <div
       ref={containerRef}
@@ -78,12 +94,16 @@ export function PackageCardIntrinsicImage({
           : undefined
       }
     >
+      {/* Blur decorativo: fora do otimizador do Next (evita 2x fetch+transcode). */}
       <StorageImage
         src={src}
         alt=""
         fill
-        sizes={sizes}
+        unoptimized
+        sizes="64px"
         aria-hidden
+        loading="lazy"
+        decoding="async"
         className="object-contain object-center scale-[1.03] blur-md brightness-[0.96] saturate-[1.05] opacity-75"
         containerClassName="absolute inset-0"
       />
@@ -93,9 +113,7 @@ export function PackageCardIntrinsicImage({
         fill
         priority={priority}
         sizes={sizes}
-        onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-          setNaturalSize({ width: naturalWidth, height: naturalHeight });
-        }}
+        onLoad={handleForegroundLoad}
         className="z-[1] object-contain object-center transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         containerClassName="absolute inset-0 z-[1]"
       />

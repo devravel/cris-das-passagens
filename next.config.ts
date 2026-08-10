@@ -26,8 +26,9 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
       },
     ],
-    formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 86400,
+    // WebP primeiro — AVIF é mais lento de gerar no otimizador em cold start.
+    formats: ["image/webp"],
+    minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   async redirects() {
     return [

@@ -15,6 +15,7 @@ export function StorageImage({
   alt,
   className,
   containerClassName,
+  unoptimized,
   ...props
 }: StorageImageProps) {
   const resolvedSrc = resolvePublicImageSrc(src);
@@ -25,7 +26,9 @@ export function StorageImage({
         {...props}
         src={resolvedSrc}
         alt={alt}
-        unoptimized={!isOptimizableRemoteImage(resolvedSrc)}
+        unoptimized={
+          unoptimized ?? !isOptimizableRemoteImage(resolvedSrc)
+        }
         className={cn("object-cover", className)}
       />
     </div>
