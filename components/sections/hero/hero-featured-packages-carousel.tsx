@@ -31,6 +31,8 @@ const LOOP_COPIES = 2;
 const MARQUEE_WIDTH_MAX_VIEWPORT = 600;
 const MARQUEE_CARD_MAX_PX = 220;
 const MARQUEE_CARD_VW_RATIO = 0.78;
+/** Distância mínima para decidir eixo do gesto (vertical = página, horizontal = faixa). */
+const TOUCH_AXIS_THRESHOLD_PX = 8;
 
 const navButtonClassName =
   "group absolute top-1/2 z-10 inline-flex size-9 -translate-y-1/2 items-center justify-center rounded-full border border-border/80 bg-background/95 text-muted-foreground shadow-md backdrop-blur-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
@@ -183,6 +185,79 @@ export function HeroFeaturedPackagesCarousel({
     }
   }, [useInfinite]);
 
+  // Trava o eixo no primeiro movimento: vertical → página; horizontal → carrossel.
+  useEffect(() => {
+    const track = trackRef.current;
+
+    if (!track) {
+      return;
+    }
+
+    let startX = 0;
+    let startY = 0;
+    let startScrollLeft = 0;
+    let axis: "x" | "y" | null = null;
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        return;
+      }
+
+      const touch = event.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startScrollLeft = track.scrollLeft;
+      axis = null;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        return;
+      }
+
+      const touch = event.touches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+
+      if (axis === null) {
+        if (
+          Math.abs(dx) < TOUCH_AXIS_THRESHOLD_PX &&
+          Math.abs(dy) < TOUCH_AXIS_THRESHOLD_PX
+        ) {
+          return;
+        }
+
+        axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+      }
+
+      if (axis === "x") {
+        event.preventDefault();
+        setHorizontalScrollPosition(track, startScrollLeft - dx);
+      }
+      // axis === "y": não chama preventDefault → o browser rola a página
+    };
+
+    const onTouchEnd = () => {
+      if (axis === "x") {
+        normalizeLoop();
+      }
+
+      axis = null;
+    };
+
+    track.addEventListener("touchstart", onTouchStart, { passive: true });
+    track.addEventListener("touchmove", onTouchMove, { passive: false });
+    track.addEventListener("touchend", onTouchEnd, { passive: true });
+    track.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    return () => {
+      track.removeEventListener("touchstart", onTouchStart);
+      track.removeEventListener("touchmove", onTouchMove);
+      track.removeEventListener("touchend", onTouchEnd);
+      track.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [normalizeLoop]);
+
   const scrollByStep = useCallback((direction: -1 | 1) => {
     const track = trackRef.current;
     const width = cardWidthRef.current;
@@ -217,7 +292,7 @@ export function HeroFeaturedPackagesCarousel({
 
         <div
           ref={trackRef}
-          className="min-w-0 touch-pan-x overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="region"
           aria-roledescription="carousel"
           aria-label="Pacotes em destaque"
