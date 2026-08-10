@@ -68,8 +68,9 @@ export function HeroFeaturedPackagesCarousel({
   const copyCount = useInfinite ? LOOP_COPIES : 1;
 
   // ─── Normalização do loop ──────────────────────────────────────────────────
-  // Mantém o scroll sempre dentro da cópia do meio (índice 1).
-  // Faixa válida: [0.5 * segment, 2.5 * segment).
+  // Chamada pelo evento "scrollend" (depois que momentum para) para manter o
+  // scroll dentro da cópia do meio. Sem isso o jump durante inércia cancela o
+  // momentum e causa travadas.
   const normalizeLoop = useCallback(() => {
     const track = trackRef.current;
     const segment = segmentRef.current;
@@ -135,11 +136,19 @@ export function HeroFeaturedPackagesCarousel({
     ro.observe(track);
     window.addEventListener("resize", measure);
 
+    // "scrollend" dispara após o scroll E o momentum pararem completamente,
+    // evitando que o jump instantâneo de scrollLeft cancele a inércia nativa.
+    // Fallback para "scroll" em browsers antigos (Safari < 17.5).
+    const scrollEndEvent =
+      "onscrollend" in track ? "scrollend" : "scroll";
+    track.addEventListener(scrollEndEvent, normalizeLoop);
+
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
+      track.removeEventListener(scrollEndEvent, normalizeLoop);
     };
-  }, [measure]);
+  }, [measure, normalizeLoop]);
 
   // ─── Botões ────────────────────────────────────────────────────────────────
   const scrollByStep = useCallback((direction: -1 | 1) => {
@@ -187,17 +196,20 @@ export function HeroFeaturedPackagesCarousel({
         </button>
 
         {/*
-          touch-action: pan-x → browser trata arrasto horizontal como scroll do
-          elemento (nativo, suave, com inércia); arrasto vertical propaga para a
-          página. Nenhum handler de toque manual necessário.
+          Sem touch-action explícito (usa o padrão "auto"): o browser detecta o
+          eixo naturalmente. overflow-x: auto com elemento não-scrollável
+          verticalmente faz o arrasto vertical propagar para a página. O arrasto
+          horizontal fica no carrossel com inércia nativa — sem nenhum handler
+          manual de toque. normalizeLoop é registrado via addEventListener
+          ("scrollend") no useEffect abaixo, não via onScroll, para não
+          interromper o momentum durante a rolagem.
         */}
         <div
           ref={trackRef}
-          className="touch-pan-x min-w-0 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="min-w-0 overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="region"
           aria-roledescription="carousel"
           aria-label="Pacotes em destaque"
-          onScroll={normalizeLoop}
         >
           <div
             className={cn(
