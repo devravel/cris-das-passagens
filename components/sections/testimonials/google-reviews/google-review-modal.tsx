@@ -92,14 +92,14 @@ export function GoogleReviewModal({
         <DialogOverlay className="bg-black/50 backdrop-blur-sm duration-300 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <DialogPrimitive.Content
           className={cn(
-            "fixed top-1/2 left-1/2 z-50 grid max-h-[min(88vh,720px)] w-[calc(100%-1.5rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 gap-0 overflow-hidden rounded-xl border border-border/70 bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/10 outline-none duration-300 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:w-[calc(100%-2rem)]",
+            "fixed top-1/2 left-1/2 z-50 w-[calc(100%-1.5rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 outline-none duration-300 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:w-[calc(100%-2rem)]",
           )}
           aria-describedby={`review-modal-text-${review.id}`}
         >
         <DialogPrimitive.Close asChild>
           <Button
             variant="ghost"
-            className="absolute top-2 right-2 z-10"
+            className="absolute -top-10 right-0 z-10 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 hover:text-white"
             size="icon-sm"
             aria-label="Fechar avaliação"
           >
@@ -107,6 +107,7 @@ export function GoogleReviewModal({
           </Button>
         </DialogPrimitive.Close>
 
+        <div className="grid max-h-[min(88vh,720px)] gap-0 overflow-hidden rounded-xl border border-border/70 bg-popover text-sm text-popover-foreground shadow-xl ring-1 ring-foreground/10">
         <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-4 sm:px-6">
           <button
             type="button"
@@ -178,6 +179,7 @@ export function GoogleReviewModal({
           >
             {review.text}
           </DialogDescription>
+        </div>
         </div>
         </DialogPrimitive.Content>
       </DialogPortal>

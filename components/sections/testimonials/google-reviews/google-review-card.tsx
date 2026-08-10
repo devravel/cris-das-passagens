@@ -6,7 +6,6 @@ import type { GoogleReview } from "@/config/google-reviews-fallback";
 import { GoogleVerifiedBadge } from "@/components/sections/testimonials/google-reviews/google-reviews-logo";
 import { GoogleReviewStars } from "@/components/sections/testimonials/google-reviews/google-review-stars";
 import {
-  formatReviewDate,
   getAvatarColorClass,
   getReviewInitials,
   getReviewPreviewText,
@@ -72,12 +71,6 @@ export function GoogleReviewCard({
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <GoogleReviewStars rating={review.rating} size="sm" />
-              <time
-                dateTime={review.date}
-                className="text-xs text-muted-foreground"
-              >
-                {formatReviewDate(review.date)}
-              </time>
             </div>
           </div>
         </div>
