@@ -55,10 +55,13 @@ function resolveOgImage(image: OgImageInput | undefined, alt: string) {
     };
   }
 
+  // Quando o caller não informa dimensões (ex.: imagens de pacote cujo tamanho
+  // real não é conhecido em build-time), omite width/height para evitar declarar
+  // valores incorretos que confundem crawlers como o do WhatsApp.
   return {
     url: image.url.startsWith("http") ? image.url : absoluteUrl(image.url),
-    width: image.width ?? 1200,
-    height: image.height ?? 630,
+    ...(image.width !== undefined ? { width: image.width } : {}),
+    ...(image.height !== undefined ? { height: image.height } : {}),
     alt: image.alt ?? alt,
   };
 }

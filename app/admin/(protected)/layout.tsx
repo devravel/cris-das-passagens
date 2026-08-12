@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-brand-soft/20 to-background">
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-card/95 backdrop-blur-sm">
+      <header className="border-b border-border/70 bg-card/95 backdrop-blur-sm">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <AdminSidebar mode="mobile" />

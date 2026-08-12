@@ -9,10 +9,9 @@ import { PackagesPageContent } from "@/components/sections/packages/packages-pag
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { packagesPageContent } from "@/config/packages-page";
 import { findPackageBySlug } from "@/lib/package/highlight";
-import { getPackageHighlightPath } from "@/lib/package/routes";
+import { getPackageHighlightPath, getPackageOgImageUrl } from "@/lib/package/routes";
 import { getPackagesPageData } from "@/lib/package/queries";
 import { createMetadata } from "@/lib/seo";
-import { resolvePublicOgImageUrl } from "@/lib/seo/og-image-url";
 import { scrollRevealDefaults } from "@/lib/motion";
 
 const packagesPageKeywords = [
@@ -63,8 +62,10 @@ export async function generateMetadata({
         description,
         path: getPackageHighlightPath(highlightedPackage.slug),
         ogImage: {
-          url: resolvePublicOgImageUrl(highlightedPackage.image),
+          url: getPackageOgImageUrl(highlightedPackage.slug),
           alt: highlightedPackage.title,
+          width: 1200,
+          height: 630,
         },
         keywords: [
           highlightedPackage.title,
