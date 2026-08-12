@@ -238,6 +238,43 @@
   animation: hero-featured-packages-empty-sparkle 2.8s ease-in-out infinite;
 }
 
+/* Microinteração de descoberta nos botões laterais do carrossel de pacotes */
+@keyframes carousel-nav-outline-sweep {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 0.9;
+  }
+
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 0.72;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+.carousel-nav-outline-hint__path {
+  fill: none;
+  stroke: color-mix(in oklch, var(--brand) 58%, transparent);
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0;
+}
+
+.carousel-nav-outline-hint__path--active {
+  animation: carousel-nav-outline-sweep 1.35s cubic-bezier(0.45, 0.05, 0.25, 1)
+    both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .package-card-anchor[data-highlighted="true"] article {
     animation: none;
@@ -247,6 +284,10 @@
   .hero-featured-packages-empty__glow,
   .hero-featured-packages-empty__message,
   .hero-featured-packages-empty__icon {
+    animation: none;
+  }
+
+  .carousel-nav-outline-hint__path--active {
     animation: none;
   }
 }

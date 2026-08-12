@@ -25,7 +25,7 @@ export function HomeHeroSkeleton() {
       background="soft"
       spacing="none"
       bordered
-      className="overflow-hidden pb-12 pt-8 sm:pb-20 sm:pt-14 lg:pb-24 lg:pt-16"
+      className="overflow-hidden pb-12 pt-5 sm:pb-20 sm:pt-10 lg:pb-24 lg:pt-12"
       aria-busy="true"
     >
       <div className="grid items-start gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">

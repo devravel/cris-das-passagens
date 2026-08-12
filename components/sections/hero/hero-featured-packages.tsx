@@ -85,7 +85,7 @@ export function HeroFeaturedPackages({
   return (
     <div
       className={cn(
-        "flex w-full min-w-0 flex-col gap-4 sm:min-w-[280px] sm:gap-5 lg:min-w-[300px]",
+        "flex w-full min-w-0 flex-col gap-3 sm:min-w-[280px] sm:gap-3.5 lg:min-w-[300px] lg:gap-2.5",
         className,
       )}
     >

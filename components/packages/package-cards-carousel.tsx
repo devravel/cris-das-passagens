@@ -13,6 +13,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { CarouselDots } from "@/components/ui/carousel-dots";
+import { CarouselNavOutline } from "@/components/ui/carousel-nav-outline";
+import { useCarouselNavOutlineHint } from "@/hooks/use-carousel-nav-outline-hint";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -150,10 +152,10 @@ function computeCarouselLayout(
 }
 
 const navButtonClassName =
-  "group inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground shadow-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
+  "group relative inline-flex size-9 shrink-0 items-center justify-center overflow-visible rounded-full border border-border/80 bg-background text-muted-foreground shadow-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
 
 const navIconClassName =
-  "size-5 transition-colors duration-200 group-hover:text-brand motion-reduce:transition-none";
+  "relative z-10 size-5 transition-colors duration-200 group-hover:text-brand motion-reduce:transition-none";
 
 const carouselColumnsClassName =
   "grid grid-cols-[auto_1fr_auto] gap-x-2 sm:gap-x-3";
@@ -172,12 +174,19 @@ export function PackageCardsCarousel({
   highlightedSlug = null,
   header,
 }: PackageCardsCarouselProps) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<CarouselLayout | null>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
+
+  const { hintPrev, hintNext, pulseKey } = useCarouselNavOutlineHint({
+    canScrollPrev,
+    canScrollNext,
+    getRoot: () => rootRef.current,
+  });
 
   const updateScrollState = useCallback(() => {
     const track = trackRef.current;
@@ -306,7 +315,7 @@ export function PackageCardsCarousel({
       : "row-start-2";
 
   return (
-    <div className={cn("relative min-w-0", className)}>
+    <div ref={rootRef} className={cn("relative min-w-0", className)}>
       <div className={cn(carouselColumnsClassName, "items-center")}>
         {header ? (
           <div className="col-start-2 row-start-1 min-w-0 px-0.5 pb-3 text-center sm:pb-4">
@@ -321,6 +330,7 @@ export function PackageCardsCarousel({
           disabled={!canScrollPrev}
           aria-label="Ver pacotes anteriores"
         >
+          <CarouselNavOutline active={hintPrev} pulseKey={pulseKey} />
           <ChevronLeft className={navIconClassName} aria-hidden />
         </button>
 
@@ -379,6 +389,11 @@ export function PackageCardsCarousel({
           disabled={!canScrollNext}
           aria-label="Ver próximos pacotes"
         >
+          <CarouselNavOutline
+            active={hintNext}
+            pulseKey={pulseKey}
+            delayMs={hintPrev && hintNext ? 110 : 0}
+          />
           <ChevronRight className={navIconClassName} aria-hidden />
         </button>
 
