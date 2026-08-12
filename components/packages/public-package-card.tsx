@@ -77,25 +77,27 @@ export function PublicPackageCard({
         "Pacote de hospedagem"
       : pkg.destination || pkg.title || "Pacote turístico";
 
+  const packageCardProps = {
+    data: toPackageCardDataFromPublicPackage(pkg),
+    departureCity: resolvedDepartureCity,
+    layout,
+    priority,
+    variant,
+    size,
+    narrowMobileTypography,
+    showChecklist,
+    showAirlineBadge,
+    packageSlug: variant === "landing" || showShareButton ? pkg.slug : undefined,
+    whatsAppPackageTitle,
+    showDescriptionCta,
+    showShareButton,
+    onDescriptionClick: showDescriptionCta
+      ? () => setDescriptionModalOpen(true)
+      : undefined,
+  };
+
   const packageCardElement = (
-    <PackageCard
-      data={toPackageCardDataFromPublicPackage(pkg)}
-      departureCity={resolvedDepartureCity}
-      layout={layout}
-      priority={priority}
-      variant={variant}
-      size={size}
-      narrowMobileTypography={narrowMobileTypography}
-      showChecklist={showChecklist}
-      showAirlineBadge={showAirlineBadge}
-      packageSlug={variant === "landing" || showShareButton ? pkg.slug : undefined}
-      whatsAppPackageTitle={whatsAppPackageTitle}
-      showDescriptionCta={showDescriptionCta}
-      showShareButton={showShareButton}
-      onDescriptionClick={
-        showDescriptionCta ? () => setDescriptionModalOpen(true) : undefined
-      }
-    />
+    <PackageCard {...packageCardProps} showShortDescription={false} />
   );
 
   const showCardHighlightModal = enableDescriptionModal && variant === "listing";
@@ -164,7 +166,7 @@ export function PublicPackageCard({
           onOpenChange={setCardHighlightModalOpen}
           packageName={cardLabel}
         >
-          {packageCardElement}
+          <PackageCard {...packageCardProps} />
         </PackageCardHighlightModal>
       ) : null}
 

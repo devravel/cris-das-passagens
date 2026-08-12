@@ -115,6 +115,8 @@ type PackageCardProps = {
   showDescriptionCta?: boolean;
   onDescriptionClick?: () => void;
   showShareButton?: boolean;
+  /** Quando false, oculta a descrição curta no card (continua no modal). */
+  showShortDescription?: boolean;
   className?: string;
 };
 
@@ -788,6 +790,7 @@ export function PackageCard({
   showDescriptionCta = false,
   onDescriptionClick,
   showShareButton = false,
+  showShortDescription = true,
   className,
 }: PackageCardProps) {
   const resolvedImageSrc = imageSrc || data.image;
@@ -1025,7 +1028,7 @@ export function PackageCard({
             </p>
           ) : null}
 
-          {isDetailed && data.shortDescription ? (
+          {isDetailed && showShortDescription && data.shortDescription ? (
             <p
               className={cn(
                 "text-sm leading-relaxed text-foreground/80",
@@ -1046,7 +1049,7 @@ export function PackageCard({
               )}
               aria-label={`Ver descrição completa de ${cardLabel}`}
             >
-              DESCRIÇÃO AQUI
+              DESCRIÇÃO COMPLETA AQUI
             </button>
           ) : null}
 

@@ -16,6 +16,8 @@ type InfiniteDragMarqueeProps = {
   className?: string;
   gapClassName?: string;
   ariaLabel?: string;
+  /** Quando false, para no primeiro e no último item em vez de circular. */
+  loop?: boolean;
 };
 
 const DRAG_CLICK_SUPPRESS_PX = 6;
@@ -45,12 +47,16 @@ export function InfiniteDragMarquee({
   className,
   gapClassName = "gap-3 pr-3",
   ariaLabel,
+  loop = true,
 }: InfiniteDragMarqueeProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
   const offsetRef = useRef(0);
   const halfRef = useRef(0);
+  const maxOffsetRef = useRef(0);
+  const loopRef = useRef(loop);
+  loopRef.current = loop;
   const draggingRef = useRef(false);
   const hoveredRef = useRef(false);
   const contactRef = useRef(false);
@@ -75,13 +81,24 @@ export function InfiniteDragMarquee({
     if (reduced) return;
 
     const measure = () => {
-      halfRef.current = track.scrollWidth / 2;
+      if (loopRef.current) {
+        halfRef.current = track.scrollWidth / 2;
+        return;
+      }
+      maxOffsetRef.current = Math.max(0, track.scrollWidth - root.clientWidth);
     };
 
     const wrap = () => {
-      const half = halfRef.current;
-      if (half <= 0) return;
-      offsetRef.current = ((offsetRef.current % half) + half) % half;
+      if (loopRef.current) {
+        const half = halfRef.current;
+        if (half <= 0) return;
+        offsetRef.current = ((offsetRef.current % half) + half) % half;
+        return;
+      }
+      offsetRef.current = Math.min(
+        maxOffsetRef.current,
+        Math.max(0, offsetRef.current),
+      );
     };
 
     const apply = () => {
@@ -96,7 +113,12 @@ export function InfiniteDragMarquee({
       const dt = (ts - lastTsRef.current) / 1000;
       lastTsRef.current = ts;
 
-      if (!isPaused() && halfRef.current > 0) {
+      const canAdvance = loopRef.current
+        ? halfRef.current > 0
+        : maxOffsetRef.current > 0 &&
+          offsetRef.current < maxOffsetRef.current;
+
+      if (!isPaused() && canAdvance) {
         offsetRef.current += speed * dt;
         wrap();
         apply();
@@ -110,16 +132,21 @@ export function InfiniteDragMarquee({
     rafRef.current = requestAnimationFrame(tick);
 
     const ro = new ResizeObserver(() => {
-      const before = halfRef.current;
-      measure();
-      if (before > 0 && halfRef.current > 0) {
-        offsetRef.current =
-          (offsetRef.current / before) * halfRef.current;
+      if (loopRef.current) {
+        const before = halfRef.current;
+        measure();
+        if (before > 0 && halfRef.current > 0) {
+          offsetRef.current =
+            (offsetRef.current / before) * halfRef.current;
+        }
+      } else {
+        measure();
       }
       wrap();
       apply();
     });
     ro.observe(track);
+    if (!loopRef.current) ro.observe(root);
 
     const imgs = track.querySelectorAll("img");
     const onImgLoad = () => {
@@ -145,7 +172,7 @@ export function InfiniteDragMarquee({
       imgs.forEach((img) => img.removeEventListener("load", onImgLoad));
       releaseListenersRef.current?.();
     };
-  }, [speed]);
+  }, [speed, loop]);
 
   const endPointerContact = (
     e: { pointerId: number },
@@ -222,9 +249,16 @@ export function InfiniteDragMarquee({
 
     offsetRef.current = startOffsetRef.current - dx;
 
-    const half = halfRef.current;
-    if (half > 0) {
-      offsetRef.current = ((offsetRef.current % half) + half) % half;
+    if (loopRef.current) {
+      const half = halfRef.current;
+      if (half > 0) {
+        offsetRef.current = ((offsetRef.current % half) + half) % half;
+      }
+    } else {
+      offsetRef.current = Math.min(
+        maxOffsetRef.current,
+        Math.max(0, offsetRef.current),
+      );
     }
 
     const track = trackRef.current;
@@ -277,16 +311,18 @@ export function InfiniteDragMarquee({
         >
           {children}
         </div>
-        <div
-          className={cn(
-            "infinite-drag-marquee-group flex shrink-0 flex-nowrap motion-reduce:hidden",
-            gapClassName,
-          )}
-          aria-hidden
-          inert
-        >
-          {children}
-        </div>
+        {loop ? (
+          <div
+            className={cn(
+              "infinite-drag-marquee-group flex shrink-0 flex-nowrap motion-reduce:hidden",
+              gapClassName,
+            )}
+            aria-hidden
+            inert
+          >
+            {children}
+          </div>
+        ) : null}
       </div>
     </div>
   );

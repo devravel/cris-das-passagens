@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
@@ -16,8 +16,6 @@ type HeroFeaturedPackagesCarouselProps = {
 
 const CARD_GAP_MOBILE = 12;
 const CARD_GAP_DESKTOP = 14;
-/** 3 cópias: a do meio é a "ativa". Cópias 0 e 2 são buffer para o loop. */
-const LOOP_COPIES = 3;
 /** Abaixo deste viewport, card tem largura fixa (não espreme 3 no track). */
 const NARROW_VIEWPORT_PX = 600;
 const NARROW_CARD_MAX_PX = 220;
@@ -50,43 +48,26 @@ export function HeroFeaturedPackagesCarousel({
   className,
 }: HeroFeaturedPackagesCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
-  // Referências aos primeiros cards de cada cópia para medir o tamanho de um segmento.
-  const copyStartRefs = useRef<(HTMLDivElement | null)[]>([null, null, null]);
 
-  const segmentRef = useRef(0);
   const cardWidthRef = useRef(0);
   const cardGapRef = useRef(CARD_GAP_MOBILE);
-  const didInitRef = useRef(false);
-  // Bloqueia normalizeLoop durante a animação smooth dos botões.
-  const suppressNormalizeRef = useRef(false);
-  const suppressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [cardWidth, setCardWidth] = useState(0);
   const [cardGap, setCardGap] = useState(CARD_GAP_MOBILE);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const useInfinite = packages.length > 1;
-  const copyCount = useInfinite ? LOOP_COPIES : 1;
+  const hasMultiple = packages.length > 1;
 
-  // ─── Normalização do loop ──────────────────────────────────────────────────
-  // Chamada pelo evento "scrollend" (depois que momentum para) para manter o
-  // scroll dentro da cópia do meio. Sem isso o jump durante inércia cancela o
-  // momentum e causa travadas.
-  const normalizeLoop = useCallback(() => {
+  const updateNav = useCallback(() => {
     const track = trackRef.current;
-    const segment = segmentRef.current;
+    if (!track) return;
 
-    if (!track || !useInfinite || segment <= 0 || suppressNormalizeRef.current) return;
+    const max = Math.max(0, track.scrollWidth - track.clientWidth);
+    setCanScrollPrev(track.scrollLeft > 1);
+    setCanScrollNext(track.scrollLeft < max - 1);
+  }, []);
 
-    const left = track.scrollLeft;
-
-    if (left < segment * 0.5) {
-      track.scrollLeft = left + segment;
-    } else if (left >= segment * 2.5) {
-      track.scrollLeft = left - segment;
-    }
-  }, [useInfinite]);
-
-  // ─── Medição ───────────────────────────────────────────────────────────────
   const measure = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -99,29 +80,10 @@ export function HeroFeaturedPackagesCarousel({
     setCardGap(gap);
     setCardWidth(width);
 
-    if (!useInfinite || width <= 0) {
-      segmentRef.current = 0;
-      return;
-    }
-
-    // Mede o segmento depois do layout aplicar as larguras.
-    requestAnimationFrame(() => {
-      const [c0, c1] = copyStartRefs.current;
-      if (!c0 || !c1) return;
-
-      const segment = c1.offsetLeft - c0.offsetLeft;
-      segmentRef.current = segment;
-
-      if (!didInitRef.current && segment > 0) {
-        didInitRef.current = true;
-        // Inicia no começo da cópia do meio.
-        track.scrollLeft = segment;
-      }
-    });
-  }, [useInfinite]);
+    requestAnimationFrame(updateNav);
+  }, [updateNav]);
 
   useLayoutEffect(() => {
-    didInitRef.current = false;
     measure();
   }, [measure, packages.length]);
 
@@ -130,55 +92,28 @@ export function HeroFeaturedPackagesCarousel({
     if (!track) return;
 
     const ro = new ResizeObserver(() => {
-      didInitRef.current = false;
       measure();
     });
     ro.observe(track);
     window.addEventListener("resize", measure);
-
-    // "scrollend" dispara após o scroll E o momentum pararem completamente,
-    // evitando que o jump instantâneo de scrollLeft cancele a inércia nativa.
-    // Fallback para "scroll" em browsers antigos (Safari < 17.5).
-    const scrollEndEvent =
-      "onscrollend" in track ? "scrollend" : "scroll";
-    track.addEventListener(scrollEndEvent, normalizeLoop);
+    track.addEventListener("scroll", updateNav, { passive: true });
 
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
-      track.removeEventListener(scrollEndEvent, normalizeLoop);
+      track.removeEventListener("scroll", updateNav);
     };
-  }, [measure, normalizeLoop]);
+  }, [measure, updateNav]);
 
-  // ─── Botões ────────────────────────────────────────────────────────────────
   const scrollByStep = useCallback((direction: -1 | 1) => {
     const track = trackRef.current;
     const width = cardWidthRef.current;
     const gap = cardGapRef.current;
-    const segment = segmentRef.current;
 
     if (!track || width <= 0) return;
 
-    // Garante posição na cópia do meio antes de iniciar a animação.
-    if (useInfinite && segment > 0) {
-      const left = track.scrollLeft;
-      if (left < segment * 0.5) {
-        track.scrollLeft = left + segment;
-      } else if (left >= segment * 2.5) {
-        track.scrollLeft = left - segment;
-      }
-    }
-
-    // Suspende normalizeLoop pelo tempo da animação smooth (~500ms).
-    suppressNormalizeRef.current = true;
-    if (suppressTimerRef.current) clearTimeout(suppressTimerRef.current);
-    suppressTimerRef.current = setTimeout(() => {
-      suppressNormalizeRef.current = false;
-      normalizeLoop();
-    }, 600);
-
     track.scrollBy({ left: direction * (width + gap), behavior: "smooth" });
-  }, [useInfinite, normalizeLoop]);
+  }, []);
 
   if (packages.length === 0) return null;
 
@@ -189,7 +124,7 @@ export function HeroFeaturedPackagesCarousel({
           type="button"
           className={cn(navButtonClassName, "left-1 sm:left-2")}
           onClick={() => scrollByStep(-1)}
-          disabled={!useInfinite}
+          disabled={!canScrollPrev}
           aria-label="Ver pacote anterior"
         >
           <ChevronLeft className={navIconClassName} aria-hidden />
@@ -200,9 +135,7 @@ export function HeroFeaturedPackagesCarousel({
           eixo naturalmente. overflow-x: auto com elemento não-scrollável
           verticalmente faz o arrasto vertical propagar para a página. O arrasto
           horizontal fica no carrossel com inércia nativa — sem nenhum handler
-          manual de toque. normalizeLoop é registrado via addEventListener
-          ("scrollend") no useEffect abaixo, não via onScroll, para não
-          interromper o momentum durante a rolagem.
+          manual de toque.
         */}
         <div
           ref={trackRef}
@@ -214,43 +147,30 @@ export function HeroFeaturedPackagesCarousel({
           <div
             className={cn(
               "flex w-max items-stretch px-0.5 py-1",
-              !useInfinite && "min-w-full justify-center",
+              !hasMultiple && "min-w-full justify-center",
             )}
             style={{ gap: `${cardGap}px` }}
           >
-            {Array.from({ length: copyCount }, (_, copyIndex) => (
-              <Fragment key={copyIndex}>
-                {packages.map((pkg, pkgIndex) => (
-                  <div
-                    key={`${copyIndex}-${pkg.id}`}
-                    ref={
-                      pkgIndex === 0
-                        ? (el) => {
-                            copyStartRefs.current[copyIndex] = el;
-                          }
-                        : undefined
-                    }
-                    style={{ width: cardWidth > 0 ? `${cardWidth}px` : undefined }}
-                    className={cn(
-                      "flex shrink-0 items-stretch",
-                      cardWidth === 0 && "invisible",
-                    )}
-                    // Cópias 0 e 2 são buffer de loop; apenas cópia 1 é "real".
-                    aria-hidden={useInfinite && copyIndex !== 1}
-                  >
-                    <PublicPackageCard
-                      pkg={pkg}
-                      departureCity={departureCity}
-                      layout="carousel"
-                      variant="landing"
-                      size="compact"
-                      narrowMobileTypography
-                      priority={copyIndex === 1 && pkgIndex < 2}
-                      className="h-full min-w-0"
-                    />
-                  </div>
-                ))}
-              </Fragment>
+            {packages.map((pkg, pkgIndex) => (
+              <div
+                key={pkg.id}
+                style={{ width: cardWidth > 0 ? `${cardWidth}px` : undefined }}
+                className={cn(
+                  "flex shrink-0 items-stretch",
+                  cardWidth === 0 && "invisible",
+                )}
+              >
+                <PublicPackageCard
+                  pkg={pkg}
+                  departureCity={departureCity}
+                  layout="carousel"
+                  variant="landing"
+                  size="compact"
+                  narrowMobileTypography
+                  priority={pkgIndex < 2}
+                  className="h-full min-w-0"
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -259,7 +179,7 @@ export function HeroFeaturedPackagesCarousel({
           type="button"
           className={cn(navButtonClassName, "right-1 sm:right-2")}
           onClick={() => scrollByStep(1)}
-          disabled={!useInfinite}
+          disabled={!canScrollNext}
           aria-label="Ver próximo pacote"
         >
           <ChevronRight className={navIconClassName} aria-hidden />

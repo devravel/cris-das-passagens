@@ -28,7 +28,7 @@ export function HeroFeaturedPackagesMedia({
           speed={28}
           gapClassName="gap-3 pr-3 sm:gap-3.5 sm:pr-3.5"
           ariaLabel="Pacotes em destaque"
-          className="py-1"
+          className="hero-featured-packages-marquee py-1"
         >
           {packages.map((pkg) => (
             <div key={pkg.id} className="flex w-[190px] items-stretch">
