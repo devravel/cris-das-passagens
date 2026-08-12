@@ -46,7 +46,7 @@ export default function SobrePage() {
       />
 
       <Container size="narrow" padding="none">
-        <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+        <h2 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
           {storyTitle}
         </h2>
 

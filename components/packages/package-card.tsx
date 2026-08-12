@@ -939,12 +939,14 @@ export function PackageCard({
                   : "px-3.5 pt-3 pb-3 sm:px-4 sm:pt-3.5 sm:pb-3.5",
           )}
         >
-          <CardTypeLabel
-            type={data.type}
-            compact={isCompact}
-            dense={isListing}
-            narrowMobileTypography={narrowMobileTypography}
-          />
+          {!isListing ? (
+            <CardTypeLabel
+              type={data.type}
+              compact={isCompact}
+              dense={isListing}
+              narrowMobileTypography={narrowMobileTypography}
+            />
+          ) : null}
 
           {isLanding ? (
             <h3

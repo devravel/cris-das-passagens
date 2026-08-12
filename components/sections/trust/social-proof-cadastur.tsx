@@ -176,7 +176,7 @@ export function SocialProofCadastur({
           <div className="rounded-2xl bg-muted/30 p-6 ring-1 ring-border/50 sm:p-8 lg:p-10">
             <div className="grid gap-8 lg:grid-cols-[minmax(0,10.5rem)_1fr] lg:items-start lg:gap-x-14 lg:gap-y-0">
               <div className="order-1 space-y-4 lg:order-none lg:col-start-2 lg:row-start-1">
-                <h3 className="text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-left">
+                <h3 className="text-center font-heading text-2xl font-semibold tracking-tight text-foreground lg:text-left">
                   {cadasturTitle}
                 </h3>
                 <div className="space-y-3">

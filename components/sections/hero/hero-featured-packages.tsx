@@ -1,8 +1,11 @@
 import { Sparkles } from "lucide-react";
+import Link from "next/link";
 
 import { CouponApplyForm } from "@/components/coupon/coupon-apply-form";
+import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { HeroFeaturedPackagesMedia } from "@/components/sections/hero/hero-featured-packages-media";
-import { content } from "@/config/content";
+import { Button } from "@/components/ui/button";
+import { content, type ContentCta } from "@/config/content";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +14,8 @@ type HeroFeaturedPackagesProps = {
   departureCity: string;
   title: string;
   emptyMessage?: string;
+  /** CTA de pacotes exibido só abaixo de 640px, acima do aviso de disponibilidade. */
+  mobilePackagesCta?: ContentCta;
   className?: string;
 };
 
@@ -29,7 +34,7 @@ function HeroFeaturedPackagesHeader({
         "min-[568px]:max-[768px]:flex-nowrap min-[568px]:max-[768px]:items-center min-[568px]:max-[768px]:gap-4",
       )}
     >
-      <h2 className="min-w-0 shrink-0 font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl min-[568px]:max-[768px]:min-w-0 min-[568px]:max-[768px]:flex-1 lg:text-[1.35rem]">
+      <h2 className="min-w-0 w-full shrink-0 text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-xl min-[568px]:max-[768px]:min-w-0 min-[568px]:max-[768px]:flex-1 lg:text-[1.35rem]">
         {title}
       </h2>
       {showCouponForm ? (
@@ -72,6 +77,7 @@ export function HeroFeaturedPackages({
   departureCity,
   title,
   emptyMessage = content.hero.featuredPackages.emptyMessage,
+  mobilePackagesCta,
   className,
 }: HeroFeaturedPackagesProps) {
   const hasPackages = packages.length > 0;
@@ -86,10 +92,25 @@ export function HeroFeaturedPackages({
       <HeroFeaturedPackagesHeader title={title} showCouponForm={hasPackages} />
 
       {hasPackages ? (
-        <HeroFeaturedPackagesMedia
-          packages={packages}
-          departureCity={departureCity}
-        />
+        <>
+          <HeroFeaturedPackagesMedia
+            packages={packages}
+            departureCity={departureCity}
+          />
+          <div className="mt-[0.525rem] flex flex-col items-center gap-2.5 sm:mt-[0.65625rem] sm:gap-0 md:mt-[0.7875rem]">
+            {mobilePackagesCta ? (
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-11 w-full rounded-lg border-border/80 bg-background/80 px-6 text-sm text-foreground backdrop-blur-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:scale-[1.02] hover:!bg-background/80 hover:!text-foreground hover:shadow-md active:translate-y-0 active:scale-100 sm:hidden"
+              >
+                <Link href={mobilePackagesCta.href}>{mobilePackagesCta.label}</Link>
+              </Button>
+            ) : null}
+            <PackageCarouselScrollHint className="text-center text-[0.7725rem]" />
+          </div>
+        </>
       ) : (
         <HeroFeaturedPackagesEmpty message={emptyMessage} />
       )}

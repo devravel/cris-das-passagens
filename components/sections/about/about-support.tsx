@@ -102,9 +102,9 @@ const highlightToneStyles: Record<
   "logo-light": {
     backgroundColor: LOGO_BLUE_LIGHT,
     card: "ring-[#08bfff]/40 shadow-[0_8px_30px_-14px_rgba(8,191,255,0.4)] hover:shadow-[0_14px_40px_-16px_rgba(8,191,255,0.5)]",
-    iconWrap: "bg-white/20 text-white ring-1 ring-white/30",
-    title: "text-white",
-    body: "text-white/90",
+    iconWrap: "bg-white/45 text-[#1e4590] ring-1 ring-white/55",
+    title: "text-[#12356f]",
+    body: "text-[#12356f]/90",
   },
 };
 
@@ -176,22 +176,24 @@ export function SupportSection({
                   )}
                   style={{ backgroundColor: toneStyles.backgroundColor }}
                 >
-                  <div
-                    className={cn(
-                      "mb-3 flex size-11 items-center justify-center rounded-xl",
-                      toneStyles.iconWrap,
-                    )}
-                  >
-                    <Icon className="size-5" strokeWidth={1.75} aria-hidden />
+                  <div className="mb-3 flex items-center gap-3.5">
+                    <div
+                      className={cn(
+                        "flex size-11 shrink-0 items-center justify-center rounded-xl",
+                        toneStyles.iconWrap,
+                      )}
+                    >
+                      <Icon className="size-5" strokeWidth={1.75} aria-hidden />
+                    </div>
+                    <h3
+                      className={cn(
+                        "font-heading text-lg font-semibold leading-snug tracking-tight sm:text-xl",
+                        toneStyles.title,
+                      )}
+                    >
+                      {highlightTitle}
+                    </h3>
                   </div>
-                  <h3
-                    className={cn(
-                      "font-heading text-base font-semibold tracking-tight",
-                      toneStyles.title,
-                    )}
-                  >
-                    {highlightTitle}
-                  </h3>
                   <p
                     className={cn(
                       "mt-2",

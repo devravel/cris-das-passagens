@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
@@ -185,8 +184,6 @@ export function HeroFeaturedPackagesCarousel({
           <ChevronRight className={navIconClassName} aria-hidden />
         </button>
       </div>
-
-      <PackageCarouselScrollHint className="mt-[0.525rem] text-center text-[0.7725rem] sm:mt-[0.65625rem] md:mt-[0.7875rem]" />
     </div>
   );
 }

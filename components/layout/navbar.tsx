@@ -308,7 +308,7 @@ export function Navbar({
             alt={siteConfig.name}
             width={817}
             height={388}
-            className="h-10 w-auto sm:h-11 md:h-12"
+            className="h-11 w-auto sm:h-12 md:h-14"
             priority
           />
         </Link>
@@ -325,7 +325,7 @@ export function Navbar({
               <Button
                 variant="ghost"
                 size="icon-lg"
-                className="size-11 shrink-0 rounded-lg bg-muted/65 text-foreground ring-1 ring-border/45 transition-[transform,background-color,box-shadow] duration-200 hover:bg-muted/90 hover:shadow-sm active:scale-[0.98] sm:size-12 lg:hidden"
+                className="size-11 shrink-0 rounded-lg bg-transparent text-brand-navy transition-[transform,background-color] duration-200 hover:bg-transparent hover:text-brand-navy active:scale-[0.98] sm:size-12 lg:hidden"
                 aria-label="Abrir menu de navegação"
               >
                 <Menu className="size-5 sm:size-6" strokeWidth={2} />

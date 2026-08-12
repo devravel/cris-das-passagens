@@ -23,7 +23,7 @@ export function BlogVipCta({ className }: BlogVipCtaProps) {
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">
         {vipCta.eyebrow}
       </p>
-      <h2 className="mt-2 font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+      <h2 className="mt-2 font-heading text-2xl font-semibold tracking-tight text-foreground">
         {vipCta.headline}
       </h2>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">

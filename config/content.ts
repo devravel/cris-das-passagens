@@ -26,6 +26,8 @@ export type BlogPostPreview = {
 
 export type ServiceItem = {
   label: string;
+  /** Rótulo mais curto para viewports estreitos (mantém uma linha). */
+  compactLabel?: string;
 };
 
 export type QuickActionItem = {
@@ -77,8 +79,10 @@ export const content = {
   hero: {
     headline: "Mais que uma viagem, Um Sonho!",
     services: [
-      { label: "Nacionais" },
-      { label: "Internacionais" },
+      {
+        label: "Nacionais & Internacionais",
+        compactLabel: "Nacionais/Internacionais",
+      },
       { label: "Pacotes" },
       { label: "Hospedagem" },
       { label: "Seguros" },
@@ -92,7 +96,7 @@ export const content = {
       href: "/pacotes",
     } satisfies ContentCta,
     featuredPackages: {
-      title: "Nossos melhores pacotes",
+      title: "Pacotes selecionados",
       emptyMessage: "Pacotes sendo adicionados em breve.",
     },
   },
@@ -267,18 +271,18 @@ export const content = {
   },
 
   cadastur: {
-    title: "Agência certificada CADASTUR",
+    title: "Agência certificada",
     shortText:
       "Empresa registrada no Ministério do Turismo. Verifique nossa autenticidade pelo QR Code ou no site oficial.",
     verification:
       "A autenticidade dessa informação pode ser verificada através do código acima (basta apontar a câmera) ou através de consulta no site do Governo Federal.",
     verifyUrl: contentLinks.cadastur,
     verifyUrlLabel: "www.cadastur.turismo.gov.br",
-    qrCode: "/cadastur-qrcode.png",
+    qrCode: "/cadastur-qrcode-light.png",
     qrCodeAlt:
       "QR Code para verificar a certificação CADASTUR no site do Governo Federal",
-    logo: "/cadastur-logo.png",
-    logoAlt: "Logo CADASTUR — Cadastro de Prestadores de Serviços Turísticos",
+    logo: "/cadastur-logo-white.png",
+    logoAlt: "CADASTUR",
     paragraphs: [
       "Somos uma empresa comprometida com o turismo responsável e registrada no Ministério do Turismo.",
       "Cumprimos normas e exigências que garantem aos nossos clientes a confiança de que eles terão a melhor experiência de viagem.",

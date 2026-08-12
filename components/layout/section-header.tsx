@@ -12,7 +12,7 @@ export type SectionHeaderProps = {
 };
 
 export const sectionHeadingClassName =
-  "text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-[2rem] lg:leading-tight";
+  "text-center font-heading text-2xl font-semibold tracking-tight text-foreground md:text-3xl lg:text-[2rem] lg:leading-tight";
 
 export const bodyTextClassName =
   "w-full text-justify-smart text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl";

@@ -42,32 +42,33 @@ export function CadasturCompactSection({
       >
         <h2
           id={headingId}
-          className={cn(sectionHeadingClassName, "text-white")}
+          className={cn(
+            sectionHeadingClassName,
+            "flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-white sm:gap-x-3",
+          )}
         >
-          {content.cadastur.title}
+          <span>{content.cadastur.title}</span>
+          <Image
+            src={content.cadastur.logo}
+            alt={content.cadastur.logoAlt}
+            width={220}
+            height={35}
+            className="h-[1.15em] w-auto translate-y-px object-contain"
+            unoptimized
+            priority
+          />
         </h2>
 
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:gap-10">
-          <div className="flex items-center gap-5 sm:gap-6">
-            <div className="size-24 shrink-0 overflow-hidden rounded-xl border border-white/25 bg-background shadow-sm sm:size-28">
-              <Image
-                src={content.cadastur.qrCode}
-                alt={content.cadastur.qrCodeAlt}
-                width={112}
-                height={112}
-                className="size-full object-cover object-center"
-              />
-            </div>
-
-            <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-background p-3 shadow-sm sm:size-24">
-              <Image
-                src={content.cadastur.logo}
-                alt={content.cadastur.logoAlt}
-                width={96}
-                height={48}
-                className="h-auto w-full object-contain"
-              />
-            </div>
+          <div className="size-24 shrink-0 sm:size-28">
+            <Image
+              src={content.cadastur.qrCode}
+              alt={content.cadastur.qrCodeAlt}
+              width={112}
+              height={112}
+              className="size-full object-contain object-center"
+              unoptimized
+            />
           </div>
 
           <div className="max-w-md space-y-3">

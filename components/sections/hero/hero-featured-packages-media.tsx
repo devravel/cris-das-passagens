@@ -1,7 +1,6 @@
 "use client";
 
 import { InfiniteDragMarquee } from "@/components/infinite-drag-marquee";
-import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { HeroFeaturedPackagesCarousel } from "@/components/sections/hero/hero-featured-packages-carousel";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -44,8 +43,6 @@ export function HeroFeaturedPackagesMedia({
             </div>
           ))}
         </InfiniteDragMarquee>
-
-        <PackageCarouselScrollHint className="mt-[0.525rem] text-center text-[0.7725rem] sm:mt-[0.65625rem] md:mt-[0.7875rem]" />
       </div>
     );
   }

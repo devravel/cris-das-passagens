@@ -142,7 +142,7 @@ export function TourismHero({
         <div className="flex min-w-0 flex-col gap-6 sm:gap-7">
           <motion.h1
             id="hero-headline"
-            className="font-heading text-balance text-center text-[1.875rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-left sm:text-4xl md:text-[2.75rem] md:leading-[1.06] lg:text-5xl"
+            className="font-heading text-balance text-center text-[2.25rem] font-semibold leading-[1.1] tracking-tight text-foreground sm:text-left sm:text-4xl md:text-[2.75rem] md:leading-[1.06] lg:text-5xl"
             {...headlineEntrance}
           >
             {headline}
@@ -160,14 +160,26 @@ export function TourismHero({
           </motion.p>
 
           <motion.ul
-            className="flex flex-wrap justify-center gap-2 sm:justify-start"
+            className="flex flex-nowrap justify-center gap-0 max-[477px]:w-[100vw] max-[477px]:max-w-[100vw] max-[477px]:relative max-[477px]:left-1/2 max-[477px]:-translate-x-1/2 max-[477px]:px-2.5 sm:justify-start sm:w-auto sm:max-w-none sm:left-auto sm:translate-x-0 sm:px-0 lg:translate-x-4 xl:translate-x-5"
             {...servicesEntrance}
             aria-label="Serviços oferecidos"
           >
             {services.map((service) => (
-              <li key={service.label}>
-                <span className="inline-flex rounded-full bg-background/90 px-3 py-1 text-xs font-medium text-foreground/85 ring-1 ring-border/60 sm:text-sm">
-                  {service.label}
+              <li
+                key={service.label}
+                className="relative text-xs max-[477px]:text-[0.625rem] sm:text-sm lg:text-xs xl:text-sm not-first:pl-[0.7em] not-first:before:pointer-events-none not-first:before:absolute not-first:before:top-1/2 not-first:before:left-0 not-first:before:-translate-y-1/2 not-first:before:text-[0.75em] not-first:before:leading-none not-first:before:text-brand-light not-first:before:content-['•'] max-[477px]:not-first:pl-[0.55em]"
+              >
+                <span className="inline-flex whitespace-nowrap px-2.5 py-1 font-bold tracking-wide text-brand-light uppercase max-[477px]:px-1.5 max-[477px]:py-0.5 max-[477px]:leading-tight sm:px-3 lg:px-2 xl:px-3">
+                  {service.compactLabel ? (
+                    <>
+                      <span className="max-[477px]:hidden">{service.label}</span>
+                      <span className="hidden max-[477px]:inline">
+                        {service.compactLabel}
+                      </span>
+                    </>
+                  ) : (
+                    service.label
+                  )}
                 </span>
               </li>
             ))}
@@ -185,7 +197,11 @@ export function TourismHero({
             ) : (
               <HeroCtaLink cta={primaryCta} variant="primary" />
             )}
-            <HeroCtaLink cta={secondaryCta} variant="secondary" />
+            <HeroCtaLink
+              cta={secondaryCta}
+              variant="secondary"
+              className="hidden sm:inline-flex"
+            />
           </motion.div>
 
           {hasFeatured ? (
@@ -204,6 +220,7 @@ export function TourismHero({
             packages={featuredPackages}
             departureCity={departureCity}
             title={featuredTitle}
+            mobilePackagesCta={secondaryCta}
           />
         </div>
       </div>

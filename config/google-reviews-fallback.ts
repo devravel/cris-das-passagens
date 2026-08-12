@@ -15,6 +15,8 @@ export const googleReviewsFallbackConfig = {
   /** URL do botão "Avalie-nos no Google". */
   reviewUrl: contentLinks.googleBusinessProfile,
   reviewButtonLabel: "Avalie-nos no Google",
+  /** Total de avaliações no Google (exibido no header; independente da amostra local). */
+  totalReviewCount: 146,
   reviews: [
     {
       id: "review-01",

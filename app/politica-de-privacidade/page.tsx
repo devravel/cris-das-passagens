@@ -39,7 +39,7 @@ function PolicySection({ id, title, children }: PolicySectionProps) {
     <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-24">
       <h2
         id={`${id}-heading`}
-        className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
+        className="font-heading text-2xl font-semibold tracking-tight text-foreground"
       >
         {title}
       </h2>

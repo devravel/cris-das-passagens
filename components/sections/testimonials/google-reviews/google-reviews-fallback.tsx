@@ -17,7 +17,8 @@ type GoogleReviewsFallbackProps = {
 };
 
 export function GoogleReviewsFallback({ className }: GoogleReviewsFallbackProps) {
-  const { reviews, reviewUrl, reviewButtonLabel } = googleReviewsFallbackConfig;
+  const { reviews, reviewUrl, reviewButtonLabel, totalReviewCount } =
+    googleReviewsFallbackConfig;
   const stats = useMemo(() => computeGoogleReviewsStats(reviews), [reviews]);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -43,7 +44,7 @@ export function GoogleReviewsFallback({ className }: GoogleReviewsFallbackProps)
     <div className={cn("min-w-0 space-y-5 sm:space-y-6", className)}>
       <GoogleReviewsHeader
         averageRating={stats.average}
-        reviewCount={stats.count}
+        reviewCount={totalReviewCount}
         reviewUrl={reviewUrl}
         reviewButtonLabel={reviewButtonLabel}
       />
