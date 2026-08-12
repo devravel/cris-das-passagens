@@ -293,6 +293,8 @@ export function PackageCardsCarousel({
   const hasOverflow = packages.length > 1;
   const cardWidth = layout?.cardWidth ?? 0;
   const cardGap = layout?.gap ?? CARD_GAP_MOBILE;
+  const fitsInView =
+    layout !== null && packages.length <= layout.cardsPerView;
   const carouselRowClass = header ? "row-start-2" : "row-start-1";
   const dotsRowClass = header ? "row-start-3" : "row-start-2";
   const hintRowClass = header
@@ -307,7 +309,7 @@ export function PackageCardsCarousel({
     <div className={cn("relative min-w-0", className)}>
       <div className={cn(carouselColumnsClassName, "items-center")}>
         {header ? (
-          <div className="col-start-2 row-start-1 min-w-0 px-0.5 pb-3 sm:pb-4">
+          <div className="col-start-2 row-start-1 min-w-0 px-0.5 pb-3 text-center sm:pb-4">
             {header}
           </div>
         ) : null}
@@ -334,7 +336,10 @@ export function PackageCardsCarousel({
           onScroll={updateScrollState}
         >
           <div
-            className="flex w-max items-stretch px-0.5 py-1"
+            className={cn(
+              "flex items-stretch px-0.5 py-1",
+              fitsInView ? "w-full justify-center" : "w-max",
+            )}
             style={{ gap: `${cardGap}px` }}
           >
             {packages.map((pkg, index) => (

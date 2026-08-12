@@ -273,6 +273,9 @@ export function Navbar({
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const isPacotesPage = pathname === "/pacotes" || pathname.startsWith("/pacotes/");
+  const isAdminPage = pathname.startsWith("/admin");
+  const sticksOnScroll = !isPacotesPage && !isAdminPage;
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 6);
@@ -286,7 +289,8 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b transition-[box-shadow,background-color,border-color,backdrop-filter] duration-300",
+        "z-50 w-full border-b transition-[box-shadow,background-color,border-color,backdrop-filter] duration-300",
+        sticksOnScroll ? "sticky top-0" : "relative",
         scrolled
           ? "border-border/50 bg-background/70 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-md supports-backdrop-filter:bg-background/55"
           : "border-transparent bg-background",

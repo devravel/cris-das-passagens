@@ -42,7 +42,7 @@ export function PackagesListingSection({
           header={
             <h2
               id={headingId}
-              className="font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl"
+              className="text-center font-heading text-xl font-semibold tracking-tight text-foreground sm:text-2xl md:text-3xl"
             >
               {config.title}
             </h2>

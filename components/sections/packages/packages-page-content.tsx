@@ -49,14 +49,9 @@ function isPackagesSectionId(value: string) {
 }
 
 function getPacotesScrollOffset() {
-  const siteHeader = document.querySelector("header");
   const stickyNav = document.querySelector(".pacotes-page-sticky-nav");
 
-  return (
-    (siteHeader?.getBoundingClientRect().height ?? 0) +
-    (stickyNav?.getBoundingClientRect().height ?? 0) +
-    SCROLL_SPY_BUFFER_PX
-  );
+  return (stickyNav?.getBoundingClientRect().height ?? 0) + SCROLL_SPY_BUFFER_PX;
 }
 
 function getSectionDocumentTop(section: HTMLElement) {
@@ -392,7 +387,7 @@ export function PackagesPageContent({ data }: PackagesPageContentProps) {
 
   return (
     <>
-      <div className="pacotes-page-sticky-nav sticky top-16 z-30 -mx-4 mb-8 space-y-4 border-b border-border/40 bg-background/95 px-4 pb-4 backdrop-blur-sm sm:-mx-6 sm:mb-10 sm:space-y-5 sm:px-6 sm:pb-5 sm:top-18 lg:-mx-8 lg:px-8 lg:mb-12">
+      <div className="pacotes-page-sticky-nav sticky top-0 z-30 -mx-4 mb-8 space-y-4 border-b border-border/40 bg-background/95 px-4 pb-4 pt-3 backdrop-blur-sm sm:-mx-6 sm:mb-10 sm:space-y-5 sm:px-6 sm:pb-5 sm:pt-4 lg:-mx-8 lg:px-8 lg:mb-12">
         <div className="flex justify-center">
           <PackageCategoryToggle
             value={category}
