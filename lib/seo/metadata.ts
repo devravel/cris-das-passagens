@@ -3,19 +3,21 @@ import type { Metadata, Viewport } from "next";
 import { content } from "@/config/content";
 import { siteConfig } from "@/config/site";
 import { indexableRobots, noIndexRobots } from "@/lib/seo/robots";
+import { getBlogOgImageUrl } from "@/lib/seo/og-image-url";
 import { absoluteUrl, buildCanonicalUrl, getSiteUrl } from "@/lib/seo/site-url";
 
 const defaultDescription = content.meta.tagline;
 const defaultOgImagePath = "/og-default-logo.jpg";
+// Dimensões reais do arquivo — declarar 1200×630 num quadrado faz o WhatsApp
+// descartar o preview grande.
+const defaultOgImageSize = { width: 1024, height: 1024 };
 
-type OgImageInput =
-  | string
-  | {
-      url: string;
-      width?: number;
-      height?: number;
-      alt?: string;
-    };
+type OgImageInput = {
+  url: string;
+  width?: number;
+  height?: number;
+  alt?: string;
+};
 
 type CreateMetadataOptions = {
   title: string;
@@ -40,17 +42,7 @@ function resolveOgImage(image: OgImageInput | undefined, alt: string) {
   if (!image) {
     return {
       url: defaultOgImagePath,
-      width: 1200,
-      height: 630,
-      alt,
-    };
-  }
-
-  if (typeof image === "string") {
-    return {
-      url: image.startsWith("http") ? image : absoluteUrl(image),
-      width: 1200,
-      height: 630,
+      ...defaultOgImageSize,
       alt,
     };
   }
@@ -113,7 +105,6 @@ export function createArticleMetadata(input: {
   title: string;
   description: string;
   slug: string;
-  coverImage: string;
   publishedAt: Date;
   updatedAt: Date;
   keywords?: string[];
@@ -126,8 +117,10 @@ export function createArticleMetadata(input: {
     path,
     ogType: "article",
     ogImage: {
-      url: input.coverImage,
+      url: getBlogOgImageUrl(input.slug),
       alt: input.title,
+      width: 1200,
+      height: 630,
     },
     keywords: input.keywords,
     publishedTime: input.publishedAt.toISOString(),
@@ -218,8 +211,7 @@ export const rootMetadata: Metadata = {
     images: [
       {
         url: defaultOgImagePath,
-        width: 1200,
-        height: 630,
+        ...defaultOgImageSize,
         alt: defaultDescription,
       },
     ],

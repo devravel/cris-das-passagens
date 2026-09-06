@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, PencilLine, Plus, Star, Trash2 } from "lucide-react";
+import { Eye, Loader2, PencilLine, Plus, Star, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
@@ -27,6 +27,7 @@ type BlogListItem = {
   slug: string;
   published: boolean;
   featuredOnHomepage: boolean;
+  views: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -127,6 +128,7 @@ export function BlogsTable({ posts }: BlogsTableProps) {
               <th className="px-4 py-3 font-medium">Título</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Homepage</th>
+              <th className="px-4 py-3 font-medium">Acessos</th>
               <th className="px-4 py-3 font-medium">Criado</th>
               <th className="px-4 py-3 font-medium">Atualizado</th>
               <th className="px-4 py-3 text-right font-medium">Ações</th>
@@ -179,6 +181,12 @@ export function BlogsTable({ posts }: BlogsTableProps) {
                     />
                     {post.featuredOnHomepage ? "Destaque" : "Normal"}
                   </button>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
+                    <Eye className="size-3.5 text-muted-foreground" aria-hidden />
+                    {post.views.toLocaleString("pt-BR")}
+                  </span>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{formatDate(post.createdAt)}</td>
                 <td className="px-4 py-3 text-muted-foreground">{formatDate(post.updatedAt)}</td>

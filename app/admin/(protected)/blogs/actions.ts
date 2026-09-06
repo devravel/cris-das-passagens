@@ -509,3 +509,24 @@ export async function togglePostLikeAction(
     };
   }
 }
+
+/**
+ * Contador de acessos do post. Público — chamado pelo tracker no artigo, que
+ * já deduplica por sessão do visitante.
+ */
+export async function registerPostViewAction(postId: string): Promise<void> {
+  const parsedPostId = z.string().trim().min(1).max(128).safeParse(postId);
+
+  if (!parsedPostId.success) {
+    return;
+  }
+
+  try {
+    await prisma.post.updateMany({
+      where: { id: parsedPostId.data, published: true },
+      data: { views: { increment: 1 } },
+    });
+  } catch {
+    // contador não pode derrubar a leitura do post
+  }
+}

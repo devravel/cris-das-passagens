@@ -9,6 +9,7 @@ import { BlogPostReadingUi } from "@/components/blog/blog-post-reading-ui";
 import { StorageImage } from "@/components/ui/storage-image";
 import { BlogPostLikeButton, BlogPostLikeProvider } from "@/components/blog/blog-post-like";
 import { BlogPostShare } from "@/components/blog/blog-post-share";
+import { BlogPostViewTracker } from "@/components/blog/blog-post-view-tracker";
 import { BlogPostTags } from "@/components/blog/blog-post-tags";
 import { BlogVipCta } from "@/components/blog/blog-vip-cta";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
@@ -86,7 +87,6 @@ export async function generateMetadata({
     title: post.title,
     description: post.excerpt,
     slug: post.slug,
-    coverImage: normalizeBlogImageUrl(post.coverImage),
     publishedAt: post.createdAt,
     updatedAt: post.updatedAt,
     keywords: [
@@ -137,6 +137,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <BlogPostLikeProvider postId={post.id} initialLikeCount={likeCount}>
+      <BlogPostViewTracker postId={post.id} />
       <section className="border-b border-border/50 bg-background py-10 sm:py-12 lg:py-16">
         <BlogPostReadingUi
           publishedAtLabel={sidebarPublishedAt}

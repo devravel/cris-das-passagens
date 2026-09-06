@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CircleCheck, FileText, Plus, Star } from "lucide-react";
+import { CircleCheck, Eye, FileText, Plus, Star } from "lucide-react";
 
 import { BlogsTable } from "@/components/admin/blogs-table";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ export default async function AdminBlogsPage() {
       slug: true,
       published: true,
       featuredOnHomepage: true,
+      views: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -103,7 +104,24 @@ export default async function AdminBlogsPage() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-border/70 shadow-sm md:col-span-2">
+        <Card className="rounded-2xl border-border/70 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Eye className="size-4 text-brand" aria-hidden />
+              Acessos no blog
+            </CardTitle>
+            <CardDescription>
+              Soma das visitas em todos os posts publicados.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-3xl font-semibold tracking-tight text-foreground">
+            {posts
+              .reduce((total, post) => total + post.views, 0)
+              .toLocaleString("pt-BR")}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl border-border/70 shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="size-4 text-brand" aria-hidden />
