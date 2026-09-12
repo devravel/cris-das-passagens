@@ -19,7 +19,8 @@ export const bodyTextClassName =
 
 /**
  * Palavra entre *asteriscos* no título vira degradê azul da marca.
- * `onDark` usa os azuis claros (cyan → light) pra não sumir em fundo navy.
+ * `onDark` (CTA fantasma da hero) vai de cyan a branco, em bold e com brilho,
+ * pra palavra não sumir no vidro sobre navy.
  */
 export function highlightTitle(title: string, onDark = false) {
   return title.split(/\*([^*]+)\*/).map((part, index) =>
@@ -28,7 +29,9 @@ export function highlightTitle(title: string, onDark = false) {
         key={index}
         className={cn(
           "bg-linear-to-r bg-clip-text text-transparent",
-          onDark ? "from-brand-cyan to-brand-light" : "from-brand-light to-brand",
+          onDark
+            ? "from-brand-cyan to-white font-bold drop-shadow-[0_0_0.6rem_color-mix(in_oklch,var(--brand-cyan)_55%,transparent)]"
+            : "from-brand-light to-brand",
         )}
       >
         {part}
