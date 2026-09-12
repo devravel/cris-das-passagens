@@ -125,6 +125,26 @@ export function CtaButton({
     );
   }
 
+  // Âncora na mesma página: rola sempre, mesmo com o hash já na URL
+  // (o <Link> ignora o clique quando o hash não muda).
+  if (href.startsWith("#")) {
+    return (
+      <a
+        href={href}
+        className={classes}
+        onPointerMove={onPointerMove}
+        onClick={(event) => {
+          event.preventDefault();
+          document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth" });
+          window.history.replaceState(null, "", href);
+          onClick?.();
+        }}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
     <Link href={href} className={classes} onPointerMove={onPointerMove} onClick={onClick}>
       {children}
