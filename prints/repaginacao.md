@@ -7,15 +7,12 @@ diagnóstico (feito), as decisões do dono (a preencher) e o gosto (a preencher)
 
 ## Estado (2026-09-12)
 
-- **Repaginação pronta**, esperando aprovação do Cristian. Prazo de entrega:
-  **quinta, 2026-09-17**.
-- Branch `repaginacao` (repo próprio, `main` intocada = site vivo).
-- Preview público pra ele aprovar (acompanha cada push na branch):
-  <https://cris-das-passagens-git-repaginacao-devravels-projects.vercel.app>
-- Entrega de quinta sobe **sem** a seção de roteiros da home
+- **Repaginação aprovada pelo Cristian e no ar** em crisdaspassagens.com.br
+  (merge `repaginacao` → `main`, commit 8cbd6d1, 2026-09-12).
+- Subiu **sem** a seção de roteiros da home
   (`content.itineraries.enabled = false`). O mockup fica vivo na branch
   `roteiros`, onde nasce a funcionalidade nova — spec em `roteiros.md`.
-- Pra subir: merge `repaginacao` → `main` (deploy de produção é automático).
+- `repaginacao` pode ser apagada; `main` é a base daqui pra frente.
 
 ---
 
