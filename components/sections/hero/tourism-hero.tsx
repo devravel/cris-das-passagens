@@ -323,7 +323,7 @@ export function TourismHero({
               href={secondaryCta.href}
               label={highlightTitle(secondaryCta.label, true)}
               variant="ghost"
-              arrow="down"
+              arrow={false}
             />
           </div>
 
