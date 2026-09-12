@@ -145,7 +145,7 @@ export const content = {
 
   /** Demonstração pro Cris — roteiros ainda não existem como produto. */
   itineraries: {
-    enabled: true,
+    enabled: false, // ligado so na branch `roteiros` (ver prints/roteiros.md)
     title: "*Roteiros* para se inspirar",
     subtitle:
       "Ideias de viagem prontas, do voo ao passeio. Você escolhe o roteiro e a gente ajusta datas, hotel e orçamento.",
