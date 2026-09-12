@@ -1,6 +1,7 @@
 import "server-only";
 
 import { isValidBlogImageUrl, normalizeBlogImageUrl } from "@/lib/blog/image-url";
+import { compressImageForStorage } from "@/lib/storage/compress-image";
 import { STORAGE_UPLOAD_CACHE_CONTROL } from "@/lib/storage/media-url";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 
@@ -55,14 +56,14 @@ export async function uploadPromotionImageToStorage(
     throw new Error("A imagem deve ter no máximo 5MB.");
   }
 
-  const path = makePromotionStoragePath(file.name, mimeType);
+  const { buffer, contentType, extension } = await compressImageForStorage(file);
+  const path = makePromotionStoragePath(`image.${extension}`, contentType);
   const supabaseAdmin = createSupabaseAdminClient();
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
 
   const { error: uploadError } = await supabaseAdmin.storage
     .from(PROMOTION_IMAGES_BUCKET)
-    .upload(path, fileBuffer, {
-      contentType: mimeType,
+    .upload(path, buffer, {
+      contentType,
       upsert: false,
       cacheControl: STORAGE_UPLOAD_CACHE_CONTROL,
     });
