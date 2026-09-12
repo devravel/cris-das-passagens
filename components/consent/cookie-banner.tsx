@@ -4,10 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 
 import { useConsent } from "@/components/consent/consent-context";
+import { CtaButton } from "@/components/ui/cta-button";
 import { consentCopy } from "@/config/consent";
-
-const bannerButtonClassName =
-  "inline-flex items-center justify-center border border-black bg-white px-8 py-3.5 text-[14px] font-bold uppercase tracking-[0.5px] text-black transition-colors hover:bg-[rgb(225,225,225)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30";
 
 export function CookieBanner() {
   const { isBannerVisible, acceptAll, rejectAll } = useConsent();
@@ -35,38 +33,37 @@ export function CookieBanner() {
 
   return (
     <div
-      className="cookie-banner-enter fixed inset-x-0 bottom-0 z-[1100] border-t border-black/10 bg-white p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] pb-[max(1rem,env(safe-area-inset-bottom))]"
+      className="cookie-banner-enter fixed inset-x-0 bottom-0 z-[1100] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6"
       role="dialog"
       aria-live="polite"
       aria-label={banner.ariaLabel}
       aria-describedby="cookie-banner-description"
     >
-      <div className="mx-auto flex max-w-[1224px] flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto flex max-w-[1224px] flex-col gap-5 rounded-2xl border border-brand/15 bg-card/95 p-5 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.25)] backdrop-blur-md sm:p-6 md:flex-row md:items-center md:justify-between md:gap-8">
         <p
           id="cookie-banner-description"
-          className="text-[14px] leading-[1.5] text-black"
+          className="text-sm leading-relaxed text-muted-foreground sm:text-[0.9375rem]"
         >
           {banner.text}{" "}
           <Link
             href="/politica-de-privacidade"
-            className="font-medium underline underline-offset-2 hover:text-black/70 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
+            className="font-medium text-brand underline-offset-2 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
           >
             Saiba mais
           </Link>
         </p>
 
         <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
-          <button
+          <CtaButton
             type="button"
+            label={banner.accept}
+            arrow={false}
             onClick={acceptAll}
-            className={bannerButtonClassName}
-          >
-            {banner.accept}
-          </button>
+          />
           <button
             type="button"
             onClick={rejectAll}
-            className={bannerButtonClassName}
+            className="inline-flex h-12 items-center justify-center rounded-xl border border-brand/30 px-6 text-[0.9375rem] font-semibold text-brand transition-colors hover:bg-brand/5 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:h-13 sm:px-7 sm:text-base"
           >
             {banner.reject}
           </button>
