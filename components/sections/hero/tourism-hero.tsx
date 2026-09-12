@@ -7,6 +7,7 @@ import { BedDouble, Package, Plane, ShieldCheck, type LucideIcon } from "lucide-
 
 import { TiltCard } from "@/components/motion/tilt-card";
 import { ReiDaCopaHeroCta } from "@/components/rei-da-copa/rei-da-copa-hero-cta";
+import { highlightTitle } from "@/components/layout/section-header";
 import { CtaButton } from "@/components/ui/cta-button";
 import { content, type ContentCta, type ServiceItem } from "@/config/content";
 import { reiDaCopaHomeHeroCta } from "@/config/rei-da-copa-campaign";
@@ -319,7 +320,7 @@ export function TourismHero({
             )}
             <CtaButton
               href={secondaryCta.href}
-              label={secondaryCta.label}
+              label={highlightTitle(secondaryCta.label)}
               variant="ghost"
             />
           </div>

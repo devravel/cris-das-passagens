@@ -80,8 +80,8 @@ export const content = {
   },
 
   hero: {
-    headline: "Mais que uma viagem, um sonho!",
-    subheadline: "O melhor suporte para o seu sonho. Assessoria completa.",
+    headline: "O melhor suporte para o seu sonho.",
+    subheadline: "Mais que uma viagem, um sonho! Assessoria completa.",
     /**
      * Ilustração de fundo da hero (gerada no ChatGPT a partir da foto do Cris,
      * ver prints/prompt-hero-chatgpt.md). Sem o arquivo, a hero cai no fundo
@@ -123,8 +123,8 @@ export const content = {
       href: getQuoteWhatsAppUrl(),
     } satisfies ContentCta,
     secondaryCta: {
-      label: "Confira todos os Pacotes",
-      href: "/pacotes",
+      label: "Confira Pacotes em *destaque*",
+      href: "#pacotes-em-destaque",
     } satisfies ContentCta,
     featuredPackages: {
       title: "Pacotes selecionados",
@@ -400,7 +400,6 @@ export const content = {
     title: "Nossos parceiros",
     logos: [
       { src: "/partners/debate-raiz.svg", alt: "Debate Raiz", size: "sm" },
-      { src: "/partners/bage-tv.svg", alt: "Bagé TV" },
       { src: "/partners/por-ai-de-kombi.svg", alt: "Por Aí de Kombi" },
       { src: "/partners/nicoly-owicki.svg", alt: "Nicoly Owicki", size: "sm" },
       { src: "/partners/diogo-rossi.svg", alt: "Diogo Rossi", size: "sm" },
