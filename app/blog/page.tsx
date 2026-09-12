@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
+import { BlogPostViews } from "@/components/blog/blog-post-views";
 import { StorageImage } from "@/components/ui/storage-image";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { Section } from "@/components/layout/section";
@@ -106,6 +107,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       slug: true,
       excerpt: true,
       coverImage: true,
+      views: true,
       createdAt: true,
     },
     take: BLOG_POSTS_PER_PAGE,
@@ -169,8 +171,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     </Link>
 
                     <div className={cn(blogCardBodyClassName, "p-5 sm:p-6")}>
-                      <p className="shrink-0 text-xs font-medium uppercase tracking-wider text-brand">
+                      <p className="flex shrink-0 items-center justify-between gap-3 text-xs font-medium uppercase tracking-wider text-brand">
                         {formattedDate}
+                        <BlogPostViews views={post.views} className="text-muted-foreground" />
                       </p>
 
                       <h2 className={cn(blogCardTitleClassName, "mt-2 text-lg sm:text-xl")}>

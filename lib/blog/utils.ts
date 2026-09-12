@@ -22,3 +22,17 @@ export function normalizeSlug(value: string) {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 }
+
+const compactNumber = new Intl.NumberFormat("pt-BR", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
+/** Contagem de visualizações no padrão de mercado: 155, 1,2 mil, 3 mi. */
+export function formatViewCount(views: number): string {
+  return compactNumber.format(views);
+}
+
+export function formatViewCountLabel(views: number): string {
+  return `${formatViewCount(views)} ${views === 1 ? "visualização" : "visualizações"}`;
+}

@@ -10,6 +10,7 @@ import { StorageImage } from "@/components/ui/storage-image";
 import { BlogPostLikeButton, BlogPostLikeProvider } from "@/components/blog/blog-post-like";
 import { BlogPostShare } from "@/components/blog/blog-post-share";
 import { BlogPostViewTracker } from "@/components/blog/blog-post-view-tracker";
+import { BlogPostViews } from "@/components/blog/blog-post-views";
 import { BlogPostTags } from "@/components/blog/blog-post-tags";
 import { BlogVipCta } from "@/components/blog/blog-vip-cta";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
@@ -49,6 +50,7 @@ const getPublishedPostBySlug = cache(async (slug: string) => {
       excerpt: true,
       content: true,
       coverImage: true,
+      views: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -178,12 +180,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <p className={cn("mt-4", bodyTextClassName, "sm:text-base md:text-lg")}>
                 {post.excerpt}
               </p>
-              <time
-                dateTime={post.createdAt.toISOString()}
-                className="mt-4 block text-xs font-medium uppercase tracking-wide text-muted-foreground/90"
-              >
-                Publicado em {publishedAt}
-              </time>
+              <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium uppercase tracking-wide text-muted-foreground/90">
+                <time dateTime={post.createdAt.toISOString()}>
+                  Publicado em {publishedAt}
+                </time>
+                <span aria-hidden className="text-border">·</span>
+                <BlogPostViews views={post.views} withLabel />
+              </div>
             </header>
 
             <div className="mt-6 sm:mt-8">
