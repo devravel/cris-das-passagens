@@ -14,7 +14,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "admin:create": "node --env-file=.env scripts/create-admin.mjs",
-    "admin:change-password": "node --env-file=.env scripts/change-admin-password.mjs"
+    "admin:change-password": "node --env-file=.env scripts/change-admin-password.mjs",
+    "storage:compress": "node --env-file=.env scripts/compress-storage.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

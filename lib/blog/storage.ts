@@ -2,6 +2,7 @@ import "server-only";
 
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { isValidBlogImageUrl, normalizeBlogImageUrl } from "@/lib/blog/image-url";
+import { compressImageForStorage } from "@/lib/storage/compress-image";
 import { STORAGE_UPLOAD_CACHE_CONTROL } from "@/lib/storage/media-url";
 
 export const BLOG_COVERS_BUCKET = "blog-covers";
@@ -48,12 +49,12 @@ export async function uploadBlogImageToStorage({
   }
 
   const bucket = folder === "covers" ? BLOG_COVERS_BUCKET : BLOG_CONTENT_BUCKET;
-  const path = makeBlogStoragePath(folder, file.name);
+  const { buffer, contentType, extension } = await compressImageForStorage(file);
+  const path = makeBlogStoragePath(folder, `image.${extension}`);
   const supabaseAdmin = createSupabaseAdminClient();
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-  const { error: uploadError } = await supabaseAdmin.storage.from(bucket).upload(path, fileBuffer, {
-    contentType: file.type || "image/jpeg",
+  const { error: uploadError } = await supabaseAdmin.storage.from(bucket).upload(path, buffer, {
+    contentType,
     upsert: false,
     cacheControl: STORAGE_UPLOAD_CACHE_CONTROL,
   });
