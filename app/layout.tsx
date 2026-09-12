@@ -4,7 +4,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { Toaster } from "@/components/ui/sonner";
-import { fontHeading, fontSans } from "@/config/fonts";
+import { fontHeading, fontLogo, fontSans } from "@/config/fonts";
 import {
   createOrganizationJsonLd,
   createWebsiteJsonLd,
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontHeading.variable} ${fontLogo.variable} h-full antialiased`}
     >
       <link rel="icon" href="/icon.png?v=4" type="image/png" sizes="96x96" />
       <link rel="icon" href="/icon-192.png?v=4" type="image/png" sizes="192x192" />

@@ -1,4 +1,4 @@
-import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 
 /** Corpo — Plus Jakarta Sans: legível em texto corrido e nos cards de pacote. */
 export const fontSans = Plus_Jakarta_Sans({
@@ -16,6 +16,14 @@ export const fontHeading = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin", "latin-ext"],
   weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+
+/** Logo — Montserrat Bold é o mais próximo do lettering "CRIS DAS PASSAGENS". */
+export const fontLogo = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  weight: ["700"],
   display: "swap",
 });
 
