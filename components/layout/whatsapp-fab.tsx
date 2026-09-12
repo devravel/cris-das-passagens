@@ -15,6 +15,9 @@ import { cn } from "@/lib/utils";
   (sessionStorage). useSyncExternalStore pra ler sem divergir do HTML do servidor.
 */
 const BANNER_KEY = "whatsapp-fab-banner-closed";
+const FAB_WHATSAPP_URL = `${siteConfig.whatsapp}?text=${encodeURIComponent(
+  "Olá, venho do site e gostaria de fazer um orçamento.",
+)}`;
 const bannerListeners = new Set<() => void>();
 // Fallback pra quando o storage está bloqueado (modo privado, etc.).
 let bannerClosedInMemory = false;
@@ -125,7 +128,7 @@ export function WhatsAppFab({
       ) : null}
 
       <a
-        href={siteConfig.whatsapp}
+        href={FAB_WHATSAPP_URL}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() =>
