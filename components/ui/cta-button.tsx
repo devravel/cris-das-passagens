@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 import { trackMetaLeadFromHref, type MetaLeadSource } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
@@ -27,8 +27,8 @@ export type CtaButtonProps = {
   label: React.ReactNode;
   variant?: "brand" | "ghost";
   size?: keyof typeof sizeClassName;
-  /** Seta pra cima-direita com fundo próprio; some com `false`. */
-  arrow?: boolean;
+  /** Seta pra cima-direita com fundo próprio; `"down"` aponta pra baixo (âncora na página); some com `false`. */
+  arrow?: boolean | "down";
   trackingSource?: MetaLeadSource;
   className?: string;
   onClick?: () => void;
@@ -54,6 +54,7 @@ export function CtaButton({
   const classes = cn(
     "cta-btn inline-flex shrink-0 select-none items-center justify-center rounded-xl font-semibold whitespace-nowrap outline-none focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-60",
     variant === "ghost" && "cta-btn--ghost",
+    arrow === "down" && "cta-btn--arrow-down",
     sizeClassName[size],
     className,
   );
@@ -64,7 +65,11 @@ export function CtaButton({
       <span className="relative">{label}</span>
       {arrow ? (
         <span aria-hidden className={cn("cta-btn__arrow relative", arrowSizeClassName[size])}>
-          <ArrowUpRight strokeWidth={2.25} />
+          {arrow === "down" ? (
+            <ArrowDownRight strokeWidth={2.25} />
+          ) : (
+            <ArrowUpRight strokeWidth={2.25} />
+          )}
         </span>
       ) : null}
     </>
