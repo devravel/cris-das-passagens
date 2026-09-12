@@ -70,7 +70,7 @@ export const contentLinks = {
   quote: "/contato",
   whatsapp: "https://wa.me/5551992519187",
   instagram: "https://www.instagram.com/crisdaspassagens/",
-  cadastur: "https://www.cadastur.turismo.gov.br",
+  cadastur: "https://cadastur.turismo.gov.br/hotsite/#!/public/sou-turista/inicio",
   googleBusinessProfile: "https://share.google/KJPSDMuCaGAzMqGKn",
 } as const;
 
@@ -382,7 +382,7 @@ export const content = {
     verification:
       "A autenticidade dessa informação pode ser verificada através do código acima (basta apontar a câmera) ou através de consulta no site do Governo Federal.",
     verifyUrl: contentLinks.cadastur,
-    verifyUrlLabel: "www.cadastur.turismo.gov.br",
+    verifyUrlLabel: "https://cadastur.turismo.gov.br/",
     qrCode: "/cadastur-qrcode-light.png",
     qrCodeAlt:
       "QR Code para verificar a certificação CADASTUR no site do Governo Federal",
