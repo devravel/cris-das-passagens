@@ -2,7 +2,10 @@ import { Sparkles } from "lucide-react";
 
 import { CouponApplyForm } from "@/components/coupon/coupon-apply-form";
 import { Section } from "@/components/layout/section";
-import { sectionHeadingClassName } from "@/components/layout/section-header";
+import {
+  highlightTitle,
+  sectionHeadingClassName,
+} from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { FeaturedPackagesCarousel } from "@/components/packages/featured-packages-carousel";
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
@@ -60,7 +63,7 @@ export async function FeaturedPackagesSection({
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div className="max-w-2xl">
             <h2 id={headingId} className={cn(sectionHeadingClassName, "text-left")}>
-              {copy.title}
+              {highlightTitle(copy.title)}
             </h2>
             <p className="mt-3 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
               {copy.subtitle}

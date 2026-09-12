@@ -17,6 +17,22 @@ export const sectionHeadingClassName =
 export const bodyTextClassName =
   "w-full text-justify-smart text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl";
 
+/** Palavra entre *asteriscos* no título vira degradê azul da marca. */
+export function highlightTitle(title: string) {
+  return title.split(/\*([^*]+)\*/).map((part, index) =>
+    index % 2 === 1 ? (
+      <span
+        key={index}
+        className="bg-linear-to-r from-brand-light to-brand bg-clip-text text-transparent"
+      >
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  );
+}
+
 export const sectionSubtitleClassName =
   "mt-3 w-full text-pretty text-center text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl";
 
@@ -38,7 +54,7 @@ export function SectionHeader({
       className={cn("mb-7 sm:mb-9 lg:mb-10", className)}
     >
       <HeadingTag id={id} className={cn(sectionHeadingClassName, titleClassName)}>
-        {title}
+        {highlightTitle(title)}
       </HeadingTag>
       {subtitle ? (
         <p className={cn(sectionSubtitleClassName, subtitleClassName)}>

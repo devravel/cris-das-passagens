@@ -133,7 +133,7 @@ export const content = {
   },
 
   featuredPackages: {
-    title: "Pacotes em destaque",
+    title: "Pacotes em *destaque*",
     subtitle:
       "Quer outro destino ou outra data? Chama no WhatsApp que a gente monta.",
     emptyMessage: "Pacotes sendo adicionados em breve.",
@@ -146,7 +146,7 @@ export const content = {
   /** Demonstração pro Cris — roteiros ainda não existem como produto. */
   itineraries: {
     enabled: true,
-    title: "Roteiros para se inspirar",
+    title: "*Roteiros* para se inspirar",
     subtitle:
       "Ideias de viagem prontas, do voo ao passeio. Você escolhe o roteiro e a gente ajusta datas, hotel e orçamento.",
     items: [
@@ -273,7 +273,7 @@ export const content = {
   },
 
   support: {
-    title: "Suporte Total",
+    title: "Suporte *Total*",
     intro: "Viajar com segurança, praticidade e suporte completo? Você pode!",
     paragraphs: [
       "Aqui, você conta com suporte completo do início ao fim da sua viagem, com uma equipe experiente e atenciosa, sempre pronta para te ajudar.",
@@ -334,7 +334,7 @@ export const content = {
   },
 
   testimonials: {
-    title: "Veja o que os Clientes têm a dizer",
+    title: "Veja o que os *Clientes* têm a dizer",
     subtitle: "Depoimentos de quem já viveu essa experiência.",
     items: [
       {
@@ -449,7 +449,7 @@ export const content = {
   },
 
   blog: {
-    title: "Conheça nosso Blog",
+    title: "Conheça nosso *Blog*",
     subtitle: "Dicas para sua próxima viagem.",
     posts: [
       {
