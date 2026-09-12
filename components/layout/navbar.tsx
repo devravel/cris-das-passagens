@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { Container } from "@/components/layout/container";
@@ -328,10 +329,11 @@ export function Navbar({
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-11 shrink-0 rounded-lg bg-transparent px-2 font-heading text-[0.9375rem] font-bold tracking-[0.12em] text-brand uppercase transition-[transform,background-color] duration-200 hover:bg-transparent hover:text-brand active:scale-[0.98] sm:h-12 sm:text-base lg:hidden"
+                size="icon-lg"
+                className="size-11 shrink-0 rounded-lg bg-transparent text-brand transition-[transform,background-color] duration-200 hover:bg-transparent hover:text-brand active:scale-[0.98] sm:size-12 lg:hidden"
                 aria-label="Abrir menu de navegação"
               >
-                Menu
+                <Menu className="size-6 sm:size-7" strokeWidth={2.75} />
               </Button>
             </SheetTrigger>
             <SheetContent
