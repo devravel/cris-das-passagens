@@ -306,6 +306,7 @@ export function TourismHero({
           </ul>
 
           <div
+            data-hero-cta
             className="hero-enter mt-1 flex flex-col gap-3 sm:flex-row sm:items-center"
             style={{ "--enter-delay": "0.6s" } as CSSProperties}
           >

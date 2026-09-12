@@ -257,6 +257,22 @@ export function Navbar({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Mobile/tablet: o CTA da navbar só aparece depois que o da hero sai da tela.
+  const [heroCtaVisible, setHeroCtaVisible] = React.useState(true);
+  React.useEffect(() => {
+    const heroCta = document.querySelector("[data-hero-cta]");
+    if (!heroCta) {
+      setHeroCtaVisible(false);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) =>
+      setHeroCtaVisible(entry.isIntersecting),
+    );
+    observer.observe(heroCta);
+    return () => observer.disconnect();
+  }, [pathname]);
+  const hideCtaBelowLg = heroCtaVisible && "max-lg:hidden!";
+
   const closeMobile = React.useCallback(() => setMobileOpen(false), []);
 
   return (
@@ -293,13 +309,20 @@ export function Navbar({
         <div className="flex min-w-0 justify-center">
           <DesktopNavLinks items={items} />
           {cta ? (
-            <NavbarCtaButton cta={cta} size="sm" className="sm:hidden" />
+            <NavbarCtaButton
+              cta={cta}
+              size="sm"
+              className={cn("sm:hidden", hideCtaBelowLg)}
+            />
           ) : null}
         </div>
 
         <div className="flex min-w-0 items-center gap-2 justify-self-end lg:gap-0">
           {cta ? (
-            <NavbarCtaButton cta={cta} className="hidden sm:inline-flex" />
+            <NavbarCtaButton
+              cta={cta}
+              className={cn("hidden sm:inline-flex", hideCtaBelowLg)}
+            />
           ) : null}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
