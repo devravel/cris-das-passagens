@@ -12,7 +12,7 @@ export type SectionHeaderProps = {
 };
 
 export const sectionHeadingClassName =
-  "text-center font-heading text-2xl font-semibold tracking-tight text-foreground md:text-3xl lg:text-[2rem] lg:leading-tight";
+  "text-center font-heading text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-foreground md:text-4xl lg:text-[2.75rem]";
 
 export const bodyTextClassName =
   "w-full text-justify-smart text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl";
@@ -35,7 +35,7 @@ export function SectionHeader({
     <Container
       size="prose"
       padding="none"
-      className={cn("mb-8 sm:mb-12 lg:mb-14", className)}
+      className={cn("mb-7 sm:mb-9 lg:mb-10", className)}
     >
       <HeadingTag id={id} className={cn(sectionHeadingClassName, titleClassName)}>
         {title}

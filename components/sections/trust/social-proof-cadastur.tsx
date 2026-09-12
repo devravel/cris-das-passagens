@@ -74,7 +74,7 @@ function useSectionMotion() {
       whileInView: shouldAnimate ? { opacity: 1, y: 0 } : undefined,
       viewport: { once: true, margin: "-60px" },
       transition: {
-        duration: 0.5,
+        duration: 0.6,
         ease,
         delay: shouldAnimate ? index * 0.08 : 0,
       },

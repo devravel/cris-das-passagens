@@ -5,23 +5,12 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 export type ElfsightWidgetStatus = "pending" | "loaded" | "failed";
 
 const ELFSIGHT_LOAD_TIMEOUT_MS = 10_000;
-const ELFSIGHT_MIN_HEIGHT_PX = 80;
+/* Um widget de avaliações de verdade passa fácil disso; erro de plano/limite
+   injeta só um bloco pequeno (ou nada) e não conta como carregado. */
+const ELFSIGHT_MIN_HEIGHT_PX = 200;
 
 function hasElfsightContent(container: HTMLElement): boolean {
-  if (container.querySelector("iframe")) {
-    return true;
-  }
-
-  if (container.querySelector("[class*='eapps'], [class*='elfsight']")) {
-    return true;
-  }
-
-  if (container.children.length > 0 && container.offsetHeight >= ELFSIGHT_MIN_HEIGHT_PX) {
-    return true;
-  }
-
-  const textContent = container.textContent?.trim() ?? "";
-  return textContent.length > 0 && container.offsetHeight >= ELFSIGHT_MIN_HEIGHT_PX;
+  return container.children.length > 0 && container.offsetHeight >= ELFSIGHT_MIN_HEIGHT_PX;
 }
 
 type UseElfsightWidgetOptions = {

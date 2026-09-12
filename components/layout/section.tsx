@@ -12,11 +12,11 @@ const sectionVariants = cva("relative w-full", {
   variants: {
     spacing: {
       /** Espaçamento padrão das secções — mobile first (referência). */
-      default: "py-16 sm:py-20 lg:py-24 xl:py-32",
+      default: "py-12 sm:py-14 lg:py-16 xl:py-20",
       /** Secções mais compactas (FAQ, blocos auxiliares). */
-      compact: "py-12 sm:py-16 lg:py-20 xl:py-24",
+      compact: "py-10 sm:py-12 lg:py-14 xl:py-16",
       /** Páginas internas — respiro mínimo abaixo do navbar, padding inferior padrão. */
-      page: "pt-3 pb-16 sm:pt-4 sm:pb-20 lg:pb-24 xl:pb-32",
+      page: "pt-3 pb-12 sm:pt-4 sm:pb-14 lg:pb-16 xl:pb-20",
       none: "py-0",
     },
     background: {

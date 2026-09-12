@@ -1,81 +1,66 @@
 "use client";
 
-import { motion } from "framer-motion";
+import Image from "next/image";
 
-import {
-  sectionHeadingClassName,
-  sectionSubtitleClassName,
-} from "@/components/layout/section-header";
+import { sectionHeadingClassName } from "@/components/layout/section-header";
 import { Section } from "@/components/layout/section";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { newsletterSectionContent } from "@/config/newsletter";
-import { useEntranceMotion } from "@/hooks/use-entrance-motion";
+import { scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-
-/** Azul escuro amostrado da logo (`cris-das-passagens-logo-nav.png`). */
-const LOGO_BLUE_DARK = "#345aa6";
 
 export type NewsletterSectionProps = {
   sectionId?: string;
   className?: string;
 };
 
+/**
+ * Faixa única: foto escurecida de fundo (public/newsletter/fundo.webp), título
+ * centralizado e o formulário numa linha só — sem card branco.
+ */
 export function NewsletterSection({
   sectionId = newsletterSectionContent.id,
   className,
 }: NewsletterSectionProps) {
-  const headingEntrance = useEntranceMotion(0);
-  const bodyEntrance = useEntranceMotion(0.08);
-  const formEntrance = useEntranceMotion(0.14);
   const headingId = `${sectionId}-heading`;
 
   return (
     <Section
       id={sectionId}
-      background="default"
-      spacing="compact"
-      bordered
-      className={cn("border-white/10 text-white", className)}
-      style={{ backgroundColor: LOGO_BLUE_DARK }}
+      background="navy"
+      spacing="none"
+      className={cn("isolate overflow-hidden py-14 sm:py-16 lg:py-20", className)}
       aria-labelledby={headingId}
     >
-      <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-10 xl:gap-14">
-        <div className="mx-auto max-w-xl text-center lg:mx-0 lg:max-w-none lg:text-left">
-          <motion.p
-            className="text-xs font-semibold uppercase tracking-[0.14em] text-white/80"
-            {...headingEntrance}
-          >
+      <Image
+        src="/newsletter/fundo.webp"
+        alt=""
+        fill
+        sizes="100vw"
+        className="-z-20 object-cover object-center"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,oklch(0.18_0.04_264/0.82),oklch(0.18_0.04_264/0.9)),radial-gradient(60%_80%_at_50%_0%,oklch(0.483_0.13_262.2/0.55),transparent_70%)]"
+      />
+
+      <div className="mx-auto max-w-4xl text-center">
+        <ScrollReveal>
+          <p className="text-xs font-bold tracking-[0.16em] text-brand-cyan uppercase">
             {newsletterSectionContent.eyebrow}
-          </motion.p>
-
-          <motion.h2
-            id={headingId}
-            className={cn(
-              sectionHeadingClassName,
-              "mt-3 text-white lg:text-left",
-            )}
-            {...headingEntrance}
-          >
+          </p>
+          <h2 id={headingId} className={cn(sectionHeadingClassName, "mt-3 text-white")}>
             {newsletterSectionContent.title}
-          </motion.h2>
-
-          <motion.p
-            className={cn(
-              sectionSubtitleClassName,
-              "mt-3 text-white/85 lg:mt-4 lg:text-left",
-            )}
-            {...bodyEntrance}
-          >
+          </h2>
+          <p className="mt-3 text-base text-white/75 sm:text-lg">
             {newsletterSectionContent.subtitle}
-          </motion.p>
-        </div>
+          </p>
+        </ScrollReveal>
 
-        <motion.div
-          className="mx-auto w-full max-w-md rounded-2xl bg-background p-5 text-foreground shadow-sm ring-1 ring-border/50 sm:p-6 lg:mx-0 lg:max-w-none"
-          {...formEntrance}
-        >
-          <NewsletterForm className="space-y-3.5 sm:space-y-4" />
-        </motion.div>
+        <ScrollReveal delay={scrollRevealDefaults.stagger} className="mt-8 sm:mt-10">
+          <NewsletterForm />
+        </ScrollReveal>
       </div>
     </Section>
   );

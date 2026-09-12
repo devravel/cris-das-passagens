@@ -34,7 +34,7 @@ function useHeroMotion() {
     (delay = 0) => ({
       initial: reduce ? false : { opacity: 0, y: 14 },
       animate: reduce ? false : { opacity: 1, y: 0 },
-      transition: { duration: 0.55, ease, delay: reduce ? 0 : delay },
+      transition: { duration: 0.7, ease, delay: reduce ? 0 : delay },
     }),
     [reduce],
   );
@@ -137,7 +137,7 @@ export function HeroModern({
           className="relative mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none"
           initial={reduce ? false : { opacity: 0, y: 18 }}
           animate={reduce ? false : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: reduce ? 0 : 0.24, ease }}
+          transition={{ duration: 0.8, delay: reduce ? 0 : 0.24, ease }}
           aria-hidden
         >
           <div className="aspect-4/3 rounded-2xl border border-border/60 bg-card/40 p-1 shadow-[0_24px_80px_-24px_color-mix(in_oklch,var(--foreground)_25%,transparent)] backdrop-blur-md supports-backdrop-filter:bg-card/30 sm:aspect-video">

@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
 import { sectionHeadingClassName } from "@/components/layout/section-header";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { content } from "@/config/content";
-import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
 
 /** Azul escuro amostrado da logo (`cris-das-passagens-logo-nav.png`). */
@@ -23,7 +22,6 @@ export function CadasturCompactSection({
   sectionId = "cadastur",
   className,
 }: CadasturCompactSectionProps) {
-  const entrance = useEntranceMotion(0.08);
   const headingId = `${sectionId}-heading`;
 
   return (
@@ -36,10 +34,7 @@ export function CadasturCompactSection({
       style={{ backgroundColor: LOGO_BLUE_DARK }}
       aria-labelledby={headingId}
     >
-      <motion.div
-        className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center sm:gap-8"
-        {...entrance}
-      >
+      <ScrollReveal className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center sm:gap-8">
         <h2
           id={headingId}
           className={cn(
@@ -54,8 +49,7 @@ export function CadasturCompactSection({
             width={220}
             height={35}
             className="h-[1.15em] w-auto translate-y-px object-contain"
-            unoptimized
-            priority
+            sizes="220px"
           />
         </h2>
 
@@ -67,7 +61,7 @@ export function CadasturCompactSection({
               width={112}
               height={112}
               className="size-full object-contain object-center"
-              unoptimized
+              sizes="112px"
             />
           </div>
 
@@ -92,7 +86,7 @@ export function CadasturCompactSection({
             </Link>
           </div>
         </div>
-      </motion.div>
+      </ScrollReveal>
     </Section>
   );
 }

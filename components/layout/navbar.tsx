@@ -12,6 +12,7 @@ import { navigation as defaultItems, navbarCta } from "@/config/navigation";
 import { useMotionReady } from "@/hooks/use-motion-ready";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
+import { CtaButton, type CtaButtonProps } from "@/components/ui/cta-button";
 import {
   Sheet,
   SheetContent,
@@ -19,7 +20,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 export type NavItem = {
@@ -128,20 +128,18 @@ function NavLink({
       onClick={(event) => handleNavLinkClick(event, pathname, href, onNavigate)}
       className={cn(
         "group relative inline-flex items-center py-1.5 text-base font-medium tracking-tight transition-colors duration-200",
-        active
-          ? "text-foreground"
-          : "text-foreground/75 hover:text-foreground",
+        active ? "text-brand" : "text-foreground/75 hover:text-brand",
         className
       )}
     >
       {children}
+      {/* Linha azul da marca: fixa na página ativa, cresce da esquerda no hover. */}
       <span
-        className={cn(
-          "pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 bg-foreground transition-transform duration-200 ease-out",
-          active && "scale-x-100",
-          !active && "group-hover:scale-x-100"
-        )}
         aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 rounded-full bg-brand transition-transform duration-300 ease-out motion-reduce:transition-none",
+          active ? "scale-x-100" : "group-hover:scale-x-100",
+        )}
       />
     </Link>
   );
@@ -150,7 +148,7 @@ function NavLink({
 function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
     <nav
-      className="hidden items-center gap-7 xl:gap-9 lg:flex"
+      className="hidden items-center justify-center gap-7 xl:gap-9 lg:flex"
       aria-label="Navegação principal"
     >
       {items.map((item) => (
@@ -166,47 +164,22 @@ export function NavbarCtaButton({
   cta,
   className,
   onNavigate,
-  fullWidth = false,
+  size,
 }: {
   cta: NavbarCta;
   className?: string;
   onNavigate?: () => void;
-  fullWidth?: boolean;
+  size?: CtaButtonProps["size"];
 }) {
-  const brandStyles = cn(
-    "rounded-lg bg-brand font-semibold text-brand-foreground shadow-none transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 active:translate-y-0",
-    fullWidth
-      ? "h-10 w-full px-5 text-sm"
-      : "h-auto min-h-9 min-w-0 max-w-[10.5rem] shrink px-3 py-2 text-[0.75rem] leading-tight whitespace-normal text-center sm:max-w-none sm:h-10 sm:py-0 sm:px-5 sm:text-sm sm:whitespace-nowrap md:px-6 md:text-[0.9375rem]",
-  );
-
-  if (cta.external) {
-    return (
-      <Button asChild size="sm" className={cn(brandStyles, className)}>
-        <a
-          href={cta.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => {
-            trackMetaLeadFromHref(cta.href, {
-              source: "navbar_quote",
-              content_name: cta.label,
-            });
-            onNavigate?.();
-          }}
-        >
-          {cta.label}
-        </a>
-      </Button>
-    );
-  }
-
   return (
-    <Button asChild size="sm" className={cn(brandStyles, className)}>
-      <Link href={cta.href} onClick={onNavigate}>
-        {cta.label}
-      </Link>
-    </Button>
+    <CtaButton
+      href={cta.href}
+      label={cta.label}
+      size={size}
+      trackingSource="navbar_quote"
+      onClick={onNavigate}
+      className={className}
+    />
   );
 }
 
@@ -297,7 +270,10 @@ export function Navbar({
         className
       )}
     >
-      <Container className="flex min-h-18 items-center justify-between gap-4 py-2.5 sm:min-h-20 sm:py-3">
+      {/* 3 colunas: logo | centro | direita. <640px: CTA compacto no centro, com respiro,
+          e menu na direita; a partir de 640px o CTA vai pro lado do hambúrguer;
+          desktop: links no centro e CTA na direita — sempre nas margens do Container. */}
+      <Container className="grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[1fr_auto_1fr]">
         <Link
           href={logoHref}
           onClick={(event) => handleNavLinkClick(event, pathname, logoHref)}
@@ -308,16 +284,22 @@ export function Navbar({
             alt={siteConfig.name}
             width={817}
             height={388}
-            className="h-11 w-auto sm:h-12 md:h-14"
+            className="h-[clamp(2rem,9.5vw,2.5rem)] w-auto sm:h-12 md:h-14"
+            sizes="120px"
             priority
           />
         </Link>
 
-        <div className="flex min-w-0 items-center gap-2.5 sm:gap-5 md:gap-6 lg:gap-9">
+        <div className="flex min-w-0 justify-center">
           <DesktopNavLinks items={items} />
-
           {cta ? (
-            <NavbarCtaButton cta={cta} className="hidden md:inline-flex" />
+            <NavbarCtaButton cta={cta} size="sm" className="sm:hidden" />
+          ) : null}
+        </div>
+
+        <div className="flex min-w-0 items-center gap-2 justify-self-end lg:gap-0">
+          {cta ? (
+            <NavbarCtaButton cta={cta} className="hidden sm:inline-flex" />
           ) : null}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -341,15 +323,6 @@ export function Navbar({
                 </SheetTitle>
               </SheetHeader>
               <MobileNavLinks items={items} onNavigate={closeMobile} />
-              {cta ? (
-                <div className="hidden border-t border-border/50 p-4 md:block">
-                  <NavbarCtaButton
-                    cta={cta}
-                    fullWidth
-                    onNavigate={closeMobile}
-                  />
-                </div>
-              ) : null}
             </SheetContent>
           </Sheet>
         </div>

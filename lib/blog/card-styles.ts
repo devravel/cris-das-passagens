@@ -8,7 +8,7 @@ export const blogCardTitleClassName = cn(
 );
 
 export const blogCardExcerptClassName = cn(
-  "mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground sm:text-base",
+  "mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground sm:line-clamp-4 sm:text-base",
 );
 
 export const blogCardCtaClassName =

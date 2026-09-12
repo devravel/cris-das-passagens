@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
-import { Button } from "@/components/ui/button";
+import { CtaButton } from "@/components/ui/cta-button";
 import { content, type ContentCta } from "@/config/content";
 import { HOME_BLOG_SECTION_ID } from "@/config/navigation";
 import {
@@ -202,17 +202,8 @@ export function BlogPreviewSection({
       </Container>
 
       <ScrollReveal delay={0.15}>
-        <div className="mt-10 flex justify-center sm:mt-12 lg:mt-14">
-          <Button
-            asChild
-            size="lg"
-            className="h-11 w-full rounded-lg bg-brand px-6 text-sm text-brand-foreground shadow-sm transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-brand/90 hover:shadow-md active:translate-y-0 sm:w-auto"
-          >
-            <Link href={cta.href} className="gap-2">
-              {cta.label}
-              <ArrowRight className="size-4" strokeWidth={1.75} aria-hidden />
-            </Link>
-          </Button>
+        <div className="mt-8 flex justify-center sm:mt-10">
+          <CtaButton href={cta.href} label={cta.label} arrow={false} />
         </div>
       </ScrollReveal>
     </Section>

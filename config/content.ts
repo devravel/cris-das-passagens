@@ -26,8 +26,11 @@ export type BlogPostPreview = {
 
 export type ServiceItem = {
   label: string;
-  /** Rótulo mais curto para viewports estreitos (mantém uma linha). */
-  compactLabel?: string;
+  /** Capa do card na hero (foto local em `public/hero/servicos`). */
+  image: string;
+  /** Ícone do marquee mobile (abaixo de 640px o card vira ícone + título). */
+  icon: "plane" | "package" | "bed" | "shield";
+  href: string;
 };
 
 export type QuickActionItem = {
@@ -77,15 +80,43 @@ export const content = {
   },
 
   hero: {
-    headline: "Mais que uma viagem, Um Sonho!",
+    headline: "Mais que uma viagem, um sonho!",
+    subheadline: "O melhor suporte para o seu sonho. Assessoria completa.",
+    /**
+     * Ilustração de fundo da hero (gerada no ChatGPT a partir da foto do Cris,
+     * ver prints/prompt-hero-chatgpt.md). Sem o arquivo, a hero cai no fundo
+     * navy com o padrão em CSS.
+     */
+    image: "/hero/hero-nova.webp",
+    /** Retrato pro mobile (<640px) — ver prints/prompt-hero-mobile-chatgpt.md. */
+    imageMobile: "/hero/hero-mobile.webp",
+    imageAlt: "Cris das Passagens, com um cenário ilustrado de viagem ao fundo",
+    /** `\n` no label = quebra fixa no card (whitespace-pre-line). */
     services: [
       {
-        label: "Nacionais & Internacionais",
-        compactLabel: "Nacionais/Internacionais",
+        label: "Nacionais &\nInternacionais",
+        image: "/hero/servicos/voos.webp",
+        icon: "plane",
+        href: getQuoteWhatsAppUrl(),
       },
-      { label: "Pacotes" },
-      { label: "Hospedagem" },
-      { label: "Seguros" },
+      {
+        label: "Pacotes\nCompletos",
+        image: "/hero/servicos/pacotes.webp",
+        icon: "package",
+        href: "/pacotes",
+      },
+      {
+        label: "Hospedagem",
+        image: "/hero/servicos/hospedagem.webp",
+        icon: "bed",
+        href: getQuoteWhatsAppUrl(),
+      },
+      {
+        label: "Seguros",
+        image: "/hero/servicos/seguros.webp",
+        icon: "shield",
+        href: getQuoteWhatsAppUrl(),
+      },
     ] satisfies ServiceItem[],
     primaryCta: {
       label: "Faça uma cotação",
@@ -99,6 +130,80 @@ export const content = {
       title: "Pacotes selecionados",
       emptyMessage: "Pacotes sendo adicionados em breve.",
     },
+  },
+
+  featuredPackages: {
+    title: "Pacotes em destaque",
+    subtitle:
+      "Quer outro destino ou outra data? Chama no WhatsApp que a gente monta.",
+    emptyMessage: "Pacotes sendo adicionados em breve.",
+    cta: {
+      label: "Ver todos os pacotes",
+      href: "/pacotes",
+    } satisfies ContentCta,
+  },
+
+  /** Demonstração pro Cris — roteiros ainda não existem como produto. */
+  itineraries: {
+    enabled: true,
+    title: "Roteiros para se inspirar",
+    subtitle:
+      "Ideias de viagem prontas, do voo ao passeio. Você escolhe o roteiro e a gente ajusta datas, hotel e orçamento.",
+    items: [
+      {
+        title: "Serra Gaúcha",
+        description: "Gramado, Canela e vinícolas em 4 dias, saindo de Porto Alegre.",
+        duration: "4 dias",
+        image: "/roteiros/gramado.webp",
+      },
+      {
+        title: "Buenos Aires",
+        description: "Tango, parrilla e Palermo num fim de semana prolongado.",
+        duration: "5 dias",
+        image: "/roteiros/buenos-aires.webp",
+      },
+      {
+        title: "Lisboa e Porto",
+        description: "Portugal de norte a sul com trem, hotel e passeios inclusos.",
+        duration: "8 dias",
+        image: "/roteiros/lisboa.webp",
+      },
+    ],
+    cta: {
+      label: "Montar meu roteiro",
+      href: getQuoteWhatsAppUrl(),
+    } satisfies ContentCta,
+  },
+
+  instagram: {
+    /** Só pro aria-label da seção — não aparece na tela. */
+    title: "Bastidores no Instagram",
+    handle: "@crisdaspassagens",
+    href: contentLinks.instagram,
+    /** Cabeçalho estilo perfil — atualizar à mão quando os números mudarem. */
+    profile: {
+      name: "Cris das Passagens",
+      bio: "Agência de turismo · Osório/RS · Passagens, pacotes e hospedagem",
+      stats: [
+        { value: "120+", label: "posts" },
+        { value: "+20 mil", label: "seguidores" },
+        { value: "5.000+", label: "clientes" },
+      ],
+    },
+    /** Placeholders do grid (ver public/CREDITOS-IMAGENS.md) — usados só quando
+     *  o feed do Behold (BEHOLD_FEED_URL) não responde. */
+    posts: [
+      "/instagram/post-1.webp",
+      "/instagram/post-2.webp",
+      "/instagram/post-3.webp",
+      "/instagram/post-4.webp",
+      "/instagram/post-5.webp",
+      "/instagram/post-6.webp",
+    ],
+    cta: {
+      label: "Seguir no Instagram",
+      href: contentLinks.instagram,
+    } satisfies ContentCta,
   },
 
   quickActions: {
@@ -180,7 +285,7 @@ export const content = {
       {
         title: "Atendimento humanizado",
         description:
-          "Você fala com pessoas reais que entendem sua necessidade e cuidam de cada detalhe da viagem.",
+          "Você fala com quem entende sua necessidade e cuida de cada detalhe da viagem.",
       },
       {
         title: "Suporte jurídico",
@@ -341,10 +446,6 @@ export const content = {
           "Estamos disponíveis para lhe auxiliar em diversos assuntos relacionados à sua viagem, até mesmo com suporte jurídico caso você precise.",
       },
     ] satisfies FaqItem[],
-    cta: {
-      label: "Tirar mais dúvidas",
-      href: getQuoteWhatsAppUrl(),
-    } satisfies ContentCta,
   },
 
   blog: {
@@ -371,7 +472,7 @@ export const content = {
       },
     ] satisfies BlogPostPreview[],
     cta: {
-      label: "Ver blog",
+      label: "Ver mais blogs",
       href: contentLinks.blog,
     } satisfies ContentCta,
   },

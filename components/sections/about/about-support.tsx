@@ -1,5 +1,4 @@
-import { Scale, Users } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
 
 import { Container } from "@/components/layout/container";
 import { NavbarCtaButton } from "@/components/layout/navbar";
@@ -10,13 +9,10 @@ import {
   bodyTextClassName,
 } from "@/components/layout/section-header";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { TiltCard } from "@/components/motion/tilt-card";
 import { ContentCtaButton } from "@/components/ui/content-cta-button";
 import { content, type ContentCta } from "@/config/content";
 import { navbarCta } from "@/config/navigation";
-import {
-  cardContentContainerClassName,
-  cardInteractiveClassName,
-} from "@/lib/card-styles";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -69,57 +65,26 @@ export function AboutSection({
   );
 }
 
-/** Cores exatas da logo (texto/swoosh e “C” ciano). */
+/** Azul da logo (texto/swoosh). */
 const LOGO_BLUE_DARK = "#345aa6";
-const LOGO_BLUE_LIGHT = "#08bfff";
-
-type SupportHighlightTone = "logo-dark" | "logo-light";
 
 type SupportHighlight = {
   title: string;
   description: string;
-  icon: LucideIcon;
-  tone: SupportHighlightTone;
-};
-
-const highlightToneStyles: Record<
-  SupportHighlightTone,
-  {
-    backgroundColor: string;
-    card: string;
-    iconWrap: string;
-    title: string;
-    body: string;
-  }
-> = {
-  "logo-dark": {
-    backgroundColor: LOGO_BLUE_DARK,
-    card: "ring-[#345aa6]/40 shadow-[0_8px_30px_-14px_rgba(52,90,166,0.4)] hover:shadow-[0_14px_40px_-16px_rgba(52,90,166,0.5)]",
-    iconWrap: "bg-white/15 text-white ring-1 ring-white/25",
-    title: "text-white",
-    body: "text-white/85",
-  },
-  "logo-light": {
-    backgroundColor: LOGO_BLUE_LIGHT,
-    card: "ring-[#08bfff]/40 shadow-[0_8px_30px_-14px_rgba(8,191,255,0.4)] hover:shadow-[0_14px_40px_-16px_rgba(8,191,255,0.5)]",
-    iconWrap: "bg-white/45 text-[#1e4590] ring-1 ring-white/55",
-    title: "text-[#12356f]",
-    body: "text-[#12356f]/90",
-  },
+  /** PNG sem fundo, funciona como um ícone grande na lateral do card. */
+  image: string;
 };
 
 const defaultHighlights: SupportHighlight[] = [
   {
     title: content.support.highlights[0].title,
     description: content.support.highlights[0].description,
-    icon: Users,
-    tone: "logo-dark",
+    image: "/suporte/atendimento.png",
   },
   {
     title: content.support.highlights[1].title,
     description: content.support.highlights[1].description,
-    icon: Scale,
-    tone: "logo-light",
+    image: "/suporte/juridico.png",
   },
 ];
 
@@ -156,58 +121,41 @@ export function SupportSection({
         <SectionHeader id={headingId} title={title} subtitle={intro} />
       </ScrollReveal>
 
-      <Container padding="none" className="max-w-4xl">
+      <Container padding="none" className="max-w-5xl">
         <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-          {highlights.map(
-            ({ title: highlightTitle, description, icon: Icon, tone }, index) => {
-              const toneStyles = highlightToneStyles[tone];
-
-              return (
-              <ScrollReveal
-                key={highlightTitle}
-                delay={index * scrollRevealDefaults.stagger}
+          {highlights.map(({ title: highlightTitle, description, image }, index) => (
+            <ScrollReveal
+              key={highlightTitle}
+              delay={index * scrollRevealDefaults.stagger}
+            >
+              <TiltCard
+                className={cn(
+                  "relative flex h-full min-h-[200px] overflow-hidden rounded-2xl text-white ring-1 ring-[#345aa6]/40 sm:min-h-[190px]",
+                  "shadow-[0_8px_30px_-14px_rgba(52,90,166,0.4)] hover:z-10 hover:shadow-[0_36px_70px_-24px_rgba(52,90,166,0.7)]",
+                  "transition-shadow duration-700 ease-out",
+                )}
+                style={{ backgroundColor: LOGO_BLUE_DARK }}
               >
-                <div
-                  className={cn(
-                    "rounded-2xl p-5 ring-1 sm:p-6",
-                    toneStyles.card,
-                    cardContentContainerClassName,
-                    cardInteractiveClassName,
-                  )}
-                  style={{ backgroundColor: toneStyles.backgroundColor }}
-                >
-                  <div className="mb-3 flex items-center gap-3.5">
-                    <div
-                      className={cn(
-                        "flex size-11 shrink-0 items-center justify-center rounded-xl",
-                        toneStyles.iconWrap,
-                      )}
-                    >
-                      <Icon className="size-5" strokeWidth={1.75} aria-hidden />
-                    </div>
-                    <h3
-                      className={cn(
-                        "font-heading text-lg font-semibold leading-snug tracking-tight sm:text-xl",
-                        toneStyles.title,
-                      )}
-                    >
-                      {highlightTitle}
-                    </h3>
-                  </div>
-                  <p
-                    className={cn(
-                      "mt-2",
-                      bodyTextClassName,
-                      toneStyles.body,
-                    )}
-                  >
+                <div className="relative w-[38%] shrink-0 self-stretch sm:w-[36%]">
+                  <Image
+                    src={image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 896px) 200px, 38vw"
+                    className="object-contain object-left transition-transform duration-1000 ease-out group-hover:scale-110 motion-reduce:transition-none"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col justify-center py-5 pr-5 pl-2 sm:py-6 sm:pr-6 sm:pl-2">
+                  <h3 className="font-heading text-base font-bold uppercase leading-snug tracking-[0.06em] sm:text-[1.0625rem]">
+                    {highlightTitle}
+                  </h3>
+                  <p className="mt-2 text-[0.9375rem] leading-relaxed text-white/85 sm:text-[1.0625rem]">
                     {description}
                   </p>
                 </div>
-              </ScrollReveal>
-              );
-            },
-          )}
+              </TiltCard>
+            </ScrollReveal>
+          ))}
         </div>
       </Container>
 
@@ -218,7 +166,7 @@ export function SupportSection({
           className="mt-10 space-y-4 sm:mt-12"
         >
           {paragraphs.map((paragraph) => (
-            <p key={paragraph} className={bodyTextClassName}>
+            <p key={paragraph} className={cn(bodyTextClassName, "text-center")}>
               {paragraph}
             </p>
           ))}
@@ -228,6 +176,7 @@ export function SupportSection({
               className={cn(
                 "pt-2 font-medium text-foreground",
                 bodyTextClassName,
+                "text-center",
               )}
             >
               {closing}

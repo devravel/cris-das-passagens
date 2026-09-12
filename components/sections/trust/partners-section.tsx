@@ -1,13 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
 
 import { Container } from "@/components/layout/container";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { sectionHeadingClassName } from "@/components/layout/section-header";
 import { Section } from "@/components/layout/section";
 import { PartnersLogosMarquee } from "@/components/sections/trust/partners-logos-marquee";
 import { content } from "@/config/content";
-import { useEntranceMotion } from "@/hooks/use-entrance-motion";
 import { cn } from "@/lib/utils";
 
 export type PartnersSectionProps = {
@@ -19,7 +18,6 @@ export function PartnersSection({
   sectionId = "parceiros",
   className,
 }: PartnersSectionProps) {
-  const entrance = useEntranceMotion(0.08);
   const headingId = `${sectionId}-heading`;
   const logos = content.partners.logos;
 
@@ -30,20 +28,20 @@ export function PartnersSection({
       spacing="compact"
       contained={false}
       className={cn(
-        "border-b border-border/50 py-12 sm:py-14 lg:py-16",
+        "border-b border-border/50 py-10 sm:py-12 lg:py-14",
         className,
       )}
       aria-labelledby={headingId}
     >
       <Container>
-        <motion.div className="overflow-hidden" {...entrance}>
+        <ScrollReveal className="overflow-hidden">
           <h2
             id={headingId}
             className={cn(sectionHeadingClassName, "mb-8 sm:mb-10 lg:mb-12")}
           >
             {content.partners.title}
           </h2>
-        </motion.div>
+        </ScrollReveal>
 
         <PartnersLogosMarquee logos={logos} />
       </Container>

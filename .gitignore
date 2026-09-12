@@ -53,3 +53,7 @@ next-env.d.ts
 Thumbs.db
 .idea/
 .vscode/
+
+# material da agencia (portfolio / fontes de imagem)
+/prints
+/reference/hero-src

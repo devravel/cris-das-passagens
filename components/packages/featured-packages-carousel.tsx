@@ -9,9 +9,11 @@ import { useCarouselNavOutlineHint } from "@/hooks/use-carousel-nav-outline-hint
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
-type HeroFeaturedPackagesCarouselProps = {
+type FeaturedPackagesCarouselProps = {
   packages: PublicPackage[];
   departureCity: string;
+  /** Cards visíveis no track em viewports largas. */
+  visibleCards?: number;
   className?: string;
 };
 
@@ -23,7 +25,7 @@ const NARROW_CARD_MAX_PX = 220;
 const NARROW_CARD_VW_RATIO = 0.78;
 
 const navButtonClassName =
-  "group absolute top-1/2 z-10 inline-flex size-9 -translate-y-1/2 items-center justify-center overflow-visible rounded-full border border-border/80 bg-background/95 text-muted-foreground shadow-md backdrop-blur-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
+  "group absolute top-1/2 z-10 hidden size-9 sm:inline-flex -translate-y-1/2 items-center justify-center overflow-visible rounded-full border border-border/80 bg-background/95 text-muted-foreground shadow-md backdrop-blur-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
 
 const navIconClassName =
   "relative z-10 size-5 transition-colors duration-200 group-hover:text-brand motion-reduce:transition-none";
@@ -32,22 +34,24 @@ function getCardGap(): number {
   return window.innerWidth >= 640 ? CARD_GAP_DESKTOP : CARD_GAP_MOBILE;
 }
 
-function resolveCardWidth(trackWidth: number, gap: number): number {
+function resolveCardWidth(trackWidth: number, gap: number, visible: number): number {
   if (window.innerWidth <= NARROW_VIEWPORT_PX) {
     return Math.min(NARROW_CARD_MAX_PX, window.innerWidth * NARROW_CARD_VW_RATIO);
   }
 
   if (trackWidth <= 0) return 0;
 
-  // No máximo 3 cards visíveis no track.
-  return Math.max(0, (trackWidth - gap * 2) / 3);
+  // Tablet fica em 3; `visible` só vale a partir de lg.
+  const count = window.innerWidth >= 1024 ? visible : 3;
+  return Math.max(0, (trackWidth - gap * (count - 1)) / count);
 }
 
-export function HeroFeaturedPackagesCarousel({
+export function FeaturedPackagesCarousel({
   packages,
   departureCity,
+  visibleCards = 3,
   className,
-}: HeroFeaturedPackagesCarouselProps) {
+}: FeaturedPackagesCarouselProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -81,7 +85,7 @@ export function HeroFeaturedPackagesCarousel({
     if (!track) return;
 
     const gap = getCardGap();
-    const width = resolveCardWidth(track.clientWidth, gap);
+    const width = resolveCardWidth(track.clientWidth, gap, visibleCards);
 
     cardGapRef.current = gap;
     cardWidthRef.current = width;
@@ -89,7 +93,7 @@ export function HeroFeaturedPackagesCarousel({
     setCardWidth(width);
 
     requestAnimationFrame(updateNav);
-  }, [updateNav]);
+  }, [updateNav, visibleCards]);
 
   useLayoutEffect(() => {
     measure();
@@ -133,7 +137,7 @@ export function HeroFeaturedPackagesCarousel({
           className={cn(
             navButtonClassName,
             // Mobile: sobre os cards. Desktop: fora, no meio vertical.
-            "left-1 sm:left-2 lg:left-0 lg:-translate-x-[calc(100%+0.35rem)]",
+            "left-1 sm:left-2 xl:left-0 xl:-translate-x-[calc(100%+0.5rem)]",
           )}
           onClick={() => scrollByStep(-1)}
           disabled={!canScrollPrev}
@@ -192,7 +196,7 @@ export function HeroFeaturedPackagesCarousel({
           type="button"
           className={cn(
             navButtonClassName,
-            "right-1 sm:right-2 lg:right-0 lg:translate-x-[calc(100%+0.35rem)]",
+            "right-1 sm:right-2 xl:right-0 xl:translate-x-[calc(100%+0.5rem)]",
           )}
           onClick={() => scrollByStep(1)}
           disabled={!canScrollNext}

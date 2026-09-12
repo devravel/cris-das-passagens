@@ -94,12 +94,13 @@ export function PackageCardIntrinsicImage({
           : undefined
       }
     >
-      {/* Blur decorativo: fora do otimizador do Next (evita 2x fetch+transcode). */}
+      {/* Blur decorativo: passa pelo otimizador de propósito — `sizes="64px"` vira
+          um webp de ~2KB em cache. `unoptimized` aqui baixava o original inteiro
+          (2MB+) de cada card só pra desfocar. */}
       <StorageImage
         src={src}
         alt=""
         fill
-        unoptimized
         sizes="64px"
         aria-hidden
         loading="lazy"

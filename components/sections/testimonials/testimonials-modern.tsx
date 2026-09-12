@@ -5,9 +5,11 @@ import dynamic from "next/dynamic";
 import { useConsent } from "@/components/consent/consent-context";
 import { Section } from "@/components/layout/section";
 import { SectionHeader } from "@/components/layout/section-header";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { TestimonialsElfsightHost } from "@/components/sections/testimonials/testimonials-elfsight-host";
 import { content } from "@/config/content";
 import { HOME_TESTIMONIALS_SECTION_ID } from "@/config/navigation";
+import { scrollRevealDefaults } from "@/lib/motion";
 
 const GoogleReviewsFallback = dynamic(
   () =>
@@ -43,19 +45,19 @@ export function TestimonialsModern({
       className={className}
       aria-labelledby={headingId}
     >
-      <SectionHeader
-        id={headingId}
-        title={title}
-        subtitle={subtitle}
-        subtitleClassName="mt-4"
-        className="mb-12 sm:mb-14 lg:mb-16"
-      />
+      <ScrollReveal>
+        <SectionHeader
+          id={headingId}
+          title={title}
+          subtitle={subtitle}
+          subtitleClassName="mt-4"
+          className="mb-12 sm:mb-14 lg:mb-16"
+        />
+      </ScrollReveal>
 
-      {analyticsEnabled ? (
-        <TestimonialsElfsightHost />
-      ) : (
-        <GoogleReviewsFallback />
-      )}
+      <ScrollReveal delay={scrollRevealDefaults.stagger}>
+        {analyticsEnabled ? <TestimonialsElfsightHost /> : <GoogleReviewsFallback />}
+      </ScrollReveal>
     </Section>
   );
 }

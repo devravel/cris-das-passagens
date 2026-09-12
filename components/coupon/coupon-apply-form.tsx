@@ -166,7 +166,7 @@ export function CouponApplyForm({
           <span className="min-w-0">
             <CouponFieldLabelText />
           </span>
-          <CouponFieldFootnote className="inline-flex shrink-0 text-left min-[426px]:max-[639px]:hidden" />
+          <CouponFieldFootnote className="inline-flex shrink-0 text-left max-[639px]:hidden" />
         </div>
         {showDescription ? (
           <span
@@ -182,7 +182,7 @@ export function CouponApplyForm({
           <div className="h-9 min-w-0 flex-1 rounded-xl border border-border/70 bg-background/80" />
           <div className="h-9 w-20 shrink-0 rounded-xl bg-brand/20" />
         </div>
-        <CouponFieldFootnote className="hidden w-full text-left min-[426px]:max-[639px]:inline-flex" />
+        <CouponFieldFootnote className="hidden w-full text-left max-[639px]:inline-flex" />
         <span
           className={cn(couponMutedTextClassName, "block w-full text-left")}
         >
@@ -213,7 +213,7 @@ export function CouponApplyForm({
           <label htmlFor={inputId} className="min-w-0">
             <CouponFieldLabelText />
           </label>
-          <CouponFieldFootnote className="inline-flex shrink-0 text-left min-[426px]:max-[639px]:hidden" />
+          <CouponFieldFootnote className="inline-flex shrink-0 text-left max-[639px]:hidden" />
         </div>
 
         {showDescription ? (
@@ -266,7 +266,7 @@ export function CouponApplyForm({
           </Button>
         </div>
 
-        <CouponFieldFootnote className="hidden w-full text-left min-[426px]:max-[639px]:inline-flex" />
+        <CouponFieldFootnote className="hidden w-full text-left max-[639px]:inline-flex" />
 
         {activeCoupon ? (
           <div className="flex w-full items-start gap-2">

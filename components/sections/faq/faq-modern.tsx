@@ -11,8 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SupportCta } from "@/components/sections/about/support-cta";
-import { content, type ContentCta, type FaqItem } from "@/config/content";
+import { content, type FaqItem } from "@/config/content";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { createFaqPageJsonLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -21,7 +20,6 @@ export type FaqModernProps = {
   sectionId?: string;
   title?: string;
   items?: FaqItem[];
-  cta?: ContentCta;
   className?: string;
 };
 
@@ -29,7 +27,6 @@ export function FaqModern({
   sectionId = "faq",
   title = content.faq.title,
   items = content.faq.items,
-  cta = content.faq.cta,
   className,
 }: FaqModernProps) {
   const headingId = `${sectionId}-heading`;
@@ -78,10 +75,6 @@ export function FaqModern({
               );
             })}
           </Accordion>
-        </div>
-
-        <div className="mt-10 flex justify-center sm:mt-12">
-          <SupportCta cta={cta} trackingSource="faq_whatsapp" />
         </div>
         </Container>
       </ScrollReveal>

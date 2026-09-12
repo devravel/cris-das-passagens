@@ -26,7 +26,7 @@ export function GoogleReviewsCarousel({
         speed={28}
         gapClassName="gap-3 pr-3 sm:gap-4 sm:pr-4"
         ariaLabel="Avaliações do Google"
-        className="py-0.5"
+        className="edge-fade py-0.5"
       >
         {reviews.map((review) => (
           <div
