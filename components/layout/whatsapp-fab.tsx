@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
@@ -73,6 +73,22 @@ export function WhatsAppFab({
   const { shouldAnimate } = useMotionReady();
   const bannerOpen = useSyncExternalStore(subscribeBanner, isBannerOpen, () => true);
 
+  // Na home, o balão só aparece depois que o visitante passou dos pacotes em
+  // destaque. Em página sem a seção, aparece direto.
+  const [pastPackages, setPastPackages] = useState(false);
+  useEffect(() => {
+    const section = document.getElementById("pacotes-em-destaque");
+    if (!section) {
+      setPastPackages(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) =>
+      setPastPackages(!entry.isIntersecting && entry.boundingClientRect.bottom < 0),
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [pathname]);
+
   if (pathname.startsWith("/admin")) {
     return null;
   }
@@ -88,9 +104,12 @@ export function WhatsAppFab({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
-      {bannerOpen ? (
-        <div
+      {bannerOpen && pastPackages ? (
+        <motion.div
           role="status"
+          initial={shouldAnimate ? { opacity: 0, y: 8 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center gap-1 rounded-full bg-white py-1.5 pr-1.5 pl-3.5 text-[0.8125rem] font-semibold text-brand-navy shadow-[0_8px_24px_-8px_rgba(0,0,0,0.35)] ring-1 ring-black/5"
         >
           {label}
@@ -102,7 +121,7 @@ export function WhatsAppFab({
           >
             <X className="size-3.5" strokeWidth={2.5} aria-hidden />
           </button>
-        </div>
+        </motion.div>
       ) : null}
 
       <a
@@ -117,7 +136,7 @@ export function WhatsAppFab({
           })
         }
         aria-label="Falar no WhatsApp com a Cris das Passagens"
-        className="group relative block size-16 rounded-full outline-none focus-visible:ring-3 focus-visible:ring-brand-whatsapp/50"
+        className="group relative block size-14 rounded-full sm:size-16 outline-none focus-visible:ring-3 focus-visible:ring-brand-whatsapp/50"
       >
         <span
           aria-hidden
@@ -129,8 +148,8 @@ export function WhatsAppFab({
         >
           Fale conosco agora
         </span>
-        <span className="relative flex size-16 items-center justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_rgba(37,211,102,0.4)] transition-all group-hover:shadow-[0_15px_40px_rgba(37,211,102,0.6)]">
-          <WhatsAppIcon />
+        <span className="relative flex size-14 items-center sm:size-16 justify-center rounded-full bg-[#25D366] text-white shadow-[0_10px_30px_rgba(37,211,102,0.4)] transition-all group-hover:shadow-[0_15px_40px_rgba(37,211,102,0.6)]">
+          <WhatsAppIcon className="size-7 sm:size-8" />
         </span>
       </a>
     </motion.div>
