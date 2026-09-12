@@ -271,7 +271,10 @@ export function Navbar({
     observer.observe(heroCta);
     return () => observer.disconnect();
   }, [pathname]);
-  const hideCtaBelowLg = heroCtaVisible && "max-lg:hidden!";
+  const ctaRevealClassName = cn(
+    "transition-[opacity,translate] duration-300 ease-out motion-reduce:transition-none",
+    heroCtaVisible && "max-lg:pointer-events-none max-lg:-translate-y-1 max-lg:opacity-0",
+  );
 
   const closeMobile = React.useCallback(() => setMobileOpen(false), []);
 
@@ -309,20 +312,17 @@ export function Navbar({
         <div className="flex min-w-0 justify-center">
           <DesktopNavLinks items={items} />
           {cta ? (
-            <NavbarCtaButton
-              cta={cta}
-              size="sm"
-              className={cn("sm:hidden", hideCtaBelowLg)}
-            />
+            <div className={cn("sm:hidden", ctaRevealClassName)} aria-hidden={heroCtaVisible}>
+              <NavbarCtaButton cta={cta} size="sm" />
+            </div>
           ) : null}
         </div>
 
         <div className="flex min-w-0 items-center gap-2 justify-self-end lg:gap-0">
           {cta ? (
-            <NavbarCtaButton
-              cta={cta}
-              className={cn("hidden sm:inline-flex", hideCtaBelowLg)}
-            />
+            <div className={cn("hidden sm:block", ctaRevealClassName)}>
+              <NavbarCtaButton cta={cta} />
+            </div>
           ) : null}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
