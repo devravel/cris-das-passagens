@@ -17,13 +17,19 @@ export const sectionHeadingClassName =
 export const bodyTextClassName =
   "w-full text-justify-smart text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl";
 
-/** Palavra entre *asteriscos* no título vira degradê azul da marca. */
-export function highlightTitle(title: string) {
+/**
+ * Palavra entre *asteriscos* no título vira degradê azul da marca.
+ * `onDark` usa os azuis claros (cyan → light) pra não sumir em fundo navy.
+ */
+export function highlightTitle(title: string, onDark = false) {
   return title.split(/\*([^*]+)\*/).map((part, index) =>
     index % 2 === 1 ? (
       <span
         key={index}
-        className="bg-linear-to-r from-brand-light to-brand bg-clip-text text-transparent"
+        className={cn(
+          "bg-linear-to-r bg-clip-text text-transparent",
+          onDark ? "from-brand-cyan to-brand-light" : "from-brand-light to-brand",
+        )}
       >
         {part}
       </span>

@@ -320,7 +320,7 @@ export function TourismHero({
             )}
             <CtaButton
               href={secondaryCta.href}
-              label={highlightTitle(secondaryCta.label)}
+              label={highlightTitle(secondaryCta.label, true)}
               variant="ghost"
             />
           </div>
