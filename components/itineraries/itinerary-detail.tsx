@@ -199,7 +199,7 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
                 className={cn(
                   // Blocos lado a lado separados por linha (referência Schultz), cantos retos;
                   // o ativo fica branco, colado no conteúdo, com a linha azul embaixo.
-                  "-mb-px flex min-w-0 flex-1 basis-0 items-center justify-center border-b-2 border-r border-b-transparent border-r-border/70 px-1.5 py-3 text-center font-heading text-xs font-semibold uppercase leading-tight text-muted-foreground outline-none transition-colors last:border-r-0 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/60 max-lg:min-w-[6rem] xl:px-2 xl:text-[0.8125rem]",
+                  "-mb-px flex min-w-0 flex-1 basis-0 items-center justify-center border-b-2 border-r border-b-transparent border-r-border/70 px-1.5 py-3 text-center font-heading text-xs font-semibold uppercase leading-tight text-muted-foreground outline-none transition-colors last:border-r-0 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/60 max-lg:min-w-[6rem] xl:px-2 xl:text-[0.75rem]",
                   "data-[state=active]:border-b-brand data-[state=active]:bg-card data-[state=active]:text-brand data-[state=active]:hover:bg-card",
                 )}
               >
