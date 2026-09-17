@@ -39,7 +39,7 @@ import {
   type ItineraryHotel,
   type ItineraryTabKey,
 } from "@/lib/itinerary/schemas";
-import { resolvePublicImageSrc } from "@/lib/storage/image-src";
+import { isOptimizableRemoteImage, resolvePublicImageSrc } from "@/lib/storage/image-src";
 import { cn } from "@/lib/utils";
 
 /** Só o que a página precisa. Serve tanto pro banco quanto pro preview do admin. */
@@ -284,7 +284,7 @@ function HotelCard({ hotel, preview }: { hotel: ItineraryHotel; preview: boolean
               src={imageSrc}
               alt={hotel.name}
               fill
-              unoptimized
+              unoptimized={!isOptimizableRemoteImage(imageSrc)}
               sizes="(max-width: 768px) 100vw, 400px"
               className="object-cover"
               onError={() => setImageFailed(true)}

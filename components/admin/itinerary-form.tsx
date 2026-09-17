@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { memo, useEffect, useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm, useWatch, type Path, type PathValue } from "react-hook-form";
+import { useFieldArray, useForm, useWatch, type Control, type Path, type PathValue, type UseFormSetValue } from "react-hook-form";
 import { Check, Eye, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +31,7 @@ import {
   type HotelPriceKey,
   type ItineraryHotel,
   type ItineraryInput,
+  type ItineraryTabKey,
 } from "@/lib/itinerary/schemas";
 import { resolvePublicImageSrc } from "@/lib/storage/image-src";
 import { cn } from "@/lib/utils";
@@ -90,6 +91,8 @@ const tabHints: Record<(typeof itineraryTabs)[number][0], string> = {
   notes: "Ex.: Valores por pessoa em apto duplo e sujeitos a disponibilidade.",
 };
 
+const TAB_KEYS = itineraryTabs.map(([key]) => key) as [ItineraryTabKey, ...ItineraryTabKey[]];
+
 const labelClassName = "text-sm font-medium text-foreground";
 const errorClassName = "text-xs text-destructive";
 const blockClassName = "space-y-4 rounded-2xl border border-border/70 bg-card/80 p-4 sm:p-5";
@@ -128,8 +131,29 @@ export function ItineraryForm({
   });
 
   const hotelsArray = useFieldArray({ control: form.control, name: "hotels" });
-  const watched = useWatch({ control: form.control });
-  const isPublished = watched.published ?? false;
+  const { control } = form;
+
+  // Watches por campo (não o formulário inteiro): digitar no título não re-renderiza os 9 editores.
+  const coverImage = useWatch({ control, name: "coverImage" }) ?? "";
+  const gallery = useWatch({ control, name: "gallery" }) ?? [];
+  const categoryIds = useWatch({ control, name: "categoryIds" }) ?? [];
+  const includedItems = useWatch({ control, name: "includedItems" }) ?? [];
+  const videoUrl = useWatch({ control, name: "videoUrl" });
+  const mapUrl = useWatch({ control, name: "mapUrl" });
+  const isPublished = useWatch({ control, name: "published" }) ?? false;
+  const isFeatured = useWatch({ control, name: "featuredOnHomepage" }) ?? false;
+
+  // Handlers estáveis pros editores (memoizados): só o editor tocado re-renderiza de verdade.
+  const tabHandlers = useMemo(
+    () =>
+      Object.fromEntries(
+        TAB_KEYS.map((key) => [
+          key,
+          (next: string) => form.setValue(key, next, { shouldDirty: true }),
+        ]),
+      ) as Record<ItineraryTabKey, (next: string) => void>,
+    [form],
+  );
 
   function setField<K extends Path<ItineraryInput>>(name: K, value: PathValue<ItineraryInput, K>) {
     form.setValue(name, value, { shouldDirty: true, shouldValidate: true });
@@ -194,33 +218,6 @@ export function ItineraryForm({
 
   const errors = form.formState.errors;
 
-  // Preview com o que está digitado agora.
-  const previewData = {
-    title: watched.title ?? "",
-    duration: watched.duration ?? "",
-    priceFrom: watched.priceFrom,
-    coverImage: watched.coverImage ?? "",
-    gallery: (watched.gallery ?? []).filter((url): url is string => typeof url === "string"),
-    description: watched.description ?? "",
-    includedItems: (watched.includedItems ?? []).filter((key): key is NonNullable<typeof key> => Boolean(key)),
-    videoUrl: watched.videoUrl,
-    mapUrl: watched.mapUrl,
-    itinerary: watched.itinerary,
-    optionals: watched.optionals,
-    included: watched.included,
-    notIncluded: watched.notIncluded,
-    payment: watched.payment,
-    departures: watched.departures,
-    insurance: watched.insurance,
-    notes: watched.notes,
-    hotels: (watched.hotels ?? []).map((hotel) => ({
-      ...EMPTY_HOTEL,
-      ...hotel,
-      name: hotel?.name ?? "",
-      prices: (hotel?.prices ?? {}) as ItineraryHotel["prices"],
-    })),
-  };
-
   return (
     <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)} noValidate>
       {/* 1. Identificação */}
@@ -274,14 +271,14 @@ export function ItineraryForm({
             Capa *
           </label>
           <BlogCoverField
-            value={watched.coverImage ?? ""}
+            value={coverImage}
             onChange={(next) => setField("coverImage", next)}
             error={errors.coverImage?.message}
             uploadAction={uploadItineraryImageAction}
           />
         </div>
         <GalleryField
-          value={previewData.gallery}
+          value={gallery}
           onChange={(next) => setField("gallery", next)}
           error={errors.gallery?.message}
         />
@@ -295,7 +292,7 @@ export function ItineraryForm({
         ) : (
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => {
-              const selected = (watched.categoryIds ?? []).includes(category.id);
+              const selected = categoryIds.includes(category.id);
               return (
                 <button
                   key={category.id}
@@ -351,7 +348,7 @@ export function ItineraryForm({
         />
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {INCLUDED_ITEM_OPTIONS.map((item) => {
-            const selected = (watched.includedItems ?? []).includes(item.key);
+            const selected = includedItems.includes(item.key);
             return (
               <button
                 key={item.key}
@@ -398,7 +395,7 @@ export function ItineraryForm({
               Vídeo (YouTube)
             </label>
             <Input id="videoUrl" className="h-10 rounded-xl" placeholder="https://www.youtube.com/watch?v=..." {...form.register("videoUrl")} />
-            {watched.videoUrl?.trim() && !toYouTubeEmbedUrl(watched.videoUrl) ? (
+            {videoUrl?.trim() && !toYouTubeEmbedUrl(videoUrl) ? (
               <p className={errorClassName}>Não reconheci esse link do YouTube.</p>
             ) : (
               <FieldError message={errors.videoUrl?.message} />
@@ -409,7 +406,7 @@ export function ItineraryForm({
               Localização (Google Maps)
             </label>
             <Input id="mapUrl" className="h-10 rounded-xl" placeholder="https://www.google.com/maps/place/..." {...form.register("mapUrl")} />
-            {watched.mapUrl?.trim() && !toGoogleMapsEmbedUrl(watched.mapUrl) ? (
+            {mapUrl?.trim() && !toGoogleMapsEmbedUrl(mapUrl) ? (
               <p className={errorClassName}>Use o link completo do lugar (não o encurtado maps.app.goo.gl) ou o código de incorporar.</p>
             ) : (
               <FieldError message={errors.mapUrl?.message} />
@@ -422,11 +419,12 @@ export function ItineraryForm({
       <section className={blockClassName}>
         <BlockTitle title="Abas da página" hint="Cada aba só aparece no site se tiver conteúdo. Todas são opcionais." />
         <div className="space-y-5">
+          {/* Editores são donos do próprio texto: o valor inicial vem do form e não é observado (digitar não re-renderiza o resto). */}
           {itineraryTabs.map(([key, label]) => (
             <div key={key} className="space-y-1.5">
               <label className={labelClassName}>{label}</label>
               <p className="text-xs text-muted-foreground">{tabHints[key]}</p>
-              <TiptapEditor value={watched[key] ?? ""} onChange={(next) => setField(key, next)} />
+              <TiptapEditor value={form.getValues(key) ?? ""} onChange={tabHandlers[key]} />
               <FieldError message={errors[key]?.message} />
             </div>
           ))}
@@ -484,12 +482,7 @@ export function ItineraryForm({
 
               <div className="space-y-1.5">
                 <label className={labelClassName}>Foto</label>
-                <BlogCoverField
-                  value={watched.hotels?.[index]?.image ?? ""}
-                  onChange={(next) => form.setValue(`hotels.${index}.image`, next, { shouldDirty: true })}
-                  uploadAction={uploadItineraryImageAction}
-                  inputId={`hotel-${index}-image`}
-                />
+                <HotelImageField index={index} control={control} setValue={form.setValue} />
               </div>
 
               <div className="space-y-1.5">
@@ -506,9 +499,10 @@ export function ItineraryForm({
 
               <div className="space-y-1.5">
                 <label className={labelClassName}>Descrição do hotel</label>
-                <TiptapEditor
-                  value={watched.hotels?.[index]?.description ?? ""}
-                  onChange={(next) => form.setValue(`hotels.${index}.description`, next, { shouldDirty: true })}
+                <HotelDescriptionEditor
+                  index={index}
+                  value={form.getValues(`hotels.${index}.description`) ?? ""}
+                  setValue={form.setValue}
                 />
               </div>
             </fieldset>
@@ -545,7 +539,7 @@ export function ItineraryForm({
               id="featuredOnHomepage"
               type="checkbox"
               className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              checked={watched.featuredOnHomepage ?? false}
+              checked={isFeatured}
               disabled={!isPublished}
               onChange={(event) => setField("featuredOnHomepage", event.target.checked)}
             />
@@ -566,7 +560,7 @@ export function ItineraryForm({
           <span className="text-xs text-muted-foreground">Atualiza enquanto você digita. É assim que fica no site.</span>
         </div>
         <div className="overflow-hidden rounded-2xl border border-border/70 bg-background">
-          <ItineraryDetail itinerary={previewData} preview />
+          <ItineraryLivePreview control={control} />
         </div>
       </section>
 
@@ -688,3 +682,87 @@ function GalleryField({
     </div>
   );
 }
+
+/** Foto do hotel: observa só o próprio campo. */
+function HotelImageField({
+  index,
+  control,
+  setValue,
+}: {
+  index: number;
+  control: Control<ItineraryInput>;
+  setValue: UseFormSetValue<ItineraryInput>;
+}) {
+  const value = useWatch({ control, name: `hotels.${index}.image` }) ?? "";
+
+  return (
+    <BlogCoverField
+      value={value}
+      onChange={(next) => setValue(`hotels.${index}.image`, next, { shouldDirty: true })}
+      uploadAction={uploadItineraryImageAction}
+      inputId={`hotel-${index}-image`}
+    />
+  );
+}
+
+/** Editor da descrição do hotel com handler estável por índice (não re-renderiza os outros). */
+function HotelDescriptionEditor({
+  index,
+  value,
+  setValue,
+}: {
+  index: number;
+  value: string;
+  setValue: UseFormSetValue<ItineraryInput>;
+}) {
+  const onChange = useMemo(
+    () => (next: string) => setValue(`hotels.${index}.description`, next, { shouldDirty: true }),
+    [index, setValue],
+  );
+
+  return <TiptapEditor value={value} onChange={onChange} />;
+}
+
+/**
+ * Preview isolado do formulário: observa tudo, mas só redesenha 300ms depois da
+ * última tecla — quem digita não sente o preview.
+ */
+function ItineraryLivePreview({ control }: { control: Control<ItineraryInput> }) {
+  const watched = useWatch({ control });
+  const [snapshot, setSnapshot] = useState(watched);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSnapshot(watched), 300);
+    return () => window.clearTimeout(timer);
+  }, [watched]);
+
+  const previewData = useMemo(() => ({
+    title: snapshot.title ?? "",
+    duration: snapshot.duration ?? "",
+    priceFrom: snapshot.priceFrom,
+    coverImage: snapshot.coverImage ?? "",
+    gallery: (snapshot.gallery ?? []).filter((url): url is string => typeof url === "string"),
+    description: snapshot.description ?? "",
+    includedItems: (snapshot.includedItems ?? []).filter((key): key is NonNullable<typeof key> => Boolean(key)),
+    videoUrl: snapshot.videoUrl,
+    mapUrl: snapshot.mapUrl,
+    itinerary: snapshot.itinerary,
+    optionals: snapshot.optionals,
+    included: snapshot.included,
+    notIncluded: snapshot.notIncluded,
+    payment: snapshot.payment,
+    departures: snapshot.departures,
+    insurance: snapshot.insurance,
+    notes: snapshot.notes,
+    hotels: (snapshot.hotels ?? []).map((hotel) => ({
+      ...EMPTY_HOTEL,
+      ...hotel,
+      name: hotel?.name ?? "",
+      prices: (hotel?.prices ?? {}) as ItineraryHotel["prices"],
+    })),
+  }), [snapshot]);
+
+  return <MemoItineraryDetail itinerary={previewData} preview />;
+}
+
+const MemoItineraryDetail = memo(ItineraryDetail);
