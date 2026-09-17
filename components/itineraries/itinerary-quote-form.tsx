@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Minus, Plus } from "lucide-react";
+import { Check, Minus, Plus } from "lucide-react";
 
 import { CtaButton } from "@/components/ui/cta-button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { content } from "@/config/content";
 import { getItineraryWhatsAppUrl } from "@/lib/itinerary/whatsapp";
 import { cn } from "@/lib/utils";
 
@@ -16,17 +18,34 @@ type ItineraryQuoteFormProps = {
 };
 
 const MAX_PEOPLE = 7;
+const EXTRAS = content.itineraries.extras;
+
+const fieldClassName =
+  "h-11 rounded-xl border-white/20 bg-white/10 text-white placeholder:text-white/40 focus-visible:ring-brand-cyan/60";
+const labelClassName = "text-sm font-medium text-white/90";
+
+function pillClassName(selected: boolean) {
+  return cn(
+    "inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors",
+    selected
+      ? "border-brand-cyan bg-brand-cyan/15 text-white"
+      : "border-white/20 text-white/80 hover:border-white/50 hover:text-white",
+  );
+}
 
 /**
  * "Informações e reservas" da referência. Aqui não manda nada pro servidor:
  * monta a mensagem e abre o WhatsApp (o site não tem formulário de propósito).
  */
 export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: ItineraryQuoteFormProps) {
-  const [hotel, setHotel] = useState<string>("");
+  const [hotel, setHotel] = useState("");
   const [origin, setOrigin] = useState("");
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [babies, setBabies] = useState(0);
+  const [travelDate, setTravelDate] = useState("");
+  const [extras, setExtras] = useState<string[]>([]);
+  const [message, setMessage] = useState("");
 
   const href = getItineraryWhatsAppUrl(title, {
     hotel: hotel || undefined,
@@ -34,16 +53,18 @@ export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: Iti
     adults,
     children,
     babies,
+    travelDate: travelDate.trim() || undefined,
+    extras,
+    message: message.trim() || undefined,
   });
 
+  function toggleExtra(extra: string) {
+    setExtras((list) => (list.includes(extra) ? list.filter((item) => item !== extra) : [...list, extra]));
+  }
+
   return (
-    <section
-      aria-labelledby="roteiro-reservas"
-      className="rounded-2xl bg-brand-navy p-6 text-white sm:p-8"
-    >
-      <p className="text-xs font-semibold uppercase tracking-wider text-brand-cyan">
-        Informações e reservas
-      </p>
+    <section aria-labelledby="roteiro-reservas" className="rounded-2xl bg-brand-navy p-6 text-white sm:p-8">
+      <p className="text-xs font-semibold uppercase tracking-wider text-brand-cyan">Informações e reservas</p>
       <h2 id="roteiro-reservas" className="mt-2 font-heading text-2xl font-bold tracking-tight sm:text-3xl">
         {title || "Roteiro"}
       </h2>
@@ -54,7 +75,7 @@ export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: Iti
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         {hotelOptions.length > 0 ? (
           <fieldset className="sm:col-span-2">
-            <legend className="mb-2 text-sm font-medium text-white/90">Hotel / tarifa</legend>
+            <legend className={cn("mb-2", labelClassName)}>Hotel / tarifa</legend>
             <div className="flex flex-wrap gap-2">
               {hotelOptions.map((option) => {
                 const selected = hotel === option;
@@ -64,12 +85,7 @@ export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: Iti
                     type="button"
                     aria-pressed={selected}
                     onClick={() => setHotel(selected ? "" : option)}
-                    className={cn(
-                      "rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors",
-                      selected
-                        ? "border-brand-cyan bg-brand-cyan/15 text-white"
-                        : "border-white/20 text-white/80 hover:border-white/50 hover:text-white",
-                    )}
+                    className={pillClassName(selected)}
                   >
                     {option}
                   </button>
@@ -79,8 +95,8 @@ export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: Iti
           </fieldset>
         ) : null}
 
-        <div className="space-y-1.5 sm:col-span-2">
-          <label htmlFor="roteiro-origem" className="text-sm font-medium text-white/90">
+        <div className="space-y-1.5">
+          <label htmlFor="roteiro-origem" className={labelClassName}>
             Saída de (cidade/UF)
           </label>
           <Input
@@ -88,13 +104,74 @@ export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: Iti
             value={origin}
             onChange={(event) => setOrigin(event.target.value)}
             placeholder="Ex.: Osório/RS"
-            className="h-11 rounded-xl border-white/20 bg-white/10 text-white placeholder:text-white/40"
+            className={fieldClassName}
           />
         </div>
 
-        <Counter label="Adultos" value={adults} min={1} onChange={setAdults} />
-        <Counter label="Crianças" value={children} min={0} onChange={setChildren} />
-        <Counter label="Bebês" value={babies} min={0} onChange={setBabies} />
+        <div className="space-y-1.5">
+          <label htmlFor="roteiro-data" className={labelClassName}>
+            Data aproximada da viagem
+          </label>
+          <Input
+            id="roteiro-data"
+            value={travelDate}
+            onChange={(event) => setTravelDate(event.target.value)}
+            placeholder="Ex.: julho de 2027"
+            className={fieldClassName}
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 sm:col-span-2">
+          <Counter label="Adultos" value={adults} min={1} onChange={setAdults} />
+          <Counter label="Crianças" value={children} min={0} onChange={setChildren} />
+          <Counter label="Bebês" value={babies} min={0} onChange={setBabies} />
+        </div>
+
+        {EXTRAS.length > 0 ? (
+          <fieldset className="sm:col-span-2">
+            <legend className={cn("mb-1", labelClassName)}>Quer incluir?</legend>
+            <p className="mb-2 text-xs text-white/60">Serviços à parte, cotados junto.</p>
+            <div className="flex flex-wrap gap-2">
+              {EXTRAS.map((extra) => {
+                const selected = extras.includes(extra);
+                return (
+                  <button
+                    key={extra}
+                    type="button"
+                    role="checkbox"
+                    aria-checked={selected}
+                    onClick={() => toggleExtra(extra)}
+                    className={pillClassName(selected)}
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        "grid size-4 place-items-center rounded border",
+                        selected ? "border-brand-cyan bg-brand-cyan text-brand-navy" : "border-white/40",
+                      )}
+                    >
+                      {selected ? <Check className="size-3" strokeWidth={3} /> : null}
+                    </span>
+                    {extra}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        ) : null}
+
+        <div className="space-y-1.5 sm:col-span-2">
+          <label htmlFor="roteiro-mensagem" className={labelClassName}>
+            Mensagem
+          </label>
+          <Textarea
+            id="roteiro-mensagem"
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            placeholder="Alguma dúvida ou pedido especial?"
+            className={cn(fieldClassName, "min-h-24 h-auto")}
+          />
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -107,11 +184,7 @@ export function ItineraryQuoteForm({ title, hotelOptions, preview = false }: Iti
         {preview ? (
           <CtaButton label="Falar no WhatsApp" type="button" disabled />
         ) : (
-          <CtaButton
-            href={href}
-            label="Falar no WhatsApp"
-            trackingSource="itinerary_whatsapp"
-          />
+          <CtaButton href={href} label="Falar no WhatsApp" trackingSource="itinerary_whatsapp" />
         )}
       </div>
     </section>
@@ -131,14 +204,14 @@ function Counter({
 }) {
   const id = `roteiro-${label.toLowerCase()}`;
   const buttonClassName =
-    "grid size-9 place-items-center rounded-lg border border-white/20 text-white/80 transition-colors hover:border-white/50 hover:text-white disabled:opacity-40 disabled:hover:border-white/20";
+    "grid size-9 shrink-0 place-items-center rounded-lg border border-white/20 text-white/80 transition-colors hover:border-white/50 hover:text-white disabled:opacity-40 disabled:hover:border-white/20";
 
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-white/90">
+      <label htmlFor={id} className={labelClassName}>
         {label}
       </label>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           aria-label={`Menos ${label.toLowerCase()}`}
@@ -160,7 +233,7 @@ function Counter({
             if (Number.isNaN(next)) return;
             onChange(Math.min(MAX_PEOPLE, Math.max(min, next)));
           }}
-          className="h-9 w-14 rounded-lg border border-white/20 bg-white/10 text-center text-sm font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="h-9 w-full min-w-0 rounded-lg border border-white/20 bg-white/10 text-center text-sm font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         <button
           type="button"

@@ -293,6 +293,10 @@ model Itinerary {
   duration           String
   priceFrom          String?
   description        String              @db.Text
+  // Chaves de INCLUDED_ITEM_OPTIONS (lib/itinerary/included-items.ts): faixa de ícones.
+  includedItems      String[]            @default([])
+  videoUrl           String?
+  mapUrl             String?
   // Abas da página (HTML do tiptap). Vazia = aba não aparece.
   itinerary          String?             @db.Text
   optionals          String?             @db.Text

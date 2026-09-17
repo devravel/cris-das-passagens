@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm, useWatch, type Path, type PathValue } from "react-hook-form";
-import { Eye, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
+import { Check, Eye, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { normalizeSlug } from "@/lib/blog/utils";
 import { FEATURED_HOME_ITINERARIES_LIMIT } from "@/lib/itinerary/constants";
+import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
+import { INCLUDED_ITEM_OPTIONS } from "@/lib/itinerary/included-items";
 import {
   hotelPriceLabels,
   itinerarySchema,
@@ -60,6 +62,9 @@ const EMPTY_VALUES: ItineraryInput = {
   duration: "",
   priceFrom: "",
   description: "",
+  includedItems: [],
+  videoUrl: "",
+  mapUrl: "",
   categoryIds: [],
   itinerary: "",
   optionals: "",
@@ -75,7 +80,8 @@ const EMPTY_VALUES: ItineraryInput = {
 };
 
 const tabHints: Record<(typeof itineraryTabs)[number][0], string> = {
-  itinerary: "Dia a dia da viagem. Pode ter subtítulos e lista.",
+  itinerary:
+    'Dia a dia da viagem. Parágrafo começando com "1º Dia: Osório/Caldas Novas:" vira um bloco com o dia em destaque.',
   optionals: "Passeios e serviços à parte (ex.: ingresso, city tour, seguro).",
   included: "O que está no valor: transporte, diárias, guia, brindes...",
   notIncluded: "O que fica de fora (ex.: ingressos, refeições não citadas).",
@@ -197,6 +203,9 @@ export function ItineraryForm({
     coverImage: watched.coverImage ?? "",
     gallery: (watched.gallery ?? []).filter((url): url is string => typeof url === "string"),
     description: watched.description ?? "",
+    includedItems: (watched.includedItems ?? []).filter((key): key is NonNullable<typeof key> => Boolean(key)),
+    videoUrl: watched.videoUrl,
+    mapUrl: watched.mapUrl,
     itinerary: watched.itinerary,
     optionals: watched.optionals,
     included: watched.included,
@@ -333,6 +342,81 @@ export function ItineraryForm({
         <BlockTitle title="Descrição *" hint="Texto de apresentação, logo abaixo das fotos." />
         <Textarea id="description" className="min-h-28 rounded-xl" placeholder="Caldas Novas é a maior estância hidrotermal do mundo..." {...form.register("description")} />
         <FieldError message={errors.description?.message} />
+      </section>
+
+      {/* 4b. O roteiro inclui (faixa de ícones) */}
+      <section className={blockClassName}>
+        <BlockTitle
+          title="O roteiro inclui"
+          hint="Faixa de ícones logo abaixo da descrição. A lista detalhada vai na aba Inclui."
+        />
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          {INCLUDED_ITEM_OPTIONS.map((item) => {
+            const selected = (watched.includedItems ?? []).includes(item.key);
+            return (
+              <button
+                key={item.key}
+                type="button"
+                role="checkbox"
+                aria-checked={selected}
+                onClick={() => {
+                  const current = form.getValues("includedItems");
+                  setField(
+                    "includedItems",
+                    selected ? current.filter((key) => key !== item.key) : [...current, item.key],
+                  );
+                }}
+                className={cn(
+                  "flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors",
+                  selected
+                    ? "border-brand bg-brand/10 text-brand"
+                    : "border-border/70 text-muted-foreground hover:border-brand/50 hover:text-foreground",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className={cn(
+                    "grid size-4 shrink-0 place-items-center rounded border",
+                    selected ? "border-brand bg-brand text-white" : "border-border",
+                  )}
+                >
+                  {selected ? <Check className="size-3" strokeWidth={3} /> : null}
+                </span>
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+        <FieldError message={errors.includedItems?.message} />
+      </section>
+
+      {/* 4c. Vídeo e mapa */}
+      <section className={blockClassName}>
+        <BlockTitle title="Vídeo e mapa" hint="Opcionais. Cole o link normal do YouTube e o link do lugar no Google Maps." />
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-1.5">
+            <label htmlFor="videoUrl" className={labelClassName}>
+              Vídeo (YouTube)
+            </label>
+            <Input id="videoUrl" className="h-10 rounded-xl" placeholder="https://www.youtube.com/watch?v=..." {...form.register("videoUrl")} />
+            {watched.videoUrl?.trim() && !toYouTubeEmbedUrl(watched.videoUrl) ? (
+              <p className={errorClassName}>Não reconheci esse link do YouTube.</p>
+            ) : (
+              <FieldError message={errors.videoUrl?.message} />
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="mapUrl" className={labelClassName}>
+              Localização (Google Maps)
+            </label>
+            <Input id="mapUrl" className="h-10 rounded-xl" placeholder="https://www.google.com/maps/place/..." {...form.register("mapUrl")} />
+            {watched.mapUrl?.trim() && !toGoogleMapsEmbedUrl(watched.mapUrl) ? (
+              <p className={errorClassName}>Use o link completo do lugar (não o encurtado maps.app.goo.gl) ou o código de incorporar.</p>
+            ) : (
+              <FieldError message={errors.mapUrl?.message} />
+            )}
+          </div>
+        </div>
       </section>
 
       {/* 5. Abas */}

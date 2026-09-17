@@ -2,7 +2,22 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
+import {
+  BedDouble,
+  Bus,
+  CarFront,
+  Coffee,
+  ConciergeBell,
+  ExternalLink,
+  MapPinned,
+  Plane,
+  Ship,
+  ShieldCheck,
+  Ticket,
+  UserRound,
+  Utensils,
+  type LucideIcon,
+} from "lucide-react";
 
 import { BlogArticleContent } from "@/components/blog/blog-article-content";
 import { ItineraryGallery } from "@/components/itineraries/itinerary-gallery";
@@ -14,6 +29,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { isRichTextEmpty } from "@/lib/blog/content";
+import { formatItineraryDays } from "@/lib/itinerary/day-format";
+import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
+import { INCLUDED_ITEM_OPTIONS } from "@/lib/itinerary/included-items";
 import {
   hotelPriceLabels,
   itineraryTabs,
@@ -32,6 +50,9 @@ export type ItineraryDetailData = {
   coverImage: string;
   gallery: string[];
   description: string;
+  includedItems: string[];
+  videoUrl?: string | null;
+  mapUrl?: string | null;
   hotels: ItineraryHotel[];
 } & Partial<Record<ItineraryTabKey, string | null | undefined>>;
 
@@ -44,16 +65,46 @@ type ItineraryDetailProps = {
 export const ITINERARY_DISCLAIMER =
   "* Valores sujeitos a alteração sem aviso prévio. Pacotes sujeitos a disponibilidade e a alterações. Fotos meramente ilustrativas.";
 
-const sectionTitleClassName =
-  "font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl";
+const includedIcons: Record<(typeof INCLUDED_ITEM_OPTIONS)[number]["icon"], LucideIcon> = {
+  plane: Plane,
+  bus: Bus,
+  "bed-double": BedDouble,
+  "car-front": CarFront,
+  coffee: Coffee,
+  utensils: Utensils,
+  "concierge-bell": ConciergeBell,
+  "user-round": UserRound,
+  "map-pinned": MapPinned,
+  ticket: Ticket,
+  "shield-check": ShieldCheck,
+  ship: Ship,
+};
+
+const tabContentClassName =
+  "text-base leading-7 [&_p]:mt-3 [&_ul]:mt-3 [&_ol]:mt-3 [&_h2]:mt-6 [&_h3]:mt-5 [&>*:first-child]:mt-0";
 
 function hasText(value: string | null | undefined): value is string {
   return Boolean(value) && !isRichTextEmpty(value as string);
 }
 
+/** Título de seção com linha dos dois lados (referência do orçamento infotravel). */
+function SectionRule({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <h2
+      id={id}
+      className="flex items-center gap-4 font-heading text-xl font-bold tracking-tight text-foreground before:h-px before:flex-1 before:bg-border/70 after:h-px after:flex-1 after:bg-border/70 sm:text-2xl"
+    >
+      <span className="shrink-0 text-center">{children}</span>
+    </h2>
+  );
+}
+
 export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailProps) {
   const tabs = itineraryTabs.filter(([key]) => hasText(itinerary[key]));
   const hotels = itinerary.hotels.filter((hotel) => hotel.name.trim());
+  const included = INCLUDED_ITEM_OPTIONS.filter((item) => itinerary.includedItems.includes(item.key));
+  const videoEmbed = toYouTubeEmbedUrl(itinerary.videoUrl);
+  const mapEmbed = toGoogleMapsEmbedUrl(itinerary.mapUrl);
   const [firstTab] = tabs;
 
   return (
@@ -71,23 +122,52 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
           </span>
           <span>
             A partir de:{" "}
-            <strong className="font-semibold text-brand">
-              {itinerary.priceFrom?.trim() || "Consulte*"}
-            </strong>
+            <strong className="font-semibold text-brand">{itinerary.priceFrom?.trim() || "Consulte*"}</strong>
           </span>
         </p>
       </header>
 
-      <ItineraryGallery
-        title={itinerary.title}
-        cover={itinerary.coverImage}
-        gallery={itinerary.gallery}
-      />
+      <ItineraryGallery title={itinerary.title} cover={itinerary.coverImage} gallery={itinerary.gallery} />
 
       {itinerary.description.trim() ? (
         <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground sm:text-lg">
           {itinerary.description}
         </p>
+      ) : null}
+
+      {included.length > 0 ? (
+        <section aria-labelledby="roteiro-inclui" className="space-y-5">
+          <SectionRule id="roteiro-inclui">O roteiro inclui</SectionRule>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {included.map((item) => {
+              const Icon = includedIcons[item.icon];
+              return (
+                <li
+                  key={item.key}
+                  className="flex items-center gap-3 rounded-xl border border-border/60 bg-card px-3.5 py-3 text-sm font-medium text-foreground"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
+                    <Icon className="size-4.5" strokeWidth={1.75} aria-hidden />
+                  </span>
+                  {item.label}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      {videoEmbed ? (
+        <div className="overflow-hidden rounded-2xl bg-brand-navy">
+          <iframe
+            src={videoEmbed}
+            title={`Vídeo: ${itinerary.title}`}
+            className="aspect-video w-full"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
       ) : null}
 
       {tabs.length > 0 ? (
@@ -103,8 +183,8 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
               </AccordionTrigger>
               <AccordionContent className="pb-6">
                 <BlogArticleContent
-                  html={itinerary[key] as string}
-                  className="text-base leading-7 [&_p]:mt-3 [&_ul]:mt-3 [&_ol]:mt-3 [&_h2]:mt-6 [&_h3]:mt-5 [&>*:first-child]:mt-0"
+                  html={key === "itinerary" ? formatItineraryDays(itinerary[key] as string) : (itinerary[key] as string)}
+                  className={tabContentClassName}
                 />
               </AccordionContent>
             </AccordionItem>
@@ -114,9 +194,7 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
 
       {hotels.length > 0 ? (
         <section aria-labelledby="roteiro-hoteis" className="space-y-6">
-          <h2 id="roteiro-hoteis" className={sectionTitleClassName}>
-            Escolha o hotel de sua preferência
-          </h2>
+          <SectionRule id="roteiro-hoteis">Escolha o hotel de sua preferência</SectionRule>
           <div className="space-y-6">
             {hotels.map((hotel, index) => (
               <HotelCard key={`${hotel.name}-${index}`} hotel={hotel} preview={preview} />
@@ -125,13 +203,25 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
         </section>
       ) : null}
 
+      {mapEmbed ? (
+        <section aria-labelledby="roteiro-mapa" className="space-y-5">
+          <SectionRule id="roteiro-mapa">Localização</SectionRule>
+          <div className="overflow-hidden rounded-2xl border border-border/70 bg-muted/20">
+            <iframe
+              src={mapEmbed}
+              title={`Mapa: ${itinerary.title}`}
+              className="aspect-[16/9] w-full sm:aspect-[21/9]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+        </section>
+      ) : null}
+
       <p className="text-sm text-muted-foreground">{ITINERARY_DISCLAIMER}</p>
 
-      <ItineraryQuoteForm
-        title={itinerary.title}
-        hotelOptions={hotels.map((hotel) => hotel.name)}
-        preview={preview}
-      />
+      <ItineraryQuoteForm title={itinerary.title} hotelOptions={hotels.map((hotel) => hotel.name)} preview={preview} />
     </div>
   );
 }
@@ -147,11 +237,12 @@ function HotelCard({ hotel, preview }: { hotel: ItineraryHotel; preview: boolean
     .map((key): [string, string | undefined] => [hotelPriceLabels[key], hotel.prices?.[key]?.trim()])
     .filter((row): row is [string, string] => Boolean(row[1]));
   const imageSrc = hotel.image?.trim() ? resolvePublicImageSrc(hotel.image) : "";
+  const showImage = Boolean(imageSrc) && !imageFailed;
 
   return (
     <article className="overflow-hidden rounded-2xl border border-border/70 bg-card">
-      <div className={cn("grid gap-0", imageSrc && !imageFailed ? "md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]" : "")}>
-        {imageSrc && !imageFailed ? (
+      <div className={cn("grid gap-0", showImage && "md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]")}>
+        {showImage ? (
           <div className="relative aspect-[4/3] w-full bg-muted/30 md:aspect-auto md:min-h-64">
             <Image
               src={imageSrc}
@@ -166,9 +257,7 @@ function HotelCard({ hotel, preview }: { hotel: ItineraryHotel; preview: boolean
         ) : null}
 
         <div className="space-y-4 p-5 sm:p-6">
-          <h3 className="font-heading text-lg font-bold tracking-tight text-foreground sm:text-xl">
-            {hotel.name}
-          </h3>
+          <h3 className="font-heading text-lg font-bold tracking-tight text-foreground sm:text-xl">{hotel.name}</h3>
 
           {details.length > 0 || hotel.website?.trim() ? (
             <dl className="grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">

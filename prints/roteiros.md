@@ -15,8 +15,16 @@
 - Formulário de reserva da referência virou bloco que monta a mensagem do
   WhatsApp (hotel, saída, adultos/crianças/bebês). Sem envio ao servidor.
 - Descrição é texto simples; as 8 abas e a descrição de hotel são tiptap.
-- Próximo: refinar com as referências extras e a conversa com o cliente,
-  mostrar a v1, cortar/ajustar, aí merge na `main`.
+- **v1.1 (2026-09-17, tarde)** com as referências extras e a conversa com
+  o Cristian: faixa "O roteiro inclui" com ícones (lista fixa em
+  `lib/itinerary/included-items.ts`, marcada no admin), vídeo do YouTube e
+  mapa do Google (campos opcionais, aceitam link normal), aba Roteiro com
+  "1º Dia: ..." virando bloco em destaque (`lib/itinerary/day-format.ts`),
+  títulos de seção com linha dos dois lados (infotravel), e no bloco de
+  reserva: data aproximada, mensagem e os produtos à parte "Guia virtual" e
+  "Roteiro personalizado" (`content.itineraries.extras`) — tudo vai na
+  mensagem do WhatsApp.
+- Próximo: mostrar ao Cristian, cortar/ajustar, aí merge na `main`.
 
 Aprovada pelo Cristian. Referência de estrutura (ele aprovou copiar bem
 parecido): assessoriavipviagens.com.br. **Entra depois** da entrega da

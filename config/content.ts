@@ -152,6 +152,8 @@ export const content = {
       label: "Ver todos os roteiros",
       href: "/roteiros",
     } satisfies ContentCta,
+    /** Produtos à parte que o visitante marca no bloco de reserva do roteiro. */
+    extras: ["Guia virtual", "Roteiro personalizado"],
   },
 
   instagram: {
