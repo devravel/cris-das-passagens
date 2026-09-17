@@ -23,6 +23,16 @@
   reserva: data aproximada, mensagem e os produtos à parte "Guia virtual" e
   "Roteiro personalizado" (`content.itineraries.extras`) — tudo vai na
   mensagem do WhatsApp.
+- **v1.2 (2026-09-17, noite)**, ajustes de layout pedidos na revisão:
+  banner full-bleed com parallax e título em caps nas duas páginas; em
+  `/roteiros` busca + filtro CATEGORIA (select estilizado, filtro só no
+  navegador), primeira divisória invadindo a foto, cards fixos em 254px
+  (trilho horizontal com snap e setas até 767px, grid de 768 pra cima);
+  página do roteiro em duas colunas com reserva na lateral (sem sticky) e
+  popup de reserva (30s ou metade da página, só quando o lateral não está
+  na tela); abas em blocos lado a lado; galeria com setas/teclado/swipe;
+  setas de carrossel unificadas (`components/ui/carousel-arrow.tsx`, também
+  nos pacotes); breadcrumb visível removido de todas as páginas.
 - Próximo: mostrar ao Cristian, cortar/ajustar, aí merge na `main`.
 
 Aprovada pelo Cristian. Referência de estrutura (ele aprovou copiar bem
