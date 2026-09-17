@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, Minus, Plus } from "lucide-react";
 
-import { CtaButton } from "@/components/ui/cta-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { content } from "@/config/content";
 import { getItineraryWhatsAppUrl } from "@/lib/itinerary/whatsapp";
+import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 type ItineraryQuoteFormProps = {
@@ -27,6 +27,8 @@ const EXTRAS = content.itineraries.extras;
 const fieldClassName =
   "h-11 rounded-xl border-white/20 bg-white/10 text-white placeholder:text-white/40 focus-visible:ring-brand-cyan/60";
 const labelClassName = "text-sm font-medium text-white/90";
+const submitClassName =
+  "inline-flex h-11 w-full items-center justify-center rounded-xl bg-white text-sm font-semibold uppercase tracking-wide text-brand-navy transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/70 disabled:cursor-not-allowed disabled:opacity-50";
 
 function pillClassName(selected: boolean) {
   return cn(
@@ -56,6 +58,7 @@ export function ItineraryQuoteForm({
   const [travelDate, setTravelDate] = useState("");
   const [extras, setExtras] = useState<string[]>([]);
   const [message, setMessage] = useState("");
+  const [human, setHuman] = useState(false);
 
   const href = getItineraryWhatsAppUrl(title, {
     hotel: hotel || undefined,
@@ -82,9 +85,6 @@ export function ItineraryQuoteForm({
       <h2 id={`${idPrefix}-reservas`} className="mt-1.5 font-heading text-xl font-bold uppercase leading-tight tracking-tight sm:text-2xl">
         {title || "Roteiro"}
       </h2>
-      <p className="mt-2 text-sm text-white/75">
-        Preencha o que já souber e fale com a gente no WhatsApp. A cotação sai por lá, sem cadastro.
-      </p>
 
       <div className="mt-5 grid gap-4">
         {hotelOptions.length > 0 ? (
@@ -189,10 +189,41 @@ export function ItineraryQuoteForm({
       </div>
 
       <div className="mt-5 flex flex-col gap-3">
-        {preview ? (
-          <CtaButton label="Enviar" type="button" disabled className="w-full" />
+        {/* Confirmação simples no navegador: nada vai pro servidor, então não há captcha real a validar. */}
+        <label
+          htmlFor={`${idPrefix}-humano`}
+          className="inline-flex cursor-pointer items-center gap-2.5 rounded-xl border border-white/20 bg-white/5 px-3.5 py-2.5 text-sm text-white/90"
+        >
+          <input
+            id={`${idPrefix}-humano`}
+            type="checkbox"
+            checked={human}
+            onChange={(event) => setHuman(event.target.checked)}
+            className="size-4.5 shrink-0 rounded border-white/40 accent-brand-cyan"
+          />
+          Não sou um robô
+        </label>
+
+        {preview || !human ? (
+          <button
+            type="button"
+            disabled
+            aria-disabled
+            className={submitClassName}
+            title={human ? undefined : "Marque \"Não sou um robô\" para enviar."}
+          >
+            Enviar
+          </button>
         ) : (
-          <CtaButton href={href} label="Enviar" trackingSource="itinerary_whatsapp" className="w-full" />
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={submitClassName}
+            onClick={() => trackMetaLeadFromHref(href, { source: "itinerary_whatsapp", content_name: title })}
+          >
+            Enviar
+          </a>
         )}
         <p className="text-xs text-white/60">
           Nada é enviado pelo site: a conversa acontece no WhatsApp.{" "}
