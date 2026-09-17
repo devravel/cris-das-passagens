@@ -26,7 +26,7 @@ export function ItineraryCard({ itinerary, priority, className }: ItineraryCardP
     <Link
       href={`/roteiros/${itinerary.slug}`}
       className={cn(
-        "group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-2xl bg-brand-navy text-white outline-none transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-18px_rgba(10,24,56,0.55)] focus-visible:ring-3 focus-visible:ring-ring/60 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:aspect-[3/4]",
+        "group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden bg-brand-navy text-white outline-none transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-18px_rgba(10,24,56,0.55)] focus-visible:ring-3 focus-visible:ring-ring/60 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:aspect-[3/4]",
         className,
       )}
     >
@@ -54,7 +54,7 @@ export function ItineraryCard({ itinerary, priority, className }: ItineraryCardP
 
         <span
           aria-hidden
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/12 text-xs font-bold uppercase tracking-[0.12em] backdrop-blur transition-[background-color,border-color,color,gap] duration-300 group-hover:gap-3 group-hover:border-white group-hover:bg-white group-hover:text-brand-navy group-focus-visible:border-white group-focus-visible:bg-white group-focus-visible:text-brand-navy"
+          className="flex h-11 w-full items-center justify-center gap-2 border border-white/30 bg-white/12 text-xs font-bold uppercase tracking-[0.12em] backdrop-blur transition-[background-color,border-color,color,gap] duration-300 group-hover:gap-3 group-hover:border-white group-hover:bg-white group-hover:text-brand-navy group-focus-visible:border-white group-focus-visible:bg-white group-focus-visible:text-brand-navy"
         >
           Ver roteiro
           <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.25} />
