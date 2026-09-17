@@ -10,6 +10,7 @@ import { getItinerariesGroupedByCategory } from "@/lib/itinerary/queries";
 import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
 import { scrollRevealDefaults } from "@/lib/motion";
 import { createMetadata } from "@/lib/seo";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = createMetadata({
   title: "Roteiros de viagem",
@@ -31,13 +32,21 @@ const BANNER_IMAGE = "/hero/servicos/pacotes.webp";
 
 export default async function RoteirosPage() {
   const categories = await getItinerariesGroupedByCategory();
+  const hasOverlap = categories.length > 0;
 
   return (
     <>
       <PageBreadcrumb items={breadcrumbs} />
-      <ItineraryBanner title="Todos os roteiros" image={BANNER_IMAGE} priority centered />
+      {/* Faixa mais alta, com o padding de baixo reservado: a primeira divisória sobe e "invade" a foto (referência). */}
+      <ItineraryBanner
+        title="Todos os roteiros"
+        image={BANNER_IMAGE}
+        priority
+        centered
+        className={cn("min-h-72 sm:min-h-96 lg:min-h-[30rem]", hasOverlap && "pb-28 sm:pb-36")}
+      />
 
-      <Container className="py-8 sm:py-10">
+      <Container className={cn("pb-8 sm:pb-10", hasOverlap ? "relative z-10 -mt-24 sm:-mt-32" : "pt-8 sm:pt-10")}>
         {categories.length === 0 ? (
           <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-dashed border-border/70 p-8 text-center">
             <p className="text-muted-foreground">
@@ -54,7 +63,11 @@ export default async function RoteirosPage() {
                 <ScrollReveal>
                   <h2
                     id={`categoria-${category.slug}`}
-                    className="mb-4 flex items-center gap-3 font-heading text-2xl font-bold uppercase tracking-tight text-foreground before:h-7 before:w-1.5 before:rounded-full before:bg-brand sm:text-[1.65rem]"
+                    className={cn(
+                      "mb-4 flex items-center gap-3 font-heading text-2xl font-bold uppercase tracking-tight before:h-7 before:w-1.5 before:rounded-full sm:text-[1.65rem]",
+                      // A primeira divisória fica em cima da foto do banner.
+                      categoryIndex === 0 ? "text-white drop-shadow before:bg-brand-cyan" : "text-foreground before:bg-brand",
+                    )}
                   >
                     {category.name}
                   </h2>

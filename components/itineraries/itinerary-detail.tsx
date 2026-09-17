@@ -116,7 +116,7 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
 
   return (
     <>
-      <ItineraryBanner title={itinerary.title || "Título do roteiro"} image={itinerary.coverImage} priority={!preview}>
+      <ItineraryBanner title={itinerary.title || "Título do roteiro"} image={itinerary.coverImage} priority={!preview} centered>
         <p>
           <span>
             Duração: <strong className="font-semibold text-white">{itinerary.duration || "—"}</strong>
@@ -131,17 +131,21 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
         </p>
       </ItineraryBanner>
 
-      <Container className="grid gap-8 py-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)] lg:gap-10">
+      <Container className="pt-6 sm:pt-8">
+        {!preview ? (
+          <Link
+            href="/roteiros"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" aria-hidden />
+            Todos os roteiros
+          </Link>
+        ) : null}
+      </Container>
+
+      {/* As duas colunas começam na mesma linha: foto à esquerda, reserva à direita. */}
+      <Container className="grid gap-8 pb-8 pt-5 sm:pb-10 sm:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)] lg:gap-10">
         <div className="min-w-0 space-y-8 sm:space-y-10">
-          {!preview ? (
-            <Link
-              href="/roteiros"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ArrowLeft className="size-4" aria-hidden />
-              Todos os roteiros
-            </Link>
-          ) : null}
 
       <ItineraryGallery title={itinerary.title} cover={itinerary.coverImage} gallery={itinerary.gallery} />
 
@@ -194,7 +198,7 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
         >
           {tabs.map(([key, label]) => (
             <AccordionItem key={key} value={key} className="px-5 sm:px-6">
-              <AccordionTrigger className="py-4 font-heading text-base font-semibold text-foreground hover:no-underline sm:text-lg">
+              <AccordionTrigger className="py-4 font-heading text-base font-semibold uppercase tracking-wide text-foreground hover:no-underline sm:text-lg">
                 {label}
               </AccordionTrigger>
               <AccordionContent className="pb-6">
