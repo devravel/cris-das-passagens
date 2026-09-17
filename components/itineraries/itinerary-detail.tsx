@@ -140,7 +140,7 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
       </Container>
 
       {/* As duas colunas começam na mesma linha: foto à esquerda, reserva à direita. */}
-      <Container className="grid gap-8 pb-8 pt-5 sm:pb-10 sm:pt-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)] lg:gap-10">
+      <Container className="grid gap-8 pb-8 pt-5 sm:pb-10 sm:pt-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-8">
         <div className="min-w-0 space-y-8 sm:space-y-10">
 
       <ItineraryGallery title={itinerary.title} cover={itinerary.coverImage} gallery={itinerary.gallery} />
@@ -187,16 +187,21 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
       ) : null}
 
       {tabs.length > 0 ? (
-        <Tabs.Root defaultValue={firstTab?.[0]} className="rounded-2xl border border-border/70 bg-card">
+        <Tabs.Root defaultValue={firstTab?.[0]} className="overflow-hidden rounded-2xl border border-border/70 bg-card">
           <Tabs.List
             aria-label="Detalhes do roteiro"
-            className="flex flex-wrap gap-x-1 border-b border-border/70 px-2 sm:px-3"
+            className="flex flex-wrap border-b border-border/70 bg-muted/60"
           >
             {tabs.map(([key, label]) => (
               <Tabs.Trigger
                 key={key}
                 value={key}
-                className="-mb-px border-b-2 border-transparent px-3 py-3.5 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/60 data-[state=active]:border-brand data-[state=active]:text-brand sm:px-4 sm:text-[0.9375rem]"
+                className={cn(
+                  // Blocos lado a lado separados por linha (referência Schultz), cantos retos;
+                  // o ativo fica branco, colado no conteúdo, com a linha azul embaixo.
+                  "-mb-px flex min-w-0 flex-1 basis-0 items-center justify-center border-b-2 border-r border-b-transparent border-r-border/70 px-1.5 py-3 text-center font-heading text-xs font-semibold uppercase leading-tight text-muted-foreground outline-none transition-colors last:border-r-0 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/60 max-lg:min-w-[6rem] xl:px-2 xl:text-[0.8125rem]",
+                  "data-[state=active]:border-b-brand data-[state=active]:bg-card data-[state=active]:text-brand data-[state=active]:hover:bg-card",
+                )}
               >
                 {label}
               </Tabs.Trigger>
