@@ -567,9 +567,7 @@ export function ItineraryForm({
           <span className="text-xs text-muted-foreground">Atualiza enquanto você digita. É assim que fica no site.</span>
         </div>
         <div className="overflow-hidden rounded-2xl border border-border/70 bg-background">
-          <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
-            <ItineraryDetail itinerary={previewData} preview />
-          </div>
+          <ItineraryDetail itinerary={previewData} preview />
         </div>
       </section>
 

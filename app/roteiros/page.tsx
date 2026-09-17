@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
+import { ItineraryBanner } from "@/components/itineraries/itinerary-banner";
 import { ItineraryCard } from "@/components/itineraries/itinerary-card";
+import { Container } from "@/components/layout/container";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
-import { Section } from "@/components/layout/section";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { CtaButton } from "@/components/ui/cta-button";
 import { getItinerariesGroupedByCategory } from "@/lib/itinerary/queries";
@@ -25,56 +26,53 @@ const breadcrumbs = [
   { name: "Roteiros", path: "/roteiros" },
 ] as const;
 
+/** Foto da faixa de topo — a mesma dos cards de serviço da hero. */
+const BANNER_IMAGE = "/hero/servicos/pacotes.webp";
+
 export default async function RoteirosPage() {
   const categories = await getItinerariesGroupedByCategory();
 
   return (
-    <Section spacing="page" background="default" bordered aria-labelledby="roteiros-page-heading">
+    <>
       <PageBreadcrumb items={breadcrumbs} />
+      <ItineraryBanner title="Todos os roteiros" image={BANNER_IMAGE} priority>
+        <p>Viagens prontas, do embarque ao passeio. Escolha uma e a gente ajusta datas, hotel e orçamento.</p>
+      </ItineraryBanner>
 
-      <ScrollReveal y={scrollRevealDefaults.y}>
-        <header className="mx-auto mb-8 max-w-3xl text-center sm:mb-10">
-          <h1
-            id="roteiros-page-heading"
-            className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-[2.5rem] md:leading-tight"
-          >
-            Todos os roteiros
-          </h1>
-        </header>
-      </ScrollReveal>
-
-      {categories.length === 0 ? (
-        <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-dashed border-border/70 p-8 text-center">
-          <p className="text-muted-foreground">
-            Os roteiros estão sendo preparados. Enquanto isso, a gente monta o seu no WhatsApp.
-          </p>
-          <div className="flex justify-center">
-            <CtaButton href={getQuoteWhatsAppUrl()} label="Montar meu roteiro" trackingSource="content_cta" />
+      <Container className="py-8 sm:py-10">
+        {categories.length === 0 ? (
+          <div className="mx-auto max-w-xl space-y-4 rounded-2xl border border-dashed border-border/70 p-8 text-center">
+            <p className="text-muted-foreground">
+              Os roteiros estão sendo preparados. Enquanto isso, a gente monta o seu no WhatsApp.
+            </p>
+            <div className="flex justify-center">
+              <CtaButton href={getQuoteWhatsAppUrl()} label="Montar meu roteiro" trackingSource="content_cta" />
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="space-y-12 sm:space-y-14">
-          {categories.map((category, categoryIndex) => (
-            <section key={category.id} id={category.slug} aria-labelledby={`categoria-${category.slug}`}>
-              <ScrollReveal>
-                <h2
-                  id={`categoria-${category.slug}`}
-                  className="mb-5 font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-                >
-                  {category.name}
-                </h2>
-              </ScrollReveal>
-              <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-                {category.itineraries.map((itinerary, index) => (
-                  <ScrollReveal key={itinerary.id} delay={index * scrollRevealDefaults.stagger}>
-                    <ItineraryCard itinerary={itinerary} priority={categoryIndex === 0 && index < 3} />
-                  </ScrollReveal>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
-    </Section>
+        ) : (
+          <div className="space-y-10 sm:space-y-12">
+            {categories.map((category, categoryIndex) => (
+              <section key={category.id} id={category.slug} aria-labelledby={`categoria-${category.slug}`}>
+                <ScrollReveal>
+                  <h2
+                    id={`categoria-${category.slug}`}
+                    className="mb-4 flex items-center gap-3 font-heading text-2xl font-bold uppercase tracking-tight text-foreground before:h-7 before:w-1.5 before:rounded-full before:bg-brand sm:text-[1.65rem]"
+                  >
+                    {category.name}
+                  </h2>
+                </ScrollReveal>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {category.itineraries.map((itinerary, index) => (
+                    <ScrollReveal key={itinerary.id} delay={index * scrollRevealDefaults.stagger}>
+                      <ItineraryCard itinerary={itinerary} priority={categoryIndex === 0 && index < 4} />
+                    </ScrollReveal>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </Container>
+    </>
   );
 }

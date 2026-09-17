@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
+  ArrowLeft,
   BedDouble,
   Bus,
   CarFront,
@@ -20,8 +22,11 @@ import {
 } from "lucide-react";
 
 import { BlogArticleContent } from "@/components/blog/blog-article-content";
+import { ItineraryBanner } from "@/components/itineraries/itinerary-banner";
 import { ItineraryGallery } from "@/components/itineraries/itinerary-gallery";
 import { ItineraryQuoteForm } from "@/components/itineraries/itinerary-quote-form";
+import { ItineraryQuotePopup } from "@/components/itineraries/itinerary-quote-popup";
+import { Container } from "@/components/layout/container";
 import {
   Accordion,
   AccordionContent,
@@ -107,25 +112,36 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
   const mapEmbed = toGoogleMapsEmbedUrl(itinerary.mapUrl);
   const [firstTab] = tabs;
 
+  const hotelOptions = hotels.map((hotel) => hotel.name);
+
   return (
-    <div className="space-y-10 sm:space-y-12">
-      <header className="space-y-3">
-        <h1 className="text-balance font-heading text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
-          {itinerary.title || "Título do roteiro"}
-        </h1>
-        <p className="text-base text-muted-foreground sm:text-lg">
+    <>
+      <ItineraryBanner title={itinerary.title || "Título do roteiro"} image={itinerary.coverImage} priority={!preview}>
+        <p>
           <span>
-            Duração: <strong className="font-semibold text-foreground">{itinerary.duration || "—"}</strong>
+            Duração: <strong className="font-semibold text-white">{itinerary.duration || "—"}</strong>
           </span>
-          <span aria-hidden className="mx-2 text-border">
+          <span aria-hidden className="mx-2 text-white/40">
             ·
           </span>
           <span>
             A partir de:{" "}
-            <strong className="font-semibold text-brand">{itinerary.priceFrom?.trim() || "Consulte*"}</strong>
+            <strong className="font-semibold text-brand-cyan">{itinerary.priceFrom?.trim() || "Consulte*"}</strong>
           </span>
         </p>
-      </header>
+      </ItineraryBanner>
+
+      <Container className="grid gap-8 py-8 sm:py-10 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)] lg:gap-10">
+        <div className="min-w-0 space-y-8 sm:space-y-10">
+          {!preview ? (
+            <Link
+              href="/roteiros"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-4" aria-hidden />
+              Todos os roteiros
+            </Link>
+          ) : null}
 
       <ItineraryGallery title={itinerary.title} cover={itinerary.coverImage} gallery={itinerary.gallery} />
 
@@ -220,9 +236,18 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
       ) : null}
 
       <p className="text-sm text-muted-foreground">{ITINERARY_DISCLAIMER}</p>
+        </div>
 
-      <ItineraryQuoteForm title={itinerary.title} hotelOptions={hotels.map((hotel) => hotel.name)} preview={preview} />
-    </div>
+        {/* Reserva na lateral, perto do topo; no mobile vai pro fim (e o popup cobre quem não rola). */}
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <ItineraryQuoteForm title={itinerary.title} hotelOptions={hotelOptions} preview={preview} />
+        </aside>
+      </Container>
+
+      {!preview ? (
+        <ItineraryQuotePopup title={itinerary.title} image={itinerary.coverImage} hotelOptions={hotelOptions} />
+      ) : null}
+    </>
   );
 }
 

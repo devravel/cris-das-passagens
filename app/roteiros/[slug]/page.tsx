@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { ItineraryDetail } from "@/components/itineraries/itinerary-detail";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
-import { Section } from "@/components/layout/section";
-import { Button } from "@/components/ui/button";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
 import { getPublishedItineraryBySlug } from "@/lib/itinerary/queries";
 import { prisma } from "@/lib/prisma";
@@ -63,20 +59,9 @@ export default async function RoteiroPage({ params }: RoteiroPageProps) {
   ] as const;
 
   return (
-    <Section spacing="page" background="default" bordered containerSize="narrow">
+    <>
       <PageBreadcrumb items={breadcrumbs} />
-      <Button
-        asChild
-        variant="ghost"
-        className="mb-6 h-9 rounded-lg px-3 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <Link href="/roteiros">
-          <ArrowLeft className="size-4" aria-hidden />
-          Voltar para os roteiros
-        </Link>
-      </Button>
-
       <ItineraryDetail itinerary={itinerary} />
-    </Section>
+    </>
   );
 }
