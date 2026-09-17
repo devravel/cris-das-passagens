@@ -1,0 +1,1 @@
+export const FEATURED_HOME_ITINERARIES_LIMIT = 3;

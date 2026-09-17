@@ -8,19 +8,40 @@ import { toast } from "sonner";
 import { uploadBlogCoverImageAction } from "@/app/admin/(protected)/blogs/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { ActionResult } from "@/lib/admin/action-result";
 import { normalizeBlogImageUrl, isValidBlogImageUrl } from "@/lib/blog/image-url";
 import { resolveStorageImageSrc } from "@/lib/storage/media-url";
 import { cn } from "@/lib/utils";
 
 type CoverImageMode = "upload" | "url";
 
+export type ImageUploadAction = (
+  formData: FormData,
+) => Promise<ActionResult<{ imageUrl: string }>>;
+
+const uploadBlogCover: ImageUploadAction = async (formData) => {
+  const result = await uploadBlogCoverImageAction(formData);
+  return result.ok && result.data
+    ? { ok: true, message: result.message, data: { imageUrl: result.data.coverImageUrl } }
+    : { ok: false, message: result.message };
+};
+
 type BlogCoverFieldProps = {
   value: string;
   onChange: (value: string) => void;
   error?: string;
+  /** Pra reusar o campo fora do blog (roteiros): outra pasta no Storage. */
+  uploadAction?: ImageUploadAction;
+  inputId?: string;
 };
 
-export function BlogCoverField({ value, onChange, error }: BlogCoverFieldProps) {
+export function BlogCoverField({
+  value,
+  onChange,
+  error,
+  uploadAction = uploadBlogCover,
+  inputId = "coverImage",
+}: BlogCoverFieldProps) {
   const [mode, setMode] = useState<CoverImageMode>("url");
   const [isUploading, setIsUploading] = useState(false);
   const [previewErroredUrl, setPreviewErroredUrl] = useState<string | null>(null);
@@ -39,7 +60,7 @@ export function BlogCoverField({ value, onChange, error }: BlogCoverFieldProps) 
     formData.append("file", file);
 
     setIsUploading(true);
-    const result = await uploadBlogCoverImageAction(formData);
+    const result = await uploadAction(formData);
     setIsUploading(false);
 
     if (!result.ok || !result.data) {
@@ -47,7 +68,7 @@ export function BlogCoverField({ value, onChange, error }: BlogCoverFieldProps) 
       return;
     }
 
-    onChange(result.data.coverImageUrl);
+    onChange(result.data.imageUrl);
     toast.success("Imagem de capa enviada.");
   }
 
@@ -76,7 +97,7 @@ export function BlogCoverField({ value, onChange, error }: BlogCoverFieldProps) 
 
       {mode === "url" ? (
         <Input
-          id="coverImage"
+          id={inputId}
           className="h-10 rounded-xl"
           placeholder="https://..."
           value={value}

@@ -1,8 +1,8 @@
 # Créditos — fotos (Unsplash)
 
 Baixadas com `scripts/buscar-imagem.mjs`. A licença Unsplash não exige
-atribuição, mas pede — e é o certo a fazer. Roteiros têm crédito próprio em
-`roteiros/CREDITOS.md`.
+atribuição, mas pede — e é o certo a fazer. Fotos de roteiro são do cliente,
+sobem pelo admin.
 
 ## `hero/servicos/` — capas dos cards de serviço da hero
 

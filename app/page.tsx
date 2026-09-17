@@ -69,7 +69,7 @@ export default function HomePage() {
       <Suspense fallback={<FeaturedPackagesSkeleton />}>
         <FeaturedPackagesSection />
       </Suspense>
-      {content.itineraries.enabled ? <ItinerariesSection /> : null}
+      <ItinerariesSection />
       {/* Seções por categoria de pacote: desligadas, a home mostra só os destaques. */}
       {LANDING_PACKAGE_CATEGORY_SECTIONS_ENABLED ? (
         <Suspense fallback={<HomePackagesSectionsSkeleton />}>

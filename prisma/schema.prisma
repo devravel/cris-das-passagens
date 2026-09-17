@@ -270,3 +270,46 @@ model CouponRedemption {
   @@index([usedAt])
   @@map("coupon_redemptions")
 }
+
+// Roteiros: viagem pronta com itinerário, o que inclui, saídas etc.
+// Convive com Package (cartaz de divulgação). Spec: prints/roteiros.md
+model ItineraryCategory {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  itineraries Itinerary[]
+
+  @@index([order])
+}
+
+model Itinerary {
+  id                 String              @id @default(cuid())
+  title              String
+  slug               String              @unique
+  coverImage         String
+  gallery            String[]            @default([])
+  duration           String
+  priceFrom          String?
+  description        String              @db.Text
+  // Abas da página (HTML do tiptap). Vazia = aba não aparece.
+  itinerary          String?             @db.Text
+  optionals          String?             @db.Text
+  included           String?             @db.Text
+  notIncluded        String?             @db.Text
+  payment            String?             @db.Text
+  departures         String?             @db.Text
+  insurance          String?             @db.Text
+  notes              String?             @db.Text
+  // [{ name, image, type, accommodation, board, website, prices: {single,double,...}, description }]
+  hotels             Json                @default("[]")
+  published          Boolean             @default(false)
+  featuredOnHomepage Boolean             @default(false)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  categories         ItineraryCategory[]
+
+  @@index([published, createdAt])
+  @@index([featuredOnHomepage, published, createdAt])
+}

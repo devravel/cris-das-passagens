@@ -18,6 +18,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     orderBy: { updatedAt: "desc" },
   });
 
+  const publishedItineraries = await prisma.itinerary.findMany({
+    where: { published: true },
+    select: { slug: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
   const latestBlogUpdate = publishedPosts[0]?.updatedAt ?? new Date();
   const now = new Date();
 
@@ -44,6 +50,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           },
         ]
       : []),
+    {
+      url: `${baseUrl}/roteiros`,
+      lastModified: publishedItineraries[0]?.updatedAt ?? now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
     {
       url: `${baseUrl}/blog`,
       lastModified: latestBlogUpdate,
@@ -77,5 +89,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...brandPages, ...blogPosts];
+  const itineraries: MetadataRoute.Sitemap = publishedItineraries.map((row) => ({
+    url: `${baseUrl}/roteiros/${row.slug}`,
+    lastModified: row.updatedAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  return [...brandPages, ...itineraries, ...blogPosts];
 }

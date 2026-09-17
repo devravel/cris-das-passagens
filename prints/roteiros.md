@@ -1,5 +1,23 @@
 # Roteiros — funcionalidade nova (anotada 2026-09-12)
 
+## Estado (2026-09-17)
+
+- **Primeira versão pronta na branch `roteiros`**: banco (migração
+  `20260916120000_add_itineraries`), `/roteiros`, `/roteiros/[slug]`, seção
+  de destaques na home (some sozinha sem destaque), aba `/admin/roteiros`
+  com divisórias (criar, renomear, reordenar, excluir), lista, criar/editar
+  com preview em tempo real. Testado no navegador: criar, editar, destaque.
+- Dois roteiros de exemplo no banco (Caldas Novas, cópia da referência, e
+  Gramado e Canela) pra demonstrar ao Cristian. Apagar pelo admin depois.
+- Imagens de roteiro vão pro bucket `blog-covers`, pasta `itineraries/`
+  (reuso do upload do blog, sem bucket novo). Imagem inline do tiptap cai
+  em `content/`, como no blog.
+- Formulário de reserva da referência virou bloco que monta a mensagem do
+  WhatsApp (hotel, saída, adultos/crianças/bebês). Sem envio ao servidor.
+- Descrição é texto simples; as 8 abas e a descrição de hotel são tiptap.
+- Próximo: refinar com as referências extras e a conversa com o cliente,
+  mostrar a v1, cortar/ajustar, aí merge na `main`.
+
 Aprovada pelo Cristian. Referência de estrutura (ele aprovou copiar bem
 parecido): assessoriavipviagens.com.br. **Entra depois** da entrega da
 repaginação (quinta, 2026-09-17) — ver "Branches" no fim.
