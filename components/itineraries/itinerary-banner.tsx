@@ -8,6 +8,8 @@ type ItineraryBannerProps = {
   /** Linha abaixo do título (duração, preço). */
   children?: React.ReactNode;
   priority?: boolean;
+  /** Título no centro da faixa (página de listagem); padrão é embaixo à esquerda. */
+  centered?: boolean;
   className?: string;
 };
 
@@ -15,9 +17,15 @@ type ItineraryBannerProps = {
  * Faixa de topo da referência (assessoriavipviagens): foto de fundo, véu navy
  * e o título em caixa alta. Full-bleed; o texto alinha com o Container.
  */
-export function ItineraryBanner({ title, image, children, priority, className }: ItineraryBannerProps) {
+export function ItineraryBanner({ title, image, children, priority, centered = false, className }: ItineraryBannerProps) {
   return (
-    <div className={cn("relative isolate flex min-h-56 items-end overflow-hidden bg-brand-navy text-white sm:min-h-72 lg:min-h-80", className)}>
+    <div
+      className={cn(
+        "relative isolate flex min-h-56 overflow-hidden bg-brand-navy text-white sm:min-h-72 lg:min-h-80",
+        centered ? "items-center" : "items-end",
+        className,
+      )}
+    >
       {image ? (
         <StorageImage
           src={image}
@@ -33,8 +41,13 @@ export function ItineraryBanner({ title, image, children, priority, className }:
         aria-hidden
         className="absolute inset-0 bg-linear-to-t from-brand-navy via-brand-navy/55 to-brand-navy/15"
       />
-      <Container className="relative pb-7 pt-20 sm:pb-9 sm:pt-24">
-        <h1 className="max-w-4xl text-balance font-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight drop-shadow sm:text-4xl lg:text-5xl">
+      <Container className={cn("relative", centered ? "py-16 text-center sm:py-20" : "pb-7 pt-20 sm:pb-9 sm:pt-24")}>
+        <h1
+          className={cn(
+            "max-w-4xl text-balance font-heading text-3xl font-bold uppercase leading-[1.05] tracking-tight drop-shadow sm:text-4xl lg:text-5xl",
+            centered && "mx-auto",
+          )}
+        >
           {title}
         </h1>
         {children ? <div className="mt-3 text-base text-white/85 sm:text-lg">{children}</div> : null}

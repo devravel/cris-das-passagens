@@ -35,9 +35,7 @@ export default async function RoteirosPage() {
   return (
     <>
       <PageBreadcrumb items={breadcrumbs} />
-      <ItineraryBanner title="Todos os roteiros" image={BANNER_IMAGE} priority>
-        <p>Viagens prontas, do embarque ao passeio. Escolha uma e a gente ajusta datas, hotel e orçamento.</p>
-      </ItineraryBanner>
+      <ItineraryBanner title="Todos os roteiros" image={BANNER_IMAGE} priority centered />
 
       <Container className="py-8 sm:py-10">
         {categories.length === 0 ? (
