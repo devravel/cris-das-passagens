@@ -27,7 +27,6 @@ import { BlogArticleContent } from "@/components/blog/blog-article-content";
 import { ItineraryBanner } from "@/components/itineraries/itinerary-banner";
 import { ItineraryGallery } from "@/components/itineraries/itinerary-gallery";
 import { ItineraryQuoteForm } from "@/components/itineraries/itinerary-quote-form";
-import { ItineraryQuotePopup } from "@/components/itineraries/itinerary-quote-popup";
 import { Container } from "@/components/layout/container";
 import { isRichTextEmpty } from "@/lib/blog/content";
 import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
@@ -248,16 +247,11 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
       <p className="text-sm text-muted-foreground">{ITINERARY_DISCLAIMER}</p>
         </div>
 
-        {/* Reserva na lateral, perto do topo, sem ficar presa ao rolar; no mobile vai pro fim.
-            Quem rola e perde o formulário de vista recebe o popup. */}
+        {/* Reserva na lateral, perto do topo, sem ficar presa ao rolar; no mobile vai pro fim. */}
         <aside className="min-w-0 lg:self-start">
           <ItineraryQuoteForm title={itinerary.title} hotelOptions={hotelOptions} preview={preview} />
         </aside>
       </Container>
-
-      {!preview ? (
-        <ItineraryQuotePopup title={itinerary.title} image={itinerary.coverImage} hotelOptions={hotelOptions} />
-      ) : null}
     </>
   );
 }

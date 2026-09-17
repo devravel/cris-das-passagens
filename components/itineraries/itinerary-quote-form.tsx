@@ -15,9 +15,9 @@ type ItineraryQuoteFormProps = {
   title: string;
   hotelOptions: string[];
   preview?: boolean;
-  /** Dentro do popup: sem a moldura/fundo próprio (o popup já tem). */
+  /** Sem a moldura/fundo próprio (quando o container já tem). */
   embedded?: boolean;
-  /** Ids únicos quando há duas instâncias na página (lateral + popup). */
+  /** Prefixo dos ids dos campos. */
   idPrefix?: string;
 };
 

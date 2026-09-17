@@ -28,9 +28,8 @@
   `/roteiros` busca + filtro CATEGORIA (select estilizado, filtro só no
   navegador), primeira divisória invadindo a foto, cards fixos em 254px
   (trilho horizontal com snap e setas até 767px, grid de 768 pra cima);
-  página do roteiro em duas colunas com reserva na lateral (sem sticky) e
-  popup de reserva (30s ou metade da página, só quando o lateral não está
-  na tela); abas em blocos lado a lado; galeria com setas/teclado/swipe;
+  página do roteiro em duas colunas com reserva na lateral (sem sticky);
+  popup de reserva foi feito e removido a pedido; abas em blocos lado a lado; galeria com setas/teclado/swipe;
   setas de carrossel unificadas (`components/ui/carousel-arrow.tsx`, também
   nos pacotes); breadcrumb visível removido de todas as páginas.
 - Próximo: mostrar ao Cristian, cortar/ajustar, aí merge na `main`.
