@@ -72,7 +72,8 @@ export default async function RoteirosPage() {
                     {category.name}
                   </h2>
                 </ScrollReveal>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {/* Card sempre do tamanho do desktop (~16rem); em tela menor só empilha, não cresce. */}
+                <div className="grid grid-cols-[repeat(auto-fill,16rem)] justify-center gap-4 sm:justify-start">
                   {category.itineraries.map((itinerary, index) => (
                     <ScrollReveal key={itinerary.id} delay={index * scrollRevealDefaults.stagger}>
                       <ItineraryCard itinerary={itinerary} priority={categoryIndex === 0 && index < 4} />
