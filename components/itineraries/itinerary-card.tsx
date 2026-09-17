@@ -41,25 +41,24 @@ export function ItineraryCard({ itinerary, priority, className }: ItineraryCardP
       />
       <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-navy via-brand-navy/45 to-transparent" />
 
-      <div className="relative space-y-3 p-4 sm:p-5">
-        <div>
-          <h3 className="font-heading text-xl font-bold leading-tight tracking-tight sm:text-[1.35rem]">
-            {itinerary.title}
-          </h3>
-          <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm text-white/80">
-            <Clock className="size-3.5" aria-hidden />
-            {itinerary.duration}
-          </p>
-        </div>
-
-        <span
-          aria-hidden
-          className="flex h-11 w-full items-center justify-center gap-2 border border-white/30 bg-white/12 text-xs font-bold uppercase tracking-[0.12em] backdrop-blur transition-[background-color,border-color,color,gap] duration-300 group-hover:gap-3 group-hover:border-white group-hover:bg-white group-hover:text-brand-navy group-focus-visible:border-white group-focus-visible:bg-white group-focus-visible:text-brand-navy"
-        >
-          Ver roteiro
-          <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.25} />
-        </span>
+      <div className="relative p-4 sm:p-5">
+        <h3 className="font-heading text-xl font-bold leading-tight tracking-tight sm:text-[1.35rem]">
+          {itinerary.title}
+        </h3>
+        <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm text-white/80">
+          <Clock className="size-3.5" aria-hidden />
+          {itinerary.duration}
+        </p>
       </div>
+
+      {/* Botão de ponta a ponta, sem borda lateral, colado na base do card. */}
+      <span
+        aria-hidden
+        className="relative flex h-11 w-full items-center justify-center gap-2 border-t border-white/30 bg-white/12 text-xs font-bold uppercase tracking-[0.12em] backdrop-blur transition-[background-color,border-color,color,gap] duration-300 group-hover:gap-3 group-hover:border-white group-hover:bg-white group-hover:text-brand-navy group-focus-visible:border-white group-focus-visible:bg-white group-focus-visible:text-brand-navy"
+      >
+        Ver roteiro
+        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.25} />
+      </span>
       <span className="sr-only">Ver roteiro {itinerary.title}</span>
     </Link>
   );
