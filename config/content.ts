@@ -146,8 +146,6 @@ export const content = {
   /** Roteiros em destaque na home (marcados no admin). Some sozinha sem destaque. */
   itineraries: {
     title: "*Roteiros* para se inspirar",
-    subtitle:
-      "Viagens prontas, do voo ao passeio. Você escolhe o roteiro e a gente ajusta datas, hotel e orçamento.",
     cta: {
       label: "Ver todos os roteiros",
       href: "/roteiros",

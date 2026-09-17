@@ -32,11 +32,7 @@ export async function ItinerariesSection({
       aria-labelledby={headingId}
     >
       <ScrollReveal>
-        <SectionHeader
-          id={headingId}
-          title={copy.title}
-          subtitle={copy.subtitle}
-        />
+        <SectionHeader id={headingId} title={copy.title} />
       </ScrollReveal>
 
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
