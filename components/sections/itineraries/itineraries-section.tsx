@@ -42,7 +42,8 @@ export async function ItinerariesSection({
             delay={index * scrollRevealDefaults.stagger}
           >
             <TiltCard scale={1.05} lift={12} tilt={5}>
-              <ItineraryCard itinerary={itinerary} />
+              {/* Na home o card é quadrado; em /roteiros fica mais alto. */}
+              <ItineraryCard itinerary={itinerary} className="aspect-square sm:aspect-square" />
             </TiltCard>
           </ScrollReveal>
         ))}
