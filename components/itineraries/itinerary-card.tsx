@@ -26,7 +26,7 @@ export function ItineraryCard({ itinerary, priority, className }: ItineraryCardP
     <Link
       href={`/roteiros/${itinerary.slug}`}
       className={cn(
-        "group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden bg-brand-navy text-white outline-none transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-18px_rgba(10,24,56,0.55)] focus-visible:ring-3 focus-visible:ring-ring/60 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:aspect-[3/4]",
+        "group relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden bg-brand-navy text-white outline-none transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-18px_rgba(10,24,56,0.55)] focus-visible:ring-3 focus-visible:ring-ring/60 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         className,
       )}
     >
@@ -41,8 +41,8 @@ export function ItineraryCard({ itinerary, priority, className }: ItineraryCardP
       />
       <div aria-hidden className="absolute inset-0 bg-linear-to-t from-brand-navy via-brand-navy/45 to-transparent" />
 
-      <div className="relative p-4 sm:p-5">
-        <h3 className="font-heading text-xl font-bold leading-tight tracking-tight sm:text-[1.35rem]">
+      <div className="relative p-4">
+        <h3 className="font-heading text-lg font-bold leading-tight tracking-tight">
           {itinerary.title}
         </h3>
         <p className="mt-1.5 inline-flex items-center gap-1.5 text-sm text-white/80">

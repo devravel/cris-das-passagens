@@ -1277,3 +1277,18 @@
     border: 1px solid rgb(20 83 45 / 0.1);
   }
 }
+
+/* Setas do trilho de roteiros no mobile: um "pulo" pro lado que tem mais card. */
+@keyframes nudge-right {
+  0%, 100% { transform: translate(0, -50%); }
+  50% { transform: translate(6px, -50%); }
+}
+
+@keyframes nudge-left {
+  0%, 100% { transform: translate(0, -50%); }
+  50% { transform: translate(-6px, -50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="nudge-"] { animation: none; }
+}

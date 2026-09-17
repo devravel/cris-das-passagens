@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 
 import { ItineraryBanner } from "@/components/itineraries/itinerary-banner";
-import { ItineraryCard } from "@/components/itineraries/itinerary-card";
+import { ItineraryCardRow } from "@/components/itineraries/itinerary-card-row";
 import { Container } from "@/components/layout/container";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { CtaButton } from "@/components/ui/cta-button";
 import { getItinerariesGroupedByCategory } from "@/lib/itinerary/queries";
 import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
-import { scrollRevealDefaults } from "@/lib/motion";
 import { createMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -64,22 +63,18 @@ export default async function RoteirosPage() {
                   <h2
                     id={`categoria-${category.slug}`}
                     className={cn(
-                      "mb-4 flex items-center gap-3 font-heading text-2xl font-bold uppercase tracking-tight before:h-7 before:w-1.5 before:rounded-full sm:text-[1.65rem]",
+                      "mb-4 font-heading text-2xl font-bold uppercase tracking-tight sm:text-[1.65rem]",
                       // A primeira divisória fica em cima da foto do banner.
-                      categoryIndex === 0 ? "text-white drop-shadow before:bg-brand-cyan" : "text-foreground before:bg-brand",
+                      categoryIndex === 0 ? "text-white drop-shadow" : "text-foreground",
                     )}
                   >
                     {category.name}
                   </h2>
                 </ScrollReveal>
-                {/* Card sempre do tamanho do desktop (~16rem); em tela menor só empilha, não cresce. */}
-                <div className="grid grid-cols-[repeat(auto-fill,16rem)] justify-center gap-4 sm:justify-start">
-                  {category.itineraries.map((itinerary, index) => (
-                    <ScrollReveal key={itinerary.id} delay={index * scrollRevealDefaults.stagger}>
-                      <ItineraryCard itinerary={itinerary} priority={categoryIndex === 0 && index < 4} />
-                    </ScrollReveal>
-                  ))}
-                </div>
+                <ItineraryCardRow
+                  itineraries={category.itineraries}
+                  priorityCount={categoryIndex === 0 ? 4 : 0}
+                />
               </section>
             ))}
           </div>
