@@ -18,9 +18,8 @@
 - **v1.1 (2026-09-17, tarde)** com as referências extras e a conversa com
   o Cristian: faixa "O roteiro inclui" com ícones (lista fixa em
   `lib/itinerary/included-items.ts`, marcada no admin), vídeo do YouTube e
-  mapa do Google (campos opcionais, aceitam link normal), aba Roteiro com
-  "1º Dia: ..." virando bloco em destaque (`lib/itinerary/day-format.ts`),
-  títulos de seção com linha dos dois lados (infotravel), e no bloco de
+  mapa do Google (campos opcionais, aceitam link normal), abas em blocos
+  lado a lado (Schultz) com texto livre do editor, justificado, títulos de seção com linha dos dois lados (infotravel), e no bloco de
   reserva: data aproximada, mensagem e os produtos à parte "Guia virtual" e
   "Roteiro personalizado" (`content.itineraries.extras`) — tudo vai na
   mensagem do WhatsApp.

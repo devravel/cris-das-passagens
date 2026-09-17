@@ -30,7 +30,6 @@ import { ItineraryQuoteForm } from "@/components/itineraries/itinerary-quote-for
 import { ItineraryQuotePopup } from "@/components/itineraries/itinerary-quote-popup";
 import { Container } from "@/components/layout/container";
 import { isRichTextEmpty } from "@/lib/blog/content";
-import { formatItineraryDays } from "@/lib/itinerary/day-format";
 import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
 import { INCLUDED_ITEM_OPTIONS } from "@/lib/itinerary/included-items";
 import {
@@ -81,8 +80,9 @@ const includedIcons: Record<(typeof INCLUDED_ITEM_OPTIONS)[number]["icon"], Luci
   ship: Ship,
 };
 
+/** Texto das abas: igual ao blog (o que o Cristian colar/formatar no editor sai assim), justificado. */
 const tabContentClassName =
-  "text-base leading-7 [&_p]:mt-3 [&_ul]:mt-3 [&_ol]:mt-3 [&_h2]:mt-6 [&_h3]:mt-5 [&>*:first-child]:mt-0";
+  "text-justify-smart text-base leading-7 [&_p]:mt-4 [&_ul]:mt-4 [&_ol]:mt-4 [&_h2]:mt-6 [&_h3]:mt-5 [&>*:first-child]:mt-0";
 
 function hasText(value: string | null | undefined): value is string {
   return Boolean(value) && !isRichTextEmpty(value as string);
@@ -210,7 +210,7 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
           {tabs.map(([key]) => (
             <Tabs.Content key={key} value={key} className="px-5 py-6 outline-none sm:px-6">
               <BlogArticleContent
-                html={key === "itinerary" ? formatItineraryDays(itinerary[key] as string) : (itinerary[key] as string)}
+                html={itinerary[key] as string}
                 className={tabContentClassName}
               />
             </Tabs.Content>

@@ -80,8 +80,7 @@ const EMPTY_VALUES: ItineraryInput = {
 };
 
 const tabHints: Record<(typeof itineraryTabs)[number][0], string> = {
-  itinerary:
-    'Dia a dia da viagem. Parágrafo começando com "1º Dia: Osório/Caldas Novas:" vira um bloco com o dia em destaque.',
+  itinerary: "Dia a dia da viagem. Cole o texto pronto e formate como no blog (negrito, listas, subtítulos).",
   optionals: "Passeios e serviços à parte (ex.: ingresso, city tour, seguro).",
   included: "O que está no valor: transporte, diárias, guia, brindes...",
   notIncluded: "O que fica de fora (ex.: ingressos, refeições não citadas).",
