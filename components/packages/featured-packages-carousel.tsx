@@ -1,11 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PublicPackageCard } from "@/components/packages/public-package-card";
-import { CarouselNavOutline } from "@/components/ui/carousel-nav-outline";
-import { useCarouselNavOutlineHint } from "@/hooks/use-carousel-nav-outline-hint";
+import { CarouselArrow } from "@/components/ui/carousel-arrow";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -23,12 +21,6 @@ const CARD_GAP_DESKTOP = 12;
 const NARROW_VIEWPORT_PX = 600;
 const NARROW_CARD_MAX_PX = 220;
 const NARROW_CARD_VW_RATIO = 0.78;
-
-const navButtonClassName =
-  "group absolute top-1/2 z-10 hidden size-9 sm:inline-flex -translate-y-1/2 items-center justify-center overflow-visible rounded-full border border-border/80 bg-background/95 text-muted-foreground shadow-md backdrop-blur-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
-
-const navIconClassName =
-  "relative z-10 size-5 transition-colors duration-200 group-hover:text-brand motion-reduce:transition-none";
 
 function getCardGap(): number {
   return window.innerWidth >= 640 ? CARD_GAP_DESKTOP : CARD_GAP_MOBILE;
@@ -62,12 +54,6 @@ export function FeaturedPackagesCarousel({
   const [cardGap, setCardGap] = useState(CARD_GAP_MOBILE);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
-
-  const { hintPrev, hintNext, pulseKey } = useCarouselNavOutlineHint({
-    canScrollPrev,
-    canScrollNext,
-    getRoot: () => rootRef.current,
-  });
 
   const hasMultiple = packages.length > 1;
 
@@ -132,20 +118,14 @@ export function FeaturedPackagesCarousel({
   return (
     <div ref={rootRef} className={cn("relative min-w-0", className)}>
       <div className="relative min-w-0">
-        <button
-          type="button"
-          className={cn(
-            navButtonClassName,
-            // Mobile: sobre os cards. Desktop: fora, no meio vertical.
-            "left-1 sm:left-2 xl:left-0 xl:-translate-x-[calc(100%+0.5rem)]",
-          )}
+        {/* Mobile/tablet: sobre os cards (seta branca). Desktop: fora do trilho (seta azul). */}
+        <CarouselArrow
+          side="left"
+          visible={canScrollPrev}
           onClick={() => scrollByStep(-1)}
-          disabled={!canScrollPrev}
-          aria-label="Ver pacote anterior"
-        >
-          <CarouselNavOutline active={hintPrev} pulseKey={pulseKey} />
-          <ChevronLeft className={navIconClassName} aria-hidden />
-        </button>
+          ariaLabel="Ver pacote anterior"
+          className="absolute left-1 top-1/2 z-10 -translate-y-1/2 sm:left-2 xl:left-0 xl:-translate-x-full xl:text-brand xl:drop-shadow-none"
+        />
 
         {/*
           Sem touch-action explícito (usa o padrão "auto"): o browser detecta o
@@ -192,23 +172,13 @@ export function FeaturedPackagesCarousel({
           </div>
         </div>
 
-        <button
-          type="button"
-          className={cn(
-            navButtonClassName,
-            "right-1 sm:right-2 xl:right-0 xl:translate-x-[calc(100%+0.5rem)]",
-          )}
+        <CarouselArrow
+          side="right"
+          visible={canScrollNext}
           onClick={() => scrollByStep(1)}
-          disabled={!canScrollNext}
-          aria-label="Ver próximo pacote"
-        >
-          <CarouselNavOutline
-            active={hintNext}
-            pulseKey={pulseKey}
-            delayMs={hintPrev && hintNext ? 110 : 0}
-          />
-          <ChevronRight className={navIconClassName} aria-hidden />
-        </button>
+          ariaLabel="Ver próximo pacote"
+          className="absolute right-1 top-1/2 z-10 -translate-y-1/2 sm:right-2 xl:right-0 xl:translate-x-full xl:text-brand xl:drop-shadow-none"
+        />
       </div>
     </div>
   );

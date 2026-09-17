@@ -8,13 +8,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PackageCarouselScrollHint } from "@/components/packages/package-carousel-scroll-hint";
 import { PublicPackageCard } from "@/components/packages/public-package-card";
 import { CarouselDots } from "@/components/ui/carousel-dots";
-import { CarouselNavOutline } from "@/components/ui/carousel-nav-outline";
-import { useCarouselNavOutlineHint } from "@/hooks/use-carousel-nav-outline-hint";
+import { CarouselArrow } from "@/components/ui/carousel-arrow";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
 
@@ -151,12 +149,6 @@ function computeCarouselLayout(
   return { cardWidth, gap, cardsPerView };
 }
 
-const navButtonClassName =
-  "group relative inline-flex size-9 shrink-0 items-center justify-center overflow-visible rounded-full border border-border/80 bg-background text-muted-foreground shadow-sm transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out hover:scale-[1.06] hover:border-brand/35 hover:bg-brand/5 hover:text-brand hover:shadow-[0_4px_14px_-6px_rgba(52,91,167,0.28)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-35 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 sm:size-10";
-
-const navIconClassName =
-  "relative z-10 size-5 transition-colors duration-200 group-hover:text-brand motion-reduce:transition-none";
-
 const carouselColumnsClassName =
   "grid grid-cols-[auto_1fr_auto] gap-x-2 sm:gap-x-3";
 
@@ -181,12 +173,6 @@ export function PackageCardsCarousel({
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
-
-  const { hintPrev, hintNext, pulseKey } = useCarouselNavOutlineHint({
-    canScrollPrev,
-    canScrollNext,
-    getRoot: () => rootRef.current,
-  });
 
   const updateScrollState = useCallback(() => {
     const track = trackRef.current;
@@ -323,16 +309,14 @@ export function PackageCardsCarousel({
           </div>
         ) : null}
 
-        <button
-          type="button"
-          className={cn(navButtonClassName, carouselRowClass, "col-start-1")}
+        <CarouselArrow
+          side="left"
+          visible={canScrollPrev}
           onClick={() => scrollByStep(-1)}
-          disabled={!canScrollPrev}
-          aria-label="Ver pacotes anteriores"
-        >
-          <CarouselNavOutline active={hintPrev} pulseKey={pulseKey} />
-          <ChevronLeft className={navIconClassName} aria-hidden />
-        </button>
+          ariaLabel="Ver pacotes anteriores"
+          tone="brand"
+          className={cn(carouselRowClass, "col-start-1")}
+        />
 
         <div
           ref={trackRef}
@@ -382,20 +366,14 @@ export function PackageCardsCarousel({
           </div>
         </div>
 
-        <button
-          type="button"
-          className={cn(navButtonClassName, carouselRowClass, "col-start-3")}
+        <CarouselArrow
+          side="right"
+          visible={canScrollNext}
           onClick={() => scrollByStep(1)}
-          disabled={!canScrollNext}
-          aria-label="Ver próximos pacotes"
-        >
-          <CarouselNavOutline
-            active={hintNext}
-            pulseKey={pulseKey}
-            delayMs={hintPrev && hintNext ? 110 : 0}
-          />
-          <ChevronRight className={navIconClassName} aria-hidden />
-        </button>
+          ariaLabel="Ver próximos pacotes"
+          tone="brand"
+          className={cn(carouselRowClass, "col-start-3")}
+        />
 
         {hasOverflow && pageCount > 1 ? (
           <CarouselDots
