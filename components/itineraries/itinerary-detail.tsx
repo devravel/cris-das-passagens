@@ -242,8 +242,9 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
       <p className="text-sm text-muted-foreground">{ITINERARY_DISCLAIMER}</p>
         </div>
 
-        {/* Reserva na lateral, perto do topo; no mobile vai pro fim (e o popup cobre quem não rola). */}
-        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        {/* Reserva na lateral, perto do topo, sem ficar presa ao rolar; no mobile vai pro fim.
+            Quem rola e perde o formulário de vista recebe o popup. */}
+        <aside className="min-w-0 lg:self-start">
           <ItineraryQuoteForm title={itinerary.title} hotelOptions={hotelOptions} preview={preview} />
         </aside>
       </Container>
