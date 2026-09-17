@@ -21,18 +21,14 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { Tabs } from "radix-ui";
+
 import { BlogArticleContent } from "@/components/blog/blog-article-content";
 import { ItineraryBanner } from "@/components/itineraries/itinerary-banner";
 import { ItineraryGallery } from "@/components/itineraries/itinerary-gallery";
 import { ItineraryQuoteForm } from "@/components/itineraries/itinerary-quote-form";
 import { ItineraryQuotePopup } from "@/components/itineraries/itinerary-quote-popup";
 import { Container } from "@/components/layout/container";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { isRichTextEmpty } from "@/lib/blog/content";
 import { formatItineraryDays } from "@/lib/itinerary/day-format";
 import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
@@ -191,25 +187,30 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
       ) : null}
 
       {tabs.length > 0 ? (
-        <Accordion
-          type="multiple"
-          defaultValue={firstTab ? [firstTab[0]] : []}
-          className="overflow-hidden rounded-2xl border border-border/70 bg-card"
-        >
-          {tabs.map(([key, label]) => (
-            <AccordionItem key={key} value={key} className="px-5 sm:px-6">
-              <AccordionTrigger className="py-4 font-heading text-base font-semibold uppercase tracking-wide text-foreground hover:no-underline sm:text-lg">
+        <Tabs.Root defaultValue={firstTab?.[0]} className="rounded-2xl border border-border/70 bg-card">
+          <Tabs.List
+            aria-label="Detalhes do roteiro"
+            className="flex flex-wrap gap-x-1 border-b border-border/70 px-2 sm:px-3"
+          >
+            {tabs.map(([key, label]) => (
+              <Tabs.Trigger
+                key={key}
+                value={key}
+                className="-mb-px border-b-2 border-transparent px-3 py-3.5 font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/60 data-[state=active]:border-brand data-[state=active]:text-brand sm:px-4 sm:text-[0.9375rem]"
+              >
                 {label}
-              </AccordionTrigger>
-              <AccordionContent className="pb-6">
-                <BlogArticleContent
-                  html={key === "itinerary" ? formatItineraryDays(itinerary[key] as string) : (itinerary[key] as string)}
-                  className={tabContentClassName}
-                />
-              </AccordionContent>
-            </AccordionItem>
+              </Tabs.Trigger>
+            ))}
+          </Tabs.List>
+          {tabs.map(([key]) => (
+            <Tabs.Content key={key} value={key} className="px-5 py-6 outline-none sm:px-6">
+              <BlogArticleContent
+                html={key === "itinerary" ? formatItineraryDays(itinerary[key] as string) : (itinerary[key] as string)}
+                className={tabContentClassName}
+              />
+            </Tabs.Content>
           ))}
-        </Accordion>
+        </Tabs.Root>
       ) : null}
 
       {hotels.length > 0 ? (
