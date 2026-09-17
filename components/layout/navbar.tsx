@@ -145,14 +145,18 @@ function NavLink({
   );
 }
 
-function DesktopNavLinks({ items }: { items: NavItem[] }) {
+function DesktopNavLinks({ items, compact }: { items: NavItem[]; compact: boolean }) {
   return (
     <nav
       className="hidden items-center justify-center gap-5 xl:gap-8 lg:flex"
       aria-label="Navegação principal"
     >
       {items.map((item) => (
-        <NavLink key={item.href} href={item.href}>
+        <NavLink
+          key={item.href}
+          href={item.href}
+          className={cn("transition-[font-size] duration-300", compact && "text-[0.9375rem]")}
+        >
           {item.label}
         </NavLink>
       ))}
@@ -250,8 +254,15 @@ export function Navbar({
   const isAdminPage = pathname.startsWith("/admin");
   const sticksOnScroll = !isPacotesPage && !isAdminPage;
 
+  // Desktop: rolou pra baixo, a navbar encolhe e some do caminho; perto do topo volta ao normal.
+  // Histerese (encolhe > 140px, volta < 60px) pra não piscar na fronteira.
+  const [compact, setCompact] = React.useState(false);
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 6);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 6);
+      setCompact((current) => (current ? y > 60 : y > 140));
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -286,13 +297,19 @@ export function Navbar({
         scrolled
           ? "border-border/50 bg-background/70 shadow-[0_1px_0_rgba(0,0,0,0.04)] backdrop-blur-md supports-backdrop-filter:bg-background/55"
           : "border-transparent bg-background",
+        compact && sticksOnScroll && "lg:supports-backdrop-filter:bg-background/45",
         className
       )}
     >
       {/* 3 colunas: logo | centro | direita. <640px: CTA compacto no centro, com respiro,
           e menu na direita; a partir de 640px o CTA vai pro lado do hambúrguer;
           desktop: links no centro e CTA na direita — sempre nas margens do Container. */}
-      <Container className="grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8 xl:grid-cols-[1fr_auto_1fr]">
+      <Container
+        className={cn(
+          "grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 transition-[min-height,padding] duration-300 ease-out sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8 xl:grid-cols-[1fr_auto_1fr] motion-reduce:transition-none",
+          compact && sticksOnScroll && "lg:min-h-14 lg:py-1.5",
+        )}
+      >
         <Link
           href={logoHref}
           onClick={(event) => handleNavLinkClick(event, pathname, logoHref)}
@@ -303,14 +320,17 @@ export function Navbar({
             alt={siteConfig.name}
             width={817}
             height={388}
-            className="h-[clamp(2rem,9.5vw,2.5rem)] w-auto sm:h-12 md:h-14"
+            className={cn(
+              "h-[clamp(2rem,9.5vw,2.5rem)] w-auto transition-[height] duration-300 ease-out motion-reduce:transition-none sm:h-12 md:h-14",
+              compact && sticksOnScroll && "lg:h-9",
+            )}
             sizes="120px"
             priority
           />
         </Link>
 
         <div className="flex min-w-0 justify-center">
-          <DesktopNavLinks items={items} />
+          <DesktopNavLinks items={items} compact={compact && sticksOnScroll} />
           {cta ? (
             <div className={cn("sm:hidden", ctaRevealClassName)} aria-hidden={heroCtaVisible}>
               <NavbarCtaButton cta={cta} size="sm" />
@@ -320,7 +340,13 @@ export function Navbar({
 
         <div className="flex min-w-0 items-center gap-2 justify-self-end lg:gap-0">
           {cta ? (
-            <div className={cn("hidden sm:block", ctaRevealClassName)}>
+            <div
+              className={cn(
+                "hidden origin-right sm:block lg:transition-transform lg:duration-300 lg:ease-out",
+                ctaRevealClassName,
+                compact && sticksOnScroll && "lg:scale-[0.86]",
+              )}
+            >
               <NavbarCtaButton cta={cta} size="md" />
             </div>
           ) : null}
