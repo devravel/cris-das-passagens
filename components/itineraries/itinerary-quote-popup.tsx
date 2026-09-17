@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { ItineraryQuoteForm } from "@/components/itineraries/itinerary-quote-form";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { StorageImage } from "@/components/ui/storage-image";
+import { hasStoredConsentChoice } from "@/lib/consent/storage";
 
 type ItineraryQuotePopupProps = {
   title: string;
@@ -43,8 +44,15 @@ export function ItineraryQuotePopup({ title, image, hotelOptions }: ItineraryQuo
     if (alreadyShown(slugKey)) return;
 
     let done = false;
+    let waitingConsent = 0;
     const trigger = () => {
       if (done) return;
+      // Aviso de cookies ainda na tela: espera a pessoa decidir, senão são dois avisos de uma vez.
+      if (!hasStoredConsentChoice()) {
+        if (!waitingConsent) waitingConsent = window.setInterval(trigger, 1500);
+        return;
+      }
+      if (waitingConsent) window.clearInterval(waitingConsent);
       done = true;
       // Formulário lateral já na tela (desktop, sticky) ou em uso: popup seria redundante.
       const sidebarForm = document.querySelector("aside [data-quote-form]");
@@ -64,6 +72,7 @@ export function ItineraryQuotePopup({ title, image, hotelOptions }: ItineraryQuo
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.clearTimeout(timer);
+      if (waitingConsent) window.clearInterval(waitingConsent);
       window.removeEventListener("scroll", onScroll);
     };
   }, [slugKey]);
