@@ -190,9 +190,9 @@ export function ItineraryQuoteForm({
 
       <div className="mt-5 flex flex-col gap-3">
         {preview ? (
-          <CtaButton label="Falar no WhatsApp" type="button" disabled className="w-full" />
+          <CtaButton label="Enviar" type="button" disabled className="w-full" />
         ) : (
-          <CtaButton href={href} label="Falar no WhatsApp" trackingSource="itinerary_whatsapp" className="w-full" />
+          <CtaButton href={href} label="Enviar" trackingSource="itinerary_whatsapp" className="w-full" />
         )}
         <p className="text-xs text-white/60">
           Nada é enviado pelo site: a conversa acontece no WhatsApp.{" "}
