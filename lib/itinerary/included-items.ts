@@ -20,3 +20,19 @@ export const INCLUDED_ITEM_KEYS = INCLUDED_ITEM_OPTIONS.map((item) => item.key) 
   IncludedItemKey,
   ...IncludedItemKey[],
 ];
+
+/** Item digitado pelo Cristian no admin, guardado como "custom:Texto" ao lado das chaves fixas. */
+export const CUSTOM_ITEM_PREFIX = "custom:";
+export const CUSTOM_ITEM_MAX_LENGTH = 40;
+
+export function isCustomIncludedItem(value: string) {
+  return value.startsWith(CUSTOM_ITEM_PREFIX);
+}
+
+export function customIncludedItemLabel(value: string) {
+  return value.slice(CUSTOM_ITEM_PREFIX.length).trim();
+}
+
+export function makeCustomIncludedItem(label: string) {
+  return `${CUSTOM_ITEM_PREFIX}${label.trim().slice(0, CUSTOM_ITEM_MAX_LENGTH)}`;
+}

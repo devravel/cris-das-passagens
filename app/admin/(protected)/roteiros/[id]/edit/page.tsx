@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ItineraryScreen } from "@/components/admin/itinerary-screen";
-import { INCLUDED_ITEM_KEYS, type IncludedItemKey } from "@/lib/itinerary/included-items";
+import { INCLUDED_ITEM_KEYS, isCustomIncludedItem, type IncludedItemKey } from "@/lib/itinerary/included-items";
 import type { ItineraryHotel } from "@/lib/itinerary/schemas";
 import { prisma } from "@/lib/prisma";
 
@@ -47,8 +47,8 @@ export default async function EditRoteiroPage({ params }: EditRoteiroPageProps) 
         duration: itinerary.duration,
         priceFrom: itinerary.priceFrom ?? "",
         description: itinerary.description,
-        includedItems: itinerary.includedItems.filter((key): key is IncludedItemKey =>
-          INCLUDED_ITEM_KEYS.includes(key as IncludedItemKey),
+        includedItems: itinerary.includedItems.filter(
+          (key) => INCLUDED_ITEM_KEYS.includes(key as IncludedItemKey) || isCustomIncludedItem(key),
         ),
         videoUrl: itinerary.videoUrl ?? "",
         mapUrl: itinerary.mapUrl ?? "",

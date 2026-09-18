@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { isValidBlogImageUrl } from "@/lib/blog/image-url";
-import { INCLUDED_ITEM_KEYS } from "@/lib/itinerary/included-items";
+import { CUSTOM_ITEM_PREFIX, INCLUDED_ITEM_KEYS } from "@/lib/itinerary/included-items";
 
 const imageUrl = z
   .string()
@@ -51,7 +51,17 @@ export const itinerarySchema = z
     duration: z.string().trim().min(2, "Informe a duração.").max(80),
     priceFrom: z.string().trim().max(60).optional(),
     description: z.string().trim().min(20, "Descrição deve ter no mínimo 20 caracteres."),
-    includedItems: z.array(z.enum(INCLUDED_ITEM_KEYS)).max(INCLUDED_ITEM_KEYS.length),
+    includedItems: z
+      .array(
+        z.union([
+          z.enum(INCLUDED_ITEM_KEYS),
+          z
+            .string()
+            .regex(/^custom:\S.{0,39}$/, "Item personalizado inválido.")
+            .refine((value) => value.trim().length > CUSTOM_ITEM_PREFIX.length, "Item personalizado vazio."),
+        ]),
+      )
+      .max(INCLUDED_ITEM_KEYS.length + 12, "Muitos itens na faixa."),
     videoUrl: z.string().trim().max(2048).optional(),
     mapUrl: z.string().trim().max(4096).optional(),
     categoryIds: z.array(z.string().min(1)).min(1, "Escolha pelo menos uma divisória."),

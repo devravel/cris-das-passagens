@@ -23,7 +23,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { normalizeSlug } from "@/lib/blog/utils";
 import { FEATURED_HOME_ITINERARIES_LIMIT } from "@/lib/itinerary/constants";
 import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
-import { INCLUDED_ITEM_OPTIONS } from "@/lib/itinerary/included-items";
+import {
+  CUSTOM_ITEM_MAX_LENGTH,
+  INCLUDED_ITEM_OPTIONS,
+  customIncludedItemLabel,
+  isCustomIncludedItem,
+  makeCustomIncludedItem,
+} from "@/lib/itinerary/included-items";
 import {
   hotelPriceLabels,
   itinerarySchema,
@@ -169,6 +175,18 @@ export function ItineraryForm({
       "categoryIds",
       current.includes(id) ? current.filter((value) => value !== id) : [...current, id],
     );
+  }
+
+  const [newIncludedItem, setNewIncludedItem] = useState("");
+
+  function handleAddIncludedItem() {
+    const label = newIncludedItem.trim();
+    if (!label) return;
+
+    const value = makeCustomIncludedItem(label);
+    const current = form.getValues("includedItems");
+    if (!current.includes(value)) setField("includedItems", [...current, value]);
+    setNewIncludedItem("");
   }
 
   function handleAddCategory() {
@@ -382,6 +400,58 @@ export function ItineraryForm({
               </button>
             );
           })}
+        </div>
+
+        {/* Itens personalizados deste roteiro: aparecem na faixa com um ícone genérico. */}
+        {includedItems.some(isCustomIncludedItem) ? (
+          <div className="flex flex-wrap gap-2">
+            {includedItems.filter(isCustomIncludedItem).map((value) => (
+              <span
+                key={value}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-brand bg-brand/10 py-1.5 pl-3 pr-1.5 text-sm font-medium text-brand"
+              >
+                {customIncludedItemLabel(value)}
+                <button
+                  type="button"
+                  aria-label={`Remover ${customIncludedItemLabel(value)}`}
+                  onClick={() =>
+                    setField(
+                      "includedItems",
+                      form.getValues("includedItems").filter((item) => item !== value),
+                    )
+                  }
+                  className="grid size-6 place-items-center rounded-lg text-brand/70 hover:bg-brand/15 hover:text-brand"
+                >
+                  <X className="size-3.5" aria-hidden />
+                </button>
+              </span>
+            ))}
+          </div>
+        ) : null}
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={newIncludedItem}
+            onChange={(event) => setNewIncludedItem(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleAddIncludedItem();
+              }
+            }}
+            maxLength={CUSTOM_ITEM_MAX_LENGTH}
+            placeholder="Outro item (ex.: Kit lanche)"
+            className="h-10 max-w-xs rounded-xl"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 rounded-xl border-border/70"
+            onClick={handleAddIncludedItem}
+            disabled={!newIncludedItem.trim()}
+          >
+            <Plus className="size-4" aria-hidden />
+            Adicionar item
+          </Button>
         </div>
         <FieldError message={errors.includedItems?.message} />
       </section>

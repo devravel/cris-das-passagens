@@ -8,6 +8,7 @@ import {
   BedDouble,
   Bus,
   CarFront,
+  CheckCircle2,
   Coffee,
   ConciergeBell,
   ExternalLink,
@@ -30,7 +31,11 @@ import { ItineraryQuoteForm } from "@/components/itineraries/itinerary-quote-for
 import { Container } from "@/components/layout/container";
 import { isRichTextEmpty } from "@/lib/blog/content";
 import { toGoogleMapsEmbedUrl, toYouTubeEmbedUrl } from "@/lib/itinerary/embeds";
-import { INCLUDED_ITEM_OPTIONS } from "@/lib/itinerary/included-items";
+import {
+  INCLUDED_ITEM_OPTIONS,
+  customIncludedItemLabel,
+  isCustomIncludedItem,
+} from "@/lib/itinerary/included-items";
 import {
   hotelPriceLabels,
   itineraryTabs,
@@ -102,7 +107,18 @@ function SectionRule({ id, children }: { id: string; children: React.ReactNode }
 export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailProps) {
   const tabs = itineraryTabs.filter(([key]) => hasText(itinerary[key]));
   const hotels = itinerary.hotels.filter((hotel) => hotel.name.trim());
-  const included = INCLUDED_ITEM_OPTIONS.filter((item) => itinerary.includedItems.includes(item.key));
+  // Ordem: fixos na ordem do catálogo, depois os personalizados na ordem em que foram criados.
+  const included = [
+    ...INCLUDED_ITEM_OPTIONS.filter((item) => itinerary.includedItems.includes(item.key)).map((item) => ({
+      key: item.key,
+      label: item.label,
+      Icon: includedIcons[item.icon],
+    })),
+    ...itinerary.includedItems
+      .filter(isCustomIncludedItem)
+      .map((value) => ({ key: value, label: customIncludedItemLabel(value), Icon: CheckCircle2 }))
+      .filter((item) => item.label),
+  ];
   const videoEmbed = toYouTubeEmbedUrl(itinerary.videoUrl);
   const mapEmbed = toGoogleMapsEmbedUrl(itinerary.mapUrl);
   const [firstTab] = tabs;
@@ -154,17 +170,16 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
         <section aria-labelledby="roteiro-inclui" className="space-y-5">
           <SectionRule id="roteiro-inclui">O roteiro inclui</SectionRule>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {included.map((item) => {
-              const Icon = includedIcons[item.icon];
+            {included.map(({ key, label, Icon }) => {
               return (
                 <li
-                  key={item.key}
+                  key={key}
                   className="flex items-center gap-3 rounded-xl border border-border/60 bg-card px-3.5 py-3 text-sm font-medium text-foreground"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
                     <Icon className="size-4.5" strokeWidth={1.75} aria-hidden />
                   </span>
-                  {item.label}
+                  {label}
                 </li>
               );
             })}
