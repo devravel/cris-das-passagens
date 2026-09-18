@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Minus, Plus } from "lucide-react";
+import { Check, CheckCircle2, Minus, Plus } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { content } from "@/config/content";
+import { MAX_PEOPLE, type ItineraryQuoteInput } from "@/lib/itinerary/quote";
 import { getItineraryWhatsAppUrl } from "@/lib/itinerary/whatsapp";
-import { trackMetaLeadFromHref } from "@/lib/meta-pixel";
+import { trackMetaLead } from "@/lib/meta-pixel";
 import { cn } from "@/lib/utils";
 
 type ItineraryQuoteFormProps = {
   title: string;
+  slug: string;
   hotelOptions: string[];
   preview?: boolean;
   /** Sem a moldura/fundo próprio (quando o container já tem). */
@@ -21,7 +23,6 @@ type ItineraryQuoteFormProps = {
   idPrefix?: string;
 };
 
-const MAX_PEOPLE = 7;
 const EXTRAS = content.itineraries.extras;
 
 const fieldClassName =
@@ -39,17 +40,24 @@ function pillClassName(selected: boolean) {
   );
 }
 
+type Status = { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "error"; message: string };
+
 /**
- * "Informações e reservas" da referência. Aqui não manda nada pro servidor:
- * monta a mensagem e abre o WhatsApp (o site não tem formulário de propósito).
+ * "Informações e reservas" da referência. Envia por e-mail pra equipe
+ * (POST /api/roteiros/cotacao, mesmo desenho do Rei da Copa). Se o envio
+ * falhar, oferece o WhatsApp com a mensagem já montada.
  */
 export function ItineraryQuoteForm({
   title,
+  slug,
   hotelOptions,
   preview = false,
   embedded = false,
   idPrefix = "roteiro",
 }: ItineraryQuoteFormProps) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [hotel, setHotel] = useState("");
   const [origin, setOrigin] = useState("");
   const [adults, setAdults] = useState(2);
@@ -58,9 +66,11 @@ export function ItineraryQuoteForm({
   const [travelDate, setTravelDate] = useState("");
   const [extras, setExtras] = useState<string[]>([]);
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
   const [human, setHuman] = useState(false);
+  const [status, setStatus] = useState<Status>({ kind: "idle" });
 
-  const href = getItineraryWhatsAppUrl(title, {
+  const whatsappHref = getItineraryWhatsAppUrl(title, {
     hotel: hotel || undefined,
     origin: origin.trim() || undefined,
     adults,
@@ -68,18 +78,82 @@ export function ItineraryQuoteForm({
     babies,
     travelDate: travelDate.trim() || undefined,
     extras,
-    message: message.trim() || undefined,
+    message: [name.trim() && `Nome: ${name.trim()}`, message.trim()].filter(Boolean).join("\n") || undefined,
   });
 
   function toggleExtra(extra: string) {
     setExtras((list) => (list.includes(extra) ? list.filter((item) => item !== extra) : [...list, extra]));
   }
 
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (preview || status.kind === "sending") return;
+
+    const payload: ItineraryQuoteInput = {
+      itineraryTitle: title,
+      itinerarySlug: slug,
+      name: name.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      hotel: hotel || undefined,
+      origin: origin.trim() || undefined,
+      travelDate: travelDate.trim() || undefined,
+      adults,
+      children,
+      babies,
+      extras,
+      message: message.trim() || undefined,
+      website,
+    };
+
+    setStatus({ kind: "sending" });
+
+    try {
+      const response = await fetch("/api/roteiros/cotacao", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+
+      if (!response.ok || !data?.ok) {
+        setStatus({ kind: "error", message: data?.error ?? "Não conseguimos enviar agora." });
+        return;
+      }
+
+      trackMetaLead({ source: "itinerary_quote", content_name: title });
+      setStatus({ kind: "sent" });
+    } catch {
+      setStatus({ kind: "error", message: "Sem conexão com o servidor." });
+    }
+  }
+
+  if (status.kind === "sent") {
+    return (
+      <section
+        data-quote-form
+        className={cn("text-white", !embedded && "rounded-2xl bg-brand-navy p-5 sm:p-6")}
+        aria-live="polite"
+      >
+        <CheckCircle2 className="size-10 text-brand-cyan" aria-hidden />
+        <h2 className="mt-3 font-heading text-xl font-bold uppercase leading-tight tracking-tight sm:text-2xl">
+          Pedido enviado!
+        </h2>
+        <p className="mt-2 text-sm text-white/80">
+          Recebemos seu pedido de cotação de <strong className="text-white">{title}</strong>. A equipe responde em
+          breve pelo WhatsApp informado.
+        </p>
+      </section>
+    );
+  }
+
   return (
-    <section
+    <form
       data-quote-form
+      onSubmit={handleSubmit}
       aria-labelledby={`${idPrefix}-reservas`}
-      className={cn("text-white", !embedded && "rounded-2xl bg-brand-navy p-5 sm:p-6")}
+      className={cn("relative text-white", !embedded && "rounded-2xl bg-brand-navy p-5 sm:p-6")}
+      noValidate
     >
       <p className="text-xs font-semibold uppercase tracking-wider text-brand-cyan">Informações e reservas</p>
       <h2 id={`${idPrefix}-reservas`} className="mt-1.5 font-heading text-xl font-bold uppercase leading-tight tracking-tight sm:text-2xl">
@@ -87,6 +161,54 @@ export function ItineraryQuoteForm({
       </h2>
 
       <div className="mt-5 grid gap-4">
+        <div className="space-y-1.5">
+          <label htmlFor={`${idPrefix}-nome`} className={labelClassName}>
+            Nome *
+          </label>
+          <Input
+            id={`${idPrefix}-nome`}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            autoComplete="name"
+            required
+            placeholder="Seu nome"
+            className={fieldClassName}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${idPrefix}-whatsapp`} className={labelClassName}>
+            WhatsApp *
+          </label>
+          <Input
+            id={`${idPrefix}-whatsapp`}
+            type="tel"
+            inputMode="tel"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            autoComplete="tel"
+            required
+            placeholder="(51) 9 9999-9999"
+            className={fieldClassName}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${idPrefix}-email`} className={labelClassName}>
+            E-mail
+          </label>
+          <Input
+            id={`${idPrefix}-email`}
+            type="email"
+            inputMode="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
+            placeholder="voce@exemplo.com"
+            className={fieldClassName}
+          />
+        </div>
+
         {hotelOptions.length > 0 ? (
           <fieldset>
             <legend className={cn("mb-2", labelClassName)}>Hotel / tarifa</legend>
@@ -135,11 +257,13 @@ export function ItineraryQuoteForm({
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-2.5">
+        <fieldset className="space-y-2">
+          <legend className={labelClassName}>Passageiros</legend>
+          <p className="text-xs text-white/60">Crianças de 2 a 17 anos · Bebês até 24 meses.</p>
           <Counter idPrefix={idPrefix} label="Adultos" value={adults} min={1} onChange={setAdults} />
           <Counter idPrefix={idPrefix} label="Crianças" value={children} min={0} onChange={setChildren} />
           <Counter idPrefix={idPrefix} label="Bebês" value={babies} min={0} onChange={setBabies} />
-        </div>
+        </fieldset>
 
         {EXTRAS.length > 0 ? (
           <fieldset>
@@ -186,10 +310,22 @@ export function ItineraryQuoteForm({
             className={cn(fieldClassName, "h-auto min-h-20")}
           />
         </div>
+
+        {/* Honeypot: fora da tela e fora do tab; bot preenche, humano não vê. */}
+        <div className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden" aria-hidden>
+          <label htmlFor={`${idPrefix}-website`}>Website</label>
+          <input
+            id={`${idPrefix}-website`}
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={website}
+            onChange={(event) => setWebsite(event.target.value)}
+          />
+        </div>
       </div>
 
       <div className="mt-5 flex flex-col gap-3">
-        {/* Confirmação simples no navegador: nada vai pro servidor, então não há captcha real a validar. */}
         <label
           htmlFor={`${idPrefix}-humano`}
           className="inline-flex cursor-pointer items-center gap-2.5 rounded-xl border border-white/20 bg-white/5 px-3.5 py-2.5 text-sm text-white/90"
@@ -204,38 +340,41 @@ export function ItineraryQuoteForm({
           Não sou um robô
         </label>
 
-        {preview || !human ? (
-          <button
-            type="button"
-            disabled
-            aria-disabled
-            className={submitClassName}
-            title={human ? undefined : "Marque \"Não sou um robô\" para enviar."}
-          >
-            Enviar
-          </button>
-        ) : (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={submitClassName}
-            onClick={() => trackMetaLeadFromHref(href, { source: "itinerary_whatsapp", content_name: title })}
-          >
-            Enviar
-          </a>
-        )}
+        <button
+          type="submit"
+          disabled={preview || !human || status.kind === "sending" || !name.trim() || !phone.trim()}
+          className={submitClassName}
+          title={human ? undefined : 'Marque "Não sou um robô" para enviar.'}
+        >
+          {status.kind === "sending" ? "Enviando..." : "Enviar"}
+        </button>
+
+        {status.kind === "error" ? (
+          <p className="rounded-xl border border-red-300/40 bg-red-500/15 px-3.5 py-2.5 text-sm text-white" role="alert">
+            {status.message}{" "}
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold underline underline-offset-4"
+            >
+              Mandar pelo WhatsApp
+            </a>
+          </p>
+        ) : null}
+
         <p className="text-xs text-white/60">
-          Nada é enviado pelo site: a conversa acontece no WhatsApp.{" "}
+          Seus dados vão só pra equipe responder esta cotação.{" "}
           <Link href="/politica-de-privacidade" className="underline underline-offset-4 hover:text-white">
             Política de privacidade
           </Link>
         </p>
       </div>
-    </section>
+    </form>
   );
 }
 
+/** Uma linha por contador: rótulo à esquerda, −/número/+ à direita. Cabe na lateral de 320px e no celular. */
 function Counter({
   idPrefix,
   label,
@@ -254,11 +393,11 @@ function Counter({
     "grid size-9 shrink-0 place-items-center rounded-lg border border-white/20 text-white/80 transition-colors hover:border-white/50 hover:text-white disabled:opacity-40 disabled:hover:border-white/20";
 
   return (
-    <div className="space-y-1.5">
-      <label htmlFor={id} className={labelClassName}>
+    <div className="flex items-center justify-between gap-3">
+      <label htmlFor={id} className="text-sm text-white/90">
         {label}
       </label>
-      <div className="flex items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5">
         <button
           type="button"
           aria-label={`Menos ${label.toLowerCase()}`}
@@ -280,7 +419,7 @@ function Counter({
             if (Number.isNaN(next)) return;
             onChange(Math.min(MAX_PEOPLE, Math.max(min, next)));
           }}
-          className="h-9 w-full min-w-0 rounded-lg border border-white/20 bg-white/10 text-center text-sm font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="h-9 w-12 shrink-0 rounded-lg border border-white/20 bg-white/10 text-center text-sm font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan/60 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         <button
           type="button"

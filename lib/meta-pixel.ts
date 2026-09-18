@@ -28,6 +28,7 @@ export type MetaLeadSource =
   | "whatsapp_fab"
   | "package_whatsapp"
   | "itinerary_whatsapp"
+  | "itinerary_quote"
   | "footer_whatsapp"
   | "quick_action_whatsapp"
   | "support_whatsapp"

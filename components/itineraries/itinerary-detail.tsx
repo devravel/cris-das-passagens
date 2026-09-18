@@ -49,6 +49,8 @@ import { cn } from "@/lib/utils";
 /** Só o que a página precisa. Serve tanto pro banco quanto pro preview do admin. */
 export type ItineraryDetailData = {
   title: string;
+  /** Vai no e-mail de cotação (link da página). No preview do admin pode estar vazio. */
+  slug?: string;
   duration: string;
   priceFrom?: string | null;
   coverImage: string;
@@ -264,7 +266,12 @@ export function ItineraryDetail({ itinerary, preview = false }: ItineraryDetailP
 
         {/* Reserva na lateral, perto do topo, sem ficar presa ao rolar; no mobile vai pro fim. */}
         <aside className="min-w-0 lg:self-start">
-          <ItineraryQuoteForm title={itinerary.title} hotelOptions={hotelOptions} preview={preview} />
+          <ItineraryQuoteForm
+            title={itinerary.title}
+            slug={itinerary.slug ?? ""}
+            hotelOptions={hotelOptions}
+            preview={preview}
+          />
         </aside>
       </Container>
     </>

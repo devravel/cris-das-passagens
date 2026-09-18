@@ -12,8 +12,13 @@
 - Imagens de roteiro vão pro bucket `blog-covers`, pasta `itineraries/`
   (reuso do upload do blog, sem bucket novo). Imagem inline do tiptap cai
   em `content/`, como no blog.
-- Formulário de reserva da referência virou bloco que monta a mensagem do
-  WhatsApp (hotel, saída, adultos/crianças/bebês). Sem envio ao servidor.
+- Formulário de reserva (2026-09-17, à noite) **envia por e-mail** pra
+  `cotacoescrisdaspassagens@gmail.com` via `POST /api/roteiros/cotacao`
+  (Zod + rate limit 3/30min por IP + honeypot + Resend, igual ao Rei da
+  Copa). Campos: nome*, WhatsApp*, e-mail, hotel, saída, data, adultos/
+  crianças (2–17)/bebês (até 24 meses), extras, mensagem. Nada vai pro
+  banco; se o envio falhar, o form oferece o WhatsApp com a mensagem
+  montada. Política de privacidade atualizada (seções 2 e 9).
 - Descrição é texto simples; as 8 abas e a descrição de hotel são tiptap.
 - **v1.1 (2026-09-17, tarde)** com as referências extras e a conversa com
   o Cristian: faixa "O roteiro inclui" com ícones (lista fixa em
