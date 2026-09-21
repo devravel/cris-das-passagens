@@ -128,8 +128,10 @@ export function PackageForm({
   const imageValue = watchedValues.image ?? "";
   const showCategory = PACKAGE_TYPES_WITH_CATEGORY.has(typeValue);
   const isCircuit = typeValue === "CIRCUIT";
-  const showAirlineFieldAfterDestination =
-    typeValue === "FLIGHT" || typeValue === "PACKAGE_COMPLETE";
+  // Passagem muda toda hora: formulário enxuto, sem descrição, itens, companhia,
+  // slug (gerado no envio) nem "preço referente a" (sempre por pessoa).
+  const isFlight = typeValue === "FLIGHT";
+  const showAirlineFieldAfterDestination = typeValue === "PACKAGE_COMPLETE";
   const showHotelField = typeValue === "HOTEL";
   const showDepartureCityField = packageTypeShowsDepartureCity(typeValue);
   const departureCityValue =
@@ -182,7 +184,7 @@ export function PackageForm({
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
     } else {
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
-      if (typeValue === "TICKET") {
+      if (typeValue === "TICKET" || typeValue === "FLIGHT") {
         form.setValue("hotelName", "", { shouldDirty: true, shouldValidate: true });
       }
     }
@@ -261,10 +263,30 @@ export function PackageForm({
     });
   }
 
+  function fillFlightDefaults() {
+    if (!isFlight) return;
+
+    form.setValue("priceScope", "PER_PERSON", { shouldDirty: true });
+
+    if (!form.getValues("slug").trim()) {
+      const { departureCity, destination, departureDate } = form.getValues();
+      // Sem página própria de pacote, o slug é só identificador: sufixo evita colisão.
+      const suffix = Date.now().toString(36).slice(-4);
+      form.setValue(
+        "slug",
+        normalizeSlug(`passagem ${departureCity} ${destination} ${departureDate} ${suffix}`),
+        { shouldDirty: true },
+      );
+    }
+  }
+
   return (
     <form
       className="space-y-5"
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={(event) => {
+        fillFlightDefaults();
+        void form.handleSubmit(onSubmit)(event);
+      }}
       noValidate
     >
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
@@ -393,6 +415,7 @@ export function PackageForm({
               ) : null}
             </div>
 
+            {isFlight ? null : (
             <div className="space-y-1.5">
               <label
                 htmlFor="slug"
@@ -423,6 +446,7 @@ export function PackageForm({
                 </p>
               ) : null}
             </div>
+            )}
           </div>
 
           {showDepartureCityField ? (
@@ -571,6 +595,8 @@ export function PackageForm({
             </div>
           </div>
 
+          {isFlight ? null : (
+          <>
           <div className="space-y-1.5">
             <label
               htmlFor="shortDescription"
@@ -613,6 +639,8 @@ export function PackageForm({
               </p>
             ) : null}
           </div>
+          </>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -732,6 +760,7 @@ export function PackageForm({
             }}
           />
 
+          {isFlight ? null : (
           <div className="space-y-1.5">
             <label
               htmlFor="priceScope"
@@ -762,6 +791,7 @@ export function PackageForm({
               </p>
             ) : null}
           </div>
+          )}
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
             <div className="flex-1 space-y-1.5">
@@ -804,6 +834,7 @@ export function PackageForm({
             </label>
           </div>
 
+          {isFlight ? null : (
           <PackageIncludedItemsField
             value={watchedValues.includedItems ?? []}
             onChange={(items) =>
@@ -815,6 +846,7 @@ export function PackageForm({
             suggestions={includedItemSuggestions}
             error={form.formState.errors.includedItems?.message}
           />
+          )}
 
           <div className="space-y-1.5">
             <label
