@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Search, X } from "lucide-react";
 
 import { ItineraryBanner } from "@/components/itineraries/itinerary-banner";
 import { ItineraryCardRow } from "@/components/itineraries/itinerary-card-row";
 import type { ItineraryCardData } from "@/components/itineraries/itinerary-card";
 import { Container } from "@/components/layout/container";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export type CatalogCategory = {
@@ -81,12 +82,16 @@ export function ItineraryCatalog({ categories, bannerImage }: ItineraryCatalogPr
               </button>
             ) : null}
           </label>
-          <CategorySelect
-            categories={categories}
-            value={categoryId}
-            onChange={setCategoryId}
-            className="sm:ml-2 sm:border-l sm:border-border/70 sm:pl-2"
-          />
+          <div className="sm:ml-2 sm:border-l sm:border-border/70 sm:pl-2">
+            <Select
+              value={categoryId}
+              onChange={setCategoryId}
+              aria-label="Categoria"
+              options={[{ value: "", label: "Todas as categorias" }, ...categories.map((c) => ({ value: c.id, label: c.name }))]}
+              className="h-11 rounded-none border-0 bg-transparent px-3.5 text-xs font-bold uppercase tracking-[0.12em] hover:bg-muted/50 focus-visible:ring-inset sm:w-44"
+              menuClassName="rounded-none border-0 p-0 py-1 text-sm normal-case tracking-normal shadow-[0_18px_50px_-20px_rgba(10,24,56,0.6)] ring-1 ring-border/70 [&_li]:rounded-none"
+            />
+          </div>
         </div>
       </ItineraryBanner>
 
@@ -118,90 +123,5 @@ export function ItineraryCatalog({ categories, bannerImage }: ItineraryCatalogPr
         )}
       </Container>
     </>
-  );
-}
-
-/** Select estilizado (regra do workspace: nunca <select> nativo). Botão + listbox, fecha em Esc e clique fora. */
-function CategorySelect({
-  categories,
-  value,
-  onChange,
-  className,
-}: {
-  categories: CatalogCategory[];
-  value: string;
-  onChange: (id: string) => void;
-  className?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const listId = useId();
-  const selected = categories.find((category) => category.id === value);
-
-  useEffect(() => {
-    if (!open) return;
-
-    function onPointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
-    }
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open]);
-
-  const options = [{ id: "", name: "Todas as categorias" }, ...categories];
-
-  return (
-    <div ref={rootRef} className={cn("relative", className)}>
-      <button
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listId}
-        onClick={() => setOpen((state) => !state)}
-        className="flex h-11 w-full items-center justify-between gap-3 px-3.5 text-xs font-bold uppercase tracking-[0.12em] text-foreground outline-none transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/60 sm:w-44"
-      >
-        <span className="truncate">{selected ? selected.name : "Categoria"}</span>
-        <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} aria-hidden />
-      </button>
-
-      {open ? (
-        <ul
-          id={listId}
-          role="listbox"
-          aria-label="Categoria"
-          className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 max-h-72 overflow-y-auto bg-white py-1 text-sm text-foreground shadow-[0_18px_50px_-20px_rgba(10,24,56,0.6)] ring-1 ring-border/70"
-        >
-          {options.map((option) => {
-            const isSelected = option.id === value;
-            return (
-              <li key={option.id || "all"} role="option" aria-selected={isSelected}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    onChange(option.id);
-                    setOpen(false);
-                  }}
-                  className={cn(
-                    "flex w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left transition-colors hover:bg-muted/60",
-                    isSelected && "font-semibold text-brand",
-                  )}
-                >
-                  {option.name}
-                  {isSelected ? <Check className="size-4" aria-hidden /> : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </div>
   );
 }

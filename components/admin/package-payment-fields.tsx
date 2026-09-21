@@ -11,10 +11,8 @@ import {
   type PackagePaymentMethodValue,
 } from "@/lib/package/payment";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-
-const selectClassName =
-  "h-10 w-full rounded-xl border border-input bg-background px-3 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 type PackagePaymentFieldsProps = {
   price: number;
@@ -132,15 +130,11 @@ export function PackagePaymentFields({
         >
           Parcelamento
         </label>
-        <select
+        <Select
           id="installmentKind"
-          className={selectClassName}
           value={installmentKind}
-          onChange={(event) =>
-            setKind(event.target.value as PackageInstallmentKindValue)
-          }
-        >
-          {(
+          onChange={(next) => setKind(next as PackageInstallmentKindValue)}
+          options={(
             [
               "NONE",
               "INSTALLMENTS",
@@ -148,12 +142,8 @@ export function PackagePaymentFields({
               "PIX_CASH",
               ...(installmentKind === "CUSTOM" ? (["CUSTOM"] as const) : []),
             ] as const
-          ).map((kind) => (
-            <option key={kind} value={kind}>
-              {PACKAGE_INSTALLMENT_KIND_LABELS[kind]}
-            </option>
-          ))}
-        </select>
+          ).map((kind) => ({ value: kind, label: PACKAGE_INSTALLMENT_KIND_LABELS[kind] }))}
+        />
         {errors?.installmentKind ? (
           <p className="text-xs text-destructive">{errors.installmentKind}</p>
         ) : null}

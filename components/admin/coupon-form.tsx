@@ -12,6 +12,7 @@ import {
 } from "@/app/admin/(protected)/cupons/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getCouponDiscountTypeLabel } from "@/lib/coupon/format";
 import {
@@ -21,9 +22,6 @@ import {
   type CouponFormInput,
   type CouponFormValues,
 } from "@/lib/coupon/schemas";
-
-const selectClassName =
-  "h-10 w-full rounded-xl border border-input bg-background px-3 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 type CouponFormProps = {
   mode: "create" | "edit";
@@ -122,17 +120,20 @@ export function CouponForm({
           <label htmlFor="coupon-type" className="text-sm font-medium text-foreground">
             Tipo
           </label>
-          <select
+          <Select
             id="coupon-type"
-            {...form.register("discountType")}
-            className={selectClassName}
-          >
-            {COUPON_DISCOUNT_TYPES.map((type) => (
-              <option key={type} value={type}>
-                {getCouponDiscountTypeLabel(type)}
-              </option>
-            ))}
-          </select>
+            value={discountType}
+            onChange={(next) =>
+              form.setValue("discountType", next as CouponFormInput["discountType"], {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            options={COUPON_DISCOUNT_TYPES.map((type) => ({
+              value: type,
+              label: getCouponDiscountTypeLabel(type),
+            }))}
+          />
         </div>
 
         {isCustomType ? (

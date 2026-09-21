@@ -18,6 +18,7 @@ import { PackagePaymentFields } from "@/components/admin/package-payment-fields"
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   isValidBlogImageUrl,
@@ -58,9 +59,6 @@ import {
 import { CIRCUIT_START_DAY_OPTIONS } from "@/lib/package/circuit";
 import { resolveStorageImageSrc } from "@/lib/storage/media-url";
 import { cn } from "@/lib/utils";
-
-const selectClassName =
-  "h-10 w-full rounded-xl border border-input bg-background px-3 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 type PackageFormProps = {
   mode: "create" | "edit";
@@ -279,27 +277,20 @@ export function PackageForm({
               >
                 Tipo
               </label>
-              <select
+              <Select
                 id="type"
-                className={selectClassName}
                 value={typeValue}
-                onChange={(event) =>
-                  form.setValue(
-                    "type",
-                    event.target.value as PackageTypeValue,
-                    {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    },
-                  )
+                onChange={(next) =>
+                  form.setValue("type", next as PackageTypeValue, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
                 }
-              >
-                {PACKAGE_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {PACKAGE_TYPE_LABELS[type]}
-                  </option>
-                ))}
-              </select>
+                options={PACKAGE_TYPES.map((type) => ({
+                  value: type,
+                  label: PACKAGE_TYPE_LABELS[type],
+                }))}
+              />
             </div>
 
             {showCategory ? (
@@ -310,24 +301,21 @@ export function PackageForm({
                 >
                   Categoria
                 </label>
-                <select
+                <Select
                   id="category"
-                  className={selectClassName}
                   value={watchedValues.category ?? ""}
-                  onChange={(event) =>
+                  onChange={(next) =>
                     form.setValue(
                       "category",
-                      event.target.value as (typeof PACKAGE_CATEGORIES)[number],
+                      next as (typeof PACKAGE_CATEGORIES)[number],
                       { shouldDirty: true, shouldValidate: true },
                     )
                   }
-                >
-                  {PACKAGE_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {PACKAGE_CATEGORY_LABELS[category]}
-                    </option>
-                  ))}
-                </select>
+                  options={PACKAGE_CATEGORIES.map((category) => ({
+                    value: category,
+                    label: PACKAGE_CATEGORY_LABELS[category],
+                  }))}
+                />
                 {form.formState.errors.category ? (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.category.message}
@@ -446,24 +434,18 @@ export function PackageForm({
                 >
                   Saindo de
                 </label>
-                <select
+                <Select
                   id="departureCityPreset"
-                  className={selectClassName}
                   value={departurePreset}
-                  onChange={(event) =>
-                    handleDeparturePresetChange(
-                      event.target.value as DepartureCityPresetId,
-                    )
+                  onChange={(next) =>
+                    handleDeparturePresetChange(next as DepartureCityPresetId)
                   }
-                >
-                  <option value="SAO_PAULO">
-                    {PACKAGE_DEPARTURE_CITY_PRESETS.SAO_PAULO}
-                  </option>
-                  <option value="PORTO_ALEGRE">
-                    {PACKAGE_DEPARTURE_CITY_PRESETS.PORTO_ALEGRE}
-                  </option>
-                  <option value="OTHER">Outro</option>
-                </select>
+                  options={[
+                    { value: "SAO_PAULO", label: PACKAGE_DEPARTURE_CITY_PRESETS.SAO_PAULO },
+                    { value: "PORTO_ALEGRE", label: PACKAGE_DEPARTURE_CITY_PRESETS.PORTO_ALEGRE },
+                    { value: "OTHER", label: "Outro" },
+                  ]}
+                />
               </div>
 
               {departurePreset === "OTHER" ? (
@@ -501,24 +483,20 @@ export function PackageForm({
                   Dia de início{" "}
                   <span className="text-muted-foreground">(opcional)</span>
                 </label>
-                <select
+                <Select
                   id="circuitStartDay"
-                  className={selectClassName}
                   value={watchedValues.circuitStartDay ?? ""}
-                  onChange={(event) =>
-                    form.setValue("circuitStartDay", event.target.value, {
+                  onChange={(next) =>
+                    form.setValue("circuitStartDay", next, {
                       shouldDirty: true,
                       shouldValidate: true,
                     })
                   }
-                >
-                  <option value="">Selecione</option>
-                  {CIRCUIT_START_DAY_OPTIONS.map((day) => (
-                    <option key={day} value={day}>
-                      {day}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: "", label: "Selecione" },
+                    ...CIRCUIT_START_DAY_OPTIONS.map((day) => ({ value: day, label: day })),
+                  ]}
+                />
                 {form.formState.errors.circuitStartDay ? (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.circuitStartDay.message}
@@ -761,29 +739,23 @@ export function PackageForm({
             >
               Preço referente a *
             </label>
-            <select
+            <Select
               id="priceScope"
-              className={selectClassName}
               value={watchedValues.priceScope ?? ""}
-              onChange={(event) =>
+              placeholder="Selecione"
+              invalid={Boolean(form.formState.errors.priceScope)}
+              onChange={(next) =>
                 form.setValue(
                   "priceScope",
-                  event.target.value === ""
-                    ? null
-                    : (event.target.value as (typeof PACKAGE_PRICE_SCOPES)[number]),
+                  next as (typeof PACKAGE_PRICE_SCOPES)[number],
                   { shouldDirty: true, shouldValidate: true },
                 )
               }
-            >
-              <option value="" disabled>
-                Selecione
-              </option>
-              {PACKAGE_PRICE_SCOPES.map((scope) => (
-                <option key={scope} value={scope}>
-                  {PACKAGE_PRICE_SCOPE_LABELS[scope]}
-                </option>
-              ))}
-            </select>
+              options={PACKAGE_PRICE_SCOPES.map((scope) => ({
+                value: scope,
+                label: PACKAGE_PRICE_SCOPE_LABELS[scope],
+              }))}
+            />
             {form.formState.errors.priceScope ? (
               <p className="text-xs text-destructive">
                 {form.formState.errors.priceScope.message}
