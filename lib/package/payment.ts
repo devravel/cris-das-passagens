@@ -143,9 +143,11 @@ export function buildInstallmentText(fields: {
   }
 }
 
+/** Parcela sugerida: o que sobra depois da entrada, dividido pelas parcelas. */
 export function suggestInstallmentAmount(
   price: number | null | undefined,
   count: number | null | undefined,
+  downPayment?: number | null,
 ): number | null {
   if (
     price == null ||
@@ -157,7 +159,14 @@ export function suggestInstallmentAmount(
     return null;
   }
 
-  return Math.round((price / count) * 100) / 100;
+  const entrada = downPayment != null && !Number.isNaN(downPayment) ? downPayment : 0;
+  const financed = price - entrada;
+
+  if (financed <= 0) {
+    return null;
+  }
+
+  return Math.round((financed / count) * 100) / 100;
 }
 
 export function inferInstallmentFieldsFromText(

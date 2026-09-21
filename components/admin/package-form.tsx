@@ -34,9 +34,10 @@ import {
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
 } from "@/lib/package/constants";
-import type {
-  PackageInstallmentKindValue,
-  PackagePaymentMethodValue,
+import {
+  suggestInstallmentAmount,
+  type PackageInstallmentKindValue,
+  type PackagePaymentMethodValue,
 } from "@/lib/package/payment";
 import {
   EMPTY_PACKAGE_FORM_VALUES,
@@ -99,6 +100,30 @@ export function PackageForm({
   const watchedValues = useWatch({
     control: form.control,
   }) as Partial<PackageFormValues>;
+
+  const priceField = form.register("price", { valueAsNumber: true });
+
+  /** Preço novo, parcela nova: quem parcela não precisa refazer a conta na mão. */
+  function recalculateInstallmentAmount(nextPrice: number) {
+    const kind = form.getValues("installmentKind");
+
+    if (kind !== "INSTALLMENTS" && kind !== "DOWN_PAYMENT") {
+      return;
+    }
+
+    const suggested = suggestInstallmentAmount(
+      nextPrice,
+      form.getValues("installmentCount"),
+      kind === "DOWN_PAYMENT" ? form.getValues("downPaymentAmount") : null,
+    );
+
+    if (suggested != null) {
+      form.setValue("installmentAmount", suggested, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }
   const fullDescriptionValue = useWatch({ control: form.control, name: "fullDescription" }) ?? "";
   const typeValue = (watchedValues.type ??
     "PACKAGE_COMPLETE") as PackageTypeValue;
@@ -625,7 +650,11 @@ export function PackageForm({
                 min="0"
                 step="0.01"
                 className="h-10 rounded-xl"
-                {...form.register("price", { valueAsNumber: true })}
+                {...priceField}
+                onChange={(event) => {
+                  void priceField.onChange(event);
+                  recalculateInstallmentAmount(Number(event.target.value));
+                }}
               />
               {form.formState.errors.price ? (
                 <p className="text-xs text-destructive">
@@ -730,8 +759,7 @@ export function PackageForm({
               htmlFor="priceScope"
               className="text-sm font-medium text-foreground"
             >
-              Preço referente a{" "}
-              <span className="text-muted-foreground">(opcional)</span>
+              Preço referente a *
             </label>
             <select
               id="priceScope"
@@ -747,7 +775,9 @@ export function PackageForm({
                 )
               }
             >
-              <option value="">Não informar</option>
+              <option value="" disabled>
+                Selecione
+              </option>
               {PACKAGE_PRICE_SCOPES.map((scope) => (
                 <option key={scope} value={scope}>
                   {PACKAGE_PRICE_SCOPE_LABELS[scope]}

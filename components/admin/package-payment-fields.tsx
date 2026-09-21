@@ -87,11 +87,13 @@ export function PackagePaymentFields({
         : null;
 
     const suggested =
-      nextKind === "INSTALLMENTS" || nextKind === "DOWN_PAYMENT"
+      nextKind === "INSTALLMENTS"
         ? suggestInstallmentAmount(price, nextCount)
-        : nextKind === "PIX_CASH"
-          ? price
-          : null;
+        : nextKind === "DOWN_PAYMENT"
+          ? suggestInstallmentAmount(price, nextCount, downPaymentAmount)
+          : nextKind === "PIX_CASH"
+            ? price
+            : null;
 
     onChange({
       installmentKind: nextKind,
@@ -99,17 +101,17 @@ export function PackagePaymentFields({
       installmentAmount:
         nextKind === "NONE" || nextKind === "CUSTOM"
           ? null
-          : (installmentAmount ?? suggested),
+          : (suggested ?? installmentAmount),
       downPaymentAmount: nextKind === "DOWN_PAYMENT" ? downPaymentAmount : null,
       installmentText: nextKind === "CUSTOM" ? installmentText : "",
     });
   }
 
   function setCount(count: number) {
-    const suggested = suggestInstallmentAmount(price, count);
+    const suggested = suggestInstallmentAmount(price, count, downPaymentAmount);
     onChange({
       installmentCount: count,
-      installmentAmount: installmentAmount ?? suggested,
+      installmentAmount: suggested ?? installmentAmount,
     });
   }
 
@@ -225,11 +227,15 @@ export function PackagePaymentFields({
             step="0.01"
             className="h-10 rounded-xl"
             value={downPaymentAmount ?? ""}
-            onChange={(event) =>
+            onChange={(event) => {
+              const nextDownPayment = optionalNumberFromInput(event.target.value);
+              const suggested = suggestInstallmentAmount(price, installmentCount, nextDownPayment);
+
               onChange({
-                downPaymentAmount: optionalNumberFromInput(event.target.value),
-              })
-            }
+                downPaymentAmount: nextDownPayment,
+                ...(suggested != null ? { installmentAmount: suggested } : {}),
+              });
+            }}
           />
           {errors?.downPaymentAmount ? (
             <p className="text-xs text-destructive">{errors.downPaymentAmount}</p>
@@ -266,6 +272,7 @@ export function PackagePaymentFields({
                 const suggested = suggestInstallmentAmount(
                   price,
                   installmentCount,
+                  downPaymentAmount,
                 );
                 if (suggested != null) {
                   onChange({ installmentAmount: suggested });

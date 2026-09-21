@@ -64,7 +64,12 @@ const packageFormFieldsSchema = z.object({
   category: z.enum(PACKAGE_CATEGORIES).nullable(),
   price: priceSchema,
   oldPrice: optionalPriceSchema,
-  priceScope: z.enum(PACKAGE_PRICE_SCOPES).nullable(),
+  // Nullable pelo estado inicial do formulário, mas salvar sem escolher não passa.
+  priceScope: z
+    .enum(PACKAGE_PRICE_SCOPES)
+    .nullable()
+    // Tipo anotado de propósito: sem isso o refine estreita o tipo e quebra o formulário.
+    .refine((value): boolean => value !== null, "Escolha a quem o preço se refere."),
   installmentKind: z.enum(PACKAGE_INSTALLMENT_KINDS),
   installmentCount: z.number().int().min(1).max(48).nullable(),
   installmentAmount: optionalPriceSchema,
