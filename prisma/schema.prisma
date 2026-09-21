@@ -136,6 +136,8 @@ model Package {
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique
+  /// Nome do vendedor: aparece no painel e vai pro campo Vendedor do roteiro.
+  name         String   @default("")
   passwordHash String
   createdAt    DateTime @default(now())
 }
@@ -287,6 +289,8 @@ model ItineraryCategory {
 model Itinerary {
   id                 String              @id @default(cuid())
   title              String
+  /// Vendedor dono do roteiro: nunca aparece no site, só no e-mail de cotação.
+  seller             String?
   slug               String              @unique
   coverImage         String
   gallery            String[]            @default([])

@@ -42,6 +42,7 @@ function normalizeInput(input: ItineraryInput) {
 
   return {
     title: input.title,
+    seller: input.seller?.trim() || null,
     slug: input.slug,
     coverImage: normalizeBlogImageUrl(input.coverImage),
     gallery: input.gallery.map((url) => normalizeBlogImageUrl(url)),

@@ -42,7 +42,12 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-export function buildItineraryQuoteEmail(input: ItineraryQuoteInput, siteUrl: string) {
+export function buildItineraryQuoteEmail(
+  input: ItineraryQuoteInput,
+  siteUrl: string,
+  /** Vendedor dono do roteiro (cadastro do painel): só existe aqui, nunca no site. */
+  seller?: string | null,
+) {
   const receivedAt = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
     timeStyle: "short",
@@ -52,6 +57,7 @@ export function buildItineraryQuoteEmail(input: ItineraryQuoteInput, siteUrl: st
 
   const rows: [string, string][] = [
     ["Roteiro", input.itineraryTitle],
+    ["Vendedor", seller?.trim() || "não informado"],
     ["Nome", input.name],
     ["WhatsApp", input.phone],
     ["E-mail", input.email || "não informado"],
@@ -64,7 +70,9 @@ export function buildItineraryQuoteEmail(input: ItineraryQuoteInput, siteUrl: st
     ["Recebido em", `${receivedAt} (Brasília)`],
   ];
 
-  const subject = `Cotação de roteiro: ${input.itineraryTitle} — ${input.name}`;
+  const subject = seller?.trim()
+    ? `Cotação de roteiro: ${input.itineraryTitle} — ${input.name} — ${seller.trim()}`
+    : `Cotação de roteiro: ${input.itineraryTitle} — ${input.name}`;
   const text = [
     "Novo pedido de cotação pelo site",
     "",

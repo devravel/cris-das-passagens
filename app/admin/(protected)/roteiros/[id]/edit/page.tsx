@@ -41,6 +41,7 @@ export default async function EditRoteiroPage({ params }: EditRoteiroPageProps) 
       categories={categories}
       initialValues={{
         title: itinerary.title,
+        seller: itinerary.seller ?? "",
         slug: itinerary.slug,
         coverImage: itinerary.coverImage,
         gallery: itinerary.gallery,

@@ -7,6 +7,7 @@ import {
   buildItineraryQuoteEmail,
   itineraryQuoteSchema,
 } from "@/lib/itinerary/quote";
+import { prisma } from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/seo/site-url";
 
 /**
@@ -62,9 +63,15 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Vendedor vem do banco, não do formulário: o cliente nunca vê esse dado.
+    const itinerary = await prisma.itinerary.findUnique({
+      where: { slug: parsed.data.itinerarySlug },
+      select: { seller: true },
+    });
+
     const result = await sendTransactionalEmail({
       to: ITINERARY_QUOTE_EMAIL,
-      ...buildItineraryQuoteEmail(parsed.data, getSiteUrl()),
+      ...buildItineraryQuoteEmail(parsed.data, getSiteUrl(), itinerary?.seller),
     });
 
     if (!result.sent) {

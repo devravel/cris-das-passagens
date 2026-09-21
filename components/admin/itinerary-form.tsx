@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils";
 type ItineraryFormProps = {
   mode: "create" | "edit";
   itineraryId?: string;
-  initialValues?: ItineraryInput;
+  initialValues?: Partial<ItineraryInput>;
   categories: ItineraryCategoryItem[];
   onSuccess?: () => void;
 };
@@ -63,6 +63,7 @@ const EMPTY_HOTEL: ItineraryHotel = {
 
 const EMPTY_VALUES: ItineraryInput = {
   title: "",
+  seller: "",
   slug: "",
   coverImage: "",
   gallery: [],
@@ -248,6 +249,17 @@ export function ItineraryForm({
             </label>
             <Input id="title" className="h-10 rounded-xl" placeholder="Ex.: Caldas Novas imperdível" {...form.register("title")} />
             <FieldError message={errors.title?.message} />
+          </div>
+
+          <div className="space-y-1.5 md:col-span-2">
+            <label htmlFor="seller" className={labelClassName}>
+              Vendedor
+            </label>
+            <Input id="seller" className="h-10 rounded-xl" placeholder="Ex.: Maria Silva" {...form.register("seller")} />
+            <p className="text-xs text-muted-foreground">
+              Não aparece no site. Vai junto no e-mail quando alguém pedir cotação desse roteiro.
+            </p>
+            <FieldError message={errors.seller?.message} />
           </div>
 
           <div className="space-y-1.5">

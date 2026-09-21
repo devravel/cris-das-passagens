@@ -13,6 +13,7 @@ import {
   CircleUser,
   TicketPercent,
   Trophy,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -40,6 +41,7 @@ const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
   "ticket-percent": TicketPercent,
   mail: Mail,
   map: Map,
+  users: Users,
   trophy: Trophy,
 };
 

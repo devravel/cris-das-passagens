@@ -26,6 +26,7 @@ export type AdminNavigationIcon =
   | "map"
   | "ticket-percent"
   | "mail"
+  | "users"
   | "trophy";
 
 export type AdminNavigationItem = {
@@ -73,5 +74,10 @@ export const adminNavigationItems = [
     title: "Newsletter",
     href: "/admin/newsletter",
     icon: "mail",
+  },
+  {
+    title: "Usuários",
+    href: "/admin/usuarios",
+    icon: "users",
   },
 ] as const satisfies readonly AdminNavigationItem[];

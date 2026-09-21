@@ -40,6 +40,8 @@ export type ItineraryHotel = z.infer<typeof itineraryHotelSchema>;
 export const itinerarySchema = z
   .object({
     title: z.string().trim().min(3, "Título deve ter no mínimo 3 caracteres.").max(140),
+    /** Interno: não aparece no site, só no e-mail de cotação. */
+    seller: z.string().trim().max(80).optional(),
     slug: z
       .string()
       .trim()

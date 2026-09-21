@@ -11,7 +11,7 @@ import type { ItineraryInput } from "@/lib/itinerary/schemas";
 type ItineraryScreenProps = {
   mode: "create" | "edit";
   itineraryId?: string;
-  initialValues?: ItineraryInput;
+  initialValues?: Partial<ItineraryInput>;
   categories: ItineraryCategoryItem[];
 };
 
