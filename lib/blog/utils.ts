@@ -11,6 +11,16 @@ export function formatBlogSidebarDate(date: Date): string {
   return `${day} ${monthLabel} ${year}`;
 }
 
+const dayInSaoPaulo = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  dateStyle: "short",
+});
+
+/** Só conta como atualização se a edição caiu em outro dia que a publicação. */
+export function wasUpdatedAfterPublish(createdAt: Date, updatedAt: Date): boolean {
+  return dayInSaoPaulo.format(updatedAt) !== dayInSaoPaulo.format(createdAt);
+}
+
 export function normalizeSlug(value: string) {
   return value
     .normalize("NFD")

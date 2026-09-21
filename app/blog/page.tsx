@@ -26,6 +26,7 @@ import {
   withPaginationMetadata,
 } from "@/lib/seo";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
+import { wasUpdatedAfterPublish } from "@/lib/blog/utils";
 import { prisma } from "@/lib/prisma";
 import {
   cardContentContainerClassName,
@@ -109,6 +110,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       coverImage: true,
       views: true,
       createdAt: true,
+      updatedAt: true,
     },
     take: BLOG_POSTS_PER_PAGE,
     skip,
@@ -140,11 +142,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <ul className="grid list-none grid-cols-1 items-stretch gap-5 p-0 sm:gap-6 lg:grid-cols-2 xl:grid-cols-3">
             {posts.map((post) => {
               const href = `/blog/${post.slug}`;
+              // Post editado mostra a data da última edição, não a da publicação.
+              const wasUpdated = wasUpdatedAfterPublish(post.createdAt, post.updatedAt);
+              const shownDate = wasUpdated ? post.updatedAt : post.createdAt;
               const formattedDate = new Intl.DateTimeFormat("pt-BR", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
-              }).format(post.createdAt);
+              }).format(shownDate);
 
               return (
                 <li key={post.id} className="flex">
@@ -172,7 +177,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
                     <div className={cn(blogCardBodyClassName, "p-5 sm:p-6")}>
                       <p className="flex shrink-0 items-center justify-between gap-3 text-xs font-medium uppercase tracking-wider text-brand">
-                        {formattedDate}
+                        <time dateTime={shownDate.toISOString()}>
+                          {wasUpdated ? `Atualizado ${formattedDate}` : formattedDate}
+                        </time>
                         <BlogPostViews views={post.views} className="text-muted-foreground" />
                       </p>
 
