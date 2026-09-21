@@ -24,6 +24,8 @@ type ItineraryQuoteFormProps = {
 };
 
 const EXTRAS = content.itineraries.extras;
+const DURATIONS = content.itineraries.durations;
+const OTHER_DURATION = "Outra";
 
 const fieldClassName =
   "h-11 rounded-xl border-white/20 bg-white/10 text-white placeholder:text-white/40 focus-visible:ring-brand-cyan/60";
@@ -64,11 +66,17 @@ export function ItineraryQuoteForm({
   const [children, setChildren] = useState(0);
   const [babies, setBabies] = useState(0);
   const [travelDate, setTravelDate] = useState("");
+  const [duration, setDuration] = useState("");
+  const [customDays, setCustomDays] = useState("");
   const [extras, setExtras] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
   const [human, setHuman] = useState(false);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+
+  // "Outra" vira "12 dias"; o resto vai como está no botão.
+  const tripDays =
+    duration === OTHER_DURATION ? (customDays.trim() && `${customDays.trim()} dias`) : duration;
 
   const whatsappHref = getItineraryWhatsAppUrl(title, {
     hotel: hotel || undefined,
@@ -77,6 +85,7 @@ export function ItineraryQuoteForm({
     children,
     babies,
     travelDate: travelDate.trim() || undefined,
+    tripDays: tripDays || undefined,
     extras,
     message: [name.trim() && `Nome: ${name.trim()}`, message.trim()].filter(Boolean).join("\n") || undefined,
   });
@@ -98,6 +107,7 @@ export function ItineraryQuoteForm({
       hotel: hotel || undefined,
       origin: origin.trim() || undefined,
       travelDate: travelDate.trim() || undefined,
+      tripDays: tripDays || undefined,
       adults,
       children,
       babies,
@@ -256,6 +266,45 @@ export function ItineraryQuoteForm({
             className={fieldClassName}
           />
         </div>
+
+        <fieldset className="space-y-2" role="radiogroup" aria-label="Quantos dias">
+          <legend className={labelClassName}>Quantos dias</legend>
+          <div className="flex flex-wrap gap-2">
+            {[...DURATIONS, OTHER_DURATION].map((option) => {
+              const selected = duration === option;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setDuration(selected ? "" : option)}
+                  className={pillClassName(selected)}
+                >
+                  {option}
+                </button>
+              );
+            })}
+          </div>
+          {duration === OTHER_DURATION ? (
+            <div className="space-y-1.5 pt-1">
+              <label htmlFor={`${idPrefix}-dias`} className="text-xs text-white/60">
+                Quantidade de dias total da viagem
+              </label>
+              <Input
+                id={`${idPrefix}-dias`}
+                type="number"
+                min={1}
+                max={90}
+                inputMode="numeric"
+                value={customDays}
+                onChange={(event) => setCustomDays(event.target.value)}
+                placeholder="Ex.: 12"
+                className={cn(fieldClassName, "max-w-32")}
+              />
+            </div>
+          ) : null}
+        </fieldset>
 
         <fieldset className="space-y-2">
           <legend className={labelClassName}>Passageiros</legend>

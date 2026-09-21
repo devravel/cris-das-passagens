@@ -152,6 +152,8 @@ export const content = {
     } satisfies ContentCta,
     /** Produtos à parte que o visitante marca no bloco de reserva do roteiro. */
     extras: ["Guia virtual", "Roteiro personalizado"],
+    /** Durações sugeridas no bloco de reserva; "Outra" abre o campo de dias. */
+    durations: ["05 dias", "07 dias", "10 dias", "Fim de semana"],
   },
 
   instagram: {
