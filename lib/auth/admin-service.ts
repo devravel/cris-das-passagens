@@ -22,3 +22,11 @@ export async function validateAdminCredentials(email: string, password: string) 
     email: admin.email,
   };
 }
+
+/** Usuário logado com o nome, pra pré-preencher o vendedor do roteiro. */
+export async function getAdminUserById(id: string) {
+  return prisma.adminUser.findUnique({
+    where: { id },
+    select: { id: true, email: true, name: true },
+  });
+}

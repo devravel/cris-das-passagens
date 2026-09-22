@@ -18,7 +18,7 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { bodyTextClassName } from "@/components/layout/section-header";
 import { Button } from "@/components/ui/button";
 import { normalizeBlogImageUrl } from "@/lib/blog/image-url";
-import { formatBlogSidebarDate } from "@/lib/blog/utils";
+import { formatBlogSidebarDate, wasUpdatedAfterPublish } from "@/lib/blog/utils";
 import { getPostLikeCount, getTagsForPost } from "@/lib/blog/tags";
 import { prisma } from "@/lib/prisma";
 import {
@@ -114,11 +114,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const canonicalUrl = buildCanonicalUrl(`/blog/${post.slug}`);
   const coverImage = normalizeBlogImageUrl(post.coverImage);
 
-  const publishedAt = new Intl.DateTimeFormat("pt-BR", {
+  const longDate = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  }).format(post.createdAt);
+  });
+  const publishedAt = longDate.format(post.createdAt);
+  const updatedAt = wasUpdatedAfterPublish(post.createdAt, post.updatedAt)
+    ? longDate.format(post.updatedAt)
+    : null;
 
   const sidebarPublishedAt = formatBlogSidebarDate(post.createdAt);
 
@@ -184,6 +188,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <time dateTime={post.createdAt.toISOString()}>
                   Publicado em {publishedAt}
                 </time>
+                {updatedAt ? (
+                  <>
+                    <span aria-hidden className="text-border">·</span>
+                    <time dateTime={post.updatedAt.toISOString()}>
+                      Atualizado em {updatedAt}
+                    </time>
+                  </>
+                ) : null}
                 <span aria-hidden className="text-border">·</span>
                 <BlogPostViews views={post.views} withLabel />
               </div>

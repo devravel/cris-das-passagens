@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { RANKING_POINT_INCREMENTS } from "@/lib/rei-da-copa/schemas";
 import type {
   AdminReiDaCopaParticipantRow,
@@ -172,24 +173,22 @@ export function RankingTable({ entries, participants }: RankingTableProps) {
             <div className="flex flex-wrap items-end gap-3">
               <div className="min-w-[220px] flex-1">
                 <label className="mb-1.5 block text-xs text-muted-foreground">Participante</label>
-                <select
+                <Select
                   value={selectedParticipantId}
-                  onChange={(event) => setSelectedParticipantId(event.target.value)}
-                  className="h-10 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                >
-                  <option value="">Selecione...</option>
-                  {participants.map((participant) => {
-                    const isRanked = rankedParticipantIds.has(participant.id);
-
-                    return (
-                      <option key={participant.id} value={participant.id} disabled={isRanked}>
-                        #{participant.registrationNumber} — {participant.name} (
-                        {participant.instagram})
-                        {isRanked ? " — já no ranking" : ""}
-                      </option>
-                    );
-                  })}
-                </select>
+                  onChange={setSelectedParticipantId}
+                  aria-label="Participante"
+                  options={[
+                    { value: "", label: "Selecione..." },
+                    ...participants.map((participant) => {
+                      const isRanked = rankedParticipantIds.has(participant.id);
+                      return {
+                        value: participant.id,
+                        label: `#${participant.registrationNumber} — ${participant.name} (${participant.instagram})${isRanked ? " — já no ranking" : ""}`,
+                        disabled: isRanked,
+                      };
+                    }),
+                  ]}
+                />
               </div>
               <div className="w-28">
                 <label className="mb-1.5 block text-xs text-muted-foreground">Posição</label>

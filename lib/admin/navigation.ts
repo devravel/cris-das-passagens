@@ -23,8 +23,10 @@ export type AdminNavigationIcon =
   | "layout-dashboard"
   | "file-text"
   | "package"
+  | "map"
   | "ticket-percent"
   | "mail"
+  | "users"
   | "trophy";
 
 export type AdminNavigationItem = {
@@ -59,6 +61,11 @@ export const adminNavigationItems = [
     icon: "package",
   },
   {
+    title: "Roteiros",
+    href: "/admin/roteiros",
+    icon: "map",
+  },
+  {
     title: "Cupons",
     href: "/admin/cupons",
     icon: "ticket-percent",
@@ -67,5 +74,10 @@ export const adminNavigationItems = [
     title: "Newsletter",
     href: "/admin/newsletter",
     icon: "mail",
+  },
+  {
+    title: "Usuários",
+    href: "/admin/usuarios",
+    icon: "users",
   },
 ] as const satisfies readonly AdminNavigationItem[];

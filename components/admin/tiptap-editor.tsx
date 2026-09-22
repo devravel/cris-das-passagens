@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import Image from "@tiptap/extension-image";
@@ -126,7 +126,7 @@ const editorContentClassName = [
   "[&_figcaption]:mt-2 [&_figcaption]:text-center [&_figcaption]:text-xs [&_figcaption]:text-muted-foreground",
 ].join(" ");
 
-export function TiptapEditor({
+function TiptapEditorInner({
   value,
   onChange,
   placeholder = "Escreva o conteúdo do post...",
@@ -551,3 +551,6 @@ export function TiptapEditor({
     </div>
   );
 }
+
+/** Memoizado: formulários com vários editores (roteiros) não redesenham todos a cada tecla. */
+export const TiptapEditor = memo(TiptapEditorInner);

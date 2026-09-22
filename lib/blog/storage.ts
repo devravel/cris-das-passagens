@@ -19,9 +19,11 @@ export const ALLOWED_BLOG_IMAGE_MIME_TYPES = new Set([
 
 export const MAX_BLOG_IMAGE_BYTES = 5 * 1024 * 1024;
 
+export type BlogImageFolder = "covers" | "content" | "itineraries";
+
 type UploadBlogImageInput = {
   file: File;
-  folder: "covers" | "content";
+  folder: BlogImageFolder;
 };
 
 function getSafeExtension(fileName: string) {
@@ -29,7 +31,7 @@ function getSafeExtension(fileName: string) {
   return extension.replace(/[^a-z0-9]/g, "") || "jpg";
 }
 
-export function makeBlogStoragePath(folder: "covers" | "content", fileName: string) {
+export function makeBlogStoragePath(folder: BlogImageFolder, fileName: string) {
   const safeExtension = getSafeExtension(fileName);
   const randomPart = crypto.randomUUID();
 

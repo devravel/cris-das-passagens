@@ -10,7 +10,9 @@ import { cn } from "@/lib/utils";
 const sizeClassName = {
   /** Navbar no mobile — encolhe com a tela (clamp) pra manter respiro entre logo e menu. */
   sm: "h-[clamp(2.125rem,9.5vw,2.5rem)] gap-[clamp(0.25rem,1.5vw,0.5rem)] px-[clamp(0.5rem,3vw,0.875rem)] text-[clamp(0.6875rem,3.2vw,0.8125rem)]",
-  /** Padrão de todo CTA do site (hero, navbar, seções). */
+  /** Navbar a partir de 640px — menor que o da hero pra não brigar com 7 links de menu. */
+  md: "h-11 gap-2.5 px-5 text-[0.9375rem]",
+  /** Padrão de todo CTA do site (hero, seções). */
   default: "h-12 gap-3 px-6 text-[0.9375rem] sm:h-13 sm:px-7 sm:text-base",
   /** Destaque centralizado ("Ver todos os pacotes"). */
   xl: "h-14 gap-3.5 px-9 text-lg sm:h-16 sm:px-12 sm:text-xl",
@@ -18,6 +20,7 @@ const sizeClassName = {
 
 const arrowSizeClassName = {
   sm: "size-[clamp(1.125rem,5.5vw,1.5rem)] [&>svg]:size-[clamp(0.75rem,3.4vw,0.875rem)]",
+  md: "size-6 [&>svg]:size-3.5",
   default: "size-7 [&>svg]:size-4",
   xl: "size-9 [&>svg]:size-5",
 } as const;

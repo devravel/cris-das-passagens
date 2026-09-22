@@ -143,36 +143,17 @@ export const content = {
     } satisfies ContentCta,
   },
 
-  /** Demonstração pro Cris — roteiros ainda não existem como produto. */
+  /** Roteiros em destaque na home (marcados no admin). Some sozinha sem destaque. */
   itineraries: {
-    enabled: false, // ligado so na branch `roteiros` (ver prints/roteiros.md)
     title: "*Roteiros* para se inspirar",
-    subtitle:
-      "Ideias de viagem prontas, do voo ao passeio. Você escolhe o roteiro e a gente ajusta datas, hotel e orçamento.",
-    items: [
-      {
-        title: "Serra Gaúcha",
-        description: "Gramado, Canela e vinícolas em 4 dias, saindo de Porto Alegre.",
-        duration: "4 dias",
-        image: "/roteiros/gramado.webp",
-      },
-      {
-        title: "Buenos Aires",
-        description: "Tango, parrilla e Palermo num fim de semana prolongado.",
-        duration: "5 dias",
-        image: "/roteiros/buenos-aires.webp",
-      },
-      {
-        title: "Lisboa e Porto",
-        description: "Portugal de norte a sul com trem, hotel e passeios inclusos.",
-        duration: "8 dias",
-        image: "/roteiros/lisboa.webp",
-      },
-    ],
     cta: {
-      label: "Montar meu roteiro",
-      href: getQuoteWhatsAppUrl(),
+      label: "Ver todos os roteiros",
+      href: "/roteiros",
     } satisfies ContentCta,
+    /** Produtos à parte que o visitante marca no bloco de reserva do roteiro. */
+    extras: ["Guia virtual", "Roteiro personalizado"],
+    /** Durações sugeridas no bloco de reserva; "Outra" abre o campo de dias. */
+    durations: ["05 dias", "07 dias", "10 dias", "Fim de semana"],
   },
 
   instagram: {

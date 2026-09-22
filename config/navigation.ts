@@ -49,6 +49,7 @@ export const brandPrimaryPages: NavItem[] = [
   { label: "Início", href: "/" },
   ...(REI_DA_COPA_CAMPAIGN_ENABLED ? [reiDaCopaNavItem] : []),
   { label: "Pacotes", href: "/pacotes" },
+  { label: "Roteiros", href: "/roteiros" },
   { label: "Blog", href: contentLinks.blog },
   { label: "Sobre", href: "/sobre" },
   { label: "Contato", href: "/contato" },

@@ -490,41 +490,7 @@
 }
 
 /* Microinteração de descoberta nos botões laterais do carrossel de pacotes */
-@keyframes carousel-nav-outline-sweep {
-  0% {
-    stroke-dashoffset: 100;
-    opacity: 0;
-  }
 
-  8% {
-    opacity: 0.9;
-  }
-
-  70% {
-    stroke-dashoffset: 0;
-    opacity: 0.72;
-  }
-
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-}
-
-.carousel-nav-outline-hint__path {
-  fill: none;
-  stroke: color-mix(in oklch, var(--brand) 58%, transparent);
-  stroke-width: 1.35;
-  stroke-linecap: round;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  opacity: 0;
-}
-
-.carousel-nav-outline-hint__path--active {
-  animation: carousel-nav-outline-sweep 1.35s cubic-bezier(0.45, 0.05, 0.25, 1)
-    both;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .package-card-anchor[data-highlighted="true"] article {
@@ -535,10 +501,6 @@
   .hero-featured-packages-empty__glow,
   .hero-featured-packages-empty__message,
   .hero-featured-packages-empty__icon {
-    animation: none;
-  }
-
-  .carousel-nav-outline-hint__path--active {
     animation: none;
   }
 }
@@ -1276,4 +1238,19 @@
     background: #ffffff;
     border: 1px solid rgb(20 83 45 / 0.1);
   }
+}
+
+/* Setas do trilho de roteiros no mobile: um "pulo" pro lado que tem mais card. */
+@keyframes nudge-right {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes nudge-left {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="nudge-"] { animation: none; }
 }

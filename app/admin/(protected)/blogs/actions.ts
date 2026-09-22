@@ -522,10 +522,9 @@ export async function registerPostViewAction(postId: string): Promise<void> {
   }
 
   try {
-    await prisma.post.updateMany({
-      where: { id: parsedPostId.data, published: true },
-      data: { views: { increment: 1 } },
-    });
+    // SQL cru de propósito: prisma.update mexeria no updatedAt e toda visita
+    // viraria "atualizado hoje" no blog e no sitemap.
+    await prisma.$executeRaw`UPDATE "Post" SET views = views + 1 WHERE id = ${parsedPostId.data} AND published = true`;
   } catch {
     // contador não pode derrubar a leitura do post
   }

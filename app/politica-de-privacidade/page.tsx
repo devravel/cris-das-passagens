@@ -123,9 +123,9 @@ export default function PoliticaDePrivacidadePage() {
         <PolicySection id="dados-coletados" title="2. Dados que coletamos">
           <PolicyParagraph>
             Coletamos apenas os dados necessários para as funcionalidades descritas
-            abaixo. O site <strong>não possui formulário de contato com envio de
-            dados ao servidor</strong> — a página de contato exibe informações da
-            empresa e direciona você ao WhatsApp.
+            abaixo. A página de contato exibe informações da empresa e direciona
+            você ao WhatsApp; o único formulário de cotação com envio ao servidor
+            é o das páginas de roteiro, descrito na seção 9.
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
@@ -580,8 +580,17 @@ export default function PoliticaDePrivacidadePage() {
 
         <PolicySection id="formularios" title="9. Formulários do site">
           <PolicyParagraph>
-            <strong>Contato e cotação:</strong> não há envio de formulário ao servidor.
-            A página de contato e os botões de cotação redirecionam ao WhatsApp.
+            <strong>Contato:</strong> não há envio de formulário ao servidor. A
+            página de contato e os botões de cotação redirecionam ao WhatsApp.
+          </PolicyParagraph>
+          <PolicyParagraph>
+            <strong>Cotação de roteiro:</strong> formulário nas páginas de roteiro
+            com nome, WhatsApp, e-mail (opcional) e detalhes da viagem desejada
+            (hotel, cidade de saída, data aproximada, quantidade de passageiros,
+            serviços extras e mensagem). Os dados são enviados por e-mail à equipe
+            da Cris das Passagens, exclusivamente para responder ao seu pedido, e
+            <strong> não são armazenados no banco de dados do site</strong>. Limite
+            de 3 envios por IP a cada 30 minutos.
           </PolicyParagraph>
           <PolicyParagraph>
             <strong>Newsletter:</strong> formulário com nome, e-mail e telefone;

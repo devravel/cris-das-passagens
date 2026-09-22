@@ -18,6 +18,7 @@ import { PackagePaymentFields } from "@/components/admin/package-payment-fields"
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   isValidBlogImageUrl,
@@ -34,9 +35,10 @@ import {
   PACKAGE_TYPES_WITH_CATEGORY,
   type PackageTypeValue,
 } from "@/lib/package/constants";
-import type {
-  PackageInstallmentKindValue,
-  PackagePaymentMethodValue,
+import {
+  suggestInstallmentAmount,
+  type PackageInstallmentKindValue,
+  type PackagePaymentMethodValue,
 } from "@/lib/package/payment";
 import {
   EMPTY_PACKAGE_FORM_VALUES,
@@ -57,9 +59,6 @@ import {
 import { CIRCUIT_START_DAY_OPTIONS } from "@/lib/package/circuit";
 import { resolveStorageImageSrc } from "@/lib/storage/media-url";
 import { cn } from "@/lib/utils";
-
-const selectClassName =
-  "h-10 w-full rounded-xl border border-input bg-background px-3 text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 type PackageFormProps = {
   mode: "create" | "edit";
@@ -99,14 +98,40 @@ export function PackageForm({
   const watchedValues = useWatch({
     control: form.control,
   }) as Partial<PackageFormValues>;
+
+  const priceField = form.register("price", { valueAsNumber: true });
+
+  /** Preço novo, parcela nova: quem parcela não precisa refazer a conta na mão. */
+  function recalculateInstallmentAmount(nextPrice: number) {
+    const kind = form.getValues("installmentKind");
+
+    if (kind !== "INSTALLMENTS" && kind !== "DOWN_PAYMENT") {
+      return;
+    }
+
+    const suggested = suggestInstallmentAmount(
+      nextPrice,
+      form.getValues("installmentCount"),
+      kind === "DOWN_PAYMENT" ? form.getValues("downPaymentAmount") : null,
+    );
+
+    if (suggested != null) {
+      form.setValue("installmentAmount", suggested, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }
   const fullDescriptionValue = useWatch({ control: form.control, name: "fullDescription" }) ?? "";
   const typeValue = (watchedValues.type ??
     "PACKAGE_COMPLETE") as PackageTypeValue;
   const imageValue = watchedValues.image ?? "";
   const showCategory = PACKAGE_TYPES_WITH_CATEGORY.has(typeValue);
   const isCircuit = typeValue === "CIRCUIT";
-  const showAirlineFieldAfterDestination =
-    typeValue === "FLIGHT" || typeValue === "PACKAGE_COMPLETE";
+  // Passagem muda toda hora: formulário enxuto, sem descrição, itens, companhia,
+  // slug (gerado no envio) nem "preço referente a" (sempre por pessoa).
+  const isFlight = typeValue === "FLIGHT";
+  const showAirlineFieldAfterDestination = typeValue === "PACKAGE_COMPLETE";
   const showHotelField = typeValue === "HOTEL";
   const showDepartureCityField = packageTypeShowsDepartureCity(typeValue);
   const departureCityValue =
@@ -159,7 +184,7 @@ export function PackageForm({
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
     } else {
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
-      if (typeValue === "TICKET") {
+      if (typeValue === "TICKET" || typeValue === "FLIGHT") {
         form.setValue("hotelName", "", { shouldDirty: true, shouldValidate: true });
       }
     }
@@ -238,10 +263,30 @@ export function PackageForm({
     });
   }
 
+  function fillFlightDefaults() {
+    if (!isFlight) return;
+
+    form.setValue("priceScope", "PER_PERSON", { shouldDirty: true });
+
+    if (!form.getValues("slug").trim()) {
+      const { departureCity, destination, departureDate } = form.getValues();
+      // Sem página própria de pacote, o slug é só identificador: sufixo evita colisão.
+      const suffix = Date.now().toString(36).slice(-4);
+      form.setValue(
+        "slug",
+        normalizeSlug(`passagem ${departureCity} ${destination} ${departureDate} ${suffix}`),
+        { shouldDirty: true },
+      );
+    }
+  }
+
   return (
     <form
       className="space-y-5"
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={(event) => {
+        fillFlightDefaults();
+        void form.handleSubmit(onSubmit)(event);
+      }}
       noValidate
     >
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
@@ -254,27 +299,20 @@ export function PackageForm({
               >
                 Tipo
               </label>
-              <select
+              <Select
                 id="type"
-                className={selectClassName}
                 value={typeValue}
-                onChange={(event) =>
-                  form.setValue(
-                    "type",
-                    event.target.value as PackageTypeValue,
-                    {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    },
-                  )
+                onChange={(next) =>
+                  form.setValue("type", next as PackageTypeValue, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
                 }
-              >
-                {PACKAGE_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {PACKAGE_TYPE_LABELS[type]}
-                  </option>
-                ))}
-              </select>
+                options={PACKAGE_TYPES.map((type) => ({
+                  value: type,
+                  label: PACKAGE_TYPE_LABELS[type],
+                }))}
+              />
             </div>
 
             {showCategory ? (
@@ -285,24 +323,21 @@ export function PackageForm({
                 >
                   Categoria
                 </label>
-                <select
+                <Select
                   id="category"
-                  className={selectClassName}
                   value={watchedValues.category ?? ""}
-                  onChange={(event) =>
+                  onChange={(next) =>
                     form.setValue(
                       "category",
-                      event.target.value as (typeof PACKAGE_CATEGORIES)[number],
+                      next as (typeof PACKAGE_CATEGORIES)[number],
                       { shouldDirty: true, shouldValidate: true },
                     )
                   }
-                >
-                  {PACKAGE_CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {PACKAGE_CATEGORY_LABELS[category]}
-                    </option>
-                  ))}
-                </select>
+                  options={PACKAGE_CATEGORIES.map((category) => ({
+                    value: category,
+                    label: PACKAGE_CATEGORY_LABELS[category],
+                  }))}
+                />
                 {form.formState.errors.category ? (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.category.message}
@@ -380,6 +415,7 @@ export function PackageForm({
               ) : null}
             </div>
 
+            {isFlight ? null : (
             <div className="space-y-1.5">
               <label
                 htmlFor="slug"
@@ -410,6 +446,7 @@ export function PackageForm({
                 </p>
               ) : null}
             </div>
+            )}
           </div>
 
           {showDepartureCityField ? (
@@ -421,24 +458,18 @@ export function PackageForm({
                 >
                   Saindo de
                 </label>
-                <select
+                <Select
                   id="departureCityPreset"
-                  className={selectClassName}
                   value={departurePreset}
-                  onChange={(event) =>
-                    handleDeparturePresetChange(
-                      event.target.value as DepartureCityPresetId,
-                    )
+                  onChange={(next) =>
+                    handleDeparturePresetChange(next as DepartureCityPresetId)
                   }
-                >
-                  <option value="SAO_PAULO">
-                    {PACKAGE_DEPARTURE_CITY_PRESETS.SAO_PAULO}
-                  </option>
-                  <option value="PORTO_ALEGRE">
-                    {PACKAGE_DEPARTURE_CITY_PRESETS.PORTO_ALEGRE}
-                  </option>
-                  <option value="OTHER">Outro</option>
-                </select>
+                  options={[
+                    { value: "SAO_PAULO", label: PACKAGE_DEPARTURE_CITY_PRESETS.SAO_PAULO },
+                    { value: "PORTO_ALEGRE", label: PACKAGE_DEPARTURE_CITY_PRESETS.PORTO_ALEGRE },
+                    { value: "OTHER", label: "Outro" },
+                  ]}
+                />
               </div>
 
               {departurePreset === "OTHER" ? (
@@ -476,24 +507,20 @@ export function PackageForm({
                   Dia de início{" "}
                   <span className="text-muted-foreground">(opcional)</span>
                 </label>
-                <select
+                <Select
                   id="circuitStartDay"
-                  className={selectClassName}
                   value={watchedValues.circuitStartDay ?? ""}
-                  onChange={(event) =>
-                    form.setValue("circuitStartDay", event.target.value, {
+                  onChange={(next) =>
+                    form.setValue("circuitStartDay", next, {
                       shouldDirty: true,
                       shouldValidate: true,
                     })
                   }
-                >
-                  <option value="">Selecione</option>
-                  {CIRCUIT_START_DAY_OPTIONS.map((day) => (
-                    <option key={day} value={day}>
-                      {day}
-                    </option>
-                  ))}
-                </select>
+                  options={[
+                    { value: "", label: "Selecione" },
+                    ...CIRCUIT_START_DAY_OPTIONS.map((day) => ({ value: day, label: day })),
+                  ]}
+                />
                 {form.formState.errors.circuitStartDay ? (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.circuitStartDay.message}
@@ -568,6 +595,8 @@ export function PackageForm({
             </div>
           </div>
 
+          {isFlight ? null : (
+          <>
           <div className="space-y-1.5">
             <label
               htmlFor="shortDescription"
@@ -610,6 +639,8 @@ export function PackageForm({
               </p>
             ) : null}
           </div>
+          </>
+          )}
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -625,7 +656,11 @@ export function PackageForm({
                 min="0"
                 step="0.01"
                 className="h-10 rounded-xl"
-                {...form.register("price", { valueAsNumber: true })}
+                {...priceField}
+                onChange={(event) => {
+                  void priceField.onChange(event);
+                  recalculateInstallmentAmount(Number(event.target.value));
+                }}
               />
               {form.formState.errors.price ? (
                 <p className="text-xs text-destructive">
@@ -725,41 +760,38 @@ export function PackageForm({
             }}
           />
 
+          {isFlight ? null : (
           <div className="space-y-1.5">
             <label
               htmlFor="priceScope"
               className="text-sm font-medium text-foreground"
             >
-              Preço referente a{" "}
-              <span className="text-muted-foreground">(opcional)</span>
+              Preço referente a *
             </label>
-            <select
+            <Select
               id="priceScope"
-              className={selectClassName}
               value={watchedValues.priceScope ?? ""}
-              onChange={(event) =>
+              placeholder="Selecione"
+              invalid={Boolean(form.formState.errors.priceScope)}
+              onChange={(next) =>
                 form.setValue(
                   "priceScope",
-                  event.target.value === ""
-                    ? null
-                    : (event.target.value as (typeof PACKAGE_PRICE_SCOPES)[number]),
+                  next as (typeof PACKAGE_PRICE_SCOPES)[number],
                   { shouldDirty: true, shouldValidate: true },
                 )
               }
-            >
-              <option value="">Não informar</option>
-              {PACKAGE_PRICE_SCOPES.map((scope) => (
-                <option key={scope} value={scope}>
-                  {PACKAGE_PRICE_SCOPE_LABELS[scope]}
-                </option>
-              ))}
-            </select>
+              options={PACKAGE_PRICE_SCOPES.map((scope) => ({
+                value: scope,
+                label: PACKAGE_PRICE_SCOPE_LABELS[scope],
+              }))}
+            />
             {form.formState.errors.priceScope ? (
               <p className="text-xs text-destructive">
                 {form.formState.errors.priceScope.message}
               </p>
             ) : null}
           </div>
+          )}
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
             <div className="flex-1 space-y-1.5">
@@ -802,6 +834,7 @@ export function PackageForm({
             </label>
           </div>
 
+          {isFlight ? null : (
           <PackageIncludedItemsField
             value={watchedValues.includedItems ?? []}
             onChange={(items) =>
@@ -813,6 +846,7 @@ export function PackageForm({
             suggestions={includedItemSuggestions}
             error={form.formState.errors.includedItems?.message}
           />
+          )}
 
           <div className="space-y-1.5">
             <label

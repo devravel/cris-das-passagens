@@ -1,5 +1,44 @@
 # Roteiros — funcionalidade nova (anotada 2026-09-12)
 
+## Estado (2026-09-17)
+
+- **Primeira versão pronta na branch `roteiros`**: banco (migração
+  `20260916120000_add_itineraries`), `/roteiros`, `/roteiros/[slug]`, seção
+  de destaques na home (some sozinha sem destaque), aba `/admin/roteiros`
+  com divisórias (criar, renomear, reordenar, excluir), lista, criar/editar
+  com preview em tempo real. Testado no navegador: criar, editar, destaque.
+- Dois roteiros de exemplo no banco (Caldas Novas, cópia da referência, e
+  Gramado e Canela) pra demonstrar ao Cristian. Apagar pelo admin depois.
+- Imagens de roteiro vão pro bucket `blog-covers`, pasta `itineraries/`
+  (reuso do upload do blog, sem bucket novo). Imagem inline do tiptap cai
+  em `content/`, como no blog.
+- Formulário de reserva (2026-09-17, à noite) **envia por e-mail** pra
+  `cotacoescrisdaspassagens@gmail.com` via `POST /api/roteiros/cotacao`
+  (Zod + rate limit 3/30min por IP + honeypot + Resend, igual ao Rei da
+  Copa). Campos: nome*, WhatsApp*, e-mail, hotel, saída, data, adultos/
+  crianças (2–17)/bebês (até 24 meses), extras, mensagem. Nada vai pro
+  banco; se o envio falhar, o form oferece o WhatsApp com a mensagem
+  montada. Política de privacidade atualizada (seções 2 e 9).
+- Descrição é texto simples; as 8 abas e a descrição de hotel são tiptap.
+- **v1.1 (2026-09-17, tarde)** com as referências extras e a conversa com
+  o Cristian: faixa "O roteiro inclui" com ícones (lista fixa em
+  `lib/itinerary/included-items.ts`, marcada no admin), vídeo do YouTube e
+  mapa do Google (campos opcionais, aceitam link normal), abas em blocos
+  lado a lado (Schultz) com texto livre do editor, justificado, títulos de seção com linha dos dois lados (infotravel), e no bloco de
+  reserva: data aproximada, mensagem e os produtos à parte "Guia virtual" e
+  "Roteiro personalizado" (`content.itineraries.extras`) — tudo vai na
+  mensagem do WhatsApp.
+- **v1.2 (2026-09-17, noite)**, ajustes de layout pedidos na revisão:
+  banner full-bleed com parallax e título em caps nas duas páginas; em
+  `/roteiros` busca + filtro CATEGORIA (select estilizado, filtro só no
+  navegador), primeira divisória invadindo a foto, cards fixos em 254px
+  (trilho horizontal com snap e setas até 767px, grid de 768 pra cima);
+  página do roteiro em duas colunas com reserva na lateral (sem sticky);
+  popup de reserva foi feito e removido a pedido; abas em blocos lado a lado; galeria com setas/teclado/swipe;
+  setas de carrossel unificadas (`components/ui/carousel-arrow.tsx`, também
+  nos pacotes); breadcrumb visível removido de todas as páginas.
+- Próximo: mostrar ao Cristian, cortar/ajustar, aí merge na `main`.
+
 Aprovada pelo Cristian. Referência de estrutura (ele aprovou copiar bem
 parecido): assessoriavipviagens.com.br. **Entra depois** da entrega da
 repaginação (quinta, 2026-09-17) — ver "Branches" no fim.

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { updateReiDaCopaKeywordStatusAction } from "@/app/admin/(protected)/rei-da-copa/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { REI_DA_COPA_KEYWORD_STATUSES } from "@/lib/rei-da-copa/constants";
 import type { AdminReiDaCopaKeywordRow } from "@/lib/rei-da-copa/types";
 
@@ -97,19 +98,17 @@ export function PalavraChaveTable({ submissions }: PalavraChaveTableProps) {
           className="h-10 max-w-md rounded-xl"
           aria-label="Buscar envios de palavra-chave"
         />
-        <select
-          value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value)}
-          className="h-10 rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-          aria-label="Filtrar por status"
-        >
-          <option value="ALL">Todos os status</option>
-          {REI_DA_COPA_KEYWORD_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {statusLabels[status]}
-            </option>
-          ))}
-        </select>
+        <div className="w-56">
+          <Select
+            value={statusFilter}
+            onChange={setStatusFilter}
+            aria-label="Filtrar por status"
+            options={[
+              { value: "ALL", label: "Todos os status" },
+              ...REI_DA_COPA_KEYWORD_STATUSES.map((status) => ({ value: status, label: statusLabels[status] })),
+            ]}
+          />
+        </div>
       </div>
 
       {filteredSubmissions.length === 0 ? (
