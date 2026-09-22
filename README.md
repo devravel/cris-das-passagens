@@ -4,7 +4,7 @@
 
 Site institucional e comercial da agência de turismo **Cris das Passagens** (Osório — RS). O projeto combina uma landing page otimizada para conversão via WhatsApp, catálogo público de pacotes, blog com SEO, campanha promocional **Rei da Copa**, sistema de cupons de desconto e painel administrativo para gestão de conteúdo.
 
-O atendimento ao visitante ocorre principalmente por **links de WhatsApp** — não há formulário de contato com envio de dados ao servidor. A única coleta estruturada de dados pessoais de visitantes ocorre na **campanha Rei da Copa** (nome, telefone, Instagram).
+O atendimento ao visitante ocorre principalmente por **links de WhatsApp**. Dados pessoais só são enviados ao servidor em dois pontos: o **formulário de cotação de roteiro** (`/roteiros/[slug]` → e-mail interno via Resend, nada gravado no banco) e a **campanha Rei da Copa** (nome, telefone, Instagram).
 
 **Política de Privacidade:** [/politica-de-privacidade](https://crisdaspassagens.com.br/politica-de-privacidade)
 
@@ -73,6 +73,8 @@ Painel em `/admin` protegido por middleware e cookie JWT (`admin_session`, 8 hor
 - Pacotes (CRUD, upload de imagens)
 - Posts do blog (CRUD, upload de capa e conteúdo)
 - Cupons de desconto
+- Roteiros (CRUD, divisórias, galeria, hotéis, campo Vendedor que vai no e-mail de cotação)
+- Usuários do painel (um login por vendedor, todos com o mesmo acesso)
 - Campanha Rei da Copa (inscrições, palavras-chave, ranking, configurações, exportação)
 
 ### Sistema de Cupons
@@ -366,7 +368,7 @@ Implementado no projeto:
 
 ## LGPD
 
-O site trata dados pessoais de visitantes principalmente na **campanha Rei da Copa** e em interações opcionais (curtidas no blog, Meta Pixel). Não há formulário de contato com envio ao servidor.
+O site trata dados pessoais de visitantes na **cotação de roteiro** (enviada por e-mail à equipe, não armazenada), na **campanha Rei da Copa** e em interações opcionais (curtidas no blog, Meta Pixel).
 
 A **Política de Privacidade** completa, baseada no funcionamento real do sistema, está em:
 
