@@ -100,6 +100,10 @@ export function PackageForm({
   }) as Partial<PackageFormValues>;
 
   const priceField = form.register("price", { valueAsNumber: true });
+  const pixPriceField = form.register("pixPrice", {
+    setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
+  });
+  const hasPixPrice = watchedValues.pixPrice != null;
 
   /** Preço novo, parcela nova: quem parcela não precisa refazer a conta na mão. */
   function recalculateInstallmentAmount(nextPrice: number) {
@@ -128,10 +132,11 @@ export function PackageForm({
   const imageValue = watchedValues.image ?? "";
   const showCategory = PACKAGE_TYPES_WITH_CATEGORY.has(typeValue);
   const isCircuit = typeValue === "CIRCUIT";
-  // Passagem muda toda hora: formulário enxuto, sem descrição, itens, companhia,
+  // Passagem muda toda hora: formulário enxuto, sem descrição, itens,
   // slug (gerado no envio) nem "preço referente a" (sempre por pessoa).
   const isFlight = typeValue === "FLIGHT";
-  const showAirlineFieldAfterDestination = typeValue === "PACKAGE_COMPLETE";
+  const showAirlineFieldAfterDestination =
+    typeValue === "FLIGHT" || typeValue === "PACKAGE_COMPLETE";
   const showHotelField = typeValue === "HOTEL";
   const showDepartureCityField = packageTypeShowsDepartureCity(typeValue);
   const departureCityValue =
@@ -184,7 +189,7 @@ export function PackageForm({
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
     } else {
       form.setValue("airline", "", { shouldDirty: true, shouldValidate: true });
-      if (typeValue === "TICKET" || typeValue === "FLIGHT") {
+      if (typeValue === "TICKET") {
         form.setValue("hotelName", "", { shouldDirty: true, shouldValidate: true });
       }
     }
@@ -642,13 +647,13 @@ export function PackageForm({
           </>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label
                 htmlFor="price"
                 className="text-sm font-medium text-foreground"
               >
-                Preço
+                {hasPixPrice ? "Preço parcelado (total)" : "Preço"}
               </label>
               <Input
                 id="price"
@@ -667,6 +672,41 @@ export function PackageForm({
                   {form.formState.errors.price.message}
                 </p>
               ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="pixPrice"
+                className="text-sm font-medium text-foreground"
+              >
+                Preço à vista no Pix{" "}
+                <span className="text-muted-foreground">(opcional)</span>
+              </label>
+              <Input
+                id="pixPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                className="h-10 rounded-xl"
+                {...pixPriceField}
+                onChange={(event) => {
+                  void pixPriceField.onChange(event);
+                  // O Pix agora tem campo próprio; "à vista via Pix" no parcelamento duplicaria.
+                  if (form.getValues("installmentKind") === "PIX_CASH") {
+                    form.setValue("installmentKind", "NONE", { shouldDirty: true });
+                    form.setValue("installmentAmount", null, { shouldDirty: true });
+                  }
+                }}
+              />
+              {form.formState.errors.pixPrice ? (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.pixPrice.message}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Só se o Pix tiver valor diferente do parcelado.
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -814,6 +854,53 @@ export function PackageForm({
               ) : null}
             </div>
 
+            {hasPixPrice ? (
+              <div className="shrink-0 space-y-1.5">
+                <p
+                  id="highlight-label"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Em destaque no card
+                </p>
+                <div
+                  role="radiogroup"
+                  aria-labelledby="highlight-label"
+                  className="flex gap-2"
+                >
+                  {(
+                    [
+                      { value: false, label: "Pix à vista" },
+                      { value: true, label: "Parcelado" },
+                    ] as const
+                  ).map((option) => {
+                    const selected =
+                      Boolean(watchedValues.highlightInstallments) === option.value;
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        className={cn(
+                          "inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-colors",
+                          selected
+                            ? "border-brand bg-brand/10 text-foreground"
+                            : "border-border/70 bg-background text-muted-foreground hover:border-brand/40 hover:text-foreground",
+                        )}
+                        onClick={() =>
+                          form.setValue("highlightInstallments", option.value, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          })
+                        }
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
             <label
               htmlFor="highlightInstallments"
               className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-sm font-medium text-foreground sm:self-end"
@@ -832,6 +919,7 @@ export function PackageForm({
               />
               Destacar parcelamento
             </label>
+            )}
           </div>
 
           {isFlight ? null : (

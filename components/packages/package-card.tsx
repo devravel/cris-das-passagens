@@ -368,6 +368,31 @@ function PriceBlock({
       : "text-xs sm:text-sm",
   );
 
+  // Pix com valor próprio: um preço em destaque, o outro logo abaixo, menor.
+  if (data.pixPrice != null) {
+    const pixText = `${formatPackagePrice(data.pixPrice)} à vista via Pix`;
+    const installmentText =
+      data.installmentText || `${formatPackagePrice(data.price)} parcelado`;
+    const [mainText, secondaryText] = data.highlightInstallments
+      ? [installmentText, pixText]
+      : [pixText, installmentText];
+
+    return (
+      <div className="space-y-0.5">
+        <p className={labelClassName}>A partir de</p>
+        <p className={priceClassName}>{mainText}</p>
+        <p className={cn(labelClassName, "font-medium text-foreground/80")}>
+          ou {secondaryText}
+        </p>
+        <PriceScopeLabel
+          priceScope={data.priceScope}
+          compact={compact}
+          narrowMobileTypography={narrowMobileTypography}
+        />
+      </div>
+    );
+  }
+
   if (data.highlightInstallments && data.installmentText) {
     return (
       <div className="space-y-0.5">
@@ -449,15 +474,22 @@ function PriceFooter({
       : "text-xs sm:text-sm",
   );
   const paymentMethodsText = formatPaymentMethodsText(data.paymentMethods);
+  const hasPixPrice = data.pixPrice != null;
+  const showTotal =
+    hasPixPrice || (data.highlightInstallments && Boolean(data.installmentText));
   const footerParts = [
-    data.highlightInstallments && data.installmentText
-      ? `Total da cotação: ${formatPackagePrice(data.price)}`
-      : data.installmentText,
+    hasPixPrice
+      ? data.installmentText
+        ? `Total parcelado: ${formatPackagePrice(data.price)}`
+        : null
+      : showTotal
+        ? `Total da cotação: ${formatPackagePrice(data.price)}`
+        : data.installmentText,
     paymentMethodsText,
     data.feesText,
   ].filter((part): part is string => Boolean(part && part.trim()));
 
-  if (data.highlightInstallments && data.installmentText) {
+  if (showTotal && footerParts.length > 0) {
     return (
       <div className={footerClassName}>
         <p
@@ -1099,6 +1131,7 @@ export function toPackageCardDataFromPublicPackage(
     type: pkg.type,
     price: pkg.price,
     oldPrice: pkg.oldPrice,
+    pixPrice: pkg.pixPrice,
     priceScope: pkg.priceScope,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,

@@ -64,6 +64,7 @@ const packageFormFieldsSchema = z.object({
   category: z.enum(PACKAGE_CATEGORIES).nullable(),
   price: priceSchema,
   oldPrice: optionalPriceSchema,
+  pixPrice: optionalPriceSchema,
   // Nullable pelo estado inicial do formulário, mas salvar sem escolher não passa.
   priceScope: z
     .enum(PACKAGE_PRICE_SCOPES)
@@ -220,6 +221,14 @@ function validatePackageRules(
     });
   }
 
+  if (data.pixPrice != null && data.pixPrice >= data.price) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["pixPrice"],
+      message: "O preço no Pix deve ser menor que o preço parcelado.",
+    });
+  }
+
   validateInstallmentRules(data, ctx);
 
   const resolvedInstallmentText = buildInstallmentText({
@@ -231,7 +240,12 @@ function validatePackageRules(
     price: data.price,
   });
 
-  if (data.highlightInstallments && !resolvedInstallmentText.trim()) {
+  // Com preço no Pix, o parcelado em destaque pode ser só o total.
+  if (
+    data.highlightInstallments &&
+    data.pixPrice == null &&
+    !resolvedInstallmentText.trim()
+  ) {
     ctx.addIssue({
       code: "custom",
       path: ["installmentKind"],
@@ -395,6 +409,7 @@ export type PackageCardData = {
   type: PackageTypeValue;
   price: number;
   oldPrice: number | null;
+  pixPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
@@ -435,6 +450,7 @@ export function toPackageCardPreviewData(
     type: values.type,
     price: values.price,
     oldPrice: values.oldPrice ?? null,
+    pixPrice: values.pixPrice ?? null,
     priceScope: values.priceScope ?? null,
     installmentText: installmentText || null,
     highlightInstallments: values.highlightInstallments,
@@ -461,6 +477,7 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   category: "NATIONAL",
   price: 0,
   oldPrice: null,
+  pixPrice: null,
   priceScope: null,
   installmentKind: "NONE" as PackageInstallmentKindValue,
   installmentCount: 12,

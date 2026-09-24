@@ -139,7 +139,8 @@ export function PackagePaymentFields({
               "NONE",
               "INSTALLMENTS",
               "DOWN_PAYMENT",
-              "PIX_CASH",
+              // Pix tem campo próprio de preço; a opção fica só pra pacote antigo.
+              ...(installmentKind === "PIX_CASH" ? (["PIX_CASH"] as const) : []),
               ...(installmentKind === "CUSTOM" ? (["CUSTOM"] as const) : []),
             ] as const
           ).map((kind) => ({ value: kind, label: PACKAGE_INSTALLMENT_KIND_LABELS[kind] }))}

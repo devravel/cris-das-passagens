@@ -88,6 +88,7 @@ export function PackageEditScreen({
             category: pkg.category,
             price: pkg.price,
             oldPrice: pkg.oldPrice,
+            pixPrice: pkg.pixPrice,
             priceScope: pkg.priceScope,
             installmentKind:
               legacyInstallment?.installmentKind ?? pkg.installmentKind,

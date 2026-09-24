@@ -33,6 +33,7 @@ export type PublicPackage = {
   category: PackageCategoryValue | null;
   price: number;
   oldPrice: number | null;
+  pixPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
@@ -81,6 +82,7 @@ const publicPackageSelect = {
   category: true,
   price: true,
   oldPrice: true,
+  pixPrice: true,
   priceScope: true,
   installmentText: true,
   highlightInstallments: true,
@@ -128,6 +130,7 @@ function mapPublicPackage(
     category: string | null;
     price: { toNumber?: () => number } | number;
     oldPrice: { toNumber?: () => number } | number | null;
+    pixPrice: { toNumber?: () => number } | number | null;
     priceScope: string | null;
     installmentText: string | null;
     highlightInstallments: boolean;
@@ -158,6 +161,7 @@ function mapPublicPackage(
     category: (pkg.category as PackageCategoryValue | null) ?? null,
     price: decimalToNumber(pkg.price) ?? 0,
     oldPrice: decimalToNumber(pkg.oldPrice),
+    pixPrice: decimalToNumber(pkg.pixPrice),
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
@@ -314,6 +318,7 @@ export type AdminPackageListItem = {
   category: PackageCategoryValue | null;
   price: number;
   oldPrice: number | null;
+  pixPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
   installmentKind: PackageInstallmentKindValue;
   installmentCount: number | null;
@@ -353,6 +358,7 @@ const adminPackageSelect = {
   category: true,
   price: true,
   oldPrice: true,
+  pixPrice: true,
   priceScope: true,
   installmentKind: true,
   installmentCount: true,
@@ -393,6 +399,7 @@ function mapAdminPackage(
     category: string | null;
     price: { toNumber?: () => number } | number;
     oldPrice: { toNumber?: () => number } | number | null;
+    pixPrice: { toNumber?: () => number } | number | null;
     priceScope: string | null;
     installmentKind: string;
     installmentCount: number | null;
@@ -432,6 +439,7 @@ function mapAdminPackage(
     category: (pkg.category as PackageCategoryValue | null) ?? null,
     price: decimalToNumber(pkg.price) ?? 0,
     oldPrice: decimalToNumber(pkg.oldPrice),
+    pixPrice: decimalToNumber(pkg.pixPrice),
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentKind: pkg.installmentKind as PackageInstallmentKindValue,
     installmentCount: pkg.installmentCount,
