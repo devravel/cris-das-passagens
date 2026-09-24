@@ -22,6 +22,7 @@ import {
 } from "@/app/admin/(protected)/packages/actions";
 import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
+import { isOptimizableRemoteImage } from "@/lib/storage/image-src";
 import {
   Dialog,
   DialogContent,
@@ -130,6 +131,7 @@ export function PackagesGrid({ packages }: PackagesGridProps) {
                     alt={pkg.title}
                     fill
                     sizes="80px"
+                    unoptimized={!isOptimizableRemoteImage(pkg.image)}
                     className="object-cover"
                   />
                 ) : (
