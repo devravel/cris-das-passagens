@@ -374,22 +374,42 @@ function PriceBlock({
       : null;
   const installmentText = data.installmentText?.trim() || null;
   const totalText = formatPackagePrice(data.price);
+  // CDC: parcela nunca aparece sem o total pago no parcelado.
+  const installmentTotalText = `total ${formatPackagePrice(data.installmentTotal ?? data.price)}`;
 
   // Um preço grande; o outro (quando existe) logo abaixo, menor.
   let mainText = totalText;
+  let mainSuffix: string | null = null;
   let secondaryText: string | null = null;
 
   if (pixText && installmentText) {
-    [mainText, secondaryText] = data.highlightInstallments
-      ? [installmentText, `ou ${pixText}`]
-      : [pixText, `ou ${installmentText}`];
+    if (data.highlightInstallments) {
+      mainText = installmentText;
+      mainSuffix = installmentTotalText;
+      secondaryText = `ou ${pixText}`;
+    } else {
+      mainText = pixText;
+      secondaryText = `ou ${installmentText} (${installmentTotalText})`;
+    }
   } else if (pixText) {
     mainText = pixText;
   } else if (installmentText) {
+    const total = formatPackagePrice(data.installmentTotal ?? data.price);
     [mainText, secondaryText] = data.highlightInstallments
-      ? [installmentText, `Total: ${totalText}`]
-      : [totalText, `ou ${installmentText}`];
+      ? [installmentText, `Total: ${total}`]
+      : [total, `ou ${installmentText}`];
   }
+
+  const mainPrice = (
+    <p className={priceClassName}>
+      {mainText}
+      {mainSuffix ? (
+        <span className="ml-1.5 whitespace-nowrap font-sans text-[0.55em] font-medium tracking-normal text-muted-foreground">
+          {mainSuffix}
+        </span>
+      ) : null}
+    </p>
+  );
 
   const priceLabel =
     data.type === "HOTEL" ? "Diária a partir de" : "A partir de";
@@ -399,14 +419,14 @@ function PriceBlock({
       <p className={labelClassName}>{priceLabel}</p>
       {isListing && showOldPrice ? (
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <p className={priceClassName}>{mainText}</p>
+          {mainPrice}
           <p className={oldPriceClassName}>
             {formatPackagePrice(data.oldPrice!)}
           </p>
         </div>
       ) : (
         <>
-          <p className={priceClassName}>{mainText}</p>
+          {mainPrice}
           {showOldPrice ? (
             <p className={oldPriceClassName}>
               {formatPackagePrice(data.oldPrice!)}
@@ -1099,6 +1119,7 @@ export function toPackageCardDataFromPublicPackage(
     pixPrice: pkg.pixPrice,
     priceScope: pkg.priceScope,
     installmentText: pkg.installmentText,
+    installmentTotal: pkg.installmentTotal,
     highlightInstallments: pkg.highlightInstallments,
     paymentMethods: pkg.paymentMethods,
     feesText: pkg.feesText,

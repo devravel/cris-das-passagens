@@ -39,6 +39,7 @@ import {
   PACKAGE_PAYMENT_METHOD_LABELS,
   PACKAGE_PAYMENT_METHODS,
   PACKAGE_SELLS_IN_INSTALLMENTS_KINDS,
+  computeInstallmentTotal,
   suggestInstallmentAmount,
   type PackageInstallmentKindValue,
   type PackagePaymentMethodValue,
@@ -808,6 +809,13 @@ export function PackageForm({
                         shouldDirty: true,
                         shouldValidate: true,
                       });
+                    }
+
+                    // Parcela ou entrada mexida à mão: o total acompanha a conta.
+                    const current = form.getValues();
+                    const total = computeInstallmentTotal(current, current.price);
+                    if (total != null && total !== current.price) {
+                      form.setValue("price", total, { shouldDirty: true, shouldValidate: true });
                     }
                   }}
                 />

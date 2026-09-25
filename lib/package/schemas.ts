@@ -24,6 +24,7 @@ import {
   PACKAGE_SELLS_IN_INSTALLMENTS_KINDS,
   PACKAGE_PAYMENT_METHODS,
   buildInstallmentText,
+  computeInstallmentTotal,
   normalizePaymentMethods,
   type PackageInstallmentKindValue,
   type PackagePaymentMethodValue,
@@ -417,6 +418,7 @@ export type PackageCardData = {
   pixPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
+  installmentTotal: number | null;
   highlightInstallments: boolean;
   paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
@@ -458,6 +460,7 @@ export function toPackageCardPreviewData(
     pixPrice: values.pixPrice ?? null,
     priceScope: values.priceScope ?? null,
     installmentText: installmentText || null,
+    installmentTotal: computeInstallmentTotal(values, values.price),
     highlightInstallments: values.highlightInstallments,
     paymentMethods: normalizePaymentMethods(values.paymentMethods),
     feesText: values.feesText.trim() || null,
