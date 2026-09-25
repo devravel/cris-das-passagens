@@ -20,7 +20,7 @@ import {
 import { isHighlightedChecklistItem } from "@/lib/package/checklist";
 import { formatPackageTravelDate } from "@/lib/package/dates";
 import { formatPackagePrice } from "@/lib/package/format";
-import { formatPaymentMethodsText } from "@/lib/package/payment";
+import { legacyPaymentMethodsFooter } from "@/lib/package/payment";
 import type { PackageCardData } from "@/lib/package/schemas";
 import { cardShadowClassName } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
@@ -368,43 +368,27 @@ function PriceBlock({
       : "text-xs sm:text-sm",
   );
 
-  // Pix com valor próprio: um preço em destaque, o outro logo abaixo, menor.
-  if (data.pixPrice != null) {
-    const pixText = `${formatPackagePrice(data.pixPrice)} à vista via Pix`;
-    const installmentText =
-      data.installmentText || `${formatPackagePrice(data.price)} parcelado`;
-    const [mainText, secondaryText] = data.highlightInstallments
-      ? [installmentText, pixText]
-      : [pixText, installmentText];
+  const pixText =
+    data.pixPrice != null
+      ? `${formatPackagePrice(data.pixPrice)} à vista via Pix`
+      : null;
+  const installmentText = data.installmentText?.trim() || null;
+  const totalText = formatPackagePrice(data.price);
 
-    return (
-      <div className="space-y-0.5">
-        <p className={labelClassName}>A partir de</p>
-        <p className={priceClassName}>{mainText}</p>
-        <p className={cn(labelClassName, "font-medium text-foreground/80")}>
-          ou {secondaryText}
-        </p>
-        <PriceScopeLabel
-          priceScope={data.priceScope}
-          compact={compact}
-          narrowMobileTypography={narrowMobileTypography}
-        />
-      </div>
-    );
-  }
+  // Um preço grande; o outro (quando existe) logo abaixo, menor.
+  let mainText = totalText;
+  let secondaryText: string | null = null;
 
-  if (data.highlightInstallments && data.installmentText) {
-    return (
-      <div className="space-y-0.5">
-        <p className={labelClassName}>A partir de</p>
-        <p className={priceClassName}>{data.installmentText}</p>
-        <PriceScopeLabel
-          priceScope={data.priceScope}
-          compact={compact}
-          narrowMobileTypography={narrowMobileTypography}
-        />
-      </div>
-    );
+  if (pixText && installmentText) {
+    [mainText, secondaryText] = data.highlightInstallments
+      ? [installmentText, `ou ${pixText}`]
+      : [pixText, `ou ${installmentText}`];
+  } else if (pixText) {
+    mainText = pixText;
+  } else if (installmentText) {
+    [mainText, secondaryText] = data.highlightInstallments
+      ? [installmentText, `Total: ${totalText}`]
+      : [totalText, `ou ${installmentText}`];
   }
 
   const priceLabel =
@@ -415,14 +399,14 @@ function PriceBlock({
       <p className={labelClassName}>{priceLabel}</p>
       {isListing && showOldPrice ? (
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
+          <p className={priceClassName}>{mainText}</p>
           <p className={oldPriceClassName}>
             {formatPackagePrice(data.oldPrice!)}
           </p>
         </div>
       ) : (
         <>
-          <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
+          <p className={priceClassName}>{mainText}</p>
           {showOldPrice ? (
             <p className={oldPriceClassName}>
               {formatPackagePrice(data.oldPrice!)}
@@ -430,6 +414,17 @@ function PriceBlock({
           ) : null}
         </>
       )}
+      {/* Linha reservada mesmo vazia: cards lado a lado ficam com a mesma altura. */}
+      <p
+        className={cn(
+          labelClassName,
+          "font-medium text-foreground/80",
+          !secondaryText && "invisible",
+        )}
+        aria-hidden={!secondaryText || undefined}
+      >
+        {secondaryText ?? "-"}
+      </p>
       <PriceScopeLabel
         priceScope={data.priceScope}
         compact={compact}
@@ -473,41 +468,11 @@ function PriceFooter({
         )
       : "text-xs sm:text-sm",
   );
-  const paymentMethodsText = formatPaymentMethodsText(data.paymentMethods);
-  const hasPixPrice = data.pixPrice != null;
-  const showTotal =
-    hasPixPrice || (data.highlightInstallments && Boolean(data.installmentText));
+  // Texto livre do rodapé; formas de pagamento só em pacote salvo antes dele.
   const footerParts = [
-    hasPixPrice
-      ? data.installmentText
-        ? `Total parcelado: ${formatPackagePrice(data.price)}`
-        : null
-      : showTotal
-        ? `Total da cotação: ${formatPackagePrice(data.price)}`
-        : data.installmentText,
-    paymentMethodsText,
+    legacyPaymentMethodsFooter(data.paymentMethods, data.pixPrice != null),
     data.feesText,
   ].filter((part): part is string => Boolean(part && part.trim()));
-
-  if (showTotal && footerParts.length > 0) {
-    return (
-      <div className={footerClassName}>
-        <p
-          className={cn(
-            "font-medium text-muted-foreground",
-            compact
-              ? cn(
-                  "text-[9px] leading-snug lg:text-[10px] xl:text-xs",
-                  featuredFooterClassName(narrowMobileTypography),
-                )
-              : "text-[11px] sm:text-xs",
-          )}
-        >
-          {footerParts.join(" | ")}
-        </p>
-      </div>
-    );
-  }
 
   if (footerParts.length > 0) {
     return (

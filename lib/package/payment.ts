@@ -87,6 +87,67 @@ export function formatPaymentMethodsText(
   return normalized.map((method) => PACKAGE_PAYMENT_METHOD_LABELS[method]).join(", ");
 }
 
+/**
+ * Formas de pagamento marcadas antes do rodapé virar texto livre. Só "Pix" num
+ * pacote que já mostra o preço no Pix é repetição, então some.
+ */
+export function legacyPaymentMethodsFooter(
+  methods: readonly string[] | null | undefined,
+  hasPixPrice: boolean,
+): string | null {
+  const normalized = normalizePaymentMethods(methods);
+
+  if (hasPixPrice && normalized.length === 1 && normalized[0] === "PIX") {
+    return null;
+  }
+
+  return formatPaymentMethodsText(normalized);
+}
+
+export const PACKAGE_SELLS_IN_INSTALLMENTS_KINDS: readonly PackageInstallmentKindValue[] = [
+  "INSTALLMENTS",
+  "DOWN_PAYMENT",
+  "CUSTOM",
+];
+
+/**
+ * Pacote salvo no formato antigo, aberto no formulário novo: "à vista via Pix"
+ * que era tipo de parcelamento vira o preço à vista, preço sem forma vira à
+ * vista, e as formas de pagamento entram no texto do rodapé.
+ */
+export function toFormPricing(pkg: {
+  price: number;
+  pixPrice: number | null;
+  installmentKind: PackageInstallmentKindValue;
+  installmentAmount: number | null;
+  highlightInstallments: boolean;
+  paymentMethods: readonly string[];
+  feesText: string | null;
+}) {
+  const legacyPix = pkg.installmentKind === "PIX_CASH";
+  const priceOnly = pkg.installmentKind === "NONE" && pkg.pixPrice == null;
+  const pixPrice = legacyPix
+    ? (pkg.pixPrice ?? pkg.installmentAmount ?? pkg.price)
+    : priceOnly
+      ? pkg.price
+      : pkg.pixPrice;
+  const footer = [
+    legacyPaymentMethodsFooter(pkg.paymentMethods, pixPrice != null),
+    pkg.feesText?.trim(),
+  ]
+    .filter(Boolean)
+    .join(" | ");
+
+  return {
+    pixPrice,
+    installmentKind: legacyPix ? ("NONE" as const) : pkg.installmentKind,
+    installmentAmount: legacyPix ? null : pkg.installmentAmount,
+    highlightInstallments: legacyPix ? false : pkg.highlightInstallments,
+    paymentMethods: [] as PackagePaymentMethodValue[],
+    feesText: footer,
+  };
+}
+
 export function buildInstallmentText(fields: {
   installmentKind: PackageInstallmentKindValue;
   installmentCount: number | null;

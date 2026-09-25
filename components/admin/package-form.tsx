@@ -36,9 +36,9 @@ import {
   type PackageTypeValue,
 } from "@/lib/package/constants";
 import {
+  PACKAGE_SELLS_IN_INSTALLMENTS_KINDS,
   suggestInstallmentAmount,
   type PackageInstallmentKindValue,
-  type PackagePaymentMethodValue,
 } from "@/lib/package/payment";
 import {
   EMPTY_PACKAGE_FORM_VALUES,
@@ -103,7 +103,46 @@ export function PackageForm({
   const pixPriceField = form.register("pixPrice", {
     setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
   });
-  const hasPixPrice = watchedValues.pixPrice != null;
+  // Qual preço o pacote tem: à vista (pixPrice), parcelado (tipo de
+  // parcelamento + price como total) ou os dois. Sem nenhum não salva.
+  const [sellsInstallments, setSellsInstallments] = useState(() =>
+    PACKAGE_SELLS_IN_INSTALLMENTS_KINDS.includes(values.installmentKind),
+  );
+  const [sellsCash, setSellsCash] = useState(
+    () => values.pixPrice != null || !sellsInstallments,
+  );
+
+  function toggleSellsCash() {
+    if (sellsCash && !sellsInstallments) return;
+    if (sellsCash) {
+      form.setValue("pixPrice", null, { shouldDirty: true, shouldValidate: true });
+    }
+    setSellsCash(!sellsCash);
+  }
+
+  function toggleSellsInstallments() {
+    if (sellsInstallments && !sellsCash) return;
+
+    if (sellsInstallments) {
+      form.setValue("installmentKind", "NONE", { shouldDirty: true });
+      form.setValue("installmentAmount", null, { shouldDirty: true });
+      form.setValue("downPaymentAmount", null, { shouldDirty: true });
+      form.setValue("installmentText", "", { shouldDirty: true });
+      form.setValue("highlightInstallments", false, { shouldDirty: true });
+      form.setValue("price", form.getValues("pixPrice") ?? 0, { shouldDirty: true });
+    } else {
+      const count = form.getValues("installmentCount") ?? 12;
+      form.setValue("installmentKind", "INSTALLMENTS", { shouldDirty: true });
+      form.setValue("installmentCount", count, { shouldDirty: true });
+      form.setValue(
+        "installmentAmount",
+        suggestInstallmentAmount(form.getValues("price"), count),
+        { shouldDirty: true },
+      );
+    }
+
+    setSellsInstallments(!sellsInstallments);
+  }
 
   /** Preço novo, parcela nova: quem parcela não precisa refazer a conta na mão. */
   function recalculateInstallmentAmount(nextPrice: number) {
@@ -236,6 +275,12 @@ export function PackageForm({
   }
 
   function onSubmit(input: PackageFormInput) {
+    if (sellsCash && input.pixPrice == null) {
+      form.setError("pixPrice", { message: "Informe o preço à vista." });
+      form.setFocus("pixPrice");
+      return;
+    }
+
     const parsed = packageFormSchema.safeParse(input);
 
     if (!parsed.success) {
@@ -647,75 +692,173 @@ export function PackageForm({
           </>
           )}
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="price"
-                className="text-sm font-medium text-foreground"
-              >
-                {hasPixPrice ? "Preço parcelado (total)" : "Preço"}
-              </label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                className="h-10 rounded-xl"
-                {...priceField}
-                onChange={(event) => {
-                  void priceField.onChange(event);
-                  recalculateInstallmentAmount(Number(event.target.value));
-                }}
-              />
-              {form.formState.errors.price ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.price.message}
-                </p>
-              ) : null}
+          <div className="space-y-4 rounded-2xl border border-border/70 bg-muted/10 p-4">
+            <div className="space-y-2">
+              <p id="sells-label" className="text-sm font-medium text-foreground">
+                Preço no card
+              </p>
+              <div role="group" aria-labelledby="sells-label" className="flex flex-wrap gap-2">
+                {(
+                  [
+                    { key: "cash", label: "Preço à vista", pressed: sellsCash, toggle: toggleSellsCash },
+                    { key: "installments", label: "Preço parcelado", pressed: sellsInstallments, toggle: toggleSellsInstallments },
+                  ] as const
+                ).map((option) => (
+                  <button
+                    key={option.key}
+                    type="button"
+                    aria-pressed={option.pressed}
+                    className={cn(
+                      "inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-colors",
+                      option.pressed
+                        ? "border-brand bg-brand/10 text-foreground"
+                        : "border-border/70 bg-background text-muted-foreground hover:border-brand/40 hover:text-foreground",
+                    )}
+                    onClick={option.toggle}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Marque os dois pra mostrar os dois preços no card.
+              </p>
             </div>
 
-            <div className="space-y-1.5">
-              <label
-                htmlFor="pixPrice"
-                className="text-sm font-medium text-foreground"
-              >
-                Preço à vista no Pix{" "}
-                <span className="text-muted-foreground">(opcional)</span>
-              </label>
-              <Input
-                id="pixPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                className="h-10 rounded-xl"
-                {...pixPriceField}
-                onChange={(event) => {
-                  void pixPriceField.onChange(event);
-                  // O Pix agora tem campo próprio; "à vista via Pix" no parcelamento duplicaria.
-                  if (form.getValues("installmentKind") === "PIX_CASH") {
-                    form.setValue("installmentKind", "NONE", { shouldDirty: true });
-                    form.setValue("installmentAmount", null, { shouldDirty: true });
+            {sellsCash ? (
+              <div className="max-w-xs space-y-1.5">
+                <label htmlFor="pixPrice" className="text-sm font-medium text-foreground">
+                  Preço à vista via Pix (R$)
+                </label>
+                <Input
+                  id="pixPrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="h-10 rounded-xl"
+                  {...pixPriceField}
+                  onChange={(event) => {
+                    void pixPriceField.onChange(event);
+                    if (!sellsInstallments) {
+                      form.setValue("price", Number(event.target.value) || 0, {
+                        shouldDirty: true,
+                      });
+                    }
+                  }}
+                />
+                {form.formState.errors.pixPrice ? (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.pixPrice.message}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            {sellsInstallments ? (
+              <div className="space-y-4">
+                <div className="max-w-xs space-y-1.5">
+                  <label htmlFor="price" className="text-sm font-medium text-foreground">
+                    Total parcelado (R$)
+                  </label>
+                  <Input
+                    id="price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    className="h-10 rounded-xl"
+                    {...priceField}
+                    onChange={(event) => {
+                      void priceField.onChange(event);
+                      recalculateInstallmentAmount(Number(event.target.value));
+                    }}
+                  />
+                  {form.formState.errors.price ? (
+                    <p className="text-xs text-destructive">
+                      {form.formState.errors.price.message}
+                    </p>
+                  ) : null}
+                </div>
+
+                <PackagePaymentFields
+                  price={watchedValues.price ?? 0}
+                  installmentKind={
+                    (watchedValues.installmentKind ??
+                      "INSTALLMENTS") as PackageInstallmentKindValue
                   }
-                }}
-              />
-              {form.formState.errors.pixPrice ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.pixPrice.message}
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Só se o Pix tiver valor diferente do parcelado.
-                </p>
-              )}
-            </div>
+                  installmentCount={watchedValues.installmentCount ?? null}
+                  installmentAmount={watchedValues.installmentAmount ?? null}
+                  downPaymentAmount={watchedValues.downPaymentAmount ?? null}
+                  installmentText={watchedValues.installmentText ?? ""}
+                  errors={{
+                    installmentKind: form.formState.errors.installmentKind?.message,
+                    installmentCount: form.formState.errors.installmentCount?.message,
+                    installmentAmount:
+                      form.formState.errors.installmentAmount?.message,
+                    downPaymentAmount:
+                      form.formState.errors.downPaymentAmount?.message,
+                    installmentText: form.formState.errors.installmentText?.message,
+                  }}
+                  onChange={(patch) => {
+                    for (const [field, value] of Object.entries(patch)) {
+                      if (value === undefined) continue;
+                      form.setValue(field as keyof PackageFormInput, value as never, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                    }
+                  }}
+                />
+              </div>
+            ) : null}
 
-            <div className="space-y-1.5">
-              <label
-                htmlFor="oldPrice"
-                className="text-sm font-medium text-foreground"
-              >
+            {sellsInstallments ? (
+              <div className="space-y-1.5">
+                <p id="highlight-label" className="text-sm font-medium text-foreground">
+                  Em destaque no card
+                </p>
+                <div role="radiogroup" aria-labelledby="highlight-label" className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      { value: false, label: sellsCash ? "Preço à vista" : "Valor total" },
+                      { value: true, label: sellsCash ? "Preço parcelado" : "Parcelas" },
+                    ] as const
+                  ).map((option) => {
+                    const selected =
+                      Boolean(watchedValues.highlightInstallments) === option.value;
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        className={cn(
+                          "inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-colors",
+                          selected
+                            ? "border-brand bg-brand/10 text-foreground"
+                            : "border-border/70 bg-background text-muted-foreground hover:border-brand/40 hover:text-foreground",
+                        )}
+                        onClick={() =>
+                          form.setValue("highlightInstallments", option.value, {
+                            shouldDirty: true,
+                            shouldValidate: true,
+                          })
+                        }
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  O outro aparece menor, logo abaixo.
+                </p>
+              </div>
+            ) : null}
+
+            <div className="max-w-xs space-y-1.5">
+              <label htmlFor="oldPrice" className="text-sm font-medium text-foreground">
                 Preço anterior{" "}
-                <span className="text-muted-foreground">(opcional)</span>
+                <span className="text-muted-foreground">(opcional, aparece riscado)</span>
               </label>
               <Input
                 id="oldPrice"
@@ -735,70 +878,6 @@ export function PackageForm({
               ) : null}
             </div>
           </div>
-
-          <PackagePaymentFields
-            price={watchedValues.price ?? 0}
-            installmentKind={
-              (watchedValues.installmentKind ??
-                "NONE") as PackageInstallmentKindValue
-            }
-            installmentCount={watchedValues.installmentCount ?? null}
-            installmentAmount={watchedValues.installmentAmount ?? null}
-            downPaymentAmount={watchedValues.downPaymentAmount ?? null}
-            installmentText={watchedValues.installmentText ?? ""}
-            paymentMethods={
-              (watchedValues.paymentMethods ??
-                []) as PackagePaymentMethodValue[]
-            }
-            errors={{
-              installmentKind: form.formState.errors.installmentKind?.message,
-              installmentCount: form.formState.errors.installmentCount?.message,
-              installmentAmount:
-                form.formState.errors.installmentAmount?.message,
-              downPaymentAmount:
-                form.formState.errors.downPaymentAmount?.message,
-              installmentText: form.formState.errors.installmentText?.message,
-              paymentMethods: form.formState.errors.paymentMethods?.message,
-            }}
-            onChange={(patch) => {
-              if (patch.installmentKind !== undefined) {
-                form.setValue("installmentKind", patch.installmentKind, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
-              if (patch.installmentCount !== undefined) {
-                form.setValue("installmentCount", patch.installmentCount, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
-              if (patch.installmentAmount !== undefined) {
-                form.setValue("installmentAmount", patch.installmentAmount, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
-              if (patch.downPaymentAmount !== undefined) {
-                form.setValue("downPaymentAmount", patch.downPaymentAmount, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
-              if (patch.installmentText !== undefined) {
-                form.setValue("installmentText", patch.installmentText, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
-              if (patch.paymentMethods !== undefined) {
-                form.setValue("paymentMethods", patch.paymentMethods, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                });
-              }
-            }}
-          />
 
           {isFlight ? null : (
           <div className="space-y-1.5">
@@ -833,92 +912,25 @@ export function PackageForm({
           </div>
           )}
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="flex-1 space-y-1.5">
-              <label
-                htmlFor="feesText"
-                className="text-sm font-medium text-foreground"
-              >
-                Taxas
-              </label>
-              <Input
-                id="feesText"
-                className="h-10 rounded-xl"
-                placeholder="Taxas no local"
-                {...form.register("feesText")}
-              />
-              {form.formState.errors.feesText ? (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.feesText.message}
-                </p>
-              ) : null}
-            </div>
-
-            {hasPixPrice ? (
-              <div className="shrink-0 space-y-1.5">
-                <p
-                  id="highlight-label"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Em destaque no card
-                </p>
-                <div
-                  role="radiogroup"
-                  aria-labelledby="highlight-label"
-                  className="flex gap-2"
-                >
-                  {(
-                    [
-                      { value: false, label: "Pix à vista" },
-                      { value: true, label: "Parcelado" },
-                    ] as const
-                  ).map((option) => {
-                    const selected =
-                      Boolean(watchedValues.highlightInstallments) === option.value;
-                    return (
-                      <button
-                        key={option.label}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        className={cn(
-                          "inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-colors",
-                          selected
-                            ? "border-brand bg-brand/10 text-foreground"
-                            : "border-border/70 bg-background text-muted-foreground hover:border-brand/40 hover:text-foreground",
-                        )}
-                        onClick={() =>
-                          form.setValue("highlightInstallments", option.value, {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                          })
-                        }
-                      >
-                        {option.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-            <label
-              htmlFor="highlightInstallments"
-              className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-muted/20 px-3 py-2.5 text-sm font-medium text-foreground sm:self-end"
-            >
-              <input
-                id="highlightInstallments"
-                type="checkbox"
-                className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                checked={Boolean(watchedValues.highlightInstallments)}
-                onChange={(event) =>
-                  form.setValue("highlightInstallments", event.target.checked, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
-              Destacar parcelamento
+          <div className="space-y-1.5">
+            <label htmlFor="feesText" className="text-sm font-medium text-foreground">
+              Rodapé do card{" "}
+              <span className="text-muted-foreground">(opcional)</span>
             </label>
+            <Input
+              id="feesText"
+              className="h-10 rounded-xl"
+              placeholder="Ex.: Cartão ou boleto | Taxas inclusas"
+              {...form.register("feesText")}
+            />
+            {form.formState.errors.feesText ? (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.feesText.message}
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Texto da linha de baixo do card, do jeito que você escrever.
+              </p>
             )}
           </div>
 
@@ -1066,7 +1078,7 @@ export function PackageForm({
           </div>
         </div>
 
-        <div className="space-y-2 xl:sticky xl:top-6 xl:self-start">
+        <div className="space-y-2 xl:self-start">
           <p className="text-sm font-medium text-foreground">Preview do card</p>
           <p className="text-xs text-muted-foreground">
             Visualização automática do card padronizado antes de salvar.

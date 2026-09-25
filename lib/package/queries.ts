@@ -84,6 +84,8 @@ const publicPackageSelect = {
   oldPrice: true,
   pixPrice: true,
   priceScope: true,
+  installmentKind: true,
+  installmentAmount: true,
   installmentText: true,
   highlightInstallments: true,
   paymentMethods: true,
@@ -132,6 +134,8 @@ function mapPublicPackage(
     oldPrice: { toNumber?: () => number } | number | null;
     pixPrice: { toNumber?: () => number } | number | null;
     priceScope: string | null;
+    installmentKind: string;
+    installmentAmount: { toNumber?: () => number } | number | null;
     installmentText: string | null;
     highlightInstallments: boolean;
     paymentMethods: string[];
@@ -149,6 +153,11 @@ function mapPublicPackage(
     featured: boolean;
   },
 ): PublicPackage {
+  const price = decimalToNumber(pkg.price) ?? 0;
+  // Formato antigo: "à vista via Pix" era um tipo de parcelamento.
+  const legacyPix =
+    pkg.installmentKind === "PIX_CASH" && pkg.pixPrice == null;
+
   return {
     id: pkg.id,
     slug: pkg.slug,
@@ -159,12 +168,14 @@ function mapPublicPackage(
     image: normalizePackageImageUrl(pkg.image),
     type: pkg.type as PackageTypeValue,
     category: (pkg.category as PackageCategoryValue | null) ?? null,
-    price: decimalToNumber(pkg.price) ?? 0,
+    price,
     oldPrice: decimalToNumber(pkg.oldPrice),
-    pixPrice: decimalToNumber(pkg.pixPrice),
+    pixPrice: legacyPix
+      ? (decimalToNumber(pkg.installmentAmount) ?? price)
+      : decimalToNumber(pkg.pixPrice),
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
-    installmentText: pkg.installmentText,
-    highlightInstallments: pkg.highlightInstallments,
+    installmentText: legacyPix ? null : pkg.installmentText,
+    highlightInstallments: legacyPix ? false : pkg.highlightInstallments,
     paymentMethods: normalizePaymentMethods(pkg.paymentMethods),
     feesText: pkg.feesText,
     airline: pkg.airline,

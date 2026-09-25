@@ -8,7 +8,7 @@ import { packageDurationInitialValues } from "@/components/admin/package-duratio
 import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_PACKAGE_DEPARTURE_CITY, packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
-import { inferInstallmentFieldsFromText } from "@/lib/package/payment";
+import { inferInstallmentFieldsFromText, toFormPricing } from "@/lib/package/payment";
 import type { AdminPackageDetail } from "@/lib/package/queries";
 
 type PackageEditScreenProps = {
@@ -33,6 +33,11 @@ export function PackageEditScreen({
     pkg.installmentKind === "CUSTOM"
       ? inferInstallmentFieldsFromText(pkg.installmentText)
       : null;
+
+  const installmentKind = legacyInstallment?.installmentKind ?? pkg.installmentKind;
+  const installmentAmount =
+    pkg.installmentAmount ?? legacyInstallment?.installmentAmount ?? null;
+  const pricing = toFormPricing({ ...pkg, installmentKind, installmentAmount });
 
   return (
     <section className="space-y-5">
@@ -88,25 +93,21 @@ export function PackageEditScreen({
             category: pkg.category,
             price: pkg.price,
             oldPrice: pkg.oldPrice,
-            pixPrice: pkg.pixPrice,
+            pixPrice: pricing.pixPrice,
             priceScope: pkg.priceScope,
-            installmentKind:
-              legacyInstallment?.installmentKind ?? pkg.installmentKind,
+            installmentKind: pricing.installmentKind,
             installmentCount:
               pkg.installmentCount ?? legacyInstallment?.installmentCount ?? 12,
-            installmentAmount:
-              pkg.installmentAmount ??
-              legacyInstallment?.installmentAmount ??
-              null,
+            installmentAmount: pricing.installmentAmount,
             downPaymentAmount:
               pkg.downPaymentAmount ??
               legacyInstallment?.downPaymentAmount ??
               null,
             installmentText:
               legacyInstallment?.installmentText ?? pkg.installmentText ?? "",
-            highlightInstallments: pkg.highlightInstallments,
-            paymentMethods: pkg.paymentMethods,
-            feesText: pkg.feesText ?? "",
+            highlightInstallments: pricing.highlightInstallments,
+            paymentMethods: pricing.paymentMethods,
+            feesText: pricing.feesText,
             airline: pkg.airline ?? "",
             hotelName: pkg.hotelName ?? "",
             departureCity:

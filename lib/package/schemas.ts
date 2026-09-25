@@ -21,6 +21,7 @@ import {
 } from "@/lib/package/dates";
 import {
   PACKAGE_INSTALLMENT_KINDS,
+  PACKAGE_SELLS_IN_INSTALLMENTS_KINDS,
   PACKAGE_PAYMENT_METHODS,
   buildInstallmentText,
   normalizePaymentMethods,
@@ -81,7 +82,7 @@ const packageFormFieldsSchema = z.object({
   feesText: z
     .string()
     .trim()
-    .max(80, "Taxas deve ter no máximo 80 caracteres."),
+    .max(120, "O rodapé deve ter no máximo 120 caracteres."),
   airline: z.string().trim(),
   hotelName: z.string().trim(),
   departureCity: z.string().trim(),
@@ -221,11 +222,15 @@ function validatePackageRules(
     });
   }
 
-  if (data.pixPrice != null && data.pixPrice >= data.price) {
+  if (
+    data.pixPrice != null &&
+    PACKAGE_SELLS_IN_INSTALLMENTS_KINDS.includes(data.installmentKind) &&
+    data.pixPrice >= data.price
+  ) {
     ctx.addIssue({
       code: "custom",
       path: ["pixPrice"],
-      message: "O preço no Pix deve ser menor que o preço parcelado.",
+      message: "O preço à vista deve ser menor que o total parcelado.",
     });
   }
 
