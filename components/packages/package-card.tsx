@@ -20,7 +20,7 @@ import {
 import { isHighlightedChecklistItem } from "@/lib/package/checklist";
 import { formatPackageTravelDate } from "@/lib/package/dates";
 import { formatPackagePrice } from "@/lib/package/format";
-import { legacyPaymentMethodsFooter } from "@/lib/package/payment";
+import { formatPaymentMethodsText } from "@/lib/package/payment";
 import type { PackageCardData } from "@/lib/package/schemas";
 import { cardShadowClassName } from "@/lib/card-styles";
 import { cn } from "@/lib/utils";
@@ -468,9 +468,9 @@ function PriceFooter({
         )
       : "text-xs sm:text-sm",
   );
-  // Texto livre do rodapé; formas de pagamento só em pacote salvo antes dele.
+  // Formas de pagamento marcadas | texto livre.
   const footerParts = [
-    legacyPaymentMethodsFooter(data.paymentMethods, data.pixPrice != null),
+    formatPaymentMethodsText(data.paymentMethods),
     data.feesText,
   ].filter((part): part is string => Boolean(part && part.trim()));
 

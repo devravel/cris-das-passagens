@@ -36,9 +36,12 @@ import {
   type PackageTypeValue,
 } from "@/lib/package/constants";
 import {
+  PACKAGE_PAYMENT_METHOD_LABELS,
+  PACKAGE_PAYMENT_METHODS,
   PACKAGE_SELLS_IN_INSTALLMENTS_KINDS,
   suggestInstallmentAmount,
   type PackageInstallmentKindValue,
+  type PackagePaymentMethodValue,
 } from "@/lib/package/payment";
 import {
   EMPTY_PACKAGE_FORM_VALUES,
@@ -912,24 +915,62 @@ export function PackageForm({
           </div>
           )}
 
-          <div className="space-y-1.5">
-            <label htmlFor="feesText" className="text-sm font-medium text-foreground">
+          <div className="space-y-2">
+            <p id="footer-label" className="text-sm font-medium text-foreground">
               Rodapé do card{" "}
-              <span className="text-muted-foreground">(opcional)</span>
-            </label>
-            <Input
-              id="feesText"
-              className="h-10 rounded-xl"
-              placeholder="Ex.: Cartão ou boleto | Taxas inclusas"
-              {...form.register("feesText")}
-            />
+              <span className="font-normal text-muted-foreground">(opcional)</span>
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <div role="group" aria-labelledby="footer-label" className="flex shrink-0 flex-wrap gap-2">
+                {PACKAGE_PAYMENT_METHODS.map((method) => {
+                  const methods = (watchedValues.paymentMethods ??
+                    []) as PackagePaymentMethodValue[];
+                  const pressed = methods.includes(method);
+                  return (
+                    <button
+                      key={method}
+                      type="button"
+                      aria-pressed={pressed}
+                      className={cn(
+                        "inline-flex h-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-colors",
+                        pressed
+                          ? "border-brand bg-brand/10 text-foreground"
+                          : "border-border/70 bg-background text-muted-foreground hover:border-brand/40 hover:text-foreground",
+                      )}
+                      onClick={() =>
+                        form.setValue(
+                          "paymentMethods",
+                          pressed
+                            ? methods.filter((item) => item !== method)
+                            : [...methods, method],
+                          { shouldDirty: true, shouldValidate: true },
+                        )
+                      }
+                    >
+                      {PACKAGE_PAYMENT_METHOD_LABELS[method]}
+                    </button>
+                  );
+                })}
+              </div>
+              <span aria-hidden className="hidden text-muted-foreground sm:inline">
+                |
+              </span>
+              <Input
+                id="feesText"
+                aria-label="Texto livre do rodapé"
+                className="h-10 min-w-0 flex-1 rounded-xl"
+                placeholder="Ex.: Taxas inclusas"
+                {...form.register("feesText")}
+              />
+            </div>
             {form.formState.errors.feesText ? (
               <p className="text-xs text-destructive">
                 {form.formState.errors.feesText.message}
               </p>
             ) : (
               <p className="text-xs text-muted-foreground">
-                Texto da linha de baixo do card, do jeito que você escrever.
+                Marque as formas de pagamento e escreva o resto, se quiser (ex.:
+                Taxas no local).
               </p>
             )}
           </div>

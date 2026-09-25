@@ -106,8 +106,8 @@ export function PackageEditScreen({
             installmentText:
               legacyInstallment?.installmentText ?? pkg.installmentText ?? "",
             highlightInstallments: pricing.highlightInstallments,
-            paymentMethods: pricing.paymentMethods,
-            feesText: pricing.feesText,
+            paymentMethods: pkg.paymentMethods,
+            feesText: pkg.feesText ?? "",
             airline: pkg.airline ?? "",
             hotelName: pkg.hotelName ?? "",
             departureCity:
