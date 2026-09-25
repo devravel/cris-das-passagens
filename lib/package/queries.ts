@@ -12,6 +12,7 @@ import { packageDateToIsoString } from "@/lib/package/dates";
 import { buildIncludedItemSuggestions } from "@/lib/package/included-item-suggestions";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 import {
+  computeInstallmentTotal,
   normalizePaymentMethods,
   type PackageInstallmentKindValue,
   type PackagePaymentMethodValue,
@@ -36,6 +37,7 @@ export type PublicPackage = {
   pixPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
+  installmentTotal: number | null;
   highlightInstallments: boolean;
   paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
@@ -85,6 +87,8 @@ const publicPackageSelect = {
   pixPrice: true,
   priceScope: true,
   installmentKind: true,
+  installmentCount: true,
+  downPaymentAmount: true,
   installmentAmount: true,
   installmentText: true,
   highlightInstallments: true,
@@ -135,7 +139,9 @@ function mapPublicPackage(
     pixPrice: { toNumber?: () => number } | number | null;
     priceScope: string | null;
     installmentKind: string;
+    installmentCount: number | null;
     installmentAmount: { toNumber?: () => number } | number | null;
+    downPaymentAmount: { toNumber?: () => number } | number | null;
     installmentText: string | null;
     highlightInstallments: boolean;
     paymentMethods: string[];
@@ -175,6 +181,15 @@ function mapPublicPackage(
       : decimalToNumber(pkg.pixPrice),
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
     installmentText: legacyPix ? null : pkg.installmentText,
+    installmentTotal: computeInstallmentTotal(
+      {
+        installmentKind: pkg.installmentKind,
+        installmentCount: pkg.installmentCount,
+        installmentAmount: decimalToNumber(pkg.installmentAmount),
+        downPaymentAmount: decimalToNumber(pkg.downPaymentAmount),
+      },
+      price,
+    ),
     highlightInstallments: legacyPix ? false : pkg.highlightInstallments,
     paymentMethods: normalizePaymentMethods(pkg.paymentMethods),
     feesText: pkg.feesText,

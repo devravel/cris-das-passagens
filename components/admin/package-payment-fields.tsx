@@ -4,10 +4,12 @@ import {
   PACKAGE_INSTALLMENT_COUNT_PRESETS,
   PACKAGE_INSTALLMENT_KIND_LABELS,
   buildInstallmentText,
+  computeInstallmentTotal,
   suggestInstallmentAmount,
   type PackageInstallmentKindValue,
 } from "@/lib/package/payment";
 import { Input } from "@/components/ui/input";
+import { formatPackagePrice } from "@/lib/package/format";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
@@ -61,6 +63,10 @@ export function PackagePaymentFields({
     installmentText,
     price,
   });
+  const installmentTotal = computeInstallmentTotal(
+    { installmentKind, installmentCount, installmentAmount, downPaymentAmount },
+    price,
+  );
 
   const showInstallmentAmount =
     installmentKind === "INSTALLMENTS" ||
@@ -287,6 +293,11 @@ export function PackagePaymentFields({
       {previewText ? (
         <p className="rounded-xl border border-border/60 bg-background px-3 py-2 text-sm text-foreground">
           No card: <span className="font-medium">{previewText}</span>
+          {installmentTotal != null ? (
+            <span className="text-muted-foreground">
+              {" "}· total {formatPackagePrice(installmentTotal)}
+            </span>
+          ) : null}
         </p>
       ) : null}
 

@@ -87,6 +87,33 @@ export function formatPaymentMethodsText(
   return normalized.map((method) => PACKAGE_PAYMENT_METHOD_LABELS[method]).join(", ");
 }
 
+/**
+ * Total pago no parcelado (o CDC exige mostrar junto das parcelas): parcelas ×
+ * valor + entrada. Diferença de arredondamento da parcela (até 1 centavo por
+ * parcela) fica com o total digitado no painel, que é o do encarte.
+ * Texto livre não dá pra somar: null.
+ */
+export function computeInstallmentTotal(
+  fields: {
+    installmentKind: string;
+    installmentCount: number | null;
+    installmentAmount: number | null;
+    downPaymentAmount: number | null;
+  },
+  price: number,
+): number | null {
+  const { installmentKind: kind, installmentCount: count, installmentAmount: amount } = fields;
+
+  if ((kind !== "INSTALLMENTS" && kind !== "DOWN_PAYMENT") || !count || amount == null) {
+    return null;
+  }
+
+  const downPayment = kind === "DOWN_PAYMENT" ? (fields.downPaymentAmount ?? 0) : 0;
+  const sum = Math.round((count * amount + downPayment) * 100) / 100;
+
+  return Math.abs(sum - price) <= count * 0.01 ? price : sum;
+}
+
 export const PACKAGE_SELLS_IN_INSTALLMENTS_KINDS: readonly PackageInstallmentKindValue[] = [
   "INSTALLMENTS",
   "DOWN_PAYMENT",
