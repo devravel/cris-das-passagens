@@ -148,6 +148,14 @@ export function PackagePaymentFields({
         {errors?.installmentKind ? (
           <p className="text-xs text-destructive">{errors.installmentKind}</p>
         ) : null}
+        {installmentKind === "PIX_CASH" ? (
+          <p className="rounded-xl bg-brand/10 px-3 py-2 text-xs text-foreground">
+            Formato antigo. Pra mostrar Pix e parcelado com valores diferentes:
+            coloque o valor do Pix em <strong>Preço à vista no Pix</strong>, o
+            total parcelado em <strong>Preço</strong> e escolha{" "}
+            <strong>Parcelado</strong> aqui.
+          </p>
+        ) : null}
       </div>
 
       {showCount ? (
