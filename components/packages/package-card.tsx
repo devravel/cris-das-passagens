@@ -368,18 +368,27 @@ function PriceBlock({
       : "text-xs sm:text-sm",
   );
 
-  if (data.highlightInstallments && data.installmentText) {
-    return (
-      <div className="space-y-0.5">
-        <p className={labelClassName}>A partir de</p>
-        <p className={priceClassName}>{data.installmentText}</p>
-        <PriceScopeLabel
-          priceScope={data.priceScope}
-          compact={compact}
-          narrowMobileTypography={narrowMobileTypography}
-        />
-      </div>
-    );
+  const pixText =
+    data.pixPrice != null
+      ? `${formatPackagePrice(data.pixPrice)} à vista via Pix`
+      : null;
+  const installmentText = data.installmentText?.trim() || null;
+  const totalText = formatPackagePrice(data.price);
+
+  // Um preço grande; o outro (quando existe) logo abaixo, menor.
+  let mainText = totalText;
+  let secondaryText: string | null = null;
+
+  if (pixText && installmentText) {
+    [mainText, secondaryText] = data.highlightInstallments
+      ? [installmentText, `ou ${pixText}`]
+      : [pixText, `ou ${installmentText}`];
+  } else if (pixText) {
+    mainText = pixText;
+  } else if (installmentText) {
+    [mainText, secondaryText] = data.highlightInstallments
+      ? [installmentText, `Total: ${totalText}`]
+      : [totalText, `ou ${installmentText}`];
   }
 
   const priceLabel =
@@ -390,14 +399,14 @@ function PriceBlock({
       <p className={labelClassName}>{priceLabel}</p>
       {isListing && showOldPrice ? (
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
+          <p className={priceClassName}>{mainText}</p>
           <p className={oldPriceClassName}>
             {formatPackagePrice(data.oldPrice!)}
           </p>
         </div>
       ) : (
         <>
-          <p className={priceClassName}>{formatPackagePrice(data.price)}</p>
+          <p className={priceClassName}>{mainText}</p>
           {showOldPrice ? (
             <p className={oldPriceClassName}>
               {formatPackagePrice(data.oldPrice!)}
@@ -405,6 +414,17 @@ function PriceBlock({
           ) : null}
         </>
       )}
+      {/* Linha reservada mesmo vazia: cards lado a lado ficam com a mesma altura. */}
+      <p
+        className={cn(
+          labelClassName,
+          "font-medium text-foreground/80",
+          !secondaryText && "invisible",
+        )}
+        aria-hidden={!secondaryText || undefined}
+      >
+        {secondaryText ?? "-"}
+      </p>
       <PriceScopeLabel
         priceScope={data.priceScope}
         compact={compact}
@@ -448,34 +468,11 @@ function PriceFooter({
         )
       : "text-xs sm:text-sm",
   );
-  const paymentMethodsText = formatPaymentMethodsText(data.paymentMethods);
+  // Formas de pagamento marcadas | texto livre.
   const footerParts = [
-    data.highlightInstallments && data.installmentText
-      ? `Total da cotação: ${formatPackagePrice(data.price)}`
-      : data.installmentText,
-    paymentMethodsText,
+    formatPaymentMethodsText(data.paymentMethods),
     data.feesText,
   ].filter((part): part is string => Boolean(part && part.trim()));
-
-  if (data.highlightInstallments && data.installmentText) {
-    return (
-      <div className={footerClassName}>
-        <p
-          className={cn(
-            "font-medium text-muted-foreground",
-            compact
-              ? cn(
-                  "text-[9px] leading-snug lg:text-[10px] xl:text-xs",
-                  featuredFooterClassName(narrowMobileTypography),
-                )
-              : "text-[11px] sm:text-xs",
-          )}
-        >
-          {footerParts.join(" | ")}
-        </p>
-      </div>
-    );
-  }
 
   if (footerParts.length > 0) {
     return (
@@ -1099,6 +1096,7 @@ export function toPackageCardDataFromPublicPackage(
     type: pkg.type,
     price: pkg.price,
     oldPrice: pkg.oldPrice,
+    pixPrice: pkg.pixPrice,
     priceScope: pkg.priceScope,
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,

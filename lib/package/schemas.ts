@@ -21,6 +21,7 @@ import {
 } from "@/lib/package/dates";
 import {
   PACKAGE_INSTALLMENT_KINDS,
+  PACKAGE_SELLS_IN_INSTALLMENTS_KINDS,
   PACKAGE_PAYMENT_METHODS,
   buildInstallmentText,
   normalizePaymentMethods,
@@ -64,6 +65,7 @@ const packageFormFieldsSchema = z.object({
   category: z.enum(PACKAGE_CATEGORIES).nullable(),
   price: priceSchema,
   oldPrice: optionalPriceSchema,
+  pixPrice: optionalPriceSchema,
   // Nullable pelo estado inicial do formulário, mas salvar sem escolher não passa.
   priceScope: z
     .enum(PACKAGE_PRICE_SCOPES)
@@ -80,7 +82,7 @@ const packageFormFieldsSchema = z.object({
   feesText: z
     .string()
     .trim()
-    .max(80, "Taxas deve ter no máximo 80 caracteres."),
+    .max(120, "O rodapé deve ter no máximo 120 caracteres."),
   airline: z.string().trim(),
   hotelName: z.string().trim(),
   departureCity: z.string().trim(),
@@ -220,6 +222,18 @@ function validatePackageRules(
     });
   }
 
+  if (
+    data.pixPrice != null &&
+    PACKAGE_SELLS_IN_INSTALLMENTS_KINDS.includes(data.installmentKind) &&
+    data.pixPrice >= data.price
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["pixPrice"],
+      message: "O preço à vista deve ser menor que o total parcelado.",
+    });
+  }
+
   validateInstallmentRules(data, ctx);
 
   const resolvedInstallmentText = buildInstallmentText({
@@ -231,7 +245,12 @@ function validatePackageRules(
     price: data.price,
   });
 
-  if (data.highlightInstallments && !resolvedInstallmentText.trim()) {
+  // Com preço no Pix, o parcelado em destaque pode ser só o total.
+  if (
+    data.highlightInstallments &&
+    data.pixPrice == null &&
+    !resolvedInstallmentText.trim()
+  ) {
     ctx.addIssue({
       code: "custom",
       path: ["installmentKind"],
@@ -395,6 +414,7 @@ export type PackageCardData = {
   type: PackageTypeValue;
   price: number;
   oldPrice: number | null;
+  pixPrice: number | null;
   priceScope: PackagePriceScopeValue | null;
   installmentText: string | null;
   highlightInstallments: boolean;
@@ -435,6 +455,7 @@ export function toPackageCardPreviewData(
     type: values.type,
     price: values.price,
     oldPrice: values.oldPrice ?? null,
+    pixPrice: values.pixPrice ?? null,
     priceScope: values.priceScope ?? null,
     installmentText: installmentText || null,
     highlightInstallments: values.highlightInstallments,
@@ -461,6 +482,7 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   category: "NATIONAL",
   price: 0,
   oldPrice: null,
+  pixPrice: null,
   priceScope: null,
   installmentKind: "NONE" as PackageInstallmentKindValue,
   installmentCount: 12,

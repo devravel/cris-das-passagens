@@ -124,6 +124,7 @@ function normalizeInput(input: PackageFormValues) {
     category: input.category ?? null,
     price: input.price,
     oldPrice: input.oldPrice ?? null,
+    pixPrice: input.pixPrice ?? null,
     priceScope: input.priceScope ?? null,
     installmentKind: input.installmentKind,
     installmentCount:

@@ -100,6 +100,7 @@ model Package {
   category              PackageCategory?
   price                 Decimal          @db.Decimal(10, 2)
   oldPrice              Decimal?         @db.Decimal(10, 2)
+  pixPrice              Decimal?         @db.Decimal(10, 2)
   priceScope            PackagePriceScope?
   installmentKind       PackageInstallmentKind @default(CUSTOM)
   installmentCount      Int?

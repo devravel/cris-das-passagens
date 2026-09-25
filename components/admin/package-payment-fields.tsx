@@ -3,12 +3,9 @@
 import {
   PACKAGE_INSTALLMENT_COUNT_PRESETS,
   PACKAGE_INSTALLMENT_KIND_LABELS,
-  PACKAGE_PAYMENT_METHOD_LABELS,
-  PACKAGE_PAYMENT_METHODS,
   buildInstallmentText,
   suggestInstallmentAmount,
   type PackageInstallmentKindValue,
-  type PackagePaymentMethodValue,
 } from "@/lib/package/payment";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -21,14 +18,12 @@ type PackagePaymentFieldsProps = {
   installmentAmount: number | null;
   downPaymentAmount: number | null;
   installmentText: string;
-  paymentMethods: PackagePaymentMethodValue[];
   errors?: {
     installmentKind?: string;
     installmentCount?: string;
     installmentAmount?: string;
     downPaymentAmount?: string;
     installmentText?: string;
-    paymentMethods?: string;
   };
   onChange: (patch: {
     installmentKind?: PackageInstallmentKindValue;
@@ -36,7 +31,6 @@ type PackagePaymentFieldsProps = {
     installmentAmount?: number | null;
     downPaymentAmount?: number | null;
     installmentText?: string;
-    paymentMethods?: PackagePaymentMethodValue[];
   }) => void;
 };
 
@@ -56,7 +50,6 @@ export function PackagePaymentFields({
   installmentAmount,
   downPaymentAmount,
   installmentText,
-  paymentMethods,
   errors,
   onChange,
 }: PackagePaymentFieldsProps) {
@@ -113,22 +106,14 @@ export function PackagePaymentFields({
     });
   }
 
-  function togglePaymentMethod(method: PackagePaymentMethodValue) {
-    const next = paymentMethods.includes(method)
-      ? paymentMethods.filter((item) => item !== method)
-      : [...paymentMethods, method];
-
-    onChange({ paymentMethods: next });
-  }
-
   return (
-    <div className="space-y-4 rounded-2xl border border-border/70 bg-muted/10 p-4">
+    <div className="space-y-4">
       <div className="space-y-1.5">
         <label
           htmlFor="installmentKind"
           className="text-sm font-medium text-foreground"
         >
-          Parcelamento
+          Tipo de parcelamento
         </label>
         <Select
           id="installmentKind"
@@ -136,10 +121,8 @@ export function PackagePaymentFields({
           onChange={(next) => setKind(next as PackageInstallmentKindValue)}
           options={(
             [
-              "NONE",
               "INSTALLMENTS",
               "DOWN_PAYMENT",
-              "PIX_CASH",
               ...(installmentKind === "CUSTOM" ? (["CUSTOM"] as const) : []),
             ] as const
           ).map((kind) => ({ value: kind, label: PACKAGE_INSTALLMENT_KIND_LABELS[kind] }))}
@@ -307,40 +290,6 @@ export function PackagePaymentFields({
         </p>
       ) : null}
 
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-foreground">
-          Formas de pagamento{" "}
-          <span className="font-normal text-muted-foreground">
-            (marque as opções do encarte)
-          </span>
-        </p>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          {PACKAGE_PAYMENT_METHODS.map((method) => {
-            const checked = paymentMethods.includes(method);
-            const id = `payment-method-${method}`;
-
-            return (
-              <label
-                key={method}
-                htmlFor={id}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border/70 bg-background px-3 py-2.5 text-sm font-medium text-foreground"
-              >
-                <input
-                  id={id}
-                  type="checkbox"
-                  className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  checked={checked}
-                  onChange={() => togglePaymentMethod(method)}
-                />
-                {PACKAGE_PAYMENT_METHOD_LABELS[method]}
-              </label>
-            );
-          })}
-        </div>
-        {errors?.paymentMethods ? (
-          <p className="text-xs text-destructive">{errors.paymentMethods}</p>
-        ) : null}
-      </div>
     </div>
   );
 }
