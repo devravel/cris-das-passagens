@@ -108,6 +108,7 @@ model Package {
   downPaymentAmount     Decimal?         @db.Decimal(10, 2)
   installmentText       String?
   highlightInstallments Boolean          @default(false)
+  interestFree          Boolean          @default(true)
   paymentMethods        String[]         @default([])
   feesText              String?
   airline               String?

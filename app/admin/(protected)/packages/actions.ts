@@ -142,6 +142,7 @@ function normalizeInput(input: PackageFormValues) {
       input.installmentKind === "DOWN_PAYMENT" ? input.downPaymentAmount : null,
     installmentText: input.installmentText?.trim() || null,
     highlightInstallments: input.highlightInstallments,
+    interestFree: input.interestFree,
     paymentMethods: input.paymentMethods,
     feesText: input.feesText?.trim() || null,
     airline,

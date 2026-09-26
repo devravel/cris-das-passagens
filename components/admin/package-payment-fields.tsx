@@ -20,6 +20,7 @@ type PackagePaymentFieldsProps = {
   installmentAmount: number | null;
   downPaymentAmount: number | null;
   installmentText: string;
+  interestFree: boolean;
   errors?: {
     installmentKind?: string;
     installmentCount?: string;
@@ -33,6 +34,7 @@ type PackagePaymentFieldsProps = {
     installmentAmount?: number | null;
     downPaymentAmount?: number | null;
     installmentText?: string;
+    interestFree?: boolean;
   }) => void;
 };
 
@@ -52,6 +54,7 @@ export function PackagePaymentFields({
   installmentAmount,
   downPaymentAmount,
   installmentText,
+  interestFree,
   errors,
   onChange,
 }: PackagePaymentFieldsProps) {
@@ -191,6 +194,21 @@ export function PackagePaymentFields({
         </div>
       ) : null}
 
+      {showCount ? (
+        <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
+          <input
+            type="checkbox"
+            className="size-4 rounded border-border text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            checked={interestFree}
+            onChange={(event) => onChange({ interestFree: event.target.checked })}
+          />
+          Sem juros{" "}
+          <span className="font-normal text-muted-foreground">
+            (desmarque se o parcelamento tiver juros)
+          </span>
+        </label>
+      ) : null}
+
       {showDownPayment ? (
         <div className="space-y-1.5">
           <label
@@ -292,7 +310,11 @@ export function PackagePaymentFields({
 
       {previewText ? (
         <p className="rounded-xl border border-border/60 bg-background px-3 py-2 text-sm text-foreground">
-          No card: <span className="font-medium">{previewText}</span>
+          No card:{" "}
+          <span className="font-medium">
+            {previewText}
+            {interestFree && installmentTotal != null ? " sem juros" : ""}
+          </span>
           {installmentTotal != null ? (
             <span className="text-muted-foreground">
               {" "}· total {formatPackagePrice(installmentTotal)}

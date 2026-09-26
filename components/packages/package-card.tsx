@@ -377,6 +377,10 @@ function PriceBlock({
   // CDC: parcela nunca aparece sem o total pago no parcelado.
   const installmentTotalText = `total ${formatPackagePrice(data.installmentTotal ?? data.price)}`;
 
+  // Texto livre de parcelamento não recebe: quem escreveu já disse o que quis.
+  const interestFreeText =
+    data.interestFree && data.installmentTotal != null ? "sem juros" : null;
+
   // Um preço grande; o outro (quando existe) logo abaixo, menor.
   let mainText = totalText;
   let mainSuffix: string | null = null;
@@ -385,19 +389,24 @@ function PriceBlock({
   if (pixText && installmentText) {
     if (data.highlightInstallments) {
       mainText = installmentText;
-      mainSuffix = installmentTotalText;
+      mainSuffix = [interestFreeText, installmentTotalText].filter(Boolean).join(" · ");
       secondaryText = `ou ${pixText}`;
     } else {
       mainText = pixText;
-      secondaryText = `ou ${installmentText} (${installmentTotalText})`;
+      secondaryText = `ou ${[installmentText, interestFreeText].filter(Boolean).join(" ")} (${installmentTotalText})`;
     }
   } else if (pixText) {
     mainText = pixText;
   } else if (installmentText) {
     const total = formatPackagePrice(data.installmentTotal ?? data.price);
-    [mainText, secondaryText] = data.highlightInstallments
-      ? [installmentText, `Total: ${total}`]
-      : [total, `ou ${installmentText}`];
+    if (data.highlightInstallments) {
+      mainText = installmentText;
+      mainSuffix = interestFreeText;
+      secondaryText = `Total: ${total}`;
+    } else {
+      mainText = total;
+      secondaryText = `ou ${[installmentText, interestFreeText].filter(Boolean).join(" ")}`;
+    }
   }
 
   const mainPrice = (
@@ -1121,6 +1130,7 @@ export function toPackageCardDataFromPublicPackage(
     installmentText: pkg.installmentText,
     installmentTotal: pkg.installmentTotal,
     highlightInstallments: pkg.highlightInstallments,
+    interestFree: pkg.interestFree,
     paymentMethods: pkg.paymentMethods,
     feesText: pkg.feesText,
     airline: pkg.airline,

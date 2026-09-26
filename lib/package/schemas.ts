@@ -79,6 +79,7 @@ const packageFormFieldsSchema = z.object({
   downPaymentAmount: optionalPriceSchema,
   installmentText: z.string().trim(),
   highlightInstallments: z.boolean(),
+  interestFree: z.boolean(),
   paymentMethods: z.array(z.enum(PACKAGE_PAYMENT_METHODS)),
   feesText: z
     .string()
@@ -420,6 +421,7 @@ export type PackageCardData = {
   installmentText: string | null;
   installmentTotal: number | null;
   highlightInstallments: boolean;
+  interestFree: boolean;
   paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
   airline: string | null;
@@ -462,6 +464,7 @@ export function toPackageCardPreviewData(
     installmentText: installmentText || null,
     installmentTotal: computeInstallmentTotal(values, values.price),
     highlightInstallments: values.highlightInstallments,
+    interestFree: values.interestFree,
     paymentMethods: normalizePaymentMethods(values.paymentMethods),
     feesText: values.feesText.trim() || null,
     airline: values.airline.trim() || null,
@@ -493,6 +496,7 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   downPaymentAmount: null,
   installmentText: "",
   highlightInstallments: false,
+  interestFree: true,
   paymentMethods: [] as PackagePaymentMethodValue[],
   feesText: "",
   airline: "",
