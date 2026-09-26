@@ -106,6 +106,7 @@ export function PackageEditScreen({
             installmentText:
               legacyInstallment?.installmentText ?? pkg.installmentText ?? "",
             highlightInstallments: pricing.highlightInstallments,
+            interestFree: pkg.interestFree,
             paymentMethods: pkg.paymentMethods,
             feesText: pkg.feesText ?? "",
             airline: pkg.airline ?? "",

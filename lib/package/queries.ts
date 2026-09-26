@@ -39,6 +39,7 @@ export type PublicPackage = {
   installmentText: string | null;
   installmentTotal: number | null;
   highlightInstallments: boolean;
+  interestFree: boolean;
   paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
   airline: string | null;
@@ -92,6 +93,7 @@ const publicPackageSelect = {
   installmentAmount: true,
   installmentText: true,
   highlightInstallments: true,
+  interestFree: true,
   paymentMethods: true,
   feesText: true,
   airline: true,
@@ -144,6 +146,7 @@ function mapPublicPackage(
     downPaymentAmount: { toNumber?: () => number } | number | null;
     installmentText: string | null;
     highlightInstallments: boolean;
+    interestFree: boolean;
     paymentMethods: string[];
     feesText: string | null;
     airline: string | null;
@@ -191,6 +194,7 @@ function mapPublicPackage(
       price,
     ),
     highlightInstallments: legacyPix ? false : pkg.highlightInstallments,
+    interestFree: pkg.interestFree,
     paymentMethods: normalizePaymentMethods(pkg.paymentMethods),
     feesText: pkg.feesText,
     airline: pkg.airline,
@@ -352,6 +356,7 @@ export type AdminPackageListItem = {
   downPaymentAmount: number | null;
   installmentText: string | null;
   highlightInstallments: boolean;
+  interestFree: boolean;
   paymentMethods: PackagePaymentMethodValue[];
   feesText: string | null;
   airline: string | null;
@@ -392,6 +397,7 @@ const adminPackageSelect = {
   downPaymentAmount: true,
   installmentText: true,
   highlightInstallments: true,
+  interestFree: true,
   paymentMethods: true,
   feesText: true,
   airline: true,
@@ -433,6 +439,7 @@ function mapAdminPackage(
     downPaymentAmount: { toNumber?: () => number } | number | null;
     installmentText: string | null;
     highlightInstallments: boolean;
+    interestFree: boolean;
     paymentMethods: string[];
     feesText: string | null;
     airline: string | null;
@@ -473,6 +480,7 @@ function mapAdminPackage(
     downPaymentAmount: decimalToNumber(pkg.downPaymentAmount),
     installmentText: pkg.installmentText,
     highlightInstallments: pkg.highlightInstallments,
+    interestFree: pkg.interestFree,
     paymentMethods: normalizePaymentMethods(pkg.paymentMethods),
     feesText: pkg.feesText,
     airline: pkg.airline,

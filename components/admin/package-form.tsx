@@ -793,6 +793,7 @@ export function PackageForm({
                   installmentAmount={watchedValues.installmentAmount ?? null}
                   downPaymentAmount={watchedValues.downPaymentAmount ?? null}
                   installmentText={watchedValues.installmentText ?? ""}
+                  interestFree={watchedValues.interestFree ?? true}
                   errors={{
                     installmentKind: form.formState.errors.installmentKind?.message,
                     installmentCount: form.formState.errors.installmentCount?.message,
