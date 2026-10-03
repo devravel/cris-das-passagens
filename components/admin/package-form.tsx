@@ -1139,20 +1139,22 @@ export function PackageForm({
           </div>
         </div>
 
-        <div className="space-y-2 xl:sticky xl:top-6 xl:self-start">
+        <div className="space-y-2">
           <p className="text-sm font-medium text-foreground">Preview do card</p>
           <p className="text-xs text-muted-foreground">
             Visualização automática do card padronizado antes de salvar.
           </p>
-          <PackageCardPreview
-            data={cardPreviewData}
-            departureCity={
-              showDepartureCityField
-                ? departureCityValue.trim() || DEFAULT_PACKAGE_DEPARTURE_CITY
-                : DEFAULT_PACKAGE_DEPARTURE_CITY
-            }
-            imageSrc={hasValidPreview ? previewSrc : undefined}
-          />
+          <div className="xl:sticky xl:top-6">
+            <PackageCardPreview
+              data={cardPreviewData}
+              departureCity={
+                showDepartureCityField
+                  ? departureCityValue.trim() || DEFAULT_PACKAGE_DEPARTURE_CITY
+                  : DEFAULT_PACKAGE_DEPARTURE_CITY
+              }
+              imageSrc={hasValidPreview ? previewSrc : undefined}
+            />
+          </div>
         </div>
       </div>
 
