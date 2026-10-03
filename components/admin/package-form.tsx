@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Wand2 } from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -18,6 +18,7 @@ import { PackagePaymentFields } from "@/components/admin/package-payment-fields"
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/ui/money-input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -103,10 +104,6 @@ export function PackageForm({
     control: form.control,
   }) as Partial<PackageFormValues>;
 
-  const priceField = form.register("price", { valueAsNumber: true });
-  const pixPriceField = form.register("pixPrice", {
-    setValueAs: (value) => (value === "" || value == null ? null : Number(value)),
-  });
   // Qual preço o pacote tem: à vista (pixPrice), parcelado (tipo de
   // parcelamento + price como total) ou os dois. Sem nenhum não salva.
   const [sellsInstallments, setSellsInstallments] = useState(() =>
@@ -734,21 +731,25 @@ export function PackageForm({
                 <label htmlFor="pixPrice" className="text-sm font-medium text-foreground">
                   Preço à vista via Pix (R$)
                 </label>
-                <Input
-                  id="pixPrice"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="h-10 rounded-xl"
-                  {...pixPriceField}
-                  onChange={(event) => {
-                    void pixPriceField.onChange(event);
-                    if (!sellsInstallments) {
-                      form.setValue("price", Number(event.target.value) || 0, {
-                        shouldDirty: true,
-                      });
-                    }
-                  }}
+                <Controller
+                  control={form.control}
+                  name="pixPrice"
+                  render={({ field }) => (
+                    <MoneyInput
+                      id="pixPrice"
+                      className="h-10 rounded-xl"
+                      ref={field.ref}
+                      name={field.name}
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onValueChange={(next) => {
+                        field.onChange(next);
+                        if (!sellsInstallments) {
+                          form.setValue("price", next ?? 0, { shouldDirty: true });
+                        }
+                      }}
+                    />
+                  )}
                 />
                 {form.formState.errors.pixPrice ? (
                   <p className="text-xs text-destructive">
@@ -764,17 +765,23 @@ export function PackageForm({
                   <label htmlFor="price" className="text-sm font-medium text-foreground">
                     Total parcelado (R$)
                   </label>
-                  <Input
-                    id="price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    className="h-10 rounded-xl"
-                    {...priceField}
-                    onChange={(event) => {
-                      void priceField.onChange(event);
-                      recalculateInstallmentAmount(Number(event.target.value));
-                    }}
+                  <Controller
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <MoneyInput
+                        id="price"
+                        className="h-10 rounded-xl"
+                        ref={field.ref}
+                        name={field.name}
+                        value={field.value}
+                        onBlur={field.onBlur}
+                        onValueChange={(next) => {
+                          field.onChange(next ?? 0);
+                          recalculateInstallmentAmount(next ?? 0);
+                        }}
+                      />
+                    )}
                   />
                   {form.formState.errors.price ? (
                     <p className="text-xs text-destructive">
@@ -872,16 +879,20 @@ export function PackageForm({
                 Preço anterior{" "}
                 <span className="text-muted-foreground">(opcional, aparece riscado)</span>
               </label>
-              <Input
-                id="oldPrice"
-                type="number"
-                min="0"
-                step="0.01"
-                className="h-10 rounded-xl"
-                {...form.register("oldPrice", {
-                  setValueAs: (value) =>
-                    value === "" || value == null ? null : Number(value),
-                })}
+              <Controller
+                control={form.control}
+                name="oldPrice"
+                render={({ field }) => (
+                  <MoneyInput
+                    id="oldPrice"
+                    className="h-10 rounded-xl"
+                    ref={field.ref}
+                    name={field.name}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onValueChange={field.onChange}
+                  />
+                )}
               />
               {form.formState.errors.oldPrice ? (
                 <p className="text-xs text-destructive">

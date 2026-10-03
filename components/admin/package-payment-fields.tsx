@@ -9,6 +9,7 @@ import {
   type PackageInstallmentKindValue,
 } from "@/lib/package/payment";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/ui/money-input";
 import { formatPackagePrice } from "@/lib/package/format";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
@@ -217,15 +218,11 @@ export function PackagePaymentFields({
           >
             Entrada (R$)
           </label>
-          <Input
+          <MoneyInput
             id="downPaymentAmount"
-            type="number"
-            min="0"
-            step="0.01"
             className="h-10 rounded-xl"
-            value={downPaymentAmount ?? ""}
-            onChange={(event) => {
-              const nextDownPayment = optionalNumberFromInput(event.target.value);
+            value={downPaymentAmount}
+            onValueChange={(nextDownPayment) => {
               const suggested = suggestInstallmentAmount(price, installmentCount, nextDownPayment);
 
               onChange({
@@ -248,18 +245,11 @@ export function PackagePaymentFields({
           >
             {installmentKind === "PIX_CASH" ? "Valor à vista (R$)" : "Valor da parcela (R$)"}
           </label>
-          <Input
+          <MoneyInput
             id="installmentAmount"
-            type="number"
-            min="0"
-            step="0.01"
             className="h-10 rounded-xl"
-            value={installmentAmount ?? ""}
-            onChange={(event) =>
-              onChange({
-                installmentAmount: optionalNumberFromInput(event.target.value),
-              })
-            }
+            value={installmentAmount}
+            onValueChange={(next) => onChange({ installmentAmount: next })}
           />
           {showCount ? (
             <button

@@ -3,7 +3,7 @@
 import { useMemo, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/app/admin/(protected)/cupons/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MoneyInput } from "@/components/ui/money-input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getCouponDiscountTypeLabel } from "@/lib/coupon/format";
@@ -161,13 +162,20 @@ export function CouponForm({
             <label htmlFor="coupon-value" className="text-sm font-medium text-foreground">
               Valor
             </label>
-            <Input
-              id="coupon-value"
-              type="number"
-              min={0}
-              step={discountType === "PERCENTAGE" ? 1 : 0.01}
-              {...form.register("discountValue", { valueAsNumber: true })}
-              className="rounded-xl"
+            <Controller
+              control={form.control}
+              name="discountValue"
+              render={({ field }) => (
+                <MoneyInput
+                  id="coupon-value"
+                  className="rounded-xl"
+                  ref={field.ref}
+                  name={field.name}
+                  value={field.value}
+                  onBlur={field.onBlur}
+                  onValueChange={(next) => field.onChange(next ?? 0)}
+                />
+              )}
             />
             {form.formState.errors.discountValue ? (
               <p className="text-xs text-destructive">
