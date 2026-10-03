@@ -1139,7 +1139,7 @@ export function PackageForm({
           </div>
         </div>
 
-        <div className="space-y-2 xl:self-start">
+        <div className="space-y-2 xl:sticky xl:top-6 xl:self-start">
           <p className="text-sm font-medium text-foreground">Preview do card</p>
           <p className="text-xs text-muted-foreground">
             Visualização automática do card padronizado antes de salvar.
