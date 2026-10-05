@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { Container } from "@/components/layout/container";
 import { navigation as defaultItems, navbarCta } from "@/config/navigation";
 import { useMotionReady } from "@/hooks/use-motion-ready";
+import { getPromotionHref, useLivePromotion } from "@/components/promotion/promotion-popup";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { CtaButton, type CtaButtonProps } from "@/components/ui/cta-button";
@@ -82,6 +83,17 @@ function routeIsActive(pathname: string, href: string) {
   return pathname === path || pathname.startsWith(`${path}/`);
 }
 
+/** "Promoção" logo depois de Pacotes, só enquanto houver promoção no ar. */
+function withPromotionItem(items: NavItem[], slug: string | undefined): NavItem[] {
+  if (!slug) return items;
+
+  // Rótulo curto: "Oferta especial" quebra em duas linhas no desktop de 1024px.
+  const item = { label: "Promoção", href: getPromotionHref(slug) };
+  const after = items.findIndex((navItem) => navItem.href === "/pacotes") + 1;
+
+  return [...items.slice(0, after), item, ...items.slice(after)];
+}
+
 function scrollToPageTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 }
@@ -148,7 +160,12 @@ function NavLink({
 function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
     <nav
-      className="hidden items-center justify-center gap-5 xl:gap-8 lg:flex"
+      className={cn(
+        "hidden items-center justify-center gap-5 lg:flex",
+        // Com o item da promoção são 8 links: no espaçamento cheio o menu
+        // centralizado entra embaixo do botão de cotação entre 1280 e 1500px.
+        items.length > 7 ? "xl:gap-6" : "xl:gap-8",
+      )}
       aria-label="Navegação principal"
     >
       {items.map((item) => (
@@ -239,11 +256,16 @@ function MobileNavLinks({
 
 export function Navbar({
   logoHref = "/",
-  items = defaultItems,
+  items: baseItems = defaultItems,
   cta = navbarCta,
   className,
 }: NavbarProps) {
   const pathname = usePathname();
+  const promotionSlug = useLivePromotion()?.slug;
+  const items = React.useMemo(
+    () => withPromotionItem(baseItems, promotionSlug),
+    [baseItems, promotionSlug],
+  );
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const isPacotesPage = pathname === "/pacotes" || pathname.startsWith("/pacotes/");
