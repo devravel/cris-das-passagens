@@ -158,7 +158,7 @@ export function PromotionForm({
             </div>
             <p className="text-xs text-muted-foreground">
               A página fica fora do menu fixo e do Google. Chega nela quem clica no pop-up ou em
-              &ldquo;Promoção&rdquo; no menu, ou quem recebe o link.
+              &ldquo;Ofertas especiais&rdquo; no menu, ou quem recebe o link.
             </p>
             <FieldError message={errors.slug?.message} />
           </div>
@@ -217,7 +217,7 @@ export function PromotionForm({
             </div>
             <p className="text-xs text-muted-foreground sm:col-span-2">
               Horário de Brasília. Nesse período, e só se tiver pelo menos um pacote ativo
-              vinculado, o pop-up abre no site e o item &ldquo;Promoção&rdquo; aparece no menu. Pra
+              vinculado, o pop-up abre no site e o item &ldquo;Ofertas especiais&rdquo; aparece no menu. Pra
               vincular, edite o pacote e escolha a promoção no campo &ldquo;Promoção&rdquo;. Depois
               do fim, o link da página leva pra /pacotes.
             </p>

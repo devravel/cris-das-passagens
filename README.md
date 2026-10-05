@@ -88,7 +88,7 @@ Criadas em `/admin/promotions` (nome, link, imagem do pop-up, texto do botão, i
 
 - **Pop-up** — abre 2,5 s depois que a página carrega, uma vez por visita (`sessionStorage`), e só depois que a pessoa responde o banner de cookies. Fica fora do `/admin` e da própria página da promoção.
 - **Página** `/promocoes/<slug>` — só os pacotes da promoção, `noindex` e fora do sitemap. Abre desde a criação (serve de prévia) e redireciona pra `/pacotes` depois do fim.
-- **Menu** — o item "Promoção" entra logo depois de Pacotes enquanto houver promoção no ar.
+- **Menu** — o item "Ofertas especiais" entra logo depois de Pacotes enquanto houver promoção no ar.
 - Pop-up e menu leem `GET /api/promocao-ativa` no navegador (as páginas são estáticas/ISR, então o horário vale na hora; CDN segura 1 min). Só conta promoção dentro do período **com pelo menos um pacote ativo vinculado**; duas no ar ao mesmo tempo, vale a que começou por último.
 
 ### Meta Pixel

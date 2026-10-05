@@ -83,12 +83,11 @@ function routeIsActive(pathname: string, href: string) {
   return pathname === path || pathname.startsWith(`${path}/`);
 }
 
-/** "Promoção" logo depois de Pacotes, só enquanto houver promoção no ar. */
+/** "Ofertas especiais" logo depois de Pacotes, só enquanto houver promoção no ar. */
 function withPromotionItem(items: NavItem[], slug: string | undefined): NavItem[] {
   if (!slug) return items;
 
-  // Rótulo curto: "Oferta especial" quebra em duas linhas no desktop de 1024px.
-  const item = { label: "Promoção", href: getPromotionHref(slug) };
+  const item = { label: "Ofertas especiais", href: getPromotionHref(slug) };
   const after = items.findIndex((navItem) => navItem.href === "/pacotes") + 1;
 
   return [...items.slice(0, after), item, ...items.slice(after)];
@@ -161,15 +160,19 @@ function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
     <nav
       className={cn(
-        "hidden items-center justify-center gap-5 lg:flex",
-        // Com o item da promoção são 8 links: no espaçamento cheio o menu
-        // centralizado entra embaixo do botão de cotação entre 1280 e 1500px.
-        items.length > 7 ? "xl:gap-6" : "xl:gap-8",
+        "hidden items-center justify-center lg:flex",
+        // Com "Ofertas especiais" são 8 links: aperta o espaçamento (e a fonte
+        // até 1279px) pra caber numa linha sem encostar na logo nem no CTA.
+        items.length > 7 ? "gap-4 xl:gap-6" : "gap-5 xl:gap-8",
       )}
       aria-label="Navegação principal"
     >
       {items.map((item) => (
-        <NavLink key={item.href} href={item.href}>
+        <NavLink
+          key={item.href}
+          href={item.href}
+          className={cn("whitespace-nowrap", items.length > 7 && "lg:max-xl:text-[0.9375rem]")}
+        >
           {item.label}
         </NavLink>
       ))}
@@ -314,7 +317,14 @@ export function Navbar({
       {/* 3 colunas: logo | centro | direita. <640px: CTA compacto no centro, com respiro,
           e menu na direita; a partir de 640px o CTA vai pro lado do hambúrguer;
           desktop: links no centro e CTA na direita — sempre nas margens do Container. */}
-      <Container className="grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8 xl:grid-cols-[1fr_auto_1fr]">
+      <Container
+        className={cn(
+          "grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8",
+          // Menu centralizado na página só com 7 links; com 8 ele centraliza
+          // entre a logo e o CTA (o CTA é mais largo e o menu encostaria nele).
+          items.length > 7 ? "xl:grid-cols-[auto_1fr_auto]" : "xl:grid-cols-[1fr_auto_1fr]",
+        )}
+      >
         <Link
           href={logoHref}
           onClick={(event) => handleNavLinkClick(event, pathname, logoHref)}

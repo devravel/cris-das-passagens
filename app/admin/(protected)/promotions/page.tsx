@@ -28,7 +28,7 @@ export default async function AdminPromotionsPage() {
           <p className="max-w-2xl text-sm text-muted-foreground">
             Cada promoção abre um pop-up no site 2,5 segundos depois que a página carrega (uma vez
             por visita). O botão do pop-up leva pra uma página só com os pacotes da promoção, e
-            o item &ldquo;Promoção&rdquo; aparece no menu enquanto ela estiver no ar.
+            o item &ldquo;Ofertas especiais&rdquo; aparece no menu enquanto ela estiver no ar.
           </p>
         </div>
         <Button asChild className="rounded-xl">
