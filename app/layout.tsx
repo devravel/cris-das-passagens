@@ -2,6 +2,7 @@ import { ConsentRoot } from "@/components/consent/consent-manager";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Navbar } from "@/components/layout/navbar";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
+import { PromotionPopup } from "@/components/promotion/promotion-popup";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { Toaster } from "@/components/ui/sonner";
 import { fontHeading, fontSans } from "@/config/fonts";
@@ -47,6 +48,7 @@ export default function RootLayout({
           <main className="min-w-0 flex-1">{children}</main>
           <SiteFooter />
           <WhatsAppFab />
+          <PromotionPopup />
           <Toaster />
         </ConsentRoot>
       </body>

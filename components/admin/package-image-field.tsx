@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { uploadPackageImageAction } from "@/app/admin/(protected)/packages/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type { ActionResult } from "@/lib/admin/action-result";
 import { RECOMMENDED_PACKAGE_IMAGE_SIZE } from "@/lib/package/constants";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,9 @@ type PackageImageFieldProps = {
   onChange: (value: string) => void;
   onLocalPreview?: (url: string | null) => void;
   error?: string;
+  /** Outra tela (ex.: promoções) passa a própria action de upload e a dica de tamanho. */
+  upload?: (formData: FormData) => Promise<ActionResult<{ imageUrl: string }>>;
+  hint?: string;
 };
 
 export function PackageImageField({
@@ -24,6 +28,8 @@ export function PackageImageField({
   onChange,
   onLocalPreview,
   error,
+  upload = uploadPackageImageAction,
+  hint = `Recomendado: ${RECOMMENDED_PACKAGE_IMAGE_SIZE} (proporção 4:3).`,
 }: PackageImageFieldProps) {
   const [mode, setMode] = useState<ImageMode>("upload");
   const [isUploading, setIsUploading] = useState(false);
@@ -61,7 +67,7 @@ export function PackageImageField({
     formData.append("file", file);
 
     setIsUploading(true);
-    const result = await uploadPackageImageAction(formData);
+    const result = await upload(formData);
     setIsUploading(false);
 
     if (!result.ok || !result.data) {
@@ -114,7 +120,7 @@ export function PackageImageField({
             type="file"
             accept="image/jpeg,image/png,image/webp,image/avif"
             className="hidden"
-            aria-label="Selecionar imagem do pacote"
+            aria-label="Selecionar imagem"
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (!file) return;
@@ -151,8 +157,7 @@ export function PackageImageField({
       )}
 
       <p className="text-xs text-muted-foreground">
-        Recomendado: {RECOMMENDED_PACKAGE_IMAGE_SIZE} (proporção 4:3). Envie JPG, PNG, WEBP ou AVIF
-        com até 5MB.
+        {hint} Envie JPG, PNG, WEBP ou AVIF com até 5MB.
       </p>
 
       {value ? (

@@ -24,6 +24,7 @@ export type AdminNavigationIcon =
   | "file-text"
   | "package"
   | "map"
+  | "megaphone"
   | "ticket-percent"
   | "mail"
   | "users"
@@ -59,6 +60,11 @@ export const adminNavigationItems = [
     title: "Pacotes",
     href: "/admin/packages",
     icon: "package",
+  },
+  {
+    title: "Promoções",
+    href: "/admin/promotions",
+    icon: "megaphone",
   },
   {
     title: "Roteiros",

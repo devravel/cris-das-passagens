@@ -327,6 +327,17 @@ export const getHomepagePackages = cache(async (): Promise<HomepagePackages> => 
   }
 });
 
+/** Pacotes públicos vinculados a uma promoção (página /promocoes/<slug>). */
+export async function getPromotionPackages(promotionId: string): Promise<PublicPackage[]> {
+  const packages = await prisma.package.findMany({
+    where: { ...publicPackageScheduleWhere(), promotionId },
+    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    select: publicPackageSelect,
+  });
+
+  return packages.map(mapPublicPackage);
+}
+
 export const getPackagesPageData = cache(async (): Promise<PackagesPageData> => {
   try {
     return await getCachedPackagesPageData();
@@ -373,6 +384,7 @@ export type AdminPackageListItem = {
   featured: boolean;
   activatesAt: string | null;
   deactivatesAt: string | null;
+  promotionId: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -414,6 +426,7 @@ const adminPackageSelect = {
   featured: true,
   activatesAt: true,
   deactivatesAt: true,
+  promotionId: true,
   createdAt: true,
   updatedAt: true,
 } as const;
@@ -456,6 +469,7 @@ function mapAdminPackage(
     featured: boolean;
     activatesAt: Date | null;
     deactivatesAt: Date | null;
+    promotionId: string | null;
     createdAt: Date;
     updatedAt: Date;
   },
@@ -497,6 +511,7 @@ function mapAdminPackage(
     featured: pkg.featured,
     activatesAt: pkg.activatesAt?.toISOString() ?? null,
     deactivatesAt: pkg.deactivatesAt?.toISOString() ?? null,
+    promotionId: pkg.promotionId,
     createdAt: pkg.createdAt.toISOString(),
     updatedAt: pkg.updatedAt.toISOString(),
   };

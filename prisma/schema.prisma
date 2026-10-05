@@ -125,6 +125,8 @@ model Package {
   featured              Boolean          @default(false)
   activatesAt           DateTime?
   deactivatesAt         DateTime?
+  promotionId           String?
+  promotion             Promotion?       @relation(fields: [promotionId], references: [id], onDelete: SetNull)
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
 
@@ -133,6 +135,23 @@ model Package {
   @@index([type, active])
   @@index([activatesAt])
   @@index([deactivatesAt])
+  @@index([promotionId])
+}
+
+/// Campanha com pop-up no site e página própria (/promocoes/<slug>) com os pacotes vinculados.
+model Promotion {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  image     String
+  ctaLabel  String
+  startsAt  DateTime
+  endsAt    DateTime
+  packages  Package[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([startsAt, endsAt])
 }
 
 model AdminUser {
