@@ -19,7 +19,7 @@ import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MoneyInput } from "@/components/ui/money-input";
-import { Select } from "@/components/ui/select";
+import { Select, type SelectOption } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   isValidBlogImageUrl,
@@ -70,6 +70,7 @@ type PackageFormProps = {
   packageId?: string;
   initialValues?: PackageFormInput;
   includedItemSuggestions?: string[];
+  promotionOptions?: SelectOption[];
   onSuccess?: () => void;
 };
 
@@ -78,6 +79,7 @@ export function PackageForm({
   packageId,
   initialValues,
   includedItemSuggestions = [],
+  promotionOptions = [],
   onSuccess,
 }: PackageFormProps) {
   const [isPending, startTransition] = useTransition();
@@ -1075,6 +1077,24 @@ export function PackageForm({
               </label>
               <p className="w-full text-xs text-muted-foreground">
                 Todos os pacotes ativos em destaque aparecem no carrossel da homepage (deslize ou use as setas).
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="promotionId" className="text-sm font-medium text-foreground">
+                Promoção
+              </label>
+              <Select
+                id="promotionId"
+                value={watchedValues.promotionId ?? ""}
+                onChange={(next) =>
+                  form.setValue("promotionId", next, { shouldDirty: true })
+                }
+                options={[{ value: "", label: "Nenhuma" }, ...promotionOptions]}
+              />
+              <p className="text-xs text-muted-foreground">
+                O pacote entra na página da promoção (e continua em /pacotes). Crie promoções em
+                Promoções, no menu do painel.
               </p>
             </div>
 

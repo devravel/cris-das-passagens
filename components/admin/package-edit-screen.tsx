@@ -7,6 +7,7 @@ import { PackageForm } from "@/components/admin/package-form";
 import { packageDurationInitialValues } from "@/components/admin/package-duration-fields";
 import { PackageShareActions } from "@/components/packages/package-share-actions";
 import { Button } from "@/components/ui/button";
+import type { SelectOption } from "@/components/ui/select";
 import { DEFAULT_PACKAGE_DEPARTURE_CITY, packageTypeShowsDepartureCity } from "@/lib/package/departure-city";
 import { inferInstallmentFieldsFromText, toFormPricing } from "@/lib/package/payment";
 import type { AdminPackageDetail } from "@/lib/package/queries";
@@ -14,11 +15,13 @@ import type { AdminPackageDetail } from "@/lib/package/queries";
 type PackageEditScreenProps = {
   pkg: AdminPackageDetail;
   includedItemSuggestions: string[];
+  promotionOptions: SelectOption[];
 };
 
 export function PackageEditScreen({
   pkg,
   includedItemSuggestions,
+  promotionOptions,
 }: PackageEditScreenProps) {
   const router = useRouter();
   const addedAt = new Intl.DateTimeFormat("pt-BR", {
@@ -83,6 +86,7 @@ export function PackageEditScreen({
           mode="edit"
           packageId={pkg.id}
           includedItemSuggestions={includedItemSuggestions}
+          promotionOptions={promotionOptions}
           initialValues={{
             slug: pkg.slug,
             shortDescription: pkg.shortDescription ?? "",
@@ -123,6 +127,7 @@ export function PackageEditScreen({
             includedItems: pkg.includedItems,
             active: pkg.active,
             featured: pkg.featured,
+            promotionId: pkg.promotionId ?? "",
             ...packageDurationInitialValues(pkg),
           }}
           onSuccess={() => {

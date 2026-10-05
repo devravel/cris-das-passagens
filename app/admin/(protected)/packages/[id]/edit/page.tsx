@@ -6,6 +6,7 @@ import {
   getAdminPackageById,
   getPackageIncludedItemSuggestions,
 } from "@/lib/package/queries";
+import { getPromotionOptions } from "@/lib/promotion/queries";
 
 type EditPackagePageProps = {
   params: Promise<{ id: string }>;
@@ -22,9 +23,10 @@ export const metadata: Metadata = {
 
 export default async function EditPackagePage({ params }: EditPackagePageProps) {
   const { id } = await params;
-  const [pkg, includedItemSuggestions] = await Promise.all([
+  const [pkg, includedItemSuggestions, promotionOptions] = await Promise.all([
     getAdminPackageById(id),
     getPackageIncludedItemSuggestions(),
+    getPromotionOptions(),
   ]);
 
   if (!pkg) {
@@ -35,6 +37,7 @@ export default async function EditPackagePage({ params }: EditPackagePageProps) 
     <PackageEditScreen
       pkg={pkg}
       includedItemSuggestions={includedItemSuggestions}
+      promotionOptions={promotionOptions}
     />
   );
 }

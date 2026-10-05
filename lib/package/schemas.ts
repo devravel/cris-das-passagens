@@ -102,6 +102,8 @@ const packageFormFieldsSchema = z.object({
   activationMode: z.enum(PACKAGE_ACTIVATION_MODES),
   activatesAt: z.string().trim(),
   deactivatesAt: z.string().trim(),
+  /** "" = sem promoção. */
+  promotionId: z.string().trim(),
 });
 
 export const packageFormSchema = packageFormFieldsSchema
@@ -513,4 +515,5 @@ export const EMPTY_PACKAGE_FORM_VALUES: PackageFormInput = {
   activationMode: "now",
   activatesAt: "",
   deactivatesAt: "",
+  promotionId: "",
 };
