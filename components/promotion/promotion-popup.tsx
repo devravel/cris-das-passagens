@@ -10,10 +10,10 @@ import { useConsent } from "@/components/consent/consent-context";
 import { DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import { CtaButton } from "@/components/ui/cta-button";
 import type { LivePromotion } from "@/lib/promotion/schemas";
-import { isOptimizableRemoteImage, resolvePublicImageSrc } from "@/lib/storage/image-src";
+import { resolvePublicImageSrc } from "@/lib/storage/image-src";
 
-/** Espera depois que a página termina de carregar, pra não atropelar a primeira olhada. */
-const POPUP_DELAY_MS = 2500;
+/** Respiro curto depois que o site fica interativo (sem esperar as fotos da página). */
+const POPUP_DELAY_MS = 800;
 
 let livePromotionRequest: { path: string; promise: Promise<LivePromotion | null> } | null = null;
 
@@ -66,22 +66,27 @@ type PromotionCardProps = {
   onCtaClick?: () => void;
 };
 
-/** Arte + botão — o conteúdo do pop-up, reaproveitado na prévia do painel. */
+/**
+ * Arte + botão, sem moldura: a imagem aparece no tamanho dela (qualquer
+ * proporção, sem faixa nas laterais) e o botão fica embaixo, na mesma largura.
+ * Reaproveitado na prévia do painel.
+ */
 export function PromotionCard({ name, image, ctaLabel, href, onCtaClick }: PromotionCardProps) {
   const src = resolvePublicImageSrc(image);
 
   return (
-    <>
+    <div className="flex w-max max-w-full flex-col gap-3">
       <Image
         src={src}
         alt={name}
         width={1080}
         height={1350}
-        sizes="(max-width: 480px) 100vw, 416px"
-        unoptimized={!isOptimizableRemoteImage(src)}
-        className="block h-auto max-h-[calc(100dvh-10rem)] w-full bg-muted/40 object-contain"
+        // Arquivo já comprimido no upload; sem otimizar, a URL é a mesma do pré-carregamento.
+        unoptimized
+        className="block h-auto max-h-[calc(100dvh-9rem)] w-auto max-w-full rounded-2xl shadow-2xl sm:max-w-[26rem]"
       />
-      <div className="p-3 sm:p-4">
+      {/* w-0 + min-w-full: o botão acompanha a largura da arte em vez de alargar o pop-up. */}
+      <div className="w-0 min-w-full">
         <CtaButton
           href={href}
           label={ctaLabel}
@@ -89,29 +94,13 @@ export function PromotionCard({ name, image, ctaLabel, href, onCtaClick }: Promo
           className="h-auto min-h-12 w-full whitespace-normal py-3 text-center sm:min-h-13"
         />
       </div>
-    </>
+    </div>
   );
 }
 
-const SEEN_KEY_PREFIX = "promo-popup-visto:";
-
-// Uma vez por visita: some ao fechar a aba. Em aba anônima/bloqueada o storage
-// pode lançar erro — aí o pop-up aparece normalmente.
-function wasSeen(slug: string) {
-  try {
-    return window.sessionStorage.getItem(SEEN_KEY_PREFIX + slug) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function markSeen(slug: string) {
-  try {
-    window.sessionStorage.setItem(SEEN_KEY_PREFIX + slug, "1");
-  } catch {
-    // sem storage, segue sem lembrar
-  }
-}
+// Abre uma vez por carregamento: recarregar (F5) mostra de novo, mas trocar de
+// página pelo menu (navegação interna, sem recarregar) não reabre.
+let shownThisLoad = false;
 
 export function PromotionPopup() {
   const pathname = usePathname();
@@ -129,22 +118,25 @@ export function PromotionPopup() {
     consent.isModalOpen;
 
   useEffect(() => {
-    if (!promotion || blocked || wasSeen(promotion.slug)) return;
+    if (!promotion || blocked || shownThisLoad) return;
 
-    let timer: number | undefined;
-    const schedule = () => {
-      timer = window.setTimeout(() => {
-        markSeen(promotion.slug);
-        setOpen(true);
-      }, POPUP_DELAY_MS);
-    };
+    // Abre quando a arte já baixou (nada de caixa vazia) e passou o respiro.
+    let cancelled = false;
+    const delay = new Promise((resolve) => window.setTimeout(resolve, POPUP_DELAY_MS));
+    const art = new window.Image();
+    const loaded = new Promise((resolve) => {
+      art.onload = art.onerror = resolve;
+    });
+    art.src = resolvePublicImageSrc(promotion.image);
 
-    if (document.readyState === "complete") schedule();
-    else window.addEventListener("load", schedule, { once: true });
+    void Promise.all([delay, loaded]).then(() => {
+      if (cancelled) return;
+      shownThisLoad = true;
+      setOpen(true);
+    });
 
     return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("load", schedule);
+      cancelled = true;
     };
   }, [promotion, blocked]);
 
@@ -158,10 +150,15 @@ export function PromotionPopup() {
         <DialogPrimitive.Content
           data-promotion-popup
           aria-describedby={undefined}
-          className="fixed top-1/2 left-1/2 z-[200] w-[min(100vw-2rem,26rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl bg-card shadow-2xl ring-1 ring-black/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 motion-reduce:animate-none"
+          // Foco no próprio pop-up (não no X): leitor de tela entra nele e o X
+          // não abre com o anel de foco aceso.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            (event.currentTarget as HTMLElement | null)?.focus();
+          }}
+          className="fixed top-1/2 left-1/2 z-[200] w-max max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 motion-reduce:animate-none"
         >
           <DialogPrimitive.Title className="sr-only">{promotion.name}</DialogPrimitive.Title>
-          {/* Primeiro no DOM: é onde o foco cai ao abrir. */}
           <DialogPrimitive.Close
             aria-label="Fechar"
             className="absolute top-2.5 right-2.5 flex size-10 items-center justify-center rounded-xl bg-background/90 text-foreground shadow-md ring-1 ring-black/10 backdrop-blur-sm transition-colors hover:bg-background focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"

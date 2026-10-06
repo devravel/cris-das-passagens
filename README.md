@@ -86,7 +86,7 @@ Validação pública via `POST /api/coupons/validate`. Cupom aplicado fica em `l
 
 Criadas em `/admin/promotions` (nome, link, imagem do pop-up, texto do botão, início e fim em horário de Brasília). Pacotes entram numa promoção pelo campo "Promoção" no formulário do pacote e continuam em `/pacotes`.
 
-- **Pop-up** — abre 2,5 s depois que a página carrega, uma vez por visita (`sessionStorage`), e só depois que a pessoa responde o banner de cookies. Fica fora do `/admin` e da própria página da promoção.
+- **Pop-up** — abre 2,5 s depois que a página carrega, toda vez que o site é aberto ou recarregado (navegar pelo menu não reabre), e só depois que a pessoa responde o banner de cookies. Fica fora do `/admin` e da própria página da promoção.
 - **Página** `/promocoes/<slug>` — só os pacotes da promoção, `noindex` e fora do sitemap. Abre desde a criação (serve de prévia) e redireciona pra `/pacotes` depois do fim.
 - **Menu** — o item "Ofertas especiais" entra logo depois de Pacotes enquanto houver promoção no ar.
 - Pop-up e menu leem `GET /api/promocao-ativa` no navegador (as páginas são estáticas/ISR, então o horário vale na hora; CDN segura 1 min). Só conta promoção dentro do período **com pelo menos um pacote ativo vinculado**; duas no ar ao mesmo tempo, vale a que começou por último.
