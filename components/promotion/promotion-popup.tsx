@@ -13,7 +13,7 @@ import type { LivePromotion } from "@/lib/promotion/schemas";
 import { resolvePublicImageSrc } from "@/lib/storage/image-src";
 
 /** Respiro curto depois que o site fica interativo (sem esperar as fotos da página). */
-const POPUP_DELAY_MS = 800;
+const POPUP_DELAY_MS = 400;
 
 let livePromotionRequest: { path: string; promise: Promise<LivePromotion | null> } | null = null;
 
