@@ -15,30 +15,40 @@ import { isOptimizableRemoteImage, resolvePublicImageSrc } from "@/lib/storage/i
 /** Espera depois que a página termina de carregar, pra não atropelar a primeira olhada. */
 const POPUP_DELAY_MS = 2500;
 
-let livePromotionRequest: Promise<LivePromotion | null> | null = null;
+let livePromotionRequest: { path: string; promise: Promise<LivePromotion | null> } | null = null;
 
-/** Uma requisição por carregamento de página, dividida entre o pop-up e o menu. */
-function fetchLivePromotion() {
-  livePromotionRequest ??= fetch("/api/promocao-ativa")
-    .then((response) => (response.ok ? response.json() : null))
-    .then((data: { promotion?: LivePromotion | null } | null) => data?.promotion ?? null)
-    .catch(() => null);
+/**
+ * Uma requisição por página, dividida entre o pop-up e o menu. Busca de novo a
+ * cada troca de rota: a navegação interna não recarrega a página, e quem
+ * cadastra a promoção no painel e volta pro site precisa ver ela na hora.
+ */
+function fetchLivePromotion(path: string) {
+  if (livePromotionRequest?.path !== path) {
+    livePromotionRequest = {
+      path,
+      promise: fetch("/api/promocao-ativa", { cache: "no-store" })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data: { promotion?: LivePromotion | null } | null) => data?.promotion ?? null)
+        .catch(() => null),
+    };
+  }
 
-  return livePromotionRequest;
+  return livePromotionRequest.promise;
 }
 
 export function useLivePromotion() {
+  const pathname = usePathname();
   const [promotion, setPromotion] = useState<LivePromotion | null>(null);
 
   useEffect(() => {
     let alive = true;
-    void fetchLivePromotion().then((next) => {
+    void fetchLivePromotion(pathname).then((next) => {
       if (alive) setPromotion(next);
     });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [pathname]);
 
   return promotion;
 }
