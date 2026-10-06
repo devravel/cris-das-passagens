@@ -17,6 +17,7 @@ import { PackageIncludedItemsField } from "@/components/admin/package-included-i
 import { PackagePaymentFields } from "@/components/admin/package-payment-fields";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { MoneyInput } from "@/components/ui/money-input";
 import { Select, type SelectOption } from "@/components/ui/select";
@@ -613,11 +614,18 @@ export function PackageForm({
                 {isCircuit ? "Data de início" : "Ida"}{" "}
                 <span className="text-muted-foreground">(opcional)</span>
               </label>
-              <Input
-                id="departureDate"
-                type="date"
-                className="h-10 rounded-xl"
-                {...form.register("departureDate")}
+              <Controller
+                control={form.control}
+                name="departureDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="departureDate"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={Boolean(form.formState.errors.departureDate)}
+                  />
+                )}
               />
               {form.formState.errors.departureDate ? (
                 <p className="text-xs text-destructive">
@@ -634,11 +642,18 @@ export function PackageForm({
                 {isCircuit ? "Data de fim" : "Volta"}{" "}
                 <span className="text-muted-foreground">(opcional)</span>
               </label>
-              <Input
-                id="returnDate"
-                type="date"
-                className="h-10 rounded-xl"
-                {...form.register("returnDate")}
+              <Controller
+                control={form.control}
+                name="returnDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="returnDate"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={Boolean(form.formState.errors.returnDate)}
+                  />
+                )}
               />
               {form.formState.errors.returnDate ? (
                 <p className="text-xs text-destructive">

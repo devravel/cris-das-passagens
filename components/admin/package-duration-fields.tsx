@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { toDatetimeLocalValue } from "@/lib/package/dates";
 import type {
   PackageActivationMode,
@@ -90,12 +90,12 @@ export function PackageDurationFields({
                 >
                   Data e hora de ativação
                 </label>
-                <Input
+                <DatePicker
                   id="activatesAt"
-                  type="datetime-local"
-                  className="h-10 rounded-xl"
+                  withTime
                   value={activatesAt}
-                  onChange={(event) => onActivatesAtChange(event.target.value)}
+                  onChange={onActivatesAtChange}
+                  invalid={Boolean(errors.activatesAt?.message)}
                 />
                 {errors.activatesAt?.message ? (
                   <p className="text-xs text-destructive">
@@ -118,12 +118,12 @@ export function PackageDurationFields({
             >
               Desativação
             </label>
-            <Input
+            <DatePicker
               id="deactivatesAt"
-              type="datetime-local"
-              className="h-10 rounded-xl"
+              withTime
               value={deactivatesAt}
-              onChange={(event) => onDeactivatesAtChange(event.target.value)}
+              onChange={onDeactivatesAtChange}
+              invalid={Boolean(errors.deactivatesAt?.message)}
             />
             {errors.deactivatesAt?.message ? (
               <p className="text-xs text-destructive">

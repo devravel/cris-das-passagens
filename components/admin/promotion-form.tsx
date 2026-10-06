@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import {
@@ -16,6 +16,7 @@ import {
 import { PackageImageField } from "@/components/admin/package-image-field";
 import { PromotionCard, getPromotionHref } from "@/components/promotion/promotion-popup";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { isValidBlogImageUrl } from "@/lib/blog/image-url";
 import { normalizeSlug } from "@/lib/blog/utils";
@@ -195,11 +196,19 @@ export function PromotionForm({
               <label htmlFor="promotion-starts" className="text-sm font-medium text-foreground">
                 Começa em
               </label>
-              <Input
-                id="promotion-starts"
-                type="datetime-local"
-                className="h-10 rounded-xl"
-                {...form.register("startsAt")}
+              <Controller
+                control={form.control}
+                name="startsAt"
+                render={({ field }) => (
+                  <DatePicker
+                    id="promotion-starts"
+                    withTime
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={Boolean(errors.startsAt)}
+                  />
+                )}
               />
               <FieldError message={errors.startsAt?.message} />
             </div>
@@ -207,11 +216,19 @@ export function PromotionForm({
               <label htmlFor="promotion-ends" className="text-sm font-medium text-foreground">
                 Termina em
               </label>
-              <Input
-                id="promotion-ends"
-                type="datetime-local"
-                className="h-10 rounded-xl"
-                {...form.register("endsAt")}
+              <Controller
+                control={form.control}
+                name="endsAt"
+                render={({ field }) => (
+                  <DatePicker
+                    id="promotion-ends"
+                    withTime
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={Boolean(errors.endsAt)}
+                  />
+                )}
               />
               <FieldError message={errors.endsAt?.message} />
             </div>
@@ -239,7 +256,7 @@ export function PromotionForm({
 
         <div className="space-y-2">
           <p className="text-sm font-medium text-foreground">Prévia do pop-up</p>
-          <div className="overflow-hidden rounded-2xl bg-card shadow-lg ring-1 ring-black/10 lg:sticky lg:top-6">
+          <div className="flex justify-center rounded-2xl bg-black/55 p-4 lg:sticky lg:top-6">
             {previewImage ? (
               <PromotionCard
                 name={name || "Prévia da promoção"}
@@ -247,7 +264,7 @@ export function PromotionForm({
                 ctaLabel={ctaLabel || "Texto do botão"}
               />
             ) : (
-              <div className="flex aspect-[4/5] items-center justify-center bg-muted/40 p-6 text-center text-sm text-muted-foreground">
+              <div className="flex aspect-[4/5] w-full items-center justify-center rounded-xl bg-muted/90 p-6 text-center text-sm text-muted-foreground">
                 A imagem do pop-up aparece aqui.
               </div>
             )}

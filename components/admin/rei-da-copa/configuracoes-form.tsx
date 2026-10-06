@@ -3,11 +3,12 @@
 import { useMemo, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { updateReiDaCopaSettingsAction } from "@/app/admin/(protected)/rei-da-copa/actions";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -65,11 +66,18 @@ export function ConfiguracoesForm({ settings }: ConfiguracoesFormProps) {
           <label htmlFor="startDate" className="mb-1.5 block text-sm font-medium text-foreground">
             Data início
           </label>
-          <Input
-            id="startDate"
-            type="date"
-            className="h-10 rounded-xl"
-            {...form.register("startDate")}
+          <Controller
+            control={form.control}
+            name="startDate"
+            render={({ field }) => (
+              <DatePicker
+                id="startDate"
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                invalid={Boolean(form.formState.errors.startDate)}
+              />
+            )}
           />
           {form.formState.errors.startDate ? (
             <p className="mt-1 text-xs text-destructive">
@@ -82,11 +90,18 @@ export function ConfiguracoesForm({ settings }: ConfiguracoesFormProps) {
           <label htmlFor="endDate" className="mb-1.5 block text-sm font-medium text-foreground">
             Data fim
           </label>
-          <Input
-            id="endDate"
-            type="date"
-            className="h-10 rounded-xl"
-            {...form.register("endDate")}
+          <Controller
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <DatePicker
+                id="endDate"
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                invalid={Boolean(form.formState.errors.endDate)}
+              />
+            )}
           />
           {form.formState.errors.endDate ? (
             <p className="mt-1 text-xs text-destructive">
