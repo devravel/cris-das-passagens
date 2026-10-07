@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Mail,
   Map,
+  Megaphone,
   Menu,
   Package,
   CircleUser,
@@ -41,6 +42,7 @@ const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
   "ticket-percent": TicketPercent,
   mail: Mail,
   map: Map,
+  megaphone: Megaphone,
   users: Users,
   trophy: Trophy,
 };

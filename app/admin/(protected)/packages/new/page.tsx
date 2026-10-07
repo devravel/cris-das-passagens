@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { PackageCreateScreen } from "@/components/admin/package-create-screen";
 import { getPackageIncludedItemSuggestions } from "@/lib/package/queries";
+import { getPromotionOptions } from "@/lib/promotion/queries";
 
 export const metadata: Metadata = {
   title: "Novo Pacote | Admin",
@@ -24,7 +25,15 @@ export default async function NewPackagePage({ searchParams }: NewPackagePagePro
     redirect("/admin/packages");
   }
 
-  const includedItemSuggestions = await getPackageIncludedItemSuggestions();
+  const [includedItemSuggestions, promotionOptions] = await Promise.all([
+    getPackageIncludedItemSuggestions(),
+    getPromotionOptions(),
+  ]);
 
-  return <PackageCreateScreen includedItemSuggestions={includedItemSuggestions} />;
+  return (
+    <PackageCreateScreen
+      includedItemSuggestions={includedItemSuggestions}
+      promotionOptions={promotionOptions}
+    />
+  );
 }

@@ -17,9 +17,10 @@ import { PackageIncludedItemsField } from "@/components/admin/package-included-i
 import { PackagePaymentFields } from "@/components/admin/package-payment-fields";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { MoneyInput } from "@/components/ui/money-input";
-import { Select } from "@/components/ui/select";
+import { Select, type SelectOption } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   isValidBlogImageUrl,
@@ -70,6 +71,7 @@ type PackageFormProps = {
   packageId?: string;
   initialValues?: PackageFormInput;
   includedItemSuggestions?: string[];
+  promotionOptions?: SelectOption[];
   onSuccess?: () => void;
 };
 
@@ -78,6 +80,7 @@ export function PackageForm({
   packageId,
   initialValues,
   includedItemSuggestions = [],
+  promotionOptions = [],
   onSuccess,
 }: PackageFormProps) {
   const [isPending, startTransition] = useTransition();
@@ -611,11 +614,18 @@ export function PackageForm({
                 {isCircuit ? "Data de início" : "Ida"}{" "}
                 <span className="text-muted-foreground">(opcional)</span>
               </label>
-              <Input
-                id="departureDate"
-                type="date"
-                className="h-10 rounded-xl"
-                {...form.register("departureDate")}
+              <Controller
+                control={form.control}
+                name="departureDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="departureDate"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={Boolean(form.formState.errors.departureDate)}
+                  />
+                )}
               />
               {form.formState.errors.departureDate ? (
                 <p className="text-xs text-destructive">
@@ -632,11 +642,18 @@ export function PackageForm({
                 {isCircuit ? "Data de fim" : "Volta"}{" "}
                 <span className="text-muted-foreground">(opcional)</span>
               </label>
-              <Input
-                id="returnDate"
-                type="date"
-                className="h-10 rounded-xl"
-                {...form.register("returnDate")}
+              <Controller
+                control={form.control}
+                name="returnDate"
+                render={({ field }) => (
+                  <DatePicker
+                    id="returnDate"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={Boolean(form.formState.errors.returnDate)}
+                  />
+                )}
               />
               {form.formState.errors.returnDate ? (
                 <p className="text-xs text-destructive">
@@ -1075,6 +1092,24 @@ export function PackageForm({
               </label>
               <p className="w-full text-xs text-muted-foreground">
                 Todos os pacotes ativos em destaque aparecem no carrossel da homepage (deslize ou use as setas).
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="promotionId" className="text-sm font-medium text-foreground">
+                Promoção
+              </label>
+              <Select
+                id="promotionId"
+                value={watchedValues.promotionId ?? ""}
+                onChange={(next) =>
+                  form.setValue("promotionId", next, { shouldDirty: true })
+                }
+                options={[{ value: "", label: "Nenhuma" }, ...promotionOptions]}
+              />
+              <p className="text-xs text-muted-foreground">
+                O pacote entra na página da promoção (e continua em /pacotes). Crie promoções em
+                Promoções, no menu do painel.
               </p>
             </div>
 

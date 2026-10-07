@@ -73,6 +73,7 @@ Painel em `/admin` protegido por middleware e cookie JWT (`admin_session`, 8 hor
 - Pacotes (CRUD, upload de imagens)
 - Posts do blog (CRUD, upload de capa e conteúdo)
 - Cupons de desconto
+- Promoções (pop-up no site + página própria; ver abaixo)
 - Roteiros (CRUD, divisórias, galeria, hotéis, campo Vendedor que vai no e-mail de cotação)
 - Usuários do painel (um login por vendedor, todos com o mesmo acesso)
 - Campanha Rei da Copa (inscrições, palavras-chave, ranking, configurações, exportação)
@@ -80,6 +81,15 @@ Painel em `/admin` protegido por middleware e cookie JWT (`admin_session`, 8 hor
 ### Sistema de Cupons
 
 Validação pública via `POST /api/coupons/validate`. Cupom aplicado fica em `localStorage` por 24 horas e pode ser incluído na mensagem de WhatsApp ao solicitar um pacote.
+
+### Promoções
+
+Criadas em `/admin/promotions` (nome, link, imagem do pop-up, texto do botão, início e fim em horário de Brasília). Pacotes entram numa promoção pelo campo "Promoção" no formulário do pacote e continuam em `/pacotes`.
+
+- **Pop-up** — abre cerca de 1 s depois que a página é aberta, toda vez que o site é aberto ou recarregado (navegar pelo menu não reabre), e só depois que a pessoa responde o banner de cookies. Fica fora do `/admin` e da própria página da promoção.
+- **Página** `/promocoes/<slug>` — só os pacotes da promoção, `noindex` e fora do sitemap. Abre desde a criação (serve de prévia) e redireciona pra `/pacotes` depois do fim.
+- **Menu** — o item "Ofertas especiais" entra logo depois de Pacotes enquanto houver promoção no ar.
+- Pop-up e menu leem `GET /api/promocao-ativa` no navegador (as páginas são estáticas/ISR, então o horário vale na hora; CDN segura 1 min). Só conta promoção dentro do período **com pelo menos um pacote ativo vinculado**; duas no ar ao mesmo tempo, vale a que começou por último.
 
 ### Meta Pixel
 
@@ -102,7 +112,7 @@ Imagens administrativas enviadas ao Supabase Storage:
 | Bucket | Conteúdo |
 |--------|----------|
 | `package-images` | Imagens de pacotes |
-| `promotion-images` | Imagens promocionais |
+| `promotion-images` | Imagens dos pop-ups de promoção |
 | `blog-covers` | Capas e imagens de posts |
 
 Proxy opcional: `GET /api/media/[bucket]/[...path]`.

@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { Container } from "@/components/layout/container";
 import { navigation as defaultItems, navbarCta } from "@/config/navigation";
 import { useMotionReady } from "@/hooks/use-motion-ready";
+import { getPromotionHref, useLivePromotion } from "@/components/promotion/promotion-popup";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { CtaButton, type CtaButtonProps } from "@/components/ui/cta-button";
@@ -82,6 +83,16 @@ function routeIsActive(pathname: string, href: string) {
   return pathname === path || pathname.startsWith(`${path}/`);
 }
 
+/** "Ofertas especiais" logo depois de Pacotes, só enquanto houver promoção no ar. */
+function withPromotionItem(items: NavItem[], slug: string | undefined): NavItem[] {
+  if (!slug) return items;
+
+  const item = { label: "Ofertas especiais", href: getPromotionHref(slug) };
+  const after = items.findIndex((navItem) => navItem.href === "/pacotes") + 1;
+
+  return [...items.slice(0, after), item, ...items.slice(after)];
+}
+
 function scrollToPageTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 }
@@ -148,11 +159,20 @@ function NavLink({
 function DesktopNavLinks({ items }: { items: NavItem[] }) {
   return (
     <nav
-      className="hidden items-center justify-center gap-5 xl:gap-8 lg:flex"
+      className={cn(
+        "hidden items-center justify-center lg:flex",
+        // Com "Ofertas especiais" são 8 links: aperta o espaçamento (e a fonte
+        // até 1279px) pra caber numa linha sem encostar na logo nem no CTA.
+        items.length > 7 ? "gap-4 xl:gap-6" : "gap-5 xl:gap-8",
+      )}
       aria-label="Navegação principal"
     >
       {items.map((item) => (
-        <NavLink key={item.href} href={item.href}>
+        <NavLink
+          key={item.href}
+          href={item.href}
+          className={cn("whitespace-nowrap", items.length > 7 && "lg:max-xl:text-[0.9375rem]")}
+        >
           {item.label}
         </NavLink>
       ))}
@@ -239,11 +259,16 @@ function MobileNavLinks({
 
 export function Navbar({
   logoHref = "/",
-  items = defaultItems,
+  items: baseItems = defaultItems,
   cta = navbarCta,
   className,
 }: NavbarProps) {
   const pathname = usePathname();
+  const promotionSlug = useLivePromotion()?.slug;
+  const items = React.useMemo(
+    () => withPromotionItem(baseItems, promotionSlug),
+    [baseItems, promotionSlug],
+  );
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const isPacotesPage = pathname === "/pacotes" || pathname.startsWith("/pacotes/");
@@ -292,7 +317,14 @@ export function Navbar({
       {/* 3 colunas: logo | centro | direita. <640px: CTA compacto no centro, com respiro,
           e menu na direita; a partir de 640px o CTA vai pro lado do hambúrguer;
           desktop: links no centro e CTA na direita — sempre nas margens do Container. */}
-      <Container className="grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8 xl:grid-cols-[1fr_auto_1fr]">
+      <Container
+        className={cn(
+          "grid min-h-18 grid-cols-[auto_1fr_auto] items-center gap-2.5 py-2.5 sm:min-h-20 sm:gap-4 sm:py-3 lg:grid-cols-[auto_1fr_auto] lg:gap-8",
+          // Menu centralizado na página só com 7 links; com 8 ele centraliza
+          // entre a logo e o CTA (o CTA é mais largo e o menu encostaria nele).
+          items.length > 7 ? "xl:grid-cols-[auto_1fr_auto]" : "xl:grid-cols-[1fr_auto_1fr]",
+        )}
+      >
         <Link
           href={logoHref}
           onClick={(event) => handleNavLinkClick(event, pathname, logoHref)}

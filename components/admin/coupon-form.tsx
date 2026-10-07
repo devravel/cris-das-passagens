@@ -11,6 +11,7 @@ import {
   updateCouponAction,
 } from "@/app/admin/(protected)/cupons/actions";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { MoneyInput } from "@/components/ui/money-input";
 import { Select } from "@/components/ui/select";
@@ -216,11 +217,19 @@ export function CouponForm({
           <label htmlFor="coupon-expires" className="text-sm font-medium text-foreground">
             Data de expiração (opcional)
           </label>
-          <Input
-            id="coupon-expires"
-            type="datetime-local"
-            {...form.register("expiresAt")}
-            className="rounded-xl"
+          <Controller
+            control={form.control}
+            name="expiresAt"
+            render={({ field }) => (
+              <DatePicker
+                id="coupon-expires"
+                withTime
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                invalid={Boolean(form.formState.errors.expiresAt)}
+              />
+            )}
           />
           {form.formState.errors.expiresAt ? (
             <p className="text-xs text-destructive">{form.formState.errors.expiresAt.message}</p>

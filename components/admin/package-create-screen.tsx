@@ -5,13 +5,16 @@ import { ArrowLeft } from "lucide-react";
 
 import { PackageForm } from "@/components/admin/package-form";
 import { Button } from "@/components/ui/button";
+import type { SelectOption } from "@/components/ui/select";
 
 type PackageCreateScreenProps = {
   includedItemSuggestions: string[];
+  promotionOptions: SelectOption[];
 };
 
 export function PackageCreateScreen({
   includedItemSuggestions,
+  promotionOptions,
 }: PackageCreateScreenProps) {
   const router = useRouter();
 
@@ -40,6 +43,7 @@ export function PackageCreateScreen({
         <PackageForm
           mode="create"
           includedItemSuggestions={includedItemSuggestions}
+          promotionOptions={promotionOptions}
           onSuccess={() => {
             router.replace("/admin/packages?done=1");
             router.refresh();

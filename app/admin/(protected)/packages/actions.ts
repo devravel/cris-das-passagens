@@ -161,6 +161,7 @@ function normalizeInput(input: PackageFormValues) {
     featured: input.featured,
     activatesAt: schedule.activatesAt,
     deactivatesAt: schedule.deactivatesAt,
+    promotionId: input.promotionId || null,
   };
 }
 
@@ -171,6 +172,7 @@ function revalidatePackagePaths() {
   revalidatePath("/admin/packages");
   revalidatePath("/");
   revalidatePath("/pacotes");
+  revalidatePath("/promocoes/[slug]", "page");
 }
 
 export async function createPackageAction(
