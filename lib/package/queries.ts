@@ -12,6 +12,7 @@ import { packageDateToIsoString } from "@/lib/package/dates";
 import { buildIncludedItemSuggestions } from "@/lib/package/included-item-suggestions";
 import { normalizePackageImageUrl } from "@/lib/package/image-url";
 import {
+  buildInstallmentText,
   computeInstallmentTotal,
   normalizePaymentMethods,
   type PackageInstallmentKindValue,
@@ -183,7 +184,18 @@ function mapPublicPackage(
       ? (decimalToNumber(pkg.installmentAmount) ?? price)
       : decimalToNumber(pkg.pixPrice),
     priceScope: (pkg.priceScope as PackagePriceScopeValue | null) ?? null,
-    installmentText: legacyPix ? null : pkg.installmentText,
+    // O texto é gravado já formatado ao salvar; remontado das parcelas, pacote
+    // antigo segue a formatação atual ("834,5" gravado vira "834,50").
+    installmentText: legacyPix
+      ? null
+      : buildInstallmentText({
+          installmentKind: pkg.installmentKind as PackageInstallmentKindValue,
+          installmentCount: pkg.installmentCount,
+          installmentAmount: decimalToNumber(pkg.installmentAmount),
+          downPaymentAmount: decimalToNumber(pkg.downPaymentAmount),
+          installmentText: pkg.installmentText,
+          price,
+        }) || pkg.installmentText,
     installmentTotal: computeInstallmentTotal(
       {
         installmentKind: pkg.installmentKind,
