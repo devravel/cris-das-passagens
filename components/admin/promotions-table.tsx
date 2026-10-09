@@ -123,6 +123,9 @@ export function PromotionsTable({ promotions }: { promotions: AdminPromotion[] }
                       >
                         {PROMOTION_STATUS_LABELS[status]}
                       </span>
+                      <p className="mt-1.5 text-xs whitespace-nowrap text-muted-foreground">
+                        Pop-up {promotion.displayMode === "INSISTENT" ? "insistente" : "normal"}
+                      </p>
                       {missingPackages ? (
                         <p className="mt-1.5 max-w-52 text-xs text-destructive">
                           Sem pacote vinculado, o pop-up não abre.

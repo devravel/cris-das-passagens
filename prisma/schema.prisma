@@ -138,16 +138,24 @@ model Package {
   @@index([promotionId])
 }
 
+/// NORMAL: abre após 5s ou rolagem, volta 24h depois de fechado, some após o clique.
+/// INSISTENT: abre logo, a cada vez que a home é aberta ou recarregada.
+enum PromotionDisplayMode {
+  NORMAL
+  INSISTENT
+}
+
 /// Campanha com pop-up no site e página própria (/promocoes/<slug>) com os pacotes vinculados.
 model Promotion {
-  id        String    @id @default(cuid())
-  name      String
-  slug      String    @unique
-  image     String
-  ctaLabel  String
-  startsAt  DateTime
-  endsAt    DateTime
-  packages  Package[]
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  image       String
+  ctaLabel    String
+  displayMode PromotionDisplayMode @default(NORMAL)
+  startsAt    DateTime
+  endsAt      DateTime
+  packages    Package[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
