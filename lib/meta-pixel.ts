@@ -100,6 +100,15 @@ function track(event: string, params?: Record<string, unknown>): void {
   window.fbq!("track", event);
 }
 
+/** Evento com nome próprio (fora da lista padrão da Meta), ex.: pop-up de promoção. */
+export function trackMetaCustomEvent(event: string, params?: Record<string, unknown>): void {
+  if (!canTrack()) {
+    return;
+  }
+
+  window.fbq!("trackCustom", event, params);
+}
+
 export function trackMetaPageView(): void {
   track("PageView");
 }

@@ -11,6 +11,26 @@ export const DEFAULT_PROMOTION_CTA_LABEL = "Confira os pacotes em destaque";
 /** Proporção do pop-up: a mesma do post do Instagram, então a arte já sai pronta. */
 export const RECOMMENDED_PROMOTION_IMAGE_SIZE = "1080 × 1350 px (vertical 4:5)";
 
+export const PROMOTION_DISPLAY_MODES = ["NORMAL", "INSISTENT"] as const;
+export type PromotionDisplayMode = (typeof PROMOTION_DISPLAY_MODES)[number];
+
+/** Textos do painel: o Cris escolhe por campanha. */
+export const PROMOTION_DISPLAY_MODE_OPTIONS: Record<
+  PromotionDisplayMode,
+  { label: string; description: string }
+> = {
+  NORMAL: {
+    label: "Normal (recomendado)",
+    description:
+      "Aparece 5 segundos depois de a pessoa entrar, ou antes, se ela rolar a página. Se fechar, só aparece de novo 24 horas depois. Se clicar no botão, não aparece mais.",
+  },
+  INSISTENT: {
+    label: "Insistente",
+    description:
+      "Aparece logo que a página abre, toda vez que a pessoa entra ou atualiza o site. Use só em promoções de poucos dias.",
+  },
+};
+
 const datetimeSchema = (label: string) =>
   z
     .string()
@@ -41,6 +61,7 @@ export const promotionFormSchema = z
       .trim()
       .min(3, "Informe o texto do botão.")
       .max(40, "O texto do botão deve ter no máximo 40 caracteres."),
+    displayMode: z.enum(PROMOTION_DISPLAY_MODES),
     startsAt: datetimeSchema("início"),
     endsAt: datetimeSchema("fim"),
   })
@@ -64,6 +85,7 @@ export const EMPTY_PROMOTION_FORM_VALUES: PromotionFormValues = {
   slug: "",
   image: "",
   ctaLabel: DEFAULT_PROMOTION_CTA_LABEL,
+  displayMode: "NORMAL",
   startsAt: "",
   endsAt: "",
 };
@@ -92,4 +114,5 @@ export type LivePromotion = {
   name: string;
   image: string;
   ctaLabel: string;
+  displayMode: PromotionDisplayMode;
 };

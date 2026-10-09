@@ -9,11 +9,18 @@ import { XIcon } from "lucide-react";
 import { useConsent } from "@/components/consent/consent-context";
 import { DialogOverlay, DialogPortal } from "@/components/ui/dialog";
 import { CtaButton } from "@/components/ui/cta-button";
+import { trackGoogleAnalyticsEvent } from "@/lib/google-analytics";
+import { trackMetaCustomEvent } from "@/lib/meta-pixel";
 import type { LivePromotion } from "@/lib/promotion/schemas";
 import { resolvePublicImageSrc } from "@/lib/storage/image-src";
 
-/** Respiro curto depois que o site fica interativo (sem esperar as fotos da página). */
-const POPUP_DELAY_MS = 400;
+/** Insistente: respiro curto depois que o site fica interativo. */
+const INSISTENT_DELAY_MS = 400;
+/** Normal: 5s, ou antes se a pessoa rolar meia tela (sinal de interesse). */
+const NORMAL_DELAY_MS = 5000;
+const NORMAL_SCROLL_RATIO = 0.5;
+/** Normal: fechou, só volta depois disso. Clicou no botão, não volta mais. */
+const REOPEN_AFTER_CLOSE_MS = 24 * 60 * 60 * 1000;
 
 let livePromotionRequest: { path: string; promise: Promise<LivePromotion | null> } | null = null;
 
@@ -98,9 +105,74 @@ export function PromotionCard({ name, image, ctaLabel, href, onCtaClick }: Promo
   );
 }
 
-// Abre uma vez por carregamento: recarregar (F5) mostra de novo, mas trocar de
-// página pelo menu (navegação interna, sem recarregar) não reabre.
+// Abre uma vez por carregamento: trocar de página pelo menu (navegação
+// interna, sem recarregar) não reabre.
 let shownThisLoad = false;
+
+type SeenRecord = { closedAt?: number; clicked?: boolean };
+
+// Lembrança por promoção, só neste navegador. Aba anônima/storage bloqueado:
+// lança erro e o pop-up segue como se fosse a primeira visita.
+function readSeen(slug: string): SeenRecord {
+  try {
+    return JSON.parse(window.localStorage.getItem(`promo-popup:${slug}`) ?? "{}") ?? {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSeen(slug: string, record: SeenRecord) {
+  try {
+    window.localStorage.setItem(`promo-popup:${slug}`, JSON.stringify(record));
+  } catch {
+    // sem storage, segue sem lembrar
+  }
+}
+
+function shouldShow(promotion: LivePromotion) {
+  if (promotion.displayMode === "INSISTENT") return true;
+  const seen = readSeen(promotion.slug);
+  if (seen.clicked) return false;
+  return !seen.closedAt || Date.now() - seen.closedAt >= REOPEN_AFTER_CLOSE_MS;
+}
+
+const TRACKING_EVENTS = {
+  view: { ga: "promo_popup_view", meta: "PromoPopupView" },
+  close: { ga: "promo_popup_close", meta: "PromoPopupClose" },
+  click: { ga: "promo_popup_click", meta: "PromoPopupClick" },
+} as const;
+
+/** Exibição, fechamento e clique — no Analytics e no pixel (só com consentimento). */
+function trackPopup(action: keyof typeof TRACKING_EVENTS, slug: string) {
+  trackGoogleAnalyticsEvent(TRACKING_EVENTS[action].ga, { promotion: slug });
+  trackMetaCustomEvent(TRACKING_EVENTS[action].meta, { promotion: slug });
+}
+
+/** Espera o momento de abrir conforme o modo. Devolve a função que cancela. */
+function waitForTrigger(promotion: LivePromotion, onReady: () => void) {
+  const cleanups: (() => void)[] = [];
+  let fired = false;
+  const fire = () => {
+    if (fired) return;
+    fired = true;
+    cleanups.forEach((cleanup) => cleanup());
+    onReady();
+  };
+
+  const insistent = promotion.displayMode === "INSISTENT";
+  const timer = window.setTimeout(fire, insistent ? INSISTENT_DELAY_MS : NORMAL_DELAY_MS);
+  cleanups.push(() => window.clearTimeout(timer));
+
+  if (!insistent) {
+    const onScroll = () => {
+      if (window.scrollY > window.innerHeight * NORMAL_SCROLL_RATIO) fire();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    cleanups.push(() => window.removeEventListener("scroll", onScroll));
+  }
+
+  return () => cleanups.forEach((cleanup) => cleanup());
+}
 
 export function PromotionPopup() {
   const pathname = usePathname();
@@ -117,32 +189,47 @@ export function PromotionPopup() {
     consent.isModalOpen;
 
   useEffect(() => {
-    if (!promotion || blocked || shownThisLoad) return;
+    if (!promotion || blocked || shownThisLoad || !shouldShow(promotion)) return;
 
-    // Abre quando a arte já baixou (nada de caixa vazia) e passou o respiro.
+    // Abre só com a arte já baixada (nada de caixa vazia) e no momento do modo.
     let cancelled = false;
-    const delay = new Promise((resolve) => window.setTimeout(resolve, POPUP_DELAY_MS));
     const art = new window.Image();
     const loaded = new Promise((resolve) => {
       art.onload = art.onerror = resolve;
     });
     art.src = resolvePublicImageSrc(promotion.image);
 
-    void Promise.all([delay, loaded]).then(() => {
+    let cancelTrigger = () => {};
+    const triggered = new Promise<void>((resolve) => {
+      cancelTrigger = waitForTrigger(promotion, resolve);
+    });
+
+    void Promise.all([triggered, loaded]).then(() => {
       if (cancelled) return;
       shownThisLoad = true;
       setOpen(true);
+      trackPopup("view", promotion.slug);
     });
 
     return () => {
       cancelled = true;
+      cancelTrigger();
     };
   }, [promotion, blocked]);
 
   if (!promotion) return null;
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
+    <DialogPrimitive.Root
+      open={open}
+      // Só dispara ao fechar pelo X, Esc ou clique fora; o botão fecha por conta própria.
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) return;
+        writeSeen(promotion.slug, { closedAt: Date.now() });
+        trackPopup("close", promotion.slug);
+      }}
+    >
       <DialogPortal>
         {/* Acima do botão do WhatsApp (z-100); o banner de cookies (z-1100) nem chega a dividir a tela. */}
         <DialogOverlay className="z-[200] bg-black/55" />
@@ -169,7 +256,11 @@ export function PromotionPopup() {
             image={promotion.image}
             ctaLabel={promotion.ctaLabel}
             href={getPromotionHref(promotion.slug)}
-            onCtaClick={() => setOpen(false)}
+            onCtaClick={() => {
+              writeSeen(promotion.slug, { clicked: true });
+              trackPopup("click", promotion.slug);
+              setOpen(false);
+            }}
           />
         </DialogPrimitive.Content>
       </DialogPortal>

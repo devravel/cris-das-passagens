@@ -22,6 +22,8 @@ import { isValidBlogImageUrl } from "@/lib/blog/image-url";
 import { normalizeSlug } from "@/lib/blog/utils";
 import {
   EMPTY_PROMOTION_FORM_VALUES,
+  PROMOTION_DISPLAY_MODES,
+  PROMOTION_DISPLAY_MODE_OPTIONS,
   RECOMMENDED_PROMOTION_IMAGE_SIZE,
   promotionFormSchema,
   type PromotionFormValues,
@@ -190,6 +192,39 @@ export function PromotionForm({
             />
             <FieldError message={errors.ctaLabel?.message} />
           </div>
+
+          <fieldset className="space-y-2">
+            <legend className="mb-2 text-sm font-medium text-foreground">Como o pop-up aparece</legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {PROMOTION_DISPLAY_MODES.map((mode) => (
+                <label
+                  key={mode}
+                  className="flex cursor-pointer gap-3 rounded-xl border border-border/70 bg-background p-3 transition-colors hover:border-ring/60 has-checked:border-brand has-checked:bg-brand/5 has-focus-visible:ring-3 has-focus-visible:ring-ring/50"
+                >
+                  <input
+                    type="radio"
+                    value={mode}
+                    className="peer sr-only"
+                    {...form.register("displayMode")}
+                  />
+                  <span
+                    aria-hidden
+                    className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-input peer-checked:border-brand peer-checked:*:scale-100"
+                  >
+                    <span className="size-2 scale-0 rounded-full bg-brand transition-transform" />
+                  </span>
+                  <span className="space-y-1">
+                    <span className="block text-sm font-medium text-foreground">
+                      {PROMOTION_DISPLAY_MODE_OPTIONS[mode].label}
+                    </span>
+                    <span className="block text-xs leading-relaxed text-muted-foreground">
+                      {PROMOTION_DISPLAY_MODE_OPTIONS[mode].description}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">

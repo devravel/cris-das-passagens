@@ -8,6 +8,7 @@ import {
   PROMOTION_STATUS_LABELS,
   getPromotionStatus,
   type LivePromotion,
+  type PromotionDisplayMode,
 } from "@/lib/promotion/schemas";
 
 export type AdminPromotion = {
@@ -16,6 +17,7 @@ export type AdminPromotion = {
   slug: string;
   image: string;
   ctaLabel: string;
+  displayMode: PromotionDisplayMode;
   startsAt: string;
   endsAt: string;
   packageCount: number;
@@ -27,6 +29,7 @@ const adminPromotionSelect = {
   slug: true,
   image: true,
   ctaLabel: true,
+  displayMode: true,
   startsAt: true,
   endsAt: true,
   _count: { select: { packages: true } },
@@ -38,6 +41,7 @@ function mapAdminPromotion(promotion: {
   slug: string;
   image: string;
   ctaLabel: string;
+  displayMode: PromotionDisplayMode;
   startsAt: Date;
   endsAt: Date;
   _count: { packages: number };
@@ -48,6 +52,7 @@ function mapAdminPromotion(promotion: {
     slug: promotion.slug,
     image: normalizeBlogImageUrl(promotion.image),
     ctaLabel: promotion.ctaLabel,
+    displayMode: promotion.displayMode,
     startsAt: promotion.startsAt.toISOString(),
     endsAt: promotion.endsAt.toISOString(),
     packageCount: promotion._count.packages,
@@ -105,7 +110,7 @@ export async function getLivePromotion(now = new Date()): Promise<LivePromotion 
       packages: { some: publicPackageScheduleWhere(now) },
     },
     orderBy: { startsAt: "desc" },
-    select: { slug: true, name: true, image: true, ctaLabel: true },
+    select: { slug: true, name: true, image: true, ctaLabel: true, displayMode: true },
   });
 
   return promotion ? { ...promotion, image: normalizeBlogImageUrl(promotion.image) } : null;

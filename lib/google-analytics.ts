@@ -54,7 +54,7 @@ export function trackGoogleAnalyticsPageView(pathname: string): void {
   });
 }
 
-/** Prepared for future custom events — not wired to UI yet. */
+/** Evento próprio (ex.: pop-up de promoção). Só envia com consentimento. */
 export function trackGoogleAnalyticsEvent(
   eventName: string,
   params?: GoogleAnalyticsEventParams,

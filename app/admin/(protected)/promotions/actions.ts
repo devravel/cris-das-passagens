@@ -25,6 +25,7 @@ function normalizeInput(input: PromotionFormValues) {
     slug: input.slug,
     image: normalizeBlogImageUrl(input.image),
     ctaLabel: input.ctaLabel,
+    displayMode: input.displayMode,
     // O schema já garantiu que as duas datas são válidas.
     startsAt: parseOptionalDatetimeLocalInput(input.startsAt)!,
     endsAt: parseOptionalDatetimeLocalInput(input.endsAt)!,

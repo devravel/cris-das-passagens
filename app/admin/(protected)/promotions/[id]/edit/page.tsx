@@ -34,6 +34,7 @@ export default async function EditPromotionPage({ params }: EditPromotionPagePro
         slug: promotion.slug,
         image: promotion.image,
         ctaLabel: promotion.ctaLabel,
+        displayMode: promotion.displayMode,
         startsAt: toDatetimeLocalValue(promotion.startsAt),
         endsAt: toDatetimeLocalValue(promotion.endsAt),
       }}
