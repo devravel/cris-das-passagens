@@ -42,3 +42,18 @@ export function formatMoneyInput(value: number | null | undefined): string {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+/**
+ * Valor em reais pra exibir: redondo sem centavos ("R$ 8.345"), com centavos
+ * sempre nas duas casas ("R$ 2.610,90", nunca "2.610,9").
+ */
+export function formatBRL(value: number): string {
+  const rounded = Math.round(value * 100) / 100;
+
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: Number.isInteger(rounded) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(rounded);
+}

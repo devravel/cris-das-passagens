@@ -1,4 +1,5 @@
 import type { CouponDiscountTypeValue } from "@/lib/coupon/schemas";
+import { formatBRL } from "@/lib/money";
 
 export function formatCouponDiscountValue(
   type: CouponDiscountTypeValue,
@@ -14,14 +15,7 @@ export function formatCouponDiscountValue(
     return `${rounded}% OFF`;
   }
 
-  const formatted = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(value);
-
-  return `${formatted} OFF`;
+  return `${formatBRL(value)} OFF`;
 }
 
 export function formatCouponDisplayLabel(
