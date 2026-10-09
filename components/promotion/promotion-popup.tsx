@@ -107,12 +107,11 @@ export function PromotionPopup() {
   const promotion = useLivePromotion();
   const consent = useConsent();
   const [open, setOpen] = useState(false);
-  // No painel não faz sentido; na página da promoção a pessoa já chegou.
-  // Com o banner de cookies na tela, espera a resposta: os dois juntos se
-  // cobrem no celular, e o Esc do banner recusa os cookies.
+  // Só na página inicial (pedido do Cris): no blog e nas outras páginas atrapalha
+  // a leitura. Com o banner de cookies na tela, espera a resposta: os dois
+  // juntos se cobrem no celular, e o Esc do banner recusa os cookies.
   const blocked =
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/promocoes/") ||
+    pathname !== "/" ||
     !consent.isReady ||
     consent.isBannerVisible ||
     consent.isModalOpen;
