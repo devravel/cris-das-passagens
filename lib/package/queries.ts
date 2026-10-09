@@ -74,6 +74,14 @@ export type PackagesPageData = {
   circuits: PublicPackage[];
 };
 
+/**
+ * Entra na chave do cache de dados da Vercel, que sobrevive ao deploy e guarda
+ * o pacote já mapeado. Mudou o que `mapPublicPackage` monta (formato de preço,
+ * texto de parcela)? Sobe a versão, senão produção serve o mapeamento antigo
+ * até o cache vencer.
+ */
+const PUBLIC_PACKAGE_CACHE_VERSION = "2";
+
 const publicPackageSelect = {
   id: true,
   slug: true,
@@ -251,7 +259,7 @@ async function fetchFeaturedPackagesFromDb(): Promise<PublicPackage[]> {
 
 const getCachedFeaturedPackages = unstable_cache(
   fetchFeaturedPackagesFromDb,
-  ["featured-packages"],
+  ["featured-packages", PUBLIC_PACKAGE_CACHE_VERSION],
   { tags: [FEATURED_PACKAGES_CACHE_TAG], revalidate: 60 },
 );
 
@@ -272,7 +280,7 @@ async function fetchHomepagePackagesFromDb(): Promise<HomepagePackages> {
 
 const getCachedHomepagePackages = unstable_cache(
   fetchHomepagePackagesFromDb,
-  ["homepage-packages"],
+  ["homepage-packages", PUBLIC_PACKAGE_CACHE_VERSION],
   { tags: [HOMEPAGE_PACKAGES_CACHE_TAG], revalidate: 60 },
 );
 
@@ -299,7 +307,7 @@ async function fetchPackagesPageDataFromDb(): Promise<PackagesPageData> {
 
 const getCachedPackagesPageData = unstable_cache(
   fetchPackagesPageDataFromDb,
-  ["packages-page"],
+  ["packages-page", PUBLIC_PACKAGE_CACHE_VERSION],
   { tags: [PACKAGES_PAGE_CACHE_TAG], revalidate: 60 },
 );
 
