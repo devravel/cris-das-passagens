@@ -5,12 +5,13 @@ import type { ContentCta } from "@/config/content";
  * /blue-friday dá 404, some do menu/sitemap/hero e a API recusa cadastros.
  * O admin (Blue Friday → Pedidos/Ranking) continua acessível.
  */
-export const BLUE_FRIDAY_CAMPAIGN_ENABLED = false;
+// DEMO (branch demo/blue-friday): ligado pro link de demonstração. Não mergear.
+export const BLUE_FRIDAY_CAMPAIGN_ENABLED = true;
 
 // TODO(Cris): datas, links e listas abaixo são provisórios.
 export const blueFridayCampaign = {
   /** Janela de inscrições, `YYYY-MM-DD` no horário de Brasília (inclusivo). */
-  signupStartDate: "2026-10-27",
+  signupStartDate: "2026-10-21",
   signupEndDate: "2026-11-19",
   /** Início da Blue Live. */
   liveAt: "2026-11-19T20:00:00-03:00",
