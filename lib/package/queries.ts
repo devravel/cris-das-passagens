@@ -54,6 +54,8 @@ export type PublicPackage = {
   daysCount: number | null;
   nightsCount: number | null;
   featured: boolean;
+  /** Quando entrou no ar (ativação agendada ou criação): "Publicado há X dias" no card. */
+  publishedAt: string;
 };
 
 export type HomepagePackages = {
@@ -80,7 +82,7 @@ export type PackagesPageData = {
  * texto de parcela)? Sobe a versão, senão produção serve o mapeamento antigo
  * até o cache vencer.
  */
-const PUBLIC_PACKAGE_CACHE_VERSION = "2";
+const PUBLIC_PACKAGE_CACHE_VERSION = "3";
 
 const publicPackageSelect = {
   id: true,
@@ -116,6 +118,8 @@ const publicPackageSelect = {
   daysCount: true,
   nightsCount: true,
   featured: true,
+  activatesAt: true,
+  createdAt: true,
 } as const;
 
 function decimalToNumber(value: { toNumber?: () => number } | number | null | undefined) {
@@ -169,6 +173,8 @@ function mapPublicPackage(
     daysCount: number | null;
     nightsCount: number | null;
     featured: boolean;
+    activatesAt: Date | null;
+    createdAt: Date;
   },
 ): PublicPackage {
   const price = decimalToNumber(pkg.price) ?? 0;
@@ -228,6 +234,7 @@ function mapPublicPackage(
     daysCount: pkg.daysCount,
     nightsCount: pkg.nightsCount,
     featured: pkg.featured,
+    publishedAt: (pkg.activatesAt ?? pkg.createdAt).toISOString(),
   };
 }
 

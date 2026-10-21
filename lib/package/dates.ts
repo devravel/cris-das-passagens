@@ -180,3 +180,39 @@ export function isValidDatetimeLocalInput(value: string): boolean {
 
   return parseOptionalDatetimeLocalInput(trimmed) !== null;
 }
+
+const saoPauloDayKey = new Intl.DateTimeFormat("en-CA", { timeZone: PACKAGE_SCHEDULE_TIME_ZONE });
+
+/** Card: "Publicado hoje" / "ontem" / "há N dias", contando dias do calendário de Brasília. */
+export function formatPackagePublishedAgo(publishedAt: string | null | undefined, now = new Date()): string | null {
+  const date = publishedAt ? new Date(publishedAt) : null;
+
+  if (!date || Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const days = Math.round(
+    (Date.parse(saoPauloDayKey.format(now)) - Date.parse(saoPauloDayKey.format(date))) / 86_400_000,
+  );
+
+  if (days <= 0) return "Publicado hoje";
+  if (days === 1) return "Publicado ontem";
+  return `Publicado há ${days} dias`;
+}
+
+/** `title` do card: "Publicado em 18/10/2026 às 14:30". */
+export function formatPackagePublishedAt(publishedAt: string | null | undefined): string | null {
+  const date = publishedAt ? new Date(publishedAt) : null;
+
+  if (!date || Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const text = new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+    timeZone: PACKAGE_SCHEDULE_TIME_ZONE,
+  }).format(date);
+
+  return `Publicado em ${text.replace(", ", " às ")}`;
+}

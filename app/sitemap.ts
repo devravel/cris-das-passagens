@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { BLUE_FRIDAY_CAMPAIGN_ENABLED } from "@/config/blue-friday-campaign";
 import { REI_DA_COPA_CAMPAIGN_ENABLED } from "@/config/rei-da-copa-campaign";
 import { prisma } from "@/lib/prisma";
 import { getSiteUrl } from "@/lib/seo/site-url";
@@ -40,6 +41,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    ...(BLUE_FRIDAY_CAMPAIGN_ENABLED
+      ? [
+          {
+            url: `${baseUrl}/blue-friday`,
+            lastModified: now,
+            changeFrequency: "daily" as const,
+            priority: 0.9,
+          },
+        ]
+      : []),
     ...(REI_DA_COPA_CAMPAIGN_ENABLED
       ? [
           {

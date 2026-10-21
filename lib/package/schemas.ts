@@ -434,6 +434,8 @@ export type PackageCardData = {
   returnDate: string | null;
   circuitStartDay: string | null;
   circuitDuration: string | null;
+  /** Só nos cards públicos (o preview do painel não tem data de publicação). */
+  publishedAt?: string | null;
 };
 
 export type PackageCardPreviewData = PackageCardData;
