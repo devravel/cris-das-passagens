@@ -1,3 +1,4 @@
+import { BLUE_FRIDAY_CAMPAIGN_ENABLED, blueFridayNavItem } from "@/config/blue-friday-campaign";
 import { content, contentLinks } from "@/config/content";
 import { REI_DA_COPA_CAMPAIGN_ENABLED } from "@/config/rei-da-copa-campaign";
 import { getQuoteWhatsAppUrl } from "@/lib/coupon/whatsapp";
@@ -47,6 +48,7 @@ export const reiDaCopaNavItem: NavItem = {
  */
 export const brandPrimaryPages: NavItem[] = [
   { label: "Início", href: "/" },
+  ...(BLUE_FRIDAY_CAMPAIGN_ENABLED ? [blueFridayNavItem] : []),
   ...(REI_DA_COPA_CAMPAIGN_ENABLED ? [reiDaCopaNavItem] : []),
   { label: "Pacotes", href: "/pacotes" },
   { label: "Roteiros", href: "/roteiros" },

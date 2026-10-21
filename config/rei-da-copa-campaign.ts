@@ -1,3 +1,4 @@
+import { BLUE_FRIDAY_CAMPAIGN_ENABLED, blueFridayHomeHeroCta } from "@/config/blue-friday-campaign";
 import type { ContentCta } from "@/config/content";
 
 /**
@@ -13,5 +14,6 @@ export const reiDaCopaHomeHeroCta = {
 } satisfies ContentCta;
 
 export function getHomeHeroPrimaryCta(defaultCta: ContentCta): ContentCta {
+  if (BLUE_FRIDAY_CAMPAIGN_ENABLED) return blueFridayHomeHeroCta;
   return REI_DA_COPA_CAMPAIGN_ENABLED ? reiDaCopaHomeHeroCta : defaultCta;
 }
