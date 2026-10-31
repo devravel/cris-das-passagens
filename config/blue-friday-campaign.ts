@@ -16,8 +16,8 @@ export const blueFridayCampaign = {
   signupEndDate: "2026-11-05",
   /** Blue Live no YouTube (Cris, 31/10). O link sai só no grupo VIP (pedido do Cris, 30/10). */
   liveDate: "2026-11-05",
-  // TODO(Cris): horário da live. Enquanto for null, a página mostra só a data.
-  liveTime: null as string | null,
+  /** `HH:mm` em Brasília; null mostra só a data. */
+  liveTime: "20:00" as string | null,
   whatsappGroupUrl: "https://chat.whatsapp.com/LPBY9Gl0VKQHYA6NrJsbqx",
   /** Slug da promoção (painel → Promoções) cujos pacotes viram "Ofertas da Blue Live". */
   promotionSlug: "blue-friday",
