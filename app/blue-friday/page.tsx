@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { BlueFridayLanding } from "@/components/blue-friday/blue-friday-landing";
 import { PageBreadcrumb } from "@/components/layout/page-breadcrumb";
 import { BLUE_FRIDAY_CAMPAIGN_ENABLED, blueFridayCampaign } from "@/config/blue-friday-campaign";
+import { getBlueFridaySignupStatus } from "@/lib/blue-friday/rules";
 import { getBlueFridayPublicRanking } from "@/lib/blue-friday/service";
 import { PACKAGE_SCHEDULE_TIME_ZONE } from "@/lib/package/dates";
 import { getPromotionPageData } from "@/lib/promotion/queries";
-import { getCampaignDateKey, isCampaignOpen } from "@/lib/rei-da-copa/campaign-window";
 import { createMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createMetadata({
@@ -28,6 +28,16 @@ const liveFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: PACKAGE_SCHEDULE_TIME_ZONE,
 });
 
+// "quinta-feira, 05/11, 17:00" → "quinta-feira, 05/11, às 17h"
+const signupEndFormatter = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "long",
+  day: "2-digit",
+  month: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: PACKAGE_SCHEDULE_TIME_ZONE,
+});
+
 async function getOffers() {
   try {
     return (await getPromotionPageData(blueFridayCampaign.promotionSlug))?.packages ?? [];
@@ -43,10 +53,10 @@ export default async function BlueFridayPage() {
   }
 
   const [ranking, offers] = await Promise.all([getBlueFridayPublicRanking(), getOffers()]);
-  const { signupStartDate, signupEndDate, liveDate, liveTime } = blueFridayCampaign;
-  // "quinta-feira, 05/11" (+ " às 20:00" quando o horário estiver na config)
+  const { signupStartDate, signupEndsAt, liveDate, liveTime } = blueFridayCampaign;
+  // "quinta-feira, 05/11" (+ " às 20h" quando o horário estiver na config)
   const liveLabel =
-    liveFormatter.format(new Date(`${liveDate}T12:00:00-03:00`)) + (liveTime ? ` às ${liveTime}` : "");
+    liveFormatter.format(new Date(`${liveDate}T12:00:00-03:00`)) + (liveTime ? ` às ${liveTime.replace(/^(\d{2}):00$/, "$1h")}` : "");
 
   return (
     <>
@@ -58,13 +68,10 @@ export default async function BlueFridayPage() {
       />
       <BlueFridayLanding
         liveLabel={liveLabel}
-        signupStatus={
-          isCampaignOpen({ startDate: signupStartDate, endDate: signupEndDate })
-            ? "open"
-            : getCampaignDateKey() < signupStartDate
-              ? "soon"
-              : "closed"
-        }
+        signupStatus={getBlueFridaySignupStatus(signupStartDate, signupEndsAt)}
+        signupEndLabel={signupEndFormatter
+          .format(new Date(signupEndsAt))
+          .replace(/, (\d{2}):(\d{2})$/, (_, h, m) => `, às ${h}h${m === "00" ? "" : m}`)}
         signupStartLabel={signupStartDate.split("-").reverse().slice(0, 2).join("/")}
         ranking={ranking}
         offers={offers}

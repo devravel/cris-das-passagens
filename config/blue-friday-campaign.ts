@@ -9,11 +9,11 @@ import type { ContentCta } from "@/config/content";
 export const BLUE_FRIDAY_CAMPAIGN_ENABLED = true;
 
 export const blueFridayCampaign = {
-  /** Janela de inscrições, `YYYY-MM-DD` no horário de Brasília (inclusivo). */
+  /** Inscrições abrem à 0h deste dia (Brasília)… */
   // DEMO: aberto desde já pro Cris testar no preview; o real é "2026-11-01".
   signupStartDate: "2026-10-21",
-  // TODO(Cris): fim das inscrições não confirmado; por ora vai até o dia da live.
-  signupEndDate: "2026-11-05",
+  /** …e fecham neste instante: 17h do dia da live (Cris, 31/10). */
+  signupEndsAt: "2026-11-05T17:00:00-03:00",
   /** Blue Live no YouTube (Cris, 31/10). O link sai só no grupo VIP (pedido do Cris, 30/10). */
   liveDate: "2026-11-05",
   /** `HH:mm` em Brasília; null mostra só a data. */

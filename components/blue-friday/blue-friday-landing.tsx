@@ -40,6 +40,8 @@ type BlueFridayLandingProps = {
   signupStatus: "soon" | "open" | "closed";
   /** "27/10" — quando abrem as inscrições. */
   signupStartLabel: string;
+  /** "quinta-feira, 05/11, às 17h" — quando fecham. */
+  signupEndLabel: string;
   ranking: RankingEntry[];
   offers: PublicPackage[];
 };
@@ -49,6 +51,7 @@ export function BlueFridayLanding({
   liveLabel,
   signupStatus,
   signupStartLabel,
+  signupEndLabel,
   ranking,
   offers,
 }: BlueFridayLandingProps) {
@@ -122,6 +125,9 @@ export function BlueFridayLanding({
                 Com o seu pedido, a equipe busca as melhores ofertas antes da live. Pode pedir mais de um destino com
                 o mesmo WhatsApp.
               </p>
+              {signupStatus === "closed" ? null : (
+                <p className="mt-2 text-sm font-semibold text-amber-300">Inscrições até {signupEndLabel}.</p>
+              )}
             </div>
 
             <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_80px_-30px] shadow-brand-cyan/40 backdrop-blur-sm sm:p-8">

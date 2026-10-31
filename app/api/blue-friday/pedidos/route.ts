@@ -3,8 +3,8 @@ import { after, NextRequest, NextResponse } from "next/server";
 import { BLUE_FRIDAY_CAMPAIGN_ENABLED, blueFridayCampaign } from "@/config/blue-friday-campaign";
 import { toBlueFridayRequestRow } from "@/lib/blue-friday/format";
 import { notifyBlueFridayRequest } from "@/lib/blue-friday/notification";
+import { getBlueFridaySignupStatus } from "@/lib/blue-friday/rules";
 import { createBlueFridayRequest, getBlueFridayRequestSchema } from "@/lib/blue-friday/service";
-import { isCampaignOpen } from "@/lib/rei-da-copa/campaign-window";
 
 /**
  * Cadastro Blue Friday → passaporte + pedido no banco + e-mail pra equipe de
@@ -36,10 +36,7 @@ function isRateLimited(ip: string) {
 export async function POST(request: NextRequest) {
   const isOpen =
     BLUE_FRIDAY_CAMPAIGN_ENABLED &&
-    isCampaignOpen({
-      startDate: blueFridayCampaign.signupStartDate,
-      endDate: blueFridayCampaign.signupEndDate,
-    });
+    getBlueFridaySignupStatus(blueFridayCampaign.signupStartDate, blueFridayCampaign.signupEndsAt) === "open";
 
   if (!isOpen) {
     return NextResponse.json({ ok: false, error: "As inscrições da Blue Friday não estão abertas agora." }, { status: 403 });

@@ -15,6 +15,17 @@ export type BlueFridayPaymentPreferenceValue = (typeof BLUE_FRIDAY_PAYMENT_OPTIO
 
 export const BLUE_FRIDAY_MAX_PEOPLE = 9;
 
+export type BlueFridaySignupStatus = "soon" | "open" | "closed";
+
+/**
+ * Abre à 0h de `startDate` (`YYYY-MM-DD`, Brasília) e fecha no instante
+ * `endsAt` (ISO com fuso). Brasília é -03:00 fixo (sem horário de verão).
+ */
+export function getBlueFridaySignupStatus(startDate: string, endsAt: string, now = new Date()): BlueFridaySignupStatus {
+  if (now.getTime() >= Date.parse(endsAt)) return "closed";
+  return now.getTime() < Date.parse(`${startDate}T00:00:00-03:00`) ? "soon" : "open";
+}
+
 export type BlueFridayOptions = {
   destinations: readonly string[];
   flexiblePeriods: readonly string[];
