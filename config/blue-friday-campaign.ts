@@ -48,7 +48,7 @@ export const blueFridayCampaign = {
     "Hotel/pousada com café da manhã",
     "Airbnb com cozinha",
     "Hostel",
-    "Nenhuma opção",
+    "Somente passagem",
   ],
   budgetRanges: [
     "Até R$ 3 mil",
