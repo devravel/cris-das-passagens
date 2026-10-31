@@ -57,8 +57,9 @@ export function BlueFridayLanding({
     .map((config) => ({ config, packages: offers.filter((pkg) => pkg.type === config.type) }))
     .filter((section) => section.packages.length > 0);
 
+  // overflow-clip (não hidden): corta os brilhos sem virar contêiner de rolagem, senão o sticky do topo não gruda.
   return (
-    <div className="relative isolate overflow-hidden bg-[#050d2b] text-white">
+    <div className="relative isolate overflow-clip bg-[#050d2b] text-white">
       {/* Brilhos neon do fundo */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -left-40 -top-40 size-[36rem] rounded-full bg-brand-cyan/20 blur-[120px]" />
@@ -66,47 +67,82 @@ export function BlueFridayLanding({
         <div className="absolute bottom-0 left-1/4 size-[28rem] rounded-full bg-blue-500/15 blur-[120px]" />
       </div>
 
-      {/* Hero */}
-      <section aria-labelledby="blue-friday-heading" className="pt-12 pb-14 sm:pt-16 sm:pb-20">
-        <Container className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-cyan sm:text-sm">
-            Cris das Passagens apresenta
-          </p>
-          <h1
-            id="blue-friday-heading"
-            className="mt-4 font-heading text-6xl font-extrabold uppercase leading-[0.85] tracking-tight sm:text-8xl lg:text-9xl"
-          >
-            <span className="block bg-linear-to-b from-white via-sky-200 to-brand-cyan bg-clip-text text-transparent drop-shadow-[0_0_28px_rgba(56,189,248,0.55)]">
-              Blue
-            </span>
-            <span className="block bg-linear-to-b from-white to-slate-300 bg-clip-text text-transparent">Friday</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg font-semibold uppercase tracking-wide text-sky-100 sm:text-xl">
-            A Black Friday chegou antes no Cris das Passagens
-          </p>
+      {/* Topo: título + cadastro lado a lado no desktop (Cris, 31/10: "os campos mais pra cima") */}
+      <section aria-labelledby="blue-friday-heading" className="pt-10 pb-14 sm:pt-14 sm:pb-20">
+        <Container className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,36rem)] lg:gap-14">
+          {/* Fica parado à esquerda enquanto o formulário rola */}
+          <div className="text-center lg:sticky lg:top-28 lg:text-left">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-cyan sm:text-sm">
+              Cris das Passagens apresenta
+            </p>
+            <h1
+              id="blue-friday-heading"
+              className="mt-4 font-heading text-6xl font-extrabold uppercase leading-[0.85] tracking-tight sm:text-8xl"
+            >
+              <span className="block bg-linear-to-b from-white via-sky-200 to-brand-cyan bg-clip-text text-transparent drop-shadow-[0_0_28px_rgba(56,189,248,0.55)]">
+                Blue
+              </span>
+              <span className="block bg-linear-to-b from-white to-slate-300 bg-clip-text text-transparent">Friday</span>
+            </h1>
+            <p className="mx-auto mt-6 max-w-xl text-lg font-semibold uppercase tracking-wide text-sky-100 sm:text-xl lg:mx-0 lg:text-lg">
+              A Black Friday chegou antes no Cris das Passagens
+            </p>
 
-          <p className="mx-auto mt-5 w-fit -rotate-1 rounded-lg bg-linear-to-r from-amber-200 via-amber-300 to-amber-400 px-5 py-2.5 font-heading text-lg font-extrabold uppercase tracking-wide text-[#081845] shadow-[0_0_40px_-8px] shadow-amber-300/70 sm:text-2xl">
-            Ofertas incríveis na nossa live
-          </p>
+            <p className="mx-auto mt-5 w-fit -rotate-1 rounded-lg bg-linear-to-r from-amber-200 via-amber-300 to-amber-400 px-5 py-2.5 font-heading text-lg font-extrabold uppercase tracking-wide text-[#081845] shadow-[0_0_40px_-8px] shadow-amber-300/70 sm:text-2xl lg:mx-0 lg:text-xl">
+              Ofertas incríveis na nossa live
+            </p>
 
-          <p className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm text-white/85 sm:text-base">
-            <CalendarDays className="size-5 text-brand-cyan" aria-hidden />
-            Blue Live: <strong className="font-semibold text-white">{liveLabel}</strong>
-          </p>
+            <p className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm text-white/85 sm:text-base lg:justify-start">
+              <CalendarDays className="size-5 text-brand-cyan" aria-hidden />
+              Blue Live: <strong className="font-semibold text-white">{liveLabel}</strong>
+            </p>
 
-          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            {signupOpen ? (
-              <a
-                href={`#${FORM_ID}`}
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-bold uppercase tracking-wide text-[#081845] shadow-[0_0_36px_-6px] shadow-brand-cyan/70 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
-              >
-                Garantir meu Passaporte Blue
-              </a>
-            ) : null}
-            <GroupVipButton />
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
+              {/* No desktop o formulário já está do lado; no celular o botão leva até ele */}
+              {signupOpen ? (
+                <a
+                  href={`#${FORM_ID}`}
+                  className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-bold uppercase tracking-wide text-[#081845] shadow-[0_0_36px_-6px] shadow-brand-cyan/70 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan lg:hidden"
+                >
+                  Garantir meu Passaporte Blue
+                </a>
+              ) : null}
+              <GroupVipButton />
+            </div>
           </div>
 
-          <ul className="mx-auto mt-12 grid max-w-4xl gap-3 text-left sm:grid-cols-3">
+          {/* Cadastro */}
+          <div id={FORM_ID} aria-labelledby="cadastro-heading" role="region" className="scroll-mt-24">
+            <div className="text-center lg:text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">Passaporte Blue</p>
+              <h2 id="cadastro-heading" className="mt-2 font-heading text-3xl font-bold">
+                Diga para onde quer ir
+              </h2>
+              <p className="mx-auto mt-2 max-w-lg text-sm text-white/70 lg:mx-0">
+                Com o seu pedido, a equipe busca as melhores ofertas antes da live. Pode pedir mais de um destino com
+                o mesmo WhatsApp.
+              </p>
+            </div>
+
+            <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_80px_-30px] shadow-brand-cyan/40 backdrop-blur-sm sm:p-8">
+              {signupOpen ? (
+                <BlueFridayForm liveLabel={liveLabel} />
+              ) : (
+                <p className="py-6 text-center text-white/80">
+                  {signupStatus === "soon"
+                    ? `As inscrições para o Passaporte Blue abrem em ${signupStartLabel}. Enquanto isso, entre no grupo VIP: é lá que saem as novidades e as surpresas primeiro.`
+                    : "As inscrições da Blue Friday estão encerradas. As ofertas continuam abaixo e no grupo VIP."}
+                </p>
+              )}
+            </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Como funciona */}
+      <section aria-labelledby="como-funciona-heading" className="border-t border-white/10 py-14 sm:py-20">
+        <Container>
+          <ul className="mx-auto grid max-w-4xl gap-3 text-left sm:grid-cols-3">
             {highlights.map(({ icon: Icon, title, text }) => (
               <li
                 key={title}
@@ -120,15 +156,10 @@ export function BlueFridayLanding({
               </li>
             ))}
           </ul>
-        </Container>
-      </section>
 
-      {/* Como funciona */}
-      <section aria-labelledby="como-funciona-heading" className="border-t border-white/10 py-14 sm:py-20">
-        <Container>
           <h2
             id="como-funciona-heading"
-            className="text-center font-heading text-2xl font-bold uppercase tracking-[0.2em] sm:text-3xl"
+            className="mt-14 text-center font-heading text-2xl font-bold uppercase tracking-[0.2em] sm:text-3xl"
           >
             Como funciona?
           </h2>
@@ -146,41 +177,6 @@ export function BlueFridayLanding({
               </li>
             ))}
           </ol>
-        </Container>
-      </section>
-
-      {/* Cadastro */}
-      <section
-        id={FORM_ID}
-        aria-labelledby="cadastro-heading"
-        className="scroll-mt-24 border-t border-white/10 py-14 sm:py-20"
-      >
-        <Container size="narrow">
-          <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">Passaporte Blue</p>
-            <h2 id="cadastro-heading" className="mt-2 font-heading text-3xl font-bold sm:text-4xl">
-              Diga para onde quer ir
-            </h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm text-white/70 sm:text-base">
-              Com o seu pedido, a equipe busca as melhores ofertas antes da live. Pode pedir mais de um destino com
-              o mesmo WhatsApp.
-            </p>
-          </div>
-
-          <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_80px_-30px] shadow-brand-cyan/40 backdrop-blur-sm sm:p-8">
-            {signupOpen ? (
-              <BlueFridayForm liveLabel={liveLabel} />
-            ) : (
-              <div className="py-6 text-center">
-                <p className="text-white/80">
-                  {signupStatus === "soon"
-                    ? `As inscrições para o Passaporte Blue abrem em ${signupStartLabel}. Enquanto isso, entre no grupo VIP: é lá que saem as novidades e as surpresas primeiro.`
-                    : "As inscrições da Blue Friday estão encerradas. As ofertas continuam abaixo e no grupo VIP."}
-                </p>
-                <GroupVipButton className="mt-5" />
-              </div>
-            )}
-          </div>
         </Container>
       </section>
 
