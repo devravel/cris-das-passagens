@@ -11,6 +11,7 @@ import {
   Megaphone,
   Menu,
   Package,
+  Plane,
   CircleUser,
   TicketPercent,
   Trophy,
@@ -45,6 +46,7 @@ const adminNavigationIcons: Record<AdminNavigationIcon, LucideIcon> = {
   megaphone: Megaphone,
   users: Users,
   trophy: Trophy,
+  plane: Plane,
 };
 
 type AdminSidebarProps = {

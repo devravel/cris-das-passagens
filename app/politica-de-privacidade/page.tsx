@@ -10,7 +10,7 @@ import { content, contentLinks } from "@/config/content";
 import { createMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
-const LAST_UPDATED = "7 de junho de 2026";
+const LAST_UPDATED = "21 de outubro de 2026";
 
 export const metadata: Metadata = createMetadata({
   title: "Política de Privacidade",
@@ -124,8 +124,8 @@ export default function PoliticaDePrivacidadePage() {
           <PolicyParagraph>
             Coletamos apenas os dados necessários para as funcionalidades descritas
             abaixo. A página de contato exibe informações da empresa e direciona
-            você ao WhatsApp; o único formulário de cotação com envio ao servidor
-            é o das páginas de roteiro, descrito na seção 9.
+            você ao WhatsApp; os formulários com envio ao servidor estão descritos
+            na seção 9.
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
@@ -205,7 +205,39 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            2.3 Curtidas no blog
+            2.4 Campanha Blue Friday
+          </h3>
+          <PolicyParagraph>
+            No cadastro da campanha Blue Friday (Passaporte Blue), coletamos e
+            armazenamos em nosso banco de dados:
+          </PolicyParagraph>
+          <PolicyList
+            items={[
+              <>
+                <strong>Nome e WhatsApp</strong> — para identificar o seu Passaporte
+                Blue (um por número) e entrar em contato com as ofertas;
+              </>,
+              <>
+                <strong>Preferências da viagem</strong> — cidade de saída, destino,
+                datas ou período, tipo de hospedagem, quantidade de passageiros (com a idade das crianças,
+                sem nome), faixa de orçamento, forma de pagamento preferida e,
+                opcionalmente, o valor que faria você comprar a viagem;
+              </>,
+              <>
+                <strong>Cupom do influenciador</strong> (opcional) — o cupom ou nome
+                de quem indicou a campanha, para sabermos por qual divulgação você
+                chegou e reconhecermos os parceiros que divulgam.
+              </>,
+            ]}
+          />
+          <PolicyParagraph>
+            O ranking público da campanha mostra apenas o{" "}
+            <strong>destino e a quantidade de pessoas</strong> que o pediram — nenhum
+            nome ou telefone. O link do grupo VIP no WhatsApp é opcional.
+          </PolicyParagraph>
+
+          <h3 className="font-heading text-lg font-semibold text-foreground">
+            2.5 Curtidas no blog
           </h3>
           <PolicyParagraph>
             Ao curtir um post do blog, geramos um identificador aleatório (UUID)
@@ -216,7 +248,7 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            2.4 Cupons de desconto
+            2.6 Cupons de desconto
           </h3>
           <PolicyParagraph>
             Ao validar um cupom, o site armazena no{" "}
@@ -226,7 +258,7 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            2.5 Área administrativa
+            2.7 Área administrativa
           </h3>
           <PolicyParagraph>
             O painel administrativo é restrito à equipe interna. No login, coletamos{" "}
@@ -236,7 +268,7 @@ export default function PoliticaDePrivacidadePage() {
           </PolicyParagraph>
 
           <h3 className="font-heading text-lg font-semibold text-foreground">
-            2.6 Dados técnicos e de navegação
+            2.8 Dados técnicos e de navegação
           </h3>
           <PolicyParagraph>
             Para segurança e prevenção de abuso, podemos processar temporariamente o{" "}
@@ -266,8 +298,14 @@ export default function PoliticaDePrivacidadePage() {
                 regulamento da campanha;
               </>,
               <>
-                <strong>Notificações internas</strong> — avisar a equipe sobre novas
-                inscrições na campanha por e-mail;
+                <strong>Campanha Blue Friday</strong> — registrar seus pedidos de
+                viagem, montar as ofertas da Blue Live, exibir o ranking de destinos e
+                falar com você pelo WhatsApp;
+              </>,
+              <>
+                <strong>Notificações internas</strong> — avisar a equipe por e-mail
+                sobre novas inscrições na campanha Rei da Copa e novos pedidos da
+                Blue Friday;
               </>,
               <>
                 <strong>Interação no blog</strong> — permitir curtidas em posts sem
@@ -301,8 +339,8 @@ export default function PoliticaDePrivacidadePage() {
           <PolicyList
             items={[
               <>
-                <strong>Consentimento</strong> — cadastro voluntário na campanha Rei da
-                Copa; cookies de marketing (Meta Pixel) e analytics (Google Analytics 4,
+                <strong>Consentimento</strong> — cadastro voluntário nas campanhas Rei da
+                Copa e Blue Friday; cookies de marketing (Meta Pixel) e analytics (Google Analytics 4,
                 widget Elfsight), mediante escolha no banner ou preferências de cookies;
               </>,
               <>
@@ -328,7 +366,8 @@ export default function PoliticaDePrivacidadePage() {
             items={[
               <>
                 <strong>Banco de dados PostgreSQL (Supabase)</strong> — participantes e
-                envios da campanha Rei da Copa, curtidas do blog, cupons utilizados
+                envios da campanha Rei da Copa, passaportes e pedidos da campanha Blue
+                Friday, curtidas do blog, cupons utilizados
                 (sem identificação do usuário), credenciais administrativas;
               </>,
               <>
@@ -351,6 +390,11 @@ export default function PoliticaDePrivacidadePage() {
                 participantes permanecem no banco até exclusão manual pela equipe ou
                 conforme regulamento da campanha; não há exclusão automática
                 programada no sistema;
+              </>,
+              <>
+                <strong>Retenção da campanha Blue Friday</strong> — passaportes e
+                pedidos permanecem no banco até exclusão pela equipe ou a seu pedido
+                (seção 12);
               </>,
               <>
                 <strong>Logs de servidor</strong> — retenção definida pela plataforma
@@ -535,7 +579,9 @@ export default function PoliticaDePrivacidadePage() {
               <>
                 <strong>Resend</strong> — envio de e-mail interno à equipe (
                 reidacopacrisdaspassagens@gmail.com) com dados de novas inscrições na
-                campanha Rei da Copa (nome, telefone, Instagram, número de inscrição);
+                campanha Rei da Copa (nome, telefone, Instagram, número de inscrição) e à
+                equipe de cotações (cotacoescrisdaspassagens@gmail.com) com os pedidos de
+                cotação de roteiro e da campanha Blue Friday;
               </>,
               <>
                 <strong>Supabase</strong> — hospedagem do banco de dados PostgreSQL e
@@ -606,6 +652,13 @@ export default function PoliticaDePrivacidadePage() {
             <strong>Campanha Rei da Copa — palavra-chave:</strong> formulário com
             telefone e palavra-chave; o telefone é usado para localizar o participante
             cadastrado e não é armazenado novamente no registro da palavra-chave.
+          </PolicyParagraph>
+          <PolicyParagraph>
+            <strong>Campanha Blue Friday — Passaporte Blue:</strong> formulário com
+            nome, WhatsApp e preferências da viagem (seção 2.4); dados validados e
+            armazenados em PostgreSQL; o mesmo WhatsApp mantém o mesmo número de
+            passaporte; cada pedido também é enviado por e-mail à equipe de cotações;
+            limite de 10 envios por IP a cada 30 minutos.
           </PolicyParagraph>
           <PolicyParagraph>
             <strong>Cupom:</strong> envio apenas do código do cupom para validação; sem
@@ -684,7 +737,8 @@ export default function PoliticaDePrivacidadePage() {
           <PolicyParagraph>
             O site é destinado ao público geral interessado em serviços de turismo. A
             campanha Rei da Copa exige telefone celular e perfil de Instagram — não é
-            direcionada a crianças. Se tomarmos conhecimento de tratamento indevido de
+            direcionada a crianças. Na campanha Blue Friday, de crianças que vão
+            viajar pedimos apenas a idade, sem nome ou outro dado. Se tomarmos conhecimento de tratamento indevido de
             dados de menores sem consentimento parental adequado, adotaremos medidas
             para eliminar ou anonimizar essas informações.
           </PolicyParagraph>

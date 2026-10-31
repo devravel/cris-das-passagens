@@ -28,7 +28,8 @@ export type AdminNavigationIcon =
   | "ticket-percent"
   | "mail"
   | "users"
-  | "trophy";
+  | "trophy"
+  | "plane";
 
 export type AdminNavigationItem = {
   title: string;
@@ -70,6 +71,15 @@ export const adminNavigationItems = [
     title: "Roteiros",
     href: "/admin/roteiros",
     icon: "map",
+  },
+  {
+    title: "Blue Friday",
+    href: "/admin/blue-friday/pedidos",
+    icon: "plane",
+    children: [
+      { title: "Pedidos", href: "/admin/blue-friday/pedidos" },
+      { title: "Ranking", href: "/admin/blue-friday/ranking" },
+    ],
   },
   {
     title: "Cupons",

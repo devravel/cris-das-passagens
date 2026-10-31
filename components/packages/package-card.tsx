@@ -18,7 +18,11 @@ import {
   PACKAGE_TYPE_CARD_LABELS,
 } from "@/lib/package/constants";
 import { isHighlightedChecklistItem } from "@/lib/package/checklist";
-import { formatPackageTravelDate } from "@/lib/package/dates";
+import {
+  formatPackagePublishedAgo,
+  formatPackagePublishedAt,
+  formatPackageTravelDate,
+} from "@/lib/package/dates";
 import { formatPackagePrice } from "@/lib/package/format";
 import { formatPaymentMethodsText } from "@/lib/package/payment";
 import type { PackageCardData } from "@/lib/package/schemas";
@@ -502,13 +506,30 @@ function PriceFooter({
     formatPaymentMethodsText(data.paymentMethods),
     data.feesText,
   ].filter((part): part is string => Boolean(part && part.trim()));
+  const publishedAgo = formatPackagePublishedAgo(data.publishedAt);
+  // "há N dias" depende de agora: HTML em cache (ISR) pode diferir da hidratação.
+  const published = publishedAgo ? (
+    <p
+      className={cn(
+        "text-muted-foreground",
+        compact ? "mt-0.5 text-[9px] lg:text-[10px]" : "mt-1 text-[11px] sm:text-xs",
+      )}
+      title={formatPackagePublishedAt(data.publishedAt) ?? undefined}
+      suppressHydrationWarning
+    >
+      {publishedAgo} · Sujeito a disponibilidade
+    </p>
+  ) : null;
 
-  if (footerParts.length > 0) {
+  if (footerParts.length > 0 || published) {
     return (
       <div className={footerClassName}>
-        <p className={cn("text-foreground", footerTextClassName)}>
-          {footerParts.join(" | ")}
-        </p>
+        {footerParts.length > 0 ? (
+          <p className={cn("text-foreground", footerTextClassName)}>
+            {footerParts.join(" | ")}
+          </p>
+        ) : null}
+        {published}
       </div>
     );
   }
@@ -1141,5 +1162,6 @@ export function toPackageCardDataFromPublicPackage(
     returnDate: pkg.returnDate,
     circuitStartDay: pkg.circuitStartDay,
     circuitDuration: pkg.circuitDuration,
+    publishedAt: pkg.publishedAt,
   };
 }

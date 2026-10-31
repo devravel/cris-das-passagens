@@ -350,3 +350,67 @@ model Itinerary {
   @@index([published, createdAt])
   @@index([featuredOnHomepage, published, createdAt])
 }
+
+// Blue Friday: cadastro no site gera um Passaporte Blue (1 por WhatsApp) com
+// pedidos de destino. Ranking público = pessoas distintas por destino.
+// Spec: docs/superpowers/specs/2026-10-21-blue-friday-design.md
+enum BlueFridayDateMode {
+  SPECIFIC
+  FLEXIBLE
+}
+
+enum BlueFridayPaymentPreference {
+  PIX
+  CREDIT_CARD
+  BOLETO
+}
+
+model BlueFridayPassport {
+  id        String              @id @default(cuid())
+  number    Int                 @unique @default(autoincrement())
+  name      String
+  /// Só dígitos, celular BR com DDD (11 dígitos).
+  phone     String              @unique
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  requests  BlueFridayRequest[]
+
+  @@map("blue_friday_passports")
+}
+
+model BlueFridayRequest {
+  id                String                      @id @default(cuid())
+  passportId        String
+  /// Como foi exibido/digitado.
+  destination       String
+  /// Sem acento, minúsculo, espaços colapsados: agrupa o ranking.
+  destinationKey    String
+  departureCity     String
+  dateMode          BlueFridayDateMode
+  option1Departure  DateTime?                   @db.Date
+  option1Return     DateTime?                   @db.Date
+  option2Departure  DateTime?                   @db.Date
+  option2Return     DateTime?                   @db.Date
+  flexiblePeriod    String?
+  tripDays          Int?
+  /// Uma de `lodgingOptions` da config; nulo nos pedidos de antes do campo.
+  lodging           String?
+  adults            Int
+  /// Uma idade (2–17) por criança.
+  childrenAges      Int[]                       @default([])
+  babies            Int                         @default(0)
+  budgetRange       String
+  paymentPreference BlueFridayPaymentPreference
+  targetPrice       Decimal?                    @db.Decimal(10, 2)
+  /// "Cupom do influenciador" (opcional), como digitado.
+  influencer        String?
+  /// Sem @, acento e caixa: agrupa a contagem por influenciador no admin.
+  influencerKey     String?
+  createdAt         DateTime                    @default(now())
+  passport          BlueFridayPassport          @relation(fields: [passportId], references: [id], onDelete: Cascade)
+
+  @@index([passportId])
+  @@index([destinationKey])
+  @@index([createdAt])
+  @@map("blue_friday_requests")
+}

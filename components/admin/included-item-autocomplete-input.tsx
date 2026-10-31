@@ -7,21 +7,26 @@ import { filterIncludedItemSuggestions } from "@/lib/package/included-item-sugge
 import { cn } from "@/lib/utils";
 
 type IncludedItemAutocompleteInputProps = {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   suggestions: string[];
   placeholder?: string;
   className?: string;
   "aria-label"?: string;
+  /** Borda de erro (aria-invalid) quando o campo falhou na validação. */
+  invalid?: boolean;
 };
 
 export function IncludedItemAutocompleteInput({
+  id,
   value,
   onChange,
   suggestions,
   placeholder,
   className,
   "aria-label": ariaLabel,
+  invalid,
 }: IncludedItemAutocompleteInputProps) {
   const listboxId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,6 +62,7 @@ export function IncludedItemAutocompleteInput({
   return (
     <div ref={containerRef} className="relative flex-1">
       <Input
+        id={id}
         value={value}
         onChange={(event) => {
           onChange(event.target.value);
@@ -103,6 +109,7 @@ export function IncludedItemAutocompleteInput({
         placeholder={placeholder}
         className={className}
         aria-label={ariaLabel}
+        aria-invalid={invalid || undefined}
         role="combobox"
         aria-expanded={showSuggestions}
         aria-controls={showSuggestions ? listboxId : undefined}
