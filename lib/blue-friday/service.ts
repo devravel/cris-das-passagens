@@ -27,7 +27,8 @@ export async function createBlueFridayRequest(data: BlueFridayRequestData) {
     select: { id: true, number: true },
   });
 
-  await prisma.blueFridayRequest.create({
+  const request = await prisma.blueFridayRequest.create({
+    select: requestSelect,
     data: {
       passportId: passport.id,
       destination: data.destination,
@@ -51,7 +52,7 @@ export async function createBlueFridayRequest(data: BlueFridayRequestData) {
     },
   });
 
-  return { passportNumber: passport.number };
+  return { passportNumber: passport.number, request };
 }
 
 async function getDestinationCounts(): Promise<DestinationCount[]> {

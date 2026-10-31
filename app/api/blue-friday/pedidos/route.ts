@@ -1,12 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 
 import { BLUE_FRIDAY_CAMPAIGN_ENABLED, blueFridayCampaign } from "@/config/blue-friday-campaign";
+import { toBlueFridayRequestRow } from "@/lib/blue-friday/format";
+import { notifyBlueFridayRequest } from "@/lib/blue-friday/notification";
 import { createBlueFridayRequest, getBlueFridayRequestSchema } from "@/lib/blue-friday/service";
 import { isCampaignOpen } from "@/lib/rei-da-copa/campaign-window";
 
 /**
- * Cadastro Blue Friday → passaporte + pedido no banco. Mesmo desenho de
- * /api/roteiros/cotacao: Zod, honeypot, rate limit por IP em memória.
+ * Cadastro Blue Friday → passaporte + pedido no banco + e-mail pra equipe de
+ * cotações. Mesmo desenho de /api/roteiros/cotacao: Zod, honeypot, rate limit
+ * por IP em memória.
  */
 
 const RATE_LIMIT = { maxRequests: 10, windowMs: 30 * 60 * 1000 } as const;
@@ -70,7 +73,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { passportNumber } = await createBlueFridayRequest(parsed.data);
+    const { passportNumber, request: saved } = await createBlueFridayRequest(parsed.data);
+    // Depois da resposta: o cliente não espera o e-mail.
+    after(() => notifyBlueFridayRequest(toBlueFridayRequestRow(saved)));
     return NextResponse.json({ ok: true, passportNumber }, { status: 201 });
   } catch (error) {
     console.error("[Blue Friday] Falha ao salvar o pedido:", error);

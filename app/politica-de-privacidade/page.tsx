@@ -303,8 +303,9 @@ export default function PoliticaDePrivacidadePage() {
                 falar com você pelo WhatsApp;
               </>,
               <>
-                <strong>Notificações internas</strong> — avisar a equipe sobre novas
-                inscrições na campanha por e-mail;
+                <strong>Notificações internas</strong> — avisar a equipe por e-mail
+                sobre novas inscrições na campanha Rei da Copa e novos pedidos da
+                Blue Friday;
               </>,
               <>
                 <strong>Interação no blog</strong> — permitir curtidas em posts sem
@@ -578,7 +579,9 @@ export default function PoliticaDePrivacidadePage() {
               <>
                 <strong>Resend</strong> — envio de e-mail interno à equipe (
                 reidacopacrisdaspassagens@gmail.com) com dados de novas inscrições na
-                campanha Rei da Copa (nome, telefone, Instagram, número de inscrição);
+                campanha Rei da Copa (nome, telefone, Instagram, número de inscrição) e à
+                equipe de cotações (cotacoescrisdaspassagens@gmail.com) com os pedidos de
+                cotação de roteiro e da campanha Blue Friday;
               </>,
               <>
                 <strong>Supabase</strong> — hospedagem do banco de dados PostgreSQL e
@@ -654,7 +657,8 @@ export default function PoliticaDePrivacidadePage() {
             <strong>Campanha Blue Friday — Passaporte Blue:</strong> formulário com
             nome, WhatsApp e preferências da viagem (seção 2.4); dados validados e
             armazenados em PostgreSQL; o mesmo WhatsApp mantém o mesmo número de
-            passaporte; limite de 10 envios por IP a cada 30 minutos.
+            passaporte; cada pedido também é enviado por e-mail à equipe de cotações;
+            limite de 10 envios por IP a cada 30 minutos.
           </PolicyParagraph>
           <PolicyParagraph>
             <strong>Cupom:</strong> envio apenas do código do cupom para validação; sem
