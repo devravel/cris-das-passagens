@@ -19,7 +19,10 @@ export const blueFridayCampaign = {
   whatsappGroupUrl: "https://chat.whatsapp.com/LPBY9Gl0VKQHYA6NrJsbqx",
   /** Slug da promoção (painel → Promoções) cujos pacotes viram "Ofertas da Blue Live". */
   promotionSlug: "blue-friday",
-  /** Só estes entram no ranking público; "Outro" aparece só no admin. */
+  /**
+   * Sugestões do campo de destino (o cliente digita o que quiser). Só estes
+   * entram no ranking público; o resto aparece no admin, em "fora da lista".
+   */
   destinations: [
     "Rio de Janeiro",
     "Gramado",

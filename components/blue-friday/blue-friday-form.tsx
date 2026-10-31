@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Globe, Minus, Plane, Plus } from "lucide-react";
 
+import { IncludedItemAutocompleteInput } from "@/components/admin/included-item-autocomplete-input";
 import { WhatsAppIcon } from "@/components/packages/package-whatsapp-cta";
 import { BrazilianMobilePhoneInput } from "@/components/rei-da-copa/brazilian-mobile-phone-input";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -22,7 +23,6 @@ import { getCampaignDateKey } from "@/lib/rei-da-copa/campaign-window";
 import { cn } from "@/lib/utils";
 import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
-const OTHER_DESTINATION = "__other__";
 const CHILD_AGES = Array.from({ length: 16 }, (_, i) => String(i + 2));
 
 const fieldClassName =
@@ -43,8 +43,7 @@ type Values = {
   name: string;
   phone: string;
   departureCity: string;
-  destinationChoice: string;
-  destinationOther: string;
+  destination: string;
   dateMode: "SPECIFIC" | "FLEXIBLE";
   option1Departure: string;
   option1Return: string;
@@ -64,8 +63,7 @@ const emptyValues: Values = {
   name: "",
   phone: "",
   departureCity: "",
-  destinationChoice: "",
-  destinationOther: "",
+  destination: "",
   dateMode: "SPECIFIC",
   option1Departure: "",
   option1Return: "",
@@ -112,8 +110,7 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
     event.preventDefault();
     if (sending) return;
 
-    const destination =
-      values.destinationChoice === OTHER_DESTINATION ? values.destinationOther : values.destinationChoice;
+    const { destination } = values;
     const payload = {
       name: values.name,
       phone: values.phone,
@@ -244,27 +241,16 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
           <label htmlFor="bf-destino" className={labelClassName}>
             Destino desejado *
           </label>
-          <Select
+          {/* Destino livre (pedido do Cris, 30/10); a lista da config só sugere enquanto digita. */}
+          <IncludedItemAutocompleteInput
             id="bf-destino"
-            value={values.destinationChoice}
-            onChange={(value) => set("destinationChoice", value)}
-            placeholder="Escolha o destino"
-            options={[
-              ...blueFridayCampaign.destinations.map((destination) => ({ value: destination, label: destination })),
-              { value: OTHER_DESTINATION, label: "Outro destino" },
-            ]}
+            value={values.destination}
+            onChange={(value) => set("destination", value)}
+            suggestions={[...blueFridayCampaign.destinations]}
+            placeholder="Para onde você quer ir?"
             invalid={Boolean(errors.destination)}
-            className={pickerClassName}
+            className={fieldClassName}
           />
-          {values.destinationChoice === OTHER_DESTINATION ? (
-            <Input
-              aria-label="Qual destino?"
-              value={values.destinationOther}
-              onChange={(event) => set("destinationOther", event.target.value)}
-              placeholder="Qual destino?"
-              className={cn(fieldClassName, "mt-2")}
-            />
-          ) : null}
           {error("destination")}
         </div>
       </div>

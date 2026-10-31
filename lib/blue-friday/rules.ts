@@ -53,7 +53,7 @@ export function createBlueFridayRequestSchema(options: BlueFridayOptions, todayK
         .transform(normalizeBlueFridayPhone)
         .refine((v) => /^\d{11}$/.test(v) && v[2] === "9", "Informe um celular no formato (DD) 9XXXX-XXXX."),
       departureCity: z.string().trim().min(2, "Informe a cidade ou aeroporto de saída.").max(80),
-      destination: z.string().trim().min(2, "Escolha ou digite o destino.").max(80),
+      destination: z.string().trim().min(2, "Informe o destino.").max(80),
       dateMode: z.enum(["SPECIFIC", "FLEXIBLE"]),
       option1Departure: optionalIsoDate,
       option1Return: optionalIsoDate,

@@ -42,9 +42,11 @@ export function filterIncludedItemSuggestions(
     return [];
   }
 
-  const normalizedQuery = trimmedQuery.toLowerCase();
+  // Sem acento e sem caixa: "florianopolis" acha "Florianópolis".
+  const fold = (text: string) => text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  const normalizedQuery = fold(trimmedQuery);
 
   return suggestions
-    .filter((item) => item.toLowerCase().includes(normalizedQuery))
+    .filter((item) => fold(item).includes(normalizedQuery))
     .slice(0, limit);
 }
