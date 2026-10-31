@@ -73,14 +73,14 @@ export function BlueFridayLanding({
       {/* Topo: título + cadastro lado a lado no desktop (Cris, 31/10: "os campos mais pra cima") */}
       <section aria-labelledby="blue-friday-heading" className="pt-10 pb-14 sm:pt-14 sm:pb-20">
         <Container className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,36rem)] lg:gap-14">
-          {/* Fica parado à esquerda enquanto o formulário rola */}
-          <div className="text-center lg:sticky lg:top-28 lg:text-left">
+          {/* Fica parado à esquerda enquanto o formulário rola, só em tela alta o bastante pra caber inteiro */}
+          <div className="text-center lg:top-28 lg:text-left lg:[@media(min-height:860px)]:sticky">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brand-cyan sm:text-sm">
               Cris das Passagens apresenta
             </p>
             <h1
               id="blue-friday-heading"
-              className="mt-4 font-heading text-6xl font-extrabold uppercase leading-[0.85] tracking-tight sm:text-8xl"
+              className="mt-4 font-heading text-6xl font-extrabold uppercase leading-[0.85] tracking-tight sm:text-8xl lg:text-7xl"
             >
               <span className="block bg-linear-to-b from-white via-sky-200 to-brand-cyan bg-clip-text text-transparent drop-shadow-[0_0_28px_rgba(56,189,248,0.55)]">
                 Blue
@@ -95,7 +95,21 @@ export function BlueFridayLanding({
               Ofertas incríveis na nossa live
             </p>
 
-            <p className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm text-white/85 sm:text-base lg:justify-start">
+            {/* O diferencial (Cris, 31/10): a pessoa participa e diz que oferta quer receber */}
+            <div className="mx-auto mt-8 max-w-xl lg:mx-0 lg:mt-6">
+              <h2 id="cadastro-heading" className="font-heading text-3xl font-extrabold leading-tight text-balance sm:text-4xl lg:text-3xl">
+                Aqui você escolhe a <span className="text-brand-cyan">sua oferta</span>
+              </h2>
+              <p className="mt-3 text-base text-balance text-sky-100/85 sm:text-lg">
+                Garanta seu Passaporte Blue, diga para onde quer viajar e quanto quer pagar. A equipe monta a sua
+                oferta para a Blue Live.
+              </p>
+              {signupStatus === "closed" ? null : (
+                <p className="mt-3 text-sm font-semibold text-amber-300">Inscrições até {signupEndLabel}.</p>
+              )}
+            </div>
+
+            <p className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm text-white/85 sm:text-base lg:mt-5 lg:justify-start">
               <CalendarDays className="size-5 text-brand-cyan" aria-hidden />
               Blue Live: <strong className="font-semibold text-white">{liveLabel}</strong>
             </p>
@@ -116,21 +130,7 @@ export function BlueFridayLanding({
 
           {/* Cadastro */}
           <div id={FORM_ID} aria-labelledby="cadastro-heading" role="region" className="scroll-mt-24">
-            <div className="text-center lg:text-left">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300">Passaporte Blue</p>
-              <h2 id="cadastro-heading" className="mt-2 font-heading text-3xl font-bold">
-                Diga para onde quer ir
-              </h2>
-              <p className="mx-auto mt-2 max-w-lg text-sm text-white/70 lg:mx-0">
-                Com o seu pedido, a equipe busca as melhores ofertas antes da live. Pode pedir mais de um destino com
-                o mesmo WhatsApp.
-              </p>
-              {signupStatus === "closed" ? null : (
-                <p className="mt-2 text-sm font-semibold text-amber-300">Inscrições até {signupEndLabel}.</p>
-              )}
-            </div>
-
-            <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_80px_-30px] shadow-brand-cyan/40 backdrop-blur-sm sm:p-8">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_80px_-30px] shadow-brand-cyan/40 backdrop-blur-sm sm:p-8">
               {signupOpen ? (
                 <BlueFridayForm liveLabel={liveLabel} />
               ) : (
