@@ -221,7 +221,12 @@ export default function PoliticaDePrivacidadePage() {
                 <strong>Preferências da viagem</strong> — cidade de saída, destino,
                 datas ou período, quantidade de passageiros (com a idade das crianças,
                 sem nome), faixa de orçamento, forma de pagamento preferida e,
-                opcionalmente, o valor que faria você comprar a viagem.
+                opcionalmente, o valor que faria você comprar a viagem;
+              </>,
+              <>
+                <strong>Cupom do influenciador</strong> (opcional) — o cupom ou nome
+                de quem indicou a campanha, para sabermos por qual divulgação você
+                chegou e reconhecermos os parceiros que divulgam.
               </>,
             ]}
           />

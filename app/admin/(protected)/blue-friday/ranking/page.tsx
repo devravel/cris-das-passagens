@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getBlueFridayAdminRanking } from "@/lib/blue-friday/service";
+import { getBlueFridayAdminRanking, getBlueFridayInfluencerRanking } from "@/lib/blue-friday/service";
 
 export const metadata: Metadata = {
   title: "Blue Friday — Ranking | Cris das Passagens",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlueFridayRankingPage() {
-  const ranking = await getBlueFridayAdminRanking();
+  const [ranking, influencers] = await Promise.all([getBlueFridayAdminRanking(), getBlueFridayInfluencerRanking()]);
 
   return (
     <section className="space-y-6">
@@ -19,7 +19,7 @@ export default async function BlueFridayRankingPage() {
         <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">Ranking de destinos</h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
           Pessoas diferentes por destino (a mesma pessoa pedindo o mesmo destino conta 1 vez). O site mostra só o
-          top 10 dos destinos da lista. Destinos &quot;fora da lista&quot; vieram do campo &quot;Outro destino&quot;: para
+          top 10 dos destinos da lista de sugestões. Destinos &quot;fora da lista&quot; foram digitados pelo cliente: para
           levar um deles ao ranking público, adicione-o à lista em <code>config/blue-friday-campaign.ts</code>.
         </p>
       </header>
@@ -67,6 +67,53 @@ export default async function BlueFridayRankingPage() {
                           <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-amber-700">fora da lista</span>
                         )}
                       </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-2xl border-border/70 shadow-sm">
+        <CardHeader>
+          <CardTitle>Por influenciador</CardTitle>
+          <CardDescription>
+            Quem preencheu o cupom do influenciador. Pessoas diferentes por cupom (sem diferença de @, acento ou
+            maiúscula). Clique para ver os pedidos.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto rounded-xl border border-border/70">
+            <table className="w-full min-w-[480px] text-left text-sm">
+              <thead className="bg-muted/40 text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Influenciador</th>
+                  <th className="px-4 py-3 font-medium text-right">Pessoas</th>
+                  <th className="px-4 py-3 font-medium text-right">Pedidos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {influencers.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="px-4 py-8 text-center text-muted-foreground">
+                      Nenhum pedido com cupom de influenciador ainda.
+                    </td>
+                  </tr>
+                ) : (
+                  influencers.map((entry) => (
+                    <tr key={entry.influencerKey} className="border-t border-border/60 text-foreground">
+                      <td className="px-4 py-3 font-medium">
+                        <Link
+                          href={`/admin/blue-friday/pedidos?influenciador=${encodeURIComponent(entry.influencerKey)}`}
+                          className="hover:text-brand hover:underline"
+                        >
+                          {entry.influencer}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-right font-semibold tabular-nums">{entry.people}</td>
+                      <td className="px-4 py-3 text-right tabular-nums">{entry.requests}</td>
                     </tr>
                   ))
                 )}

@@ -57,6 +57,7 @@ export function toBlueFridayRequestRow(request: BlueFridayAdminRequest) {
       BLUE_FRIDAY_PAYMENT_OPTIONS.find((option) => option.value === request.paymentPreference)?.label ??
       request.paymentPreference,
     targetPrice: request.targetPrice == null ? "—" : formatBRL(Number(request.targetPrice)),
+    influencer: request.influencer ?? "—",
     createdAt: createdAtFormatter.format(request.createdAt),
   };
 }

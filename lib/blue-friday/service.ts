@@ -46,6 +46,8 @@ export async function createBlueFridayRequest(data: BlueFridayRequestData) {
       budgetRange: data.budgetRange,
       paymentPreference: data.paymentPreference,
       targetPrice: data.targetPrice,
+      influencer: data.influencer,
+      influencerKey: data.influencerKey,
     },
   });
 
@@ -76,6 +78,26 @@ export async function getBlueFridayAdminRanking() {
   return buildDestinationRanking(await getDestinationCounts(), blueFridayCampaign.destinations);
 }
 
+export type InfluencerCount = {
+  influencerKey: string;
+  /** Um dos textos digitados para essa chave. */
+  influencer: string;
+  /** Pessoas (passaportes) distintas: base do cashback. */
+  people: number;
+  requests: number;
+};
+
+export async function getBlueFridayInfluencerRanking() {
+  return prisma.$queryRaw<InfluencerCount[]>`
+    SELECT "influencerKey", MIN("influencer") AS "influencer",
+      COUNT(DISTINCT "passportId")::int AS "people", COUNT(*)::int AS "requests"
+    FROM "blue_friday_requests"
+    WHERE "influencerKey" IS NOT NULL
+    GROUP BY "influencerKey"
+    ORDER BY "people" DESC, MIN("influencer")
+  `;
+}
+
 const requestSelect = {
   id: true,
   destination: true,
@@ -94,13 +116,16 @@ const requestSelect = {
   budgetRange: true,
   paymentPreference: true,
   targetPrice: true,
+  influencer: true,
   createdAt: true,
   passport: { select: { number: true, name: true, phone: true } },
 } as const;
 
 export type BlueFridayAdminRequest = Prisma.BlueFridayRequestGetPayload<{ select: typeof requestSelect }>;
 
-function buildRequestWhere(search?: string, destinationKey?: string): Prisma.BlueFridayRequestWhereInput {
+type RequestFilters = { search?: string; destinationKey?: string; influencerKey?: string };
+
+function buildRequestWhere({ search, destinationKey, influencerKey }: RequestFilters): Prisma.BlueFridayRequestWhereInput {
   const term = search?.trim();
   const digits = term ? normalizeBlueFridayPhone(term) : "";
   const passportFilters: Prisma.BlueFridayPassportWhereInput[] = term
@@ -113,12 +138,15 @@ function buildRequestWhere(search?: string, destinationKey?: string): Prisma.Blu
 
   return {
     ...(destinationKey ? { destinationKey } : {}),
-    ...(passportFilters.length ? { passport: { OR: passportFilters } } : {}),
+    ...(influencerKey ? { influencerKey } : {}),
+    ...(term
+      ? { OR: [{ passport: { OR: passportFilters } }, { influencer: { contains: term, mode: "insensitive" } }] }
+      : {}),
   };
 }
 
-export async function listBlueFridayRequests(params: { page: number; search?: string; destinationKey?: string }) {
-  const where = buildRequestWhere(params.search, params.destinationKey);
+export async function listBlueFridayRequests(params: RequestFilters & { page: number }) {
+  const where = buildRequestWhere(params);
   const [total, items] = await Promise.all([
     prisma.blueFridayRequest.count({ where }),
     prisma.blueFridayRequest.findMany({

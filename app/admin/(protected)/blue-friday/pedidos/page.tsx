@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 type PageProps = {
-  searchParams: Promise<{ page?: string; q?: string; destino?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; destino?: string; influenciador?: string }>;
 };
 
 export default async function BlueFridayRequestsPage({ searchParams }: PageProps) {
@@ -22,9 +22,16 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
   const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
   const search = params.q ?? "";
   const destinationKey = params.destino ?? "";
+  // Vem do link na tela Ranking (contagem por influenciador).
+  const influencerKey = params.influenciador ?? "";
 
   const [{ items, total, totalPages }, ranking] = await Promise.all([
-    listBlueFridayRequests({ page, search, destinationKey: destinationKey || undefined }),
+    listBlueFridayRequests({
+      page,
+      search,
+      destinationKey: destinationKey || undefined,
+      influencerKey: influencerKey || undefined,
+    }),
     getBlueFridayAdminRanking(),
   ]);
   const rows = items.map(toBlueFridayRequestRow);
@@ -33,6 +40,7 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
     const query = new URLSearchParams();
     if (search) query.set("q", search);
     if (destinationKey) query.set("destino", destinationKey);
+    if (influencerKey) query.set("influenciador", influencerKey);
     if (target > 1) query.set("page", String(target));
     return query.size ? `?${query}` : "?";
   };
@@ -66,8 +74,17 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
             canExport={total > 0}
           />
 
+          {influencerKey ? (
+            <p className="text-sm text-muted-foreground">
+              Só pedidos com o cupom do influenciador <strong className="text-foreground">{influencerKey}</strong>.{" "}
+              <Link href="/admin/blue-friday/pedidos" className="text-brand hover:underline">
+                Ver todos
+              </Link>
+            </p>
+          ) : null}
+
           <div className="overflow-x-auto rounded-xl border border-border/70">
-            <table className="w-full min-w-[1100px] text-left text-sm">
+            <table className="w-full min-w-[1200px] text-left text-sm">
               <thead className="bg-muted/40 text-muted-foreground">
                 <tr>
                   <th className="px-3 py-3 font-medium">Nº</th>
@@ -78,13 +95,14 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
                   <th className="px-3 py-3 font-medium">Orçamento</th>
                   <th className="px-3 py-3 font-medium">Pagamento</th>
                   <th className="px-3 py-3 font-medium">Compraria por</th>
+                  <th className="px-3 py-3 font-medium">Influenciador</th>
                   <th className="px-3 py-3 font-medium">Data</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={10} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum pedido encontrado.
                     </td>
                   </tr>
@@ -112,6 +130,7 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
                       <td className="px-3 py-3">{row.budget}</td>
                       <td className="px-3 py-3">{row.payment}</td>
                       <td className="px-3 py-3 tabular-nums">{row.targetPrice}</td>
+                      <td className="px-3 py-3">{row.influencer}</td>
                       <td className="px-3 py-3 text-xs text-muted-foreground">{row.createdAt}</td>
                     </tr>
                   ))

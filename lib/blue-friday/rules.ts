@@ -31,6 +31,11 @@ export function normalizeDestinationKey(destination: string): string {
     .replace(/\s+/g, " ");
 }
 
+/** "@Fulano Viagens " → "fulano viagens": agrupa o cupom do influenciador. */
+export function normalizeInfluencerKey(influencer: string): string {
+  return normalizeDestinationKey(influencer.trim().replace(/^@+/, ""));
+}
+
 /** Mesma regra de `lib/rei-da-copa/utils.ts` (aqui sem alias): só dígitos, sem o 55. */
 export function normalizeBlueFridayPhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
@@ -75,6 +80,7 @@ export function createBlueFridayRequestSchema(options: BlueFridayOptions, todayK
       budgetRange: z.string().refine((v) => options.budgetRanges.includes(v), "Escolha uma faixa de orçamento."),
       paymentPreference: z.enum(["PIX", "CREDIT_CARD", "BOLETO"], "Escolha a forma de pagamento."),
       targetPrice: z.number().positive("Informe um valor maior que zero.").max(1_000_000).nullable(),
+      influencer: z.string().trim().max(80, "Use até 80 caracteres no cupom do influenciador.").optional(),
       /** Honeypot: humano não vê, bot preenche. */
       website: z.string().max(200).optional(),
     })
@@ -122,6 +128,8 @@ export function createBlueFridayRequestSchema(options: BlueFridayOptions, todayK
         flexiblePeriod: isFlexible ? data.flexiblePeriod : null,
         tripDays: isFlexible ? data.tripDays : null,
         paymentPreference: data.paymentPreference as BlueFridayPaymentPreferenceValue,
+        influencer: data.influencer || null,
+        influencerKey: data.influencer ? normalizeInfluencerKey(data.influencer) || null : null,
       };
     });
 }

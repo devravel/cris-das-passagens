@@ -21,6 +21,7 @@ const CSV_COLUMNS = [
   ["budget", "Orçamento"],
   ["payment", "Pagamento"],
   ["targetPrice", "Valor que compraria"],
+  ["influencer", "Cupom do influenciador"],
   ["createdAt", "Data do pedido"],
 ] as const;
 

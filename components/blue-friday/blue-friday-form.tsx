@@ -57,6 +57,7 @@ type Values = {
   budgetRange: string;
   paymentPreference: BlueFridayPaymentPreferenceValue | "";
   targetPrice: number | null;
+  influencer: string;
 };
 
 const emptyValues: Values = {
@@ -77,6 +78,7 @@ const emptyValues: Values = {
   budgetRange: "",
   paymentPreference: "",
   targetPrice: null,
+  influencer: "",
 };
 
 type Passport = { number: number; name: string; destination: string };
@@ -129,6 +131,7 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
       budgetRange: values.budgetRange,
       paymentPreference: values.paymentPreference,
       targetPrice: values.targetPrice,
+      influencer: values.influencer,
       website,
     };
 
@@ -173,7 +176,12 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
   }
 
   function requestAnother() {
-    setValues((current) => ({ ...emptyValues, name: current.name, phone: current.phone }));
+    setValues((current) => ({
+      ...emptyValues,
+      name: current.name,
+      phone: current.phone,
+      influencer: current.influencer,
+    }));
     setPassport(null);
     setHuman(false);
   }
@@ -427,6 +435,23 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
           />
         </div>
         {error("targetPrice")}
+      </div>
+
+      <div className="space-y-1.5">
+        <label htmlFor="bf-influenciador" className={labelClassName}>
+          Cupom do influenciador
+        </label>
+        <p className="text-xs text-white/60">Opcional. Veio pela indicação de alguém? Digite o cupom ou o nome.</p>
+        <Input
+          id="bf-influenciador"
+          value={values.influencer}
+          onChange={(event) => set("influencer", event.target.value)}
+          maxLength={80}
+          placeholder="Ex.: @fulano"
+          aria-invalid={Boolean(errors.influencer)}
+          className={cn(fieldClassName, "max-w-sm")}
+        />
+        {error("influencer")}
       </div>
 
       {/* Honeypot: fora da tela e fora do tab; bot preenche, humano não vê. */}

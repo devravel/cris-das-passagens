@@ -400,6 +400,10 @@ model BlueFridayRequest {
   budgetRange       String
   paymentPreference BlueFridayPaymentPreference
   targetPrice       Decimal?                    @db.Decimal(10, 2)
+  /// "Cupom do influenciador" (opcional), como digitado.
+  influencer        String?
+  /// Sem @, acento e caixa: agrupa a contagem por influenciador no admin.
+  influencerKey     String?
   createdAt         DateTime                    @default(now())
   passport          BlueFridayPassport          @relation(fields: [passportId], references: [id], onDelete: Cascade)
 
