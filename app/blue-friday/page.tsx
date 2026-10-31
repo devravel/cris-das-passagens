@@ -25,8 +25,6 @@ const liveFormatter = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
   day: "2-digit",
   month: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
   timeZone: PACKAGE_SCHEDULE_TIME_ZONE,
 });
 
@@ -45,9 +43,10 @@ export default async function BlueFridayPage() {
   }
 
   const [ranking, offers] = await Promise.all([getBlueFridayPublicRanking(), getOffers()]);
-  const { signupStartDate, signupEndDate } = blueFridayCampaign;
-  // "quinta-feira, 19/11, 20:00" → "quinta-feira, 19/11 às 20:00"
-  const liveLabel = liveFormatter.format(new Date(blueFridayCampaign.liveAt)).replace(/, (\d{2}:\d{2})$/, " às $1");
+  const { signupStartDate, signupEndDate, liveDate, liveTime } = blueFridayCampaign;
+  // "segunda-feira, 16/11" (+ " às 20:00" quando o horário estiver na config)
+  const liveLabel =
+    liveFormatter.format(new Date(`${liveDate}T12:00:00-03:00`)) + (liveTime ? ` às ${liveTime}` : "");
 
   return (
     <>

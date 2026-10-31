@@ -7,15 +7,16 @@ import type { ContentCta } from "@/config/content";
  */
 export const BLUE_FRIDAY_CAMPAIGN_ENABLED = false;
 
-// TODO(Cris): datas, links e listas abaixo são provisórios.
 export const blueFridayCampaign = {
   /** Janela de inscrições, `YYYY-MM-DD` no horário de Brasília (inclusivo). */
-  signupStartDate: "2026-10-27",
-  signupEndDate: "2026-11-19",
-  /** Início da Blue Live. */
-  liveAt: "2026-11-19T20:00:00-03:00",
-  youtubeUrl: "https://www.youtube.com/@crisdaspassagens",
-  whatsappGroupUrl: "https://chat.whatsapp.com/",
+  signupStartDate: "2026-11-01",
+  // TODO(Cris): fim das inscrições não confirmado; por ora vai até o dia da live.
+  signupEndDate: "2026-11-16",
+  /** Blue Live no YouTube. O link sai só no grupo VIP (pedido do Cris, 30/10). */
+  liveDate: "2026-11-16",
+  // TODO(Cris): horário da live. Enquanto for null, a página mostra só a data.
+  liveTime: null as string | null,
+  whatsappGroupUrl: "https://chat.whatsapp.com/LPBY9Gl0VKQHYA6NrJsbqx",
   /** Slug da promoção (painel → Promoções) cujos pacotes viram "Ofertas da Blue Live". */
   promotionSlug: "blue-friday",
   /** Só estes entram no ranking público; "Outro" aparece só no admin. */

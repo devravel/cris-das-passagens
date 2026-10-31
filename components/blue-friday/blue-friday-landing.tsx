@@ -17,6 +17,7 @@ import { packagesPageSections } from "@/config/packages-page";
 import type { RankingEntry } from "@/lib/blue-friday/rules";
 import type { PublicPackage } from "@/lib/package/queries";
 import { cn } from "@/lib/utils";
+import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 
 const FORM_ID = "passaporte-blue";
 
@@ -103,13 +104,16 @@ export function BlueFridayLanding({
               </a>
             ) : null}
             <a
-              href={blueFridayCampaign.youtubeUrl}
+              href={blueFridayCampaign.whatsappGroupUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/30 px-6 text-sm font-semibold text-white transition-colors hover:border-white/70"
+              className={cn(
+                whatsappSolidButtonClassName,
+                "inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold uppercase tracking-wide",
+              )}
             >
-              <MonitorPlay className="size-4" aria-hidden />
-              Ver o canal no YouTube
+              <WhatsAppIcon className="size-5" />
+              Entrar no grupo VIP
             </a>
           </div>
 
