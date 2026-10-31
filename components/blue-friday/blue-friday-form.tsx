@@ -629,7 +629,7 @@ function PassportCard({
       </p>
       <h3 className="mt-1 text-center font-heading text-2xl font-bold sm:text-3xl">Seu Passaporte Blue chegou</h3>
       <p className="mx-auto mt-2 max-w-md text-center text-sm text-white/75">
-        Tire um print e entre no grupo VIP: é lá que chegam o link da live, as pistas e as enquetes.
+        Agora entre no grupo VIP: é lá que saem o link da live, as surpresas e as ofertas antes de todo mundo.
       </p>
 
       <div className="relative mx-auto mt-6 max-w-sm overflow-hidden rounded-2xl border border-amber-300/40 bg-linear-to-br from-[#0b2a6b] via-[#0a1d4d] to-[#06112e] p-6 shadow-[0_0_60px_-12px] shadow-brand-cyan/50">

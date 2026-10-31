@@ -29,7 +29,7 @@ const highlights = [
 
 const steps = [
   { icon: Laptop, title: "Cadastro no site", text: "Garanta seu Passaporte Blue e peça a oferta do seu destino." },
-  { icon: WhatsAppIcon, title: "Grupo VIP no WhatsApp", text: "Receba novidades, pistas e participe das enquetes." },
+  { icon: WhatsAppIcon, title: "Grupo VIP no WhatsApp", text: "Link da live, surpresas e ofertas antes de todo mundo." },
   { icon: MonitorPlay, title: "Blue Live no YouTube", text: "As ofertas são reveladas ao vivo." },
   { icon: Luggage, title: "Atendimento e vendas", text: "Nosso time transforma o sonho em viagem real." },
 ];
@@ -103,18 +103,7 @@ export function BlueFridayLanding({
                 Garantir meu Passaporte Blue
               </a>
             ) : null}
-            <a
-              href={blueFridayCampaign.whatsappGroupUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                whatsappSolidButtonClassName,
-                "inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold uppercase tracking-wide",
-              )}
-            >
-              <WhatsAppIcon className="size-5" />
-              Entrar no grupo VIP
-            </a>
+            <GroupVipButton />
           </div>
 
           <ul className="mx-auto mt-12 grid max-w-4xl gap-3 text-left sm:grid-cols-3">
@@ -182,11 +171,14 @@ export function BlueFridayLanding({
             {signupOpen ? (
               <BlueFridayForm liveLabel={liveLabel} />
             ) : (
-              <p className="py-6 text-center text-white/80">
-                {signupStatus === "soon"
-                  ? `As inscrições para o Passaporte Blue abrem em ${signupStartLabel}. Volte aqui e garanta o seu!`
-                  : "As inscrições da Blue Friday estão encerradas. Fique de olho nas ofertas abaixo e no nosso WhatsApp!"}
-              </p>
+              <div className="py-6 text-center">
+                <p className="text-white/80">
+                  {signupStatus === "soon"
+                    ? `As inscrições para o Passaporte Blue abrem em ${signupStartLabel}. Enquanto isso, entre no grupo VIP: é lá que saem as novidades e as surpresas primeiro.`
+                    : "As inscrições da Blue Friday estão encerradas. As ofertas continuam abaixo e no grupo VIP."}
+                </p>
+                <GroupVipButton className="mt-5" />
+              </div>
             )}
           </div>
         </Container>
@@ -244,6 +236,24 @@ export function BlueFridayLanding({
         </Container>
       </section>
     </div>
+  );
+}
+
+function GroupVipButton({ className }: { className?: string }) {
+  return (
+    <a
+      href={blueFridayCampaign.whatsappGroupUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        whatsappSolidButtonClassName,
+        "inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold uppercase tracking-wide",
+        className,
+      )}
+    >
+      <WhatsAppIcon className="size-5" />
+      Entrar no grupo VIP
+    </a>
   );
 }
 
