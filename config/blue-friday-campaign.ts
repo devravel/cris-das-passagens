@@ -1,17 +1,15 @@
 import type { ContentCta } from "@/config/content";
 
 /**
- * Ligue quando os dados abaixo estiverem confirmados com o Cris. Desligado:
+ * Ligada no lançamento (31/10, aprovado pelo Cris). Desligado:
  * /blue-friday dá 404, some do menu/sitemap/hero e a API recusa cadastros.
  * O admin (Blue Friday → Pedidos/Ranking) continua acessível.
  */
-// DEMO (branch demo/blue-friday): ligado pro link de demonstração. Não mergear.
 export const BLUE_FRIDAY_CAMPAIGN_ENABLED = true;
 
 export const blueFridayCampaign = {
   /** Inscrições abrem à 0h deste dia (Brasília)… */
-  // DEMO: aberto desde já pro Cris testar no preview; o real é "2026-11-01".
-  signupStartDate: "2026-10-21",
+  signupStartDate: "2026-11-01",
   /** …e fecham neste instante: 17h do dia da live (Cris, 31/10). */
   signupEndsAt: "2026-11-05T17:00:00-03:00",
   /** Blue Live no YouTube (Cris, 31/10). O link sai só no grupo VIP (pedido do Cris, 30/10). */
