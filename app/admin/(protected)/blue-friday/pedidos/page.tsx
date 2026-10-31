@@ -84,13 +84,14 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
           ) : null}
 
           <div className="overflow-x-auto rounded-xl border border-border/70">
-            <table className="w-full min-w-[1200px] text-left text-sm">
+            <table className="w-full min-w-[1300px] text-left text-sm">
               <thead className="bg-muted/40 text-muted-foreground">
                 <tr>
                   <th className="px-3 py-3 font-medium">Nº</th>
                   <th className="px-3 py-3 font-medium">Nome / WhatsApp</th>
                   <th className="px-3 py-3 font-medium">Destino</th>
                   <th className="px-3 py-3 font-medium">Quando</th>
+                  <th className="px-3 py-3 font-medium">Hospedagem</th>
                   <th className="px-3 py-3 font-medium">Passageiros</th>
                   <th className="px-3 py-3 font-medium">Orçamento</th>
                   <th className="px-3 py-3 font-medium">Pagamento</th>
@@ -102,7 +103,7 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
               <tbody>
                 {rows.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-8 text-center text-muted-foreground">
+                    <td colSpan={11} className="px-4 py-8 text-center text-muted-foreground">
                       Nenhum pedido encontrado.
                     </td>
                   </tr>
@@ -126,6 +127,7 @@ export default async function BlueFridayRequestsPage({ searchParams }: PageProps
                         <p className="text-xs text-muted-foreground">Saindo de {row.departureCity}</p>
                       </td>
                       <td className="px-3 py-3">{row.when}</td>
+                      <td className="px-3 py-3">{row.lodging}</td>
                       <td className="px-3 py-3">{row.passengers}</td>
                       <td className="px-3 py-3">{row.budget}</td>
                       <td className="px-3 py-3">{row.payment}</td>

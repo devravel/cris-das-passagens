@@ -44,6 +44,14 @@ export const blueFridayCampaign = {
     "Lisboa",
   ],
   flexiblePeriods: ["Ainda em 2026", "1º semestre de 2027", "2º semestre de 2027"],
+  /** Tipo de hospedagem, logo abaixo das datas (Cris, 31/10). */
+  lodgingOptions: [
+    "All inclusive",
+    "Hotel/pousada com café da manhã",
+    "Airbnb com cozinha",
+    "Hostel",
+    "Nenhuma opção",
+  ],
   budgetRanges: [
     "Até R$ 3 mil",
     "R$ 3 a 6 mil",

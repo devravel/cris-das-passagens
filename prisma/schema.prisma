@@ -393,6 +393,8 @@ model BlueFridayRequest {
   option2Return     DateTime?                   @db.Date
   flexiblePeriod    String?
   tripDays          Int?
+  /// Uma de `lodgingOptions` da config; nulo nos pedidos de antes do campo.
+  lodging           String?
   adults            Int
   /// Uma idade (2–17) por criança.
   childrenAges      Int[]                       @default([])

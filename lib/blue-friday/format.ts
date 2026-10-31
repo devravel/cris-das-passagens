@@ -51,6 +51,7 @@ export function toBlueFridayRequestRow(request: BlueFridayAdminRequest) {
     destination: request.destination,
     departureCity: request.departureCity,
     when,
+    lodging: request.lodging ?? "—",
     passengers,
     budget: request.budgetRange,
     payment:

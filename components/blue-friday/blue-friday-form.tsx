@@ -51,6 +51,7 @@ type Values = {
   option2Return: string;
   flexiblePeriod: string;
   tripDays: string;
+  lodging: string;
   adults: number;
   childrenAges: string[];
   babies: number;
@@ -72,6 +73,7 @@ const emptyValues: Values = {
   option2Return: "",
   flexiblePeriod: "",
   tripDays: "",
+  lodging: "",
   adults: 2,
   childrenAges: [],
   babies: 0,
@@ -125,6 +127,7 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
       option2Return: values.option2Return,
       flexiblePeriod: values.flexiblePeriod,
       tripDays: values.tripDays.trim() ? Number(values.tripDays) : null,
+      lodging: values.lodging,
       adults: values.adults,
       childrenAges: values.childrenAges.map((age) => Number(age || 0)),
       babies: values.babies,
@@ -346,6 +349,25 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
             </div>
           </div>
         )}
+      </fieldset>
+
+      <fieldset>
+        <legend className={cn("mb-2", labelClassName)}>Hospedagem *</legend>
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Hospedagem">
+          {blueFridayCampaign.lodgingOptions.map((option) => (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={values.lodging === option}
+              onClick={() => set("lodging", option)}
+              className={pillClassName(values.lodging === option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        <div className="mt-1.5">{error("lodging")}</div>
       </fieldset>
 
       <fieldset className="space-y-2">

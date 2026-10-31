@@ -29,6 +29,7 @@ export function getBlueFridaySignupStatus(startDate: string, endsAt: string, now
 export type BlueFridayOptions = {
   destinations: readonly string[];
   flexiblePeriods: readonly string[];
+  lodgingOptions: readonly string[];
   budgetRanges: readonly string[];
 };
 
@@ -77,6 +78,7 @@ export function createBlueFridayRequestSchema(options: BlueFridayOptions, todayK
       option2Return: optionalIsoDate,
       flexiblePeriod: z.string().trim(),
       tripDays: z.number().int().min(1, "Mínimo de 1 dia.").max(60, "Máximo de 60 dias.").nullable(),
+      lodging: z.string().refine((v) => options.lodgingOptions.includes(v), "Escolha o tipo de hospedagem."),
       adults: z.number().int().min(1, "Pelo menos 1 adulto.").max(BLUE_FRIDAY_MAX_PEOPLE),
       childrenAges: z
         .array(

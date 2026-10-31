@@ -14,6 +14,7 @@ function buildBlueFridayRequestEmail(row: BlueFridayRequestRow) {
     ["Destino", row.destination],
     ["Saída de", row.departureCity],
     ["Quando", row.when],
+    ["Hospedagem", row.lodging],
     ["Passageiros", row.passengers],
     ["Orçamento", row.budget],
     ["Pagamento", row.payment],

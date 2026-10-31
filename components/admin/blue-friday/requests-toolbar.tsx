@@ -17,6 +17,7 @@ const CSV_COLUMNS = [
   ["destination", "Destino"],
   ["departureCity", "Saída"],
   ["when", "Quando"],
+  ["lodging", "Hospedagem"],
   ["passengers", "Passageiros"],
   ["budget", "Orçamento"],
   ["payment", "Pagamento"],

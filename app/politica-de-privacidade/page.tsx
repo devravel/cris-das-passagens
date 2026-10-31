@@ -219,7 +219,7 @@ export default function PoliticaDePrivacidadePage() {
               </>,
               <>
                 <strong>Preferências da viagem</strong> — cidade de saída, destino,
-                datas ou período, quantidade de passageiros (com a idade das crianças,
+                datas ou período, tipo de hospedagem, quantidade de passageiros (com a idade das crianças,
                 sem nome), faixa de orçamento, forma de pagamento preferida e,
                 opcionalmente, o valor que faria você comprar a viagem;
               </>,
