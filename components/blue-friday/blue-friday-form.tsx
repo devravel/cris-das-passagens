@@ -90,7 +90,7 @@ type Passport = { number: number; name: string; destination: string };
  * formulário de cotação de roteiros. Sucesso mostra o Passaporte Blue com o
  * nome digitado agora (não o do banco) e o link do grupo VIP.
  */
-export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
+export function BlueFridayForm() {
   const [values, setValues] = useState<Values>(emptyValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [website, setWebsite] = useState(""); // honeypot
@@ -190,7 +190,7 @@ export function BlueFridayForm({ liveLabel }: { liveLabel: string }) {
   }
 
   if (passport) {
-    return <PassportCard passport={passport} liveLabel={liveLabel} onRequestAnother={requestAnother} />;
+    return <PassportCard passport={passport} onRequestAnother={requestAnother} />;
   }
 
   const error = (key: string) =>
@@ -646,15 +646,7 @@ function Counter({
   );
 }
 
-function PassportCard({
-  passport,
-  liveLabel,
-  onRequestAnother,
-}: {
-  passport: Passport;
-  liveLabel: string;
-  onRequestAnother: () => void;
-}) {
+function PassportCard({ passport, onRequestAnother }: { passport: Passport; onRequestAnother: () => void }) {
   return (
     <div className="text-white" role="status" aria-live="polite">
       <p className="text-center text-sm font-semibold uppercase tracking-wider text-brand-cyan">
@@ -662,7 +654,7 @@ function PassportCard({
       </p>
       <h3 className="mt-1 text-center font-heading text-2xl font-bold sm:text-3xl">Seu Passaporte Blue chegou</h3>
       <p className="mx-auto mt-2 max-w-md text-center text-sm text-white/75">
-        Agora entre no grupo VIP: é lá que saem o link da live, as surpresas e as ofertas antes de todo mundo.
+        Agora entre no grupo VIP: é lá que saem as surpresas e as ofertas antes de todo mundo.
       </p>
 
       <div className="relative mx-auto mt-6 max-w-sm overflow-hidden rounded-2xl border border-amber-300/40 bg-linear-to-br from-[#0b2a6b] via-[#0a1d4d] to-[#06112e] p-6 shadow-[0_0_60px_-12px] shadow-brand-cyan/50">
@@ -689,10 +681,6 @@ function PassportCard({
           <div>
             <dt className="text-[11px] uppercase tracking-wider text-white/50">Destino</dt>
             <dd className="font-semibold">{passport.destination}</dd>
-          </div>
-          <div>
-            <dt className="text-[11px] uppercase tracking-wider text-white/50">Blue Live</dt>
-            <dd className="font-semibold">{liveLabel}</dd>
           </div>
         </dl>
       </div>

@@ -299,7 +299,7 @@ export default function PoliticaDePrivacidadePage() {
               </>,
               <>
                 <strong>Campanha Blue Friday</strong> — registrar seus pedidos de
-                viagem, montar as ofertas da Blue Live, exibir o ranking de destinos e
+                viagem, montar as ofertas da campanha, exibir o ranking de destinos e
                 falar com você pelo WhatsApp;
               </>,
               <>

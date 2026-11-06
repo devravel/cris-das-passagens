@@ -10,14 +10,13 @@ export const BLUE_FRIDAY_CAMPAIGN_ENABLED = true;
 export const blueFridayCampaign = {
   /** Inscrições abrem à 0h deste dia (Brasília)… */
   signupStartDate: "2026-11-01",
-  /** …e fecham neste instante: 17h do dia da live (Cris, 31/10). */
-  signupEndsAt: "2026-11-05T17:00:00-03:00",
-  /** Blue Live no YouTube (Cris, 31/10). O link sai só no grupo VIP (pedido do Cris, 30/10). */
-  liveDate: "2026-11-05",
-  /** `HH:mm` em Brasília; null mostra só a data. */
-  liveTime: "20:00" as string | null,
+  /**
+   * …e fecham neste instante (ISO com fuso). null = sem data: seguem abertas até
+   * alguém preencher aqui ou desligar a campanha acima (06/11, depois da live).
+   */
+  signupEndsAt: null as string | null,
   whatsappGroupUrl: "https://chat.whatsapp.com/LPBY9Gl0VKQHYA6NrJsbqx",
-  /** Slug da promoção (painel → Promoções) cujos pacotes viram "Ofertas da Blue Live". */
+  /** Slug da promoção (painel → Promoções) cujos pacotes viram "Ofertas da Blue Friday". */
   promotionSlug: "blue-friday",
   /**
    * Sugestões do campo de destino (o cliente digita o que quiser). Só estes

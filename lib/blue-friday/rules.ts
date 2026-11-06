@@ -19,10 +19,15 @@ export type BlueFridaySignupStatus = "soon" | "open" | "closed";
 
 /**
  * Abre à 0h de `startDate` (`YYYY-MM-DD`, Brasília) e fecha no instante
- * `endsAt` (ISO com fuso). Brasília é -03:00 fixo (sem horário de verão).
+ * `endsAt` (ISO com fuso; null = não fecha sozinha). Brasília é -03:00 fixo
+ * (sem horário de verão).
  */
-export function getBlueFridaySignupStatus(startDate: string, endsAt: string, now = new Date()): BlueFridaySignupStatus {
-  if (now.getTime() >= Date.parse(endsAt)) return "closed";
+export function getBlueFridaySignupStatus(
+  startDate: string,
+  endsAt: string | null,
+  now = new Date(),
+): BlueFridaySignupStatus {
+  if (endsAt && now.getTime() >= Date.parse(endsAt)) return "closed";
   return now.getTime() < Date.parse(`${startDate}T00:00:00-03:00`) ? "soon" : "open";
 }
 

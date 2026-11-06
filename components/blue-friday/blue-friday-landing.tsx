@@ -1,12 +1,4 @@
-import {
-  CalendarDays,
-  Laptop,
-  Luggage,
-  MonitorPlay,
-  Tag,
-  Trophy,
-  Users,
-} from "lucide-react";
+import { Laptop, Luggage, Tag, Trophy, Users } from "lucide-react";
 
 import { BlueFridayForm } from "@/components/blue-friday/blue-friday-form";
 import { Container } from "@/components/layout/container";
@@ -22,36 +14,29 @@ import { whatsappSolidButtonClassName } from "@/lib/whatsapp-styles";
 const FORM_ID = "passaporte-blue";
 
 const highlights = [
-  { icon: MonitorPlay, title: "Live no YouTube", text: "Com ofertas exclusivas" },
   { icon: Users, title: "Passaporte Blue", text: "Cadastro no site e grupo VIP no WhatsApp" },
   { icon: Tag, title: "Pacotes, passagens e muito mais", text: "Destinos nacionais e internacionais" },
 ];
 
 const steps = [
   { icon: Laptop, title: "Cadastro no site", text: "Garanta seu Passaporte Blue e peça a oferta do seu destino." },
-  { icon: WhatsAppIcon, title: "Grupo VIP no WhatsApp", text: "Link da live, surpresas e ofertas antes de todo mundo." },
-  { icon: MonitorPlay, title: "Blue Live no YouTube", text: "As ofertas são reveladas ao vivo." },
+  { icon: WhatsAppIcon, title: "Grupo VIP no WhatsApp", text: "Surpresas e ofertas antes de todo mundo." },
   { icon: Luggage, title: "Atendimento e vendas", text: "Nosso time transforma o sonho em viagem real." },
 ];
 
 type BlueFridayLandingProps = {
-  liveLabel: string;
   /** Antes da abertura, aberto ou encerrado (janela da config, horário de Brasília). */
   signupStatus: "soon" | "open" | "closed";
   /** "27/10" — quando abrem as inscrições. */
   signupStartLabel: string;
-  /** "quinta-feira, 05/11, às 17h" — quando fecham. */
-  signupEndLabel: string;
   ranking: RankingEntry[];
   offers: PublicPackage[];
 };
 
 /** Página da campanha no visual do cartaz: navy, azul neon e dourado. */
 export function BlueFridayLanding({
-  liveLabel,
   signupStatus,
   signupStartLabel,
-  signupEndLabel,
   ranking,
   offers,
 }: BlueFridayLandingProps) {
@@ -92,7 +77,7 @@ export function BlueFridayLanding({
             </p>
 
             <p className="mx-auto mt-5 w-fit -rotate-1 rounded-lg bg-linear-to-r from-amber-200 via-amber-300 to-amber-400 px-5 py-2.5 font-heading text-lg font-extrabold uppercase tracking-wide text-[#081845] shadow-[0_0_40px_-8px] shadow-amber-300/70 sm:text-2xl lg:mx-0 lg:text-xl">
-              Ofertas incríveis na nossa live
+              Ofertas incríveis
             </p>
 
             {/* O diferencial (Cris, 31/10): a pessoa participa e diz que oferta quer receber */}
@@ -102,17 +87,9 @@ export function BlueFridayLanding({
               </h2>
               <p className="mt-3 text-base text-balance text-sky-100/85 sm:text-lg">
                 Garanta seu Passaporte Blue, diga para onde quer viajar e quanto quer pagar. A equipe monta a sua
-                oferta para a Blue Live.
+                oferta.
               </p>
-              {signupStatus === "closed" ? null : (
-                <p className="mt-3 text-sm font-semibold text-amber-300">Inscrições até {signupEndLabel}.</p>
-              )}
             </div>
-
-            <p className="mt-7 flex flex-wrap items-center justify-center gap-2 text-sm text-white/85 sm:text-base lg:mt-5 lg:justify-start">
-              <CalendarDays className="size-5 text-brand-cyan" aria-hidden />
-              Blue Live: <strong className="font-semibold text-white">{liveLabel}</strong>
-            </p>
 
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row lg:justify-start">
               {/* No desktop o formulário já está do lado; no celular o botão leva até ele */}
@@ -132,7 +109,7 @@ export function BlueFridayLanding({
           <div id={FORM_ID} aria-labelledby="cadastro-heading" role="region" className="scroll-mt-24">
             <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_80px_-30px] shadow-brand-cyan/40 backdrop-blur-sm sm:p-8">
               {signupOpen ? (
-                <BlueFridayForm liveLabel={liveLabel} />
+                <BlueFridayForm />
               ) : (
                 <p className="py-6 text-center text-white/80">
                   {signupStatus === "soon"
@@ -148,7 +125,7 @@ export function BlueFridayLanding({
       {/* Como funciona */}
       <section aria-labelledby="como-funciona-heading" className="border-t border-white/10 py-14 sm:py-20">
         <Container>
-          <ul className="mx-auto grid max-w-4xl gap-3 text-left sm:grid-cols-3">
+          <ul className="mx-auto grid max-w-4xl gap-3 text-left sm:grid-cols-2">
             {highlights.map(({ icon: Icon, title, text }) => (
               <li
                 key={title}
@@ -169,7 +146,7 @@ export function BlueFridayLanding({
           >
             Como funciona?
           </h2>
-          <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mx-auto mt-10 grid max-w-4xl gap-8 sm:grid-cols-3">
             {steps.map(({ icon: Icon, title, text }, index) => (
               <li key={title} className="text-center">
                 <div className="relative mx-auto grid size-20 place-items-center rounded-full border-2 border-brand-cyan/70 shadow-[0_0_30px_-4px] shadow-brand-cyan/50">
@@ -200,12 +177,12 @@ export function BlueFridayLanding({
         </Container>
       </section>
 
-      {/* Ofertas da live (pacotes da promoção configurada) */}
+      {/* Ofertas (pacotes da promoção configurada) */}
       {offerSections.length > 0 ? (
         <section aria-labelledby="ofertas-heading" className="border-t border-white/10 bg-background py-14 text-foreground sm:py-20">
           <Container>
             <h2 id="ofertas-heading" className="text-center font-heading text-3xl font-bold sm:text-4xl">
-              Ofertas da Blue Live
+              Ofertas da Blue Friday
             </h2>
             <div className="mt-10 space-y-11 sm:space-y-12">
               {offerSections.map(({ config, packages }, index) => (
