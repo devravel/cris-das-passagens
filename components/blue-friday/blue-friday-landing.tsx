@@ -98,7 +98,7 @@ export function BlueFridayLanding({
                   href={`#${FORM_ID}`}
                   className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-bold uppercase tracking-wide text-[#081845] shadow-[0_0_36px_-6px] shadow-brand-cyan/70 transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan lg:hidden"
                 >
-                  Garantir meu Passaporte Blue
+                  Solicitar minha oferta Blue
                 </a>
               ) : null}
               <GroupVipButton />
